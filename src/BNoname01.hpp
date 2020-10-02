@@ -1,0 +1,128 @@
+/* B.Noname01
+ * Glitch effect sequencer LV2 plugin
+ *
+ * Copyright (C) 2020 by Sven Jähnichen
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software Foundation,
+ * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+#ifndef BNONAME01_HPP_
+#define BNONAME01_HPP_
+
+#include <cmath>
+#include <lv2/lv2plug.in/ns/lv2core/lv2.h>
+#include <lv2/lv2plug.in/ns/ext/atom/atom.h>
+#include <lv2/lv2plug.in/ns/ext/atom/util.h>
+#include <lv2/lv2plug.in/ns/ext/atom/forge.h>
+#include <lv2/lv2plug.in/ns/ext/urid/urid.h>
+#include <lv2/lv2plug.in/ns/ext/time/time.h>
+#include <lv2/lv2plug.in/ns/ext/state/state.h>
+#include <lv2/lv2plug.in/ns/ext/worker/worker.h>
+#include "Definitions.hpp"
+#include "Ports.hpp"
+#include "Urids.hpp"
+#include "Pad.hpp"
+#include "Slot.hpp"
+#include "Message.hpp"
+
+struct Transport
+{
+	double rate;
+	float bpm;
+	float speed;
+	uint64_t bar;
+	float barBeat;
+	float beatsPerBar;
+	int beatUnit;
+};
+
+class BNoname01 : public Transport
+{
+public:
+	BNoname01 (double samplerate, const LV2_Feature* const* features);
+	~BNoname01();
+	void connect_port (uint32_t port, void *data);
+	void run (uint32_t n_samples);
+	LV2_State_Status state_save(LV2_State_Store_Function store, LV2_State_Handle handle, uint32_t flags, const LV2_Feature* const* features);
+	LV2_State_Status state_restore(LV2_State_Retrieve_Function retrieve, LV2_State_Handle handle, uint32_t flags, const LV2_Feature* const* features);
+	LV2_Worker_Status work (LV2_Worker_Respond_Function respond, LV2_Worker_Respond_Handle handle, uint32_t size, const void* data);
+	LV2_Worker_Status work_response (uint32_t size, const void* data);
+
+	LV2_URID_Map* map;
+	LV2_Worker_Schedule* workerSchedule;
+
+private:
+	void play(uint32_t start, uint32_t end);
+	void stepsChanged ();
+	void notifySlotToGui (const int slot);
+	void notifyMessageToGui ();
+	void notifyStatusToGui ();
+	double getPositionFromBeats (double beats);
+	double getPositionFromFrames (uint64_t frames);
+	double getPositionFromSeconds (double seconds);
+	double getFramesPerStep ();
+
+	BNoname01URIDs urids;
+
+	Transport host;
+
+	double position;
+	double offset;
+	uint64_t refFrame;
+
+	// Atom ports
+	LV2_Atom_Sequence* controlPort;
+	LV2_Atom_Sequence* notifyPort;
+
+	// Audio ports
+	float* audioInput1;
+	float* audioInput2;
+	float* audioOutput1;
+	float* audioOutput2;
+
+	// Controller ports
+	float* new_controllers[NR_CONTROLLERS];
+	float globalControllers [SLOTS];
+
+	LV2_Atom_Forge forge;
+	LV2_Atom_Forge_Frame notify_frame;
+
+	// Internals
+	Slot slots[NR_SLOTS];
+	int oStep;
+	Message message;
+	bool ui_on;
+	bool scheduleNotifySlot[NR_SLOTS];
+	bool scheduleNotifyStatus;
+	bool scheduleResizeBuffers;
+	bool scheduleSetFx[NR_SLOTS];
+
+	struct Atom_BufferList
+	{
+		LV2_Atom atom;
+		RingBuffer<Stereo>* buffers[NR_SLOTS];
+	};
+
+	struct Atom_Fx
+	{
+		LV2_Atom atom;
+		int index;
+		BNoname01EffectsIndex effect;
+		Fx* fx;
+	};
+
+};
+
+#endif /* BNONAME01_HPP_ */
