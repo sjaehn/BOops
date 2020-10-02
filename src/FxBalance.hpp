@@ -41,12 +41,13 @@ public:
 	virtual void start (const double position) override
 	{
 		Fx::start (position);
+		const double r = bidist (rnd);
 		balance =
 		(
 			params ?
 			LIMIT
 			(
-				2.0 * (params[SLOTS_OPTPARAMS + FX_BALANCE_BALANCE] + bidist (rnd) * params[SLOTS_OPTPARAMS + FX_BALANCE_BALANCERAND]) - 1.0,
+				2.0 * (params[SLOTS_OPTPARAMS + FX_BALANCE_BALANCE] + r * params[SLOTS_OPTPARAMS + FX_BALANCE_BALANCERAND]) - 1.0,
 				-1.0,
 				1.0
 			) :

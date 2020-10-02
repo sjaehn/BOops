@@ -39,14 +39,15 @@ public:
 	virtual void start (const double position) override
 	{
 		Fx::start (position);
+		const double r = bidist (rnd);
 		width =
 		(
 			params ?
 			pow
 			(
-				2 * LIMIT (params[SLOTS_OPTPARAMS + FX_WIDTH_WIDTH] + bidist (rnd) * params[SLOTS_OPTPARAMS + FX_WIDTH_WIDTHRAND], 0.0, 1.0),
+				2 * LIMIT (params[SLOTS_OPTPARAMS + FX_WIDTH_WIDTH] + r * params[SLOTS_OPTPARAMS + FX_WIDTH_WIDTHRAND], 0.0, 1.0),
 				6.64385619
-			) : 
+			) :
 			1.0
 		);
 	}

@@ -39,12 +39,13 @@ public:
 	virtual void start (const double position) override
 	{
 		Fx::start (position);
+		const double r = bidist (rnd);
 		amp =
 		(
 			params ?
 			LIMIT
 			(
-				2.0 * (params[SLOTS_OPTPARAMS + FX_AMP_AMP] + bidist (rnd) * params[SLOTS_OPTPARAMS + FX_AMP_AMPRAND]),
+				2.0 * (params[SLOTS_OPTPARAMS + FX_AMP_AMP] + r * params[SLOTS_OPTPARAMS + FX_AMP_AMPRAND]),
 				0.0,
 				2.0
 			) :

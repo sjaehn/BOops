@@ -45,12 +45,16 @@ public:
 		{
 			nr = LIMIT (1 + 8.0f * params[SLOTS_OPTPARAMS + FX_CHOPPER_NR], 1, 8);
 			smoothing = params[SLOTS_OPTPARAMS + FX_CHOPPER_SMOOTH];
-			for (int i = 0; i < nr; ++i) chops[i] = LIMIT
-			(
-				params[SLOTS_OPTPARAMS + FX_CHOPPER_STEPS + i] + bidist (rnd) * params[SLOTS_OPTPARAMS + FX_CHOPPER_STEPRAND],
-				0.0,
-				1.0
-			);
+			for (int i = 0; i < nr; ++i)
+			{
+				const double r = bidist (rnd);
+				chops[i] = LIMIT
+				(
+					params[SLOTS_OPTPARAMS + FX_CHOPPER_STEPS + i] + r * params[SLOTS_OPTPARAMS + FX_CHOPPER_STEPRAND],
+					0.0,
+					1.0
+				);
+			}
 		}
 	}
 
