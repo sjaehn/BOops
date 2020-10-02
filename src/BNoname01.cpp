@@ -526,8 +526,6 @@ void BNoname01::run (uint32_t n_samples)
 	position = npos;
 	refFrame = 0;
 
-	fprintf(stderr, "%f %f %f %li %f %f %i\n", rate, bpm, speed, bar, barBeat, beatsPerBar, beatUnit);
-
 	// Send collected data to GUI
 	if (ui_on)
 	{
