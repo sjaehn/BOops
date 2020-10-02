@@ -50,7 +50,10 @@ to run it stand-alone and connect it to the JACK system.
 
 Notes:
 
-* **Jack transport is required**
+**Jack transport is required to get information about beat and bar position in the host controlled mode and in the MIDI controlled mode**
+
+**The host must provide information about beat and bar position to use B.Noname01 in these modes.**
+**Pure audio tracks (Ardour) may lack these information. Try to add a MIDI input!**
 
 
 ## Usage
