@@ -60,7 +60,8 @@ TODO
 
 ## What's new
 
-* First release
+* Implement effects
+  * Jumble
 
 
 ## TODO
@@ -73,7 +74,6 @@ TODO
 * Implement effects
   * Surprise box
   * Pitch (?)
-  * Jumble
   * Tape stop
   * Tape start
   * Tape speed

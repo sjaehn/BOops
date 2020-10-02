@@ -35,6 +35,7 @@
 #include "FxDelay.hpp"
 #include "FxReverser.hpp"
 #include "FxChopper.hpp"
+#include "FxJumbler.hpp"
 
 struct Slot
 {
@@ -112,6 +113,9 @@ struct Slot
 						break;
 
 			case FX_CHOPPER:	fx = new FxChopper (&buffer, params, pads);
+						break;
+
+			case FX_JUMBLER:	fx = new FxJumbler (&buffer, params, pads, framesPerStep, size);
 						break;
 
 			case FX_INVALID:	fx = nullptr;
