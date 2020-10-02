@@ -86,3 +86,7 @@ TODO
   * Noise
   * Crackles
 * Messaging system
+* Enable GUI scaling
+* Show waveform
+* Optionally load a sample (?)
+* Make some presets
