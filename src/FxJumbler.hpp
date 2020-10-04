@@ -26,15 +26,21 @@
 class FxJumbler : public Fx
 {
 public:
-	FxJumbler () : FxJumbler (nullptr, nullptr, nullptr, 0, 1) {}
+	FxJumbler () : FxJumbler (nullptr, nullptr, nullptr, nullptr, nullptr) {}
 
-	FxJumbler (RingBuffer<Stereo>** buffer, float* params, Pad* pads, const double framesPerStep, const size_t size) :
+	FxJumbler (RingBuffer<Stereo>** buffer, float* params, Pad* pads, double* framesPerStep, size_t* size) :
 		Fx (buffer, params, pads),
-		framesPerStep (framesPerStep), size (size > 0 ? size : 1), delay (0) {}
+		framesPerStepPtr (framesPerStep),
+		framesPerStep (24000),
+		sizePtr (size),
+		size (1),
+		delay (0) {}
 
 	virtual void start (const double position) override
 	{
 		Fx::start (position);
+		framesPerStep = (framesPerStepPtr ? *framesPerStepPtr : 24000.0);
+		size = (sizePtr ? *sizePtr : 1);
 
 		delay = 0;
 		if (pads)
@@ -75,7 +81,9 @@ public:
 	}
 
 protected:
+	double* framesPerStepPtr;
 	double framesPerStep;
+	size_t* sizePtr;
 	size_t size;
 	int delay;
 };

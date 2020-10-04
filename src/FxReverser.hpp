@@ -28,10 +28,17 @@ class FxReverser : public Fx
 public:
 	FxReverser () : FxReverser (nullptr, nullptr, nullptr, 0) {}
 
-	FxReverser (RingBuffer<Stereo>** buffer, float* params, Pad* pads, const double framesPerStep) :
+	FxReverser (RingBuffer<Stereo>** buffer, float* params, Pad* pads, double* framesPerStep) :
 		Fx (buffer, params, pads),
-		framesPerStep (framesPerStep)
+		framesPerStepPtr (framesPerStep),
+		framesPerStep (24000)
 	{}
+
+	virtual void start (const double position) override
+	{
+		Fx::start (position);
+		framesPerStep = (framesPerStepPtr ? *framesPerStepPtr : 24000.0);
+	}
 
 	virtual Stereo play (const double position) override
 	{
@@ -45,6 +52,7 @@ public:
 	}
 
 protected:
+	double* framesPerStepPtr;
 	double framesPerStep;
 
 };

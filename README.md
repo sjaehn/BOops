@@ -65,6 +65,8 @@ TODO
 
 * Implement effects
   * Jumble
+  * Tape start
+  * Tape speed
 
 
 ## TODO
@@ -77,9 +79,7 @@ TODO
 * Implement effects
   * Surprise box
   * Pitch (?)
-  * Tape stop
-  * Tape start
-  * Tape speed
+  * Tape start (?)
   * Scratch
   * Wobble
   * Crush
@@ -91,5 +91,8 @@ TODO
 * Messaging system
 * Enable GUI scaling
 * Show waveform
+* Swing option
+* Modify step size
 * Optionally load a sample (?)
+* Latency ? (Pitch, Tape start)
 * Make some presets

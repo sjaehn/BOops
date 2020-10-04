@@ -18,36 +18,31 @@
  * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef FXDELAY_HPP_
-#define FXDELAY_HPP_
+#ifndef FXTAPESPEED_HPP_
+#define FXTAPESPEED_HPP_
 
 #include "Fx.hpp"
 
-#define FX_DELAY_RANGE 0
-#define FX_DELAY_DELAY 1
-#define FX_DELAY_DELAYRAND 2
+#define FX_TAPESPEED_SPEED 0
+#define FX_TAPESPEED_SPEEDRAND 1
 
-class FxDelay : public Fx
+class FxTapeSpeed : public Fx
 {
 public:
-	FxDelay () : FxDelay (nullptr, nullptr, nullptr, nullptr, nullptr) {}
+	FxTapeSpeed () : FxTapeSpeed (nullptr, nullptr, nullptr, nullptr) {}
 
-	FxDelay (RingBuffer<Stereo>** buffer, float* params, Pad* pads, double* framesPerStep, size_t* size) :
+	FxTapeSpeed (RingBuffer<Stereo>** buffer, float* params, Pad* pads, double* framesPerStep) :
 		Fx (buffer, params, pads),
 		framesPerStepPtr (framesPerStep),
 		framesPerStep (24000),
-		sizePtr (size),
-		size (1),
-		range (1.0f), delay (0.0f) {}
+		speed (1.0) {}
 
 	virtual void start (const double position) override
 	{
 		Fx::start (position);
 		const double r = bidist (rnd);
-		range = floor (params ? LIMIT (1.0 + params[SLOTS_OPTPARAMS + FX_DELAY_RANGE] * (NR_STEPS - 1), 1.0, size - 1) : 1.0f);
-		delay = (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_DELAY_DELAY] + r * params[SLOTS_OPTPARAMS + FX_DELAY_DELAYRAND], 0.0, 1.0) : 0.5);
+		speed = (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_TAPESPEED_SPEED] + r * params[SLOTS_OPTPARAMS + FX_TAPESPEED_SPEEDRAND], 0.0, 1.0) : 1.0);
 		framesPerStep = (framesPerStepPtr ? *framesPerStepPtr : 24000.0);
-		size = (sizePtr ? *sizePtr : 1);
 	}
 
 	virtual Stereo play (const double position) override
@@ -55,7 +50,7 @@ public:
 		const Stereo s0 = (buffer && (*buffer) ? (**buffer)[0] : Stereo {0, 0});
 		if ((!playing) || (!pads) || (startPos < 0) || (!pads[startPos].mix) || (position < double (startPos)) || (position > double (startPos) + pads[startPos].size)) return s0;
 
-		const long frame = framesPerStep * range * delay;
+		const long frame = (1.0 - speed) * framesPerStep * (position - startPos);
 		Stereo s1 = (buffer && (*buffer) ? (**buffer)[frame] : Stereo {0, 0});
 		s1.mix (s0, 1.0f - pads[startPos].mix);
 		return s1.mix (s0, 1.0f - params[SLOTS_MIX] * adsr (position));
@@ -64,10 +59,7 @@ public:
 protected:
 	double* framesPerStepPtr;
 	double framesPerStep;
-	size_t* sizePtr;
-	size_t size;
-	float range;
-	float delay;
+	double speed;
 };
 
-#endif /* FXDELAY_HPP_ */
+#endif /* FXTAPESPEED_HPP_ */

@@ -29,6 +29,8 @@
 #include "OptionWidth.hpp"
 #include "OptionDelay.hpp"
 #include "OptionChopper.hpp"
+#include "OptionTapeStop.hpp"
+#include "OptionTapeSpeed.hpp"
 
 inline double floorfrac (const double value) {return value - floor (value);}
 inline double floormod (const double numer, const double denom) {return numer - floor(numer / denom) * denom;}
@@ -853,6 +855,12 @@ void BNoname01GUI::setOptionWidget (const int slot)
 					break;
 
 		case FX_CHOPPER:	slotParams[slot].optionWidget = new OptionChopper (430, 0, 480, 130, "widget");
+					break;
+
+		case FX_TAPE_STOP:	slotParams[slot].optionWidget = new OptionTapeStop (430, 0, 160, 130, "widget");
+					break;
+
+		case FX_TAPE_SPEED:	slotParams[slot].optionWidget = new OptionTapeSpeed (430, 0, 80, 130, "widget");
 					break;
 
 		default:		slotParams[slot].optionWidget = new OptionWidget (0, 0, 0, 0, "widget");

@@ -36,6 +36,8 @@
 #include "FxReverser.hpp"
 #include "FxChopper.hpp"
 #include "FxJumbler.hpp"
+#include "FxTapeStop.hpp"
+#include "FxTapeSpeed.hpp"
 
 struct Slot
 {
@@ -106,16 +108,22 @@ struct Slot
 			case FX_WIDTH:		fx = new FxWidth (&buffer, params, pads);
 						break;
 
-			case FX_DELAY:		fx = new FxDelay (&buffer, params, pads, framesPerStep, size);
+			case FX_DELAY:		fx = new FxDelay (&buffer, params, pads, &framesPerStep, &size);
 						break;
 
-			case FX_REVERSER:	fx = new FxReverser (&buffer, params, pads, framesPerStep);
+			case FX_REVERSER:	fx = new FxReverser (&buffer, params, pads, &framesPerStep);
 						break;
 
 			case FX_CHOPPER:	fx = new FxChopper (&buffer, params, pads);
 						break;
 
-			case FX_JUMBLER:	fx = new FxJumbler (&buffer, params, pads, framesPerStep, size);
+			case FX_JUMBLER:	fx = new FxJumbler (&buffer, params, pads, &framesPerStep, &size);
+						break;
+
+			case FX_TAPE_STOP:	fx = new FxTapeStop (&buffer, params, pads, &framesPerStep);
+						break;
+
+			case FX_TAPE_SPEED:	fx = new FxTapeSpeed (&buffer, params, pads, &framesPerStep);
 						break;
 
 			case FX_INVALID:	fx = nullptr;

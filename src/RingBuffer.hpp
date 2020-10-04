@@ -48,6 +48,7 @@ public:
         void pop_front ();
         void pop_front (const size_t n);
         void move (const long n);
+        size_t position () const;
 
 protected:
         T* data_;
@@ -188,5 +189,7 @@ template <class T>void RingBuffer<T>::move (const long n)
 {
         if (size_) position_ = (position_ + size_ - (n % size_)) % size_;
 }
+
+template <class T> size_t RingBuffer<T>::position () const {return position_;}
 
 #endif /* RINGBUFFER_HPP_ */
