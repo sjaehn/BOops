@@ -38,6 +38,7 @@
 #include "FxJumbler.hpp"
 #include "FxTapeStop.hpp"
 #include "FxTapeSpeed.hpp"
+#include "FxNoise.hpp"
 
 struct Slot
 {
@@ -124,6 +125,9 @@ struct Slot
 						break;
 
 			case FX_TAPE_SPEED:	fx = new FxTapeSpeed (&buffer, params, pads, &framesPerStep);
+						break;
+
+			case FX_NOISE:		fx = new FxNoise (&buffer, params, pads);
 						break;
 
 			case FX_INVALID:	fx = nullptr;

@@ -68,6 +68,7 @@ TODO
   * Jumble
   * Tape start
   * Tape speed
+  * Noise
 
 
 ## TODO
@@ -87,7 +88,6 @@ TODO
   * Decimate
   * Distortion
   * Filter
-  * Noise
   * Crackles
 * Messaging system
 * Enable GUI scaling
