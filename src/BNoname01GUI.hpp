@@ -221,6 +221,8 @@ private:
 	struct SlotParam
 	{
 		BWidgets::Widget container;
+		BWidgets::ImageIcon nrIcon;
+		BWidgets::ImageIcon nameIcon;
 		BWidgets::Label attackLabel;
 		BWidgets::Label decayLabel;
 		BWidgets::Label sustainLabel;

@@ -109,11 +109,11 @@ enum BNoname01EffectsIndex
 
 #define BNONAME01FXNAMES \
 { \
-	{1, "Surprise box"}, {2, "Amp"}, {3, "Balance"}, {4, "Width"}, {5, "Pitch"}, \
+	{1, "Surprise box (TODO)"}, {2, "Amp"}, {3, "Balance"}, {4, "Width"}, {5, "Pitch (TODO)"}, \
 	{6, "Delay"}, {7, "Reverse"}, {8, "Chop"}, {9, "Jumble"}, \
-	{10, "Tape stop"}, {11, "Tape start"}, {12, "Tape speed"}, {13, "Scratch"}, {14, "Wobble"}, \
-	{15, "Crush"}, {16, "Decimate"}, {17, "Distortion"}, {18, "Filter"}, \
-	{19, "Noise"}, {20, "Crackles"} \
+	{10, "Tape stop"}, {11, "Tape start (TODO)"}, {12, "Tape speed"}, {13, "Scratch (TODO)"}, {14, "Wobble (TODO)"}, \
+	{15, "Crush (TODO)"}, {16, "Decimate (TODO)"}, {17, "Distortion (TODO)"}, {18, "Filter (TODO)"}, \
+	{19, "Noise (TODO)"}, {20, "Crackles (TODO)"} \
 }
 
 #endif /* PORTS_HPP_ */

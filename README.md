@@ -63,6 +63,7 @@ TODO
 
 ## What's new
 
+* Show slot index and effect name for selected slot
 * Implement effects
   * Jumble
   * Tape start
@@ -91,8 +92,7 @@ TODO
 * Messaging system
 * Enable GUI scaling
 * Show waveform
-* Swing option
-* Modify step size
+* Group colors
 * Optionally load a sample (?)
 * Latency ? (Pitch, Tape start)
 * Make some presets

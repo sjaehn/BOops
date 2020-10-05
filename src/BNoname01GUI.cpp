@@ -96,20 +96,22 @@ BNoname01GUI::BNoname01GUI (const char *bundle_path, const LV2_Feature *const *f
 	// Init slot params
 	for (int i = 0; i < NR_SLOTS; ++i)
 	{
-		slotParams[i].container = BWidgets::Widget (20, 458, 1000, 130, "widget");
-		slotParams[i].attackLabel = BWidgets::Label (190, 10, 20, 20, "ctlabel", "A");
-		slotParams[i].decayLabel = BWidgets::Label (190, 40, 20, 20, "ctlabel", "D");
-		slotParams[i].sustainLabel = BWidgets::Label (190, 70, 20, 20, "ctlabel", "S");
-		slotParams[i].releaseLabel = BWidgets::Label (190, 100, 20, 20, "ctlabel", "R");
-		slotParams[i].attackSlider = HSlider (210, 10, 60, 20, "slider", 0.1, 0.0, 1.0, 0.0, "%1.2f", [] (double x) {return x;}, [] (double x) {return pow (x, 1.0 / 2.0);}, [] (double x) {return pow (x, 2.0);});
-		slotParams[i].decaySlider = HSlider (210, 40, 60, 20, "slider", 0.1, 0.0, 1.0, 0.0, "%1.2f", [] (double x) {return x;}, [] (double x) {return pow (x, 1.0 / 2.0);}, [] (double x) {return pow (x, 2.0);});
-		slotParams[i].sustainSlider = HSlider (210, 70, 60, 20, "slider", 1.0, 0.0, 1.0, 0.0, "%1.2f");
-		slotParams[i].releaseSlider = HSlider (210, 100, 60, 20, "slider", 0.1, 0.0, 1.0, 0.0, "%1.2f", [] (double x) {return x;}, [] (double x) {return pow (x, 1.0 / 2.0);}, [] (double x) {return pow (x, 2.0);});
-		slotParams[i].adsrDisplay = CurveChart (10, 10, 170, 110, "slider");
-		slotParams[i].panLabel = BWidgets::Label (280, 90, 60, 20, "ctlabel", "Pan");
-		slotParams[i].panDial = Dial (280, 20, 60, 60, "dial", 0.0, -1.0, 1.0, 0.0, "%1.2f");
-		slotParams[i].mixLabel = BWidgets::Label (360, 90, 60, 20, "ctlabel", "Mix");
-		slotParams[i].mixDial = Dial (360, 20, 60, 60, "dial", 0.0, 0.0, 1.0, 0.0, "%1.2f");
+		slotParams[i].container = BWidgets::Widget (20, 438, 1000, 150, "widget");
+		slotParams[i].nrIcon = BWidgets::ImageIcon (20, 8, 40, 20, "widget", "");
+		slotParams[i].nameIcon = BWidgets::ImageIcon (60, 8, 160, 20, "widget", "");
+		slotParams[i].attackLabel = BWidgets::Label (190, 30, 20, 20, "ctlabel", "A");
+		slotParams[i].decayLabel = BWidgets::Label (190, 60, 20, 20, "ctlabel", "D");
+		slotParams[i].sustainLabel = BWidgets::Label (190, 90, 20, 20, "ctlabel", "S");
+		slotParams[i].releaseLabel = BWidgets::Label (190, 120, 20, 20, "ctlabel", "R");
+		slotParams[i].attackSlider = HSlider (210, 30, 60, 20, "slider", 0.1, 0.0, 1.0, 0.0, "%1.2f", [] (double x) {return x;}, [] (double x) {return pow (x, 1.0 / 2.0);}, [] (double x) {return pow (x, 2.0);});
+		slotParams[i].decaySlider = HSlider (210, 60, 60, 20, "slider", 0.1, 0.0, 1.0, 0.0, "%1.2f", [] (double x) {return x;}, [] (double x) {return pow (x, 1.0 / 2.0);}, [] (double x) {return pow (x, 2.0);});
+		slotParams[i].sustainSlider = HSlider (210, 90, 60, 20, "slider", 1.0, 0.0, 1.0, 0.0, "%1.2f");
+		slotParams[i].releaseSlider = HSlider (210, 120, 60, 20, "slider", 0.1, 0.0, 1.0, 0.0, "%1.2f", [] (double x) {return x;}, [] (double x) {return pow (x, 1.0 / 2.0);}, [] (double x) {return pow (x, 2.0);});
+		slotParams[i].adsrDisplay = CurveChart (10, 30, 170, 110, "slider");
+		slotParams[i].panLabel = BWidgets::Label (280, 110, 60, 20, "ctlabel", "Pan");
+		slotParams[i].panDial = Dial (280, 40, 60, 60, "dial", 0.0, -1.0, 1.0, 0.0, "%1.2f");
+		slotParams[i].mixLabel = BWidgets::Label (360, 110, 60, 20, "ctlabel", "Mix");
+		slotParams[i].mixDial = Dial (360, 40, 60, 60, "dial", 0.0, 0.0, 1.0, 0.0, "%1.2f");
 		for (int j = 0; j < NR_OPTPARAMS; ++j) slotParams[i].options[j] = Dial (0, 0, 0, 0, "widget", 0.0, 0.0, 1.0, 0.0);
 		slotParams[i].optionWidget = nullptr;
 	}
@@ -228,6 +230,8 @@ BNoname01GUI::BNoname01GUI (const char *bundle_path, const LV2_Feature *const *f
 
 	for (SlotParam& s : slotParams)
 	{
+		s.container.add (s.nrIcon);
+		s.container.add (s.nameIcon);
 		s.container.add (s.attackLabel);
 		s.container.add (s.decayLabel);
 		s.container.add (s.sustainLabel);
@@ -542,6 +546,8 @@ void BNoname01GUI::applyTheme (BStyles::Theme& theme)
 	for (SlotParam& s : slotParams)
 	{
 		s.container.applyTheme (theme);
+		s.nrIcon.applyTheme (theme);
+		s.nameIcon.applyTheme (theme);
 		s.attackLabel.applyTheme (theme);
 		s.decayLabel.applyTheme (theme);
 		s.sustainLabel.applyTheme (theme);
@@ -842,25 +848,25 @@ void BNoname01GUI::setOptionWidget (const int slot)
 
 	switch (fxnr)
 	{
-		case FX_AMP:		slotParams[slot].optionWidget = new OptionAmp (430, 0, 80, 130, "widget");
+		case FX_AMP:		slotParams[slot].optionWidget = new OptionAmp (430, 20, 80, 130, "widget");
 					break;
 
-		case FX_BALANCE:	slotParams[slot].optionWidget = new OptionBalance (430, 0, 80, 130, "widget");
+		case FX_BALANCE:	slotParams[slot].optionWidget = new OptionBalance (430, 20, 80, 130, "widget");
 					break;
 
-		case FX_WIDTH:		slotParams[slot].optionWidget = new OptionWidth (430, 0, 80, 130, "widget");
+		case FX_WIDTH:		slotParams[slot].optionWidget = new OptionWidth (430, 20, 80, 130, "widget");
 					break;
 
-		case FX_DELAY:		slotParams[slot].optionWidget = new OptionDelay (430, 0, 160, 130, "widget");
+		case FX_DELAY:		slotParams[slot].optionWidget = new OptionDelay (430, 20, 160, 130, "widget");
 					break;
 
-		case FX_CHOPPER:	slotParams[slot].optionWidget = new OptionChopper (430, 0, 480, 130, "widget");
+		case FX_CHOPPER:	slotParams[slot].optionWidget = new OptionChopper (430, 20, 480, 130, "widget");
 					break;
 
-		case FX_TAPE_STOP:	slotParams[slot].optionWidget = new OptionTapeStop (430, 0, 160, 130, "widget");
+		case FX_TAPE_STOP:	slotParams[slot].optionWidget = new OptionTapeStop (430, 20, 160, 130, "widget");
 					break;
 
-		case FX_TAPE_SPEED:	slotParams[slot].optionWidget = new OptionTapeSpeed (430, 0, 80, 130, "widget");
+		case FX_TAPE_SPEED:	slotParams[slot].optionWidget = new OptionTapeSpeed (430, 20, 80, 130, "widget");
 					break;
 
 		default:		slotParams[slot].optionWidget = new OptionWidget (0, 0, 0, 0, "widget");
@@ -1022,6 +1028,9 @@ void BNoname01GUI::valueChangedCallback(BEvents::Event* event)
 										}
 									}
 									else ui->slots[slot].effectsListbox.setValue (fxnr);
+
+									ui->slotParams[slot].nrIcon.loadImage (BColors::NORMAL, ui->pluginPath + "inc/Nr" + std::to_string (slot + 1) + ".png");
+									ui->slotParams[slot].nameIcon.loadImage (BColors::NORMAL, ui->pluginPath + "inc/" + fxIconFileNames[fxnr] + "16.png");
 
 									// Load options to optionWidget
 									ui->loadOptions (slot);

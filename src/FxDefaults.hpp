@@ -40,7 +40,7 @@ const std::array<const std::array<const float, NR_PARAMS>, NR_FX> fxDefaultValue
 	{{STDPARAMS, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},				// FX_REVERSER
 	{{STDPARAMS, 8, 0.1, 1.0, 0.5, 0.75, 0.25, 1.0, 0.0, 0.75, 0.0, 0.0, 0}},	// FX_CHOPPER
 	{{STDPARAMS, 0.5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},				// FX_JUMBLER
-	{{STDPARAMS, 0.9, 0, 0.5, 0, 0, 0, 0, 0, 0, 0, 0, 0}},				// FX_TAPE_STOP
+	{{STDPARAMS, 0.75, 0, 0.5, 0, 0, 0, 0, 0, 0, 0, 0, 0}},				// FX_TAPE_STOP
 	{{STDPARAMS, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},				// FX_TAPE_START
 	{{STDPARAMS, 1.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},				// FX_TAPE_SPEED
 	{{STDPARAMS, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},				// FX_SCRATCH
