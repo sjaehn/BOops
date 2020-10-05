@@ -32,6 +32,7 @@
 #include "OptionTapeStop.hpp"
 #include "OptionTapeSpeed.hpp"
 #include "OptionDecimate.hpp"
+#include "OptionBitcrush.hpp"
 #include "OptionNoise.hpp"
 
 inline double floorfrac (const double value) {return value - floor (value);}
@@ -869,6 +870,9 @@ void BNoname01GUI::setOptionWidget (const int slot)
 					break;
 
 		case FX_TAPE_SPEED:	slotParams[slot].optionWidget = new OptionTapeSpeed (430, 20, 80, 130, "widget");
+					break;
+
+		case FX_BITCRUSH:	slotParams[slot].optionWidget = new OptionBitcrush (430, 20, 160, 130, "widget");
 					break;
 
 		case FX_DECIMATE:	slotParams[slot].optionWidget = new OptionDecimate (430, 20, 80, 130, "widget");

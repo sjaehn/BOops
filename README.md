@@ -68,6 +68,7 @@ TODO
   * Jumble
   * Tape start
   * Tape speed
+  * Crush
   * Decimate
   * Noise
 
@@ -85,7 +86,6 @@ TODO
   * Tape start (?)
   * Scratch
   * Wobble
-  * Crush
   * Distortion
   * Filter
   * Crackles
