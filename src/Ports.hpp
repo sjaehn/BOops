@@ -112,8 +112,8 @@ enum BNoname01EffectsIndex
 	{1, "Surprise box (TODO)"}, {2, "Amp"}, {3, "Balance"}, {4, "Width"}, {5, "Pitch (TODO)"}, \
 	{6, "Delay"}, {7, "Reverse"}, {8, "Chop"}, {9, "Jumble"}, \
 	{10, "Tape stop"}, {11, "Tape start (TODO)"}, {12, "Tape speed"}, {13, "Scratch (TODO)"}, {14, "Wobble (TODO)"}, \
-	{15, "Crush (TODO)"}, {16, "Decimate (TODO)"}, {17, "Distortion (TODO)"}, {18, "Filter (TODO)"}, \
-	{19, "Noise (TODO)"}, {20, "Crackles (TODO)"} \
+	{15, "Crush (TODO)"}, {16, "Decimate"}, {17, "Distortion (TODO)"}, {18, "Filter (TODO)"}, \
+	{19, "Noise"}, {20, "Crackles (TODO)"} \
 }
 
 #endif /* PORTS_HPP_ */

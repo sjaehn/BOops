@@ -31,6 +31,7 @@
 #include "OptionChopper.hpp"
 #include "OptionTapeStop.hpp"
 #include "OptionTapeSpeed.hpp"
+#include "OptionDecimate.hpp"
 #include "OptionNoise.hpp"
 
 inline double floorfrac (const double value) {return value - floor (value);}
@@ -870,7 +871,10 @@ void BNoname01GUI::setOptionWidget (const int slot)
 		case FX_TAPE_SPEED:	slotParams[slot].optionWidget = new OptionTapeSpeed (430, 20, 80, 130, "widget");
 					break;
 
-		case FX_NOISE:	slotParams[slot].optionWidget = new OptionNoise (430, 20, 80, 130, "widget");
+		case FX_DECIMATE:	slotParams[slot].optionWidget = new OptionDecimate (430, 20, 80, 130, "widget");
+					break;
+
+		case FX_NOISE:		slotParams[slot].optionWidget = new OptionNoise (430, 20, 80, 130, "widget");
 					break;
 
 		default:		slotParams[slot].optionWidget = new OptionWidget (0, 0, 0, 0, "widget");
