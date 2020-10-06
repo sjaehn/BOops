@@ -29,11 +29,13 @@ public:
 	Dial () : Dial (0, 0, 0, 0, "", 0, 0, 0, 0) {}
 	Dial (const double x, const double y, const double width, const double height, const std::string& name,
 		 const double value, const double min, const double max, const double step, std::string format = "",
+		 std::string unit = "",
 		 std::function<double (double x)> displayfunc = [] (double x) {return x;},
  	 	 std::function<double (double x)> func = [] (double x) {return x;},
  		 std::function<double (double x)> revfunc = [] (double x) {return x;}) :
 			RangeWidget (x, y, width, height, name, value, min, max, step),
 			format_ (format),
+			unit_ (unit),
 			display_ (displayfunc),
 			transform_ (func),
 			reverse_ (revfunc),
@@ -45,6 +47,12 @@ public:
 	}
 
 	virtual Widget* clone () const override {return new Dial (*this);}
+
+	virtual void setUnit (const std::string& s)
+	{
+		unit_ = s;
+		update();
+	}
 
 	virtual void applyTheme (BStyles::Theme& theme) override {applyTheme (theme, name_);}
 
@@ -163,21 +171,21 @@ protected:
 				cairo_fill (cr);
 
 				// Text
-				double txtlines = (unit_ == "" ? 1.0 : 2.0);
-				cairo_text_extents_t ext;
+				cairo_text_extents_t ext1, ext2;
 				cairo_select_font_face (cr, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
 				cairo_set_font_size (cr, 0.18 * d);
 
 				const std::string valstr = BUtilities::to_string (display_ (getValue()), format_);
-				cairo_text_extents (cr, valstr.c_str(), &ext);
-				cairo_move_to (cr, w / 2 - ext.width / 2 - ext.x_bearing, h / 2 - txtlines * ext.height / 2 - ext.y_bearing);
+				cairo_text_extents (cr, valstr.c_str(), &ext1);
+				cairo_text_extents (cr, unit_.c_str(), &ext2);
+				const double texth = (ext2.height ? 1.5 : 1.0) * ext1.height + ext2.height;
+				cairo_move_to (cr, w / 2 - ext1.width / 2 - ext1.x_bearing, h / 2 - texth / 2 - ext1.y_bearing);
 				cairo_set_source_rgba (cr, CAIRO_RGBA (txColor));
 				cairo_show_text (cr, valstr.c_str ());
 
-				if (txtlines > 1.0)
+				if (unit_ != "")
 				{
-					cairo_text_extents (cr, unit_.c_str(), &ext);
-					cairo_move_to (cr, w / 2 - ext.width / 2 - ext.x_bearing, h / 2 + ext.height / 2 - ext.y_bearing);
+					cairo_move_to (cr, w / 2 - ext2.width / 2 - ext2.x_bearing, h / 2 - (texth / 2 - 1.5 * ext1.height) - ext2.y_bearing);
 					cairo_set_source_rgba (cr, CAIRO_RGBA (txColor));
 					cairo_show_text (cr, unit_.c_str ());
 				}

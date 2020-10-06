@@ -40,10 +40,11 @@ public:
 		 const double value, const double min, const double max, const double step,
 		 RangeDirections dir = BIDIRECTIONAL,
 		 std::string format = "",
+		 std::string unit = "",
 		 std::function<double (double x)> displayfunc = [] (double x) {return x;},
  	 	 std::function<double (double x)> func = [] (double x) {return x;},
  		 std::function<double (double x)> revfunc = [] (double x) {return x;}) :
-			Dial (x, y, width, height, name, value, min, max, step, format, displayfunc, func, revfunc),
+			Dial (x, y, width, height, name, value, min, max, step, format, unit, displayfunc, func, revfunc),
 			range (0, 0, 0, 0, name + "/range", 0.0, (dir == BIDIRECTIONAL ? 0.0 : min - max), max - min, step),
 			direction (dir)
 	{
