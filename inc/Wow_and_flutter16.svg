@@ -13,8 +13,8 @@
    version="1.1"
    id="svg907"
    inkscape:version="1.0.1 (3bc2e813f5, 2020-09-07)"
-   sodipodi:docname="Wobble16.svg"
-   inkscape:export-filename="/home/sven/dev/c/BNoname01/inc/Wobble16.png"
+   sodipodi:docname="Wow_and_flutter16.svg"
+   inkscape:export-filename="/home/sven/dev/c/BNoname01/inc/Wow_and_Flutter16.png"
    inkscape:export-xdpi="96"
    inkscape:export-ydpi="96">
   <defs
@@ -52,7 +52,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -62,16 +62,17 @@
      id="layer1">
     <text
        xml:space="preserve"
-       style="font-size:4.23333px;line-height:1.25;font-family:'Good Times';-inkscape-font-specification:'Good Times';fill:#ffffff;stroke-width:0.264583"
-       x="2.6013832"
-       y="4.1782975"
+       style="font-size:4.00811px;line-height:1.25;font-family:'Good Times';-inkscape-font-specification:'Good Times';fill:#ffffff;stroke-width:0.250507"
+       x="2.7383928"
+       y="3.9560041"
        id="text1474"
        inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96"><tspan
+       inkscape:export-ydpi="96"
+       transform="scale(0.9467981,1.0561914)"><tspan
          sodipodi:role="line"
          id="tspan1472"
-         x="2.6013832"
-         y="4.1782975"
-         style="font-size:4.23333px;fill:#ffffff;stroke-width:0.264583">wobble</tspan></text>
+         x="2.7383928"
+         y="3.9560041"
+         style="font-size:4.00811px;fill:#ffffff;stroke-width:0.250507">wow &amp; flutter</tspan></text>
   </g>
 </svg>

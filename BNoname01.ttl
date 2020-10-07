@@ -179,7 +179,7 @@
 		lv2:scalePoint [ rdfs:label "Tape start"; rdf:value 11 ] ;
 		lv2:scalePoint [ rdfs:label "Tape speed"; rdf:value 12 ] ;
 		lv2:scalePoint [ rdfs:label "Scratch"; rdf:value 13 ] ;
-		lv2:scalePoint [ rdfs:label "Wobble"; rdf:value 14 ] ;
+		lv2:scalePoint [ rdfs:label "Wow & flutter"; rdf:value 14 ] ;
 		lv2:scalePoint [ rdfs:label "Bitcrush"; rdf:value 15 ] ;
 		lv2:scalePoint [ rdfs:label "Decimate"; rdf:value 16 ] ;
 		lv2:scalePoint [ rdfs:label "Distortion"; rdf:value 17 ] ;
@@ -362,7 +362,7 @@
 		lv2:scalePoint [ rdfs:label "Tape start"; rdf:value 11 ] ;
 		lv2:scalePoint [ rdfs:label "Tape speed"; rdf:value 12 ] ;
 		lv2:scalePoint [ rdfs:label "Scratch"; rdf:value 13 ] ;
-		lv2:scalePoint [ rdfs:label "Wobble"; rdf:value 14 ] ;
+		lv2:scalePoint [ rdfs:label "Wow & flutter"; rdf:value 14 ] ;
 		lv2:scalePoint [ rdfs:label "Bitcrush"; rdf:value 15 ] ;
 		lv2:scalePoint [ rdfs:label "Decimate"; rdf:value 16 ] ;
 		lv2:scalePoint [ rdfs:label "Distortion"; rdf:value 17 ] ;
@@ -545,7 +545,7 @@
 		lv2:scalePoint [ rdfs:label "Tape start"; rdf:value 11 ] ;
 		lv2:scalePoint [ rdfs:label "Tape speed"; rdf:value 12 ] ;
 		lv2:scalePoint [ rdfs:label "Scratch"; rdf:value 13 ] ;
-		lv2:scalePoint [ rdfs:label "Wobble"; rdf:value 14 ] ;
+		lv2:scalePoint [ rdfs:label "Wow & flutter"; rdf:value 14 ] ;
 		lv2:scalePoint [ rdfs:label "Bitcrush"; rdf:value 15 ] ;
 		lv2:scalePoint [ rdfs:label "Decimate"; rdf:value 16 ] ;
 		lv2:scalePoint [ rdfs:label "Distortion"; rdf:value 17 ] ;
@@ -728,7 +728,7 @@
 		lv2:scalePoint [ rdfs:label "Tape start"; rdf:value 11 ] ;
 		lv2:scalePoint [ rdfs:label "Tape speed"; rdf:value 12 ] ;
 		lv2:scalePoint [ rdfs:label "Scratch"; rdf:value 13 ] ;
-		lv2:scalePoint [ rdfs:label "Wobble"; rdf:value 14 ] ;
+		lv2:scalePoint [ rdfs:label "Wow & flutter"; rdf:value 14 ] ;
 		lv2:scalePoint [ rdfs:label "Bitcrush"; rdf:value 15 ] ;
 		lv2:scalePoint [ rdfs:label "Decimate"; rdf:value 16 ] ;
 		lv2:scalePoint [ rdfs:label "Distortion"; rdf:value 17 ] ;
@@ -911,7 +911,7 @@
 		lv2:scalePoint [ rdfs:label "Tape start"; rdf:value 11 ] ;
 		lv2:scalePoint [ rdfs:label "Tape speed"; rdf:value 12 ] ;
 		lv2:scalePoint [ rdfs:label "Scratch"; rdf:value 13 ] ;
-		lv2:scalePoint [ rdfs:label "Wobble"; rdf:value 14 ] ;
+		lv2:scalePoint [ rdfs:label "Wow & flutter"; rdf:value 14 ] ;
 		lv2:scalePoint [ rdfs:label "Bitcrush"; rdf:value 15 ] ;
 		lv2:scalePoint [ rdfs:label "Decimate"; rdf:value 16 ] ;
 		lv2:scalePoint [ rdfs:label "Distortion"; rdf:value 17 ] ;
@@ -1094,7 +1094,7 @@
 		lv2:scalePoint [ rdfs:label "Tape start"; rdf:value 11 ] ;
 		lv2:scalePoint [ rdfs:label "Tape speed"; rdf:value 12 ] ;
 		lv2:scalePoint [ rdfs:label "Scratch"; rdf:value 13 ] ;
-		lv2:scalePoint [ rdfs:label "Wobble"; rdf:value 14 ] ;
+		lv2:scalePoint [ rdfs:label "Wow & flutter"; rdf:value 14 ] ;
 		lv2:scalePoint [ rdfs:label "Bitcrush"; rdf:value 15 ] ;
 		lv2:scalePoint [ rdfs:label "Decimate"; rdf:value 16 ] ;
 		lv2:scalePoint [ rdfs:label "Distortion"; rdf:value 17 ] ;
@@ -1277,7 +1277,7 @@
 		lv2:scalePoint [ rdfs:label "Tape start"; rdf:value 11 ] ;
 		lv2:scalePoint [ rdfs:label "Tape speed"; rdf:value 12 ] ;
 		lv2:scalePoint [ rdfs:label "Scratch"; rdf:value 13 ] ;
-		lv2:scalePoint [ rdfs:label "Wobble"; rdf:value 14 ] ;
+		lv2:scalePoint [ rdfs:label "Wow & flutter"; rdf:value 14 ] ;
 		lv2:scalePoint [ rdfs:label "Bitcrush"; rdf:value 15 ] ;
 		lv2:scalePoint [ rdfs:label "Decimate"; rdf:value 16 ] ;
 		lv2:scalePoint [ rdfs:label "Distortion"; rdf:value 17 ] ;
@@ -1460,7 +1460,7 @@
 		lv2:scalePoint [ rdfs:label "Tape start"; rdf:value 11 ] ;
 		lv2:scalePoint [ rdfs:label "Tape speed"; rdf:value 12 ] ;
 		lv2:scalePoint [ rdfs:label "Scratch"; rdf:value 13 ] ;
-		lv2:scalePoint [ rdfs:label "Wobble"; rdf:value 14 ] ;
+		lv2:scalePoint [ rdfs:label "Wow & flutter"; rdf:value 14 ] ;
 		lv2:scalePoint [ rdfs:label "Bitcrush"; rdf:value 15 ] ;
 		lv2:scalePoint [ rdfs:label "Decimate"; rdf:value 16 ] ;
 		lv2:scalePoint [ rdfs:label "Distortion"; rdf:value 17 ] ;
@@ -1643,7 +1643,7 @@
 		lv2:scalePoint [ rdfs:label "Tape start"; rdf:value 11 ] ;
 		lv2:scalePoint [ rdfs:label "Tape speed"; rdf:value 12 ] ;
 		lv2:scalePoint [ rdfs:label "Scratch"; rdf:value 13 ] ;
-		lv2:scalePoint [ rdfs:label "Wobble"; rdf:value 14 ] ;
+		lv2:scalePoint [ rdfs:label "Wow & flutter"; rdf:value 14 ] ;
 		lv2:scalePoint [ rdfs:label "Bitcrush"; rdf:value 15 ] ;
 		lv2:scalePoint [ rdfs:label "Decimate"; rdf:value 16 ] ;
 		lv2:scalePoint [ rdfs:label "Distortion"; rdf:value 17 ] ;
@@ -1826,7 +1826,7 @@
 		lv2:scalePoint [ rdfs:label "Tape start"; rdf:value 11 ] ;
 		lv2:scalePoint [ rdfs:label "Tape speed"; rdf:value 12 ] ;
 		lv2:scalePoint [ rdfs:label "Scratch"; rdf:value 13 ] ;
-		lv2:scalePoint [ rdfs:label "Wobble"; rdf:value 14 ] ;
+		lv2:scalePoint [ rdfs:label "Wow & flutter"; rdf:value 14 ] ;
 		lv2:scalePoint [ rdfs:label "Bitcrush"; rdf:value 15 ] ;
 		lv2:scalePoint [ rdfs:label "Decimate"; rdf:value 16 ] ;
 		lv2:scalePoint [ rdfs:label "Distortion"; rdf:value 17 ] ;
@@ -2009,7 +2009,7 @@
 		lv2:scalePoint [ rdfs:label "Tape start"; rdf:value 11 ] ;
 		lv2:scalePoint [ rdfs:label "Tape speed"; rdf:value 12 ] ;
 		lv2:scalePoint [ rdfs:label "Scratch"; rdf:value 13 ] ;
-		lv2:scalePoint [ rdfs:label "Wobble"; rdf:value 14 ] ;
+		lv2:scalePoint [ rdfs:label "Wow & flutter"; rdf:value 14 ] ;
 		lv2:scalePoint [ rdfs:label "Bitcrush"; rdf:value 15 ] ;
 		lv2:scalePoint [ rdfs:label "Decimate"; rdf:value 16 ] ;
 		lv2:scalePoint [ rdfs:label "Distortion"; rdf:value 17 ] ;
@@ -2192,7 +2192,7 @@
 		lv2:scalePoint [ rdfs:label "Tape start"; rdf:value 11 ] ;
 		lv2:scalePoint [ rdfs:label "Tape speed"; rdf:value 12 ] ;
 		lv2:scalePoint [ rdfs:label "Scratch"; rdf:value 13 ] ;
-		lv2:scalePoint [ rdfs:label "Wobble"; rdf:value 14 ] ;
+		lv2:scalePoint [ rdfs:label "Wow & flutter"; rdf:value 14 ] ;
 		lv2:scalePoint [ rdfs:label "Bitcrush"; rdf:value 15 ] ;
 		lv2:scalePoint [ rdfs:label "Decimate"; rdf:value 16 ] ;
 		lv2:scalePoint [ rdfs:label "Distortion"; rdf:value 17 ] ;

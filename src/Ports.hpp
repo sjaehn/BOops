@@ -96,7 +96,7 @@ enum BNoname01EffectsIndex
 	FX_TAPE_START	= 11,
 	FX_TAPE_SPEED	= 12,
 	FX_SCRATCH	= 13,
-	FX_WOBBLE	= 14,
+	FX_WOWFLUTTER	= 14,
 	FX_BITCRUSH	= 15,
 	FX_DECIMATE	= 16,
 	FX_DISTORTION	= 17,
@@ -120,7 +120,7 @@ enum BNoname01DistortionIndex
 { \
 	{1, "Surprise box (TODO)"}, {2, "Amp"}, {3, "Balance"}, {4, "Width"}, {5, "Pitch (TODO)"}, \
 	{6, "Delay"}, {7, "Reverse"}, {8, "Chop"}, {9, "Jumble"}, \
-	{10, "Tape stop"}, {11, "Tape start (TODO)"}, {12, "Tape speed"}, {13, "Scratch (TODO)"}, {14, "Wobble (TODO)"}, \
+	{10, "Tape stop"}, {11, "Tape start (TODO)"}, {12, "Tape speed"}, {13, "Scratch (TODO)"}, {14, "Wow & flutter"}, \
 	{15, "Crush"}, {16, "Decimate"}, {17, "Distortion"}, {18, "Filter (TODO)"}, \
 	{19, "Noise"}, {20, "Crackles (TODO)"} \
 }

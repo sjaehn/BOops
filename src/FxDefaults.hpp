@@ -44,7 +44,7 @@ const std::array<const std::array<const float, NR_PARAMS>, NR_FX> fxDefaultValue
 	{{STDPARAMS, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},				// FX_TAPE_START
 	{{STDPARAMS, 1.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},				// FX_TAPE_SPEED
 	{{STDPARAMS, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},				// FX_SCRATCH
-	{{STDPARAMS, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},				// FX_WOBBLE
+	{{STDPARAMS, 0.5, 0, 1.0, 0, 0.1, 0, 0.2, 0, 0, 0, 0, 0}},			// FX_WOWFLUTTER
 	{{STDPARAMS, 0.5, 0, 0.46875, 0, 0, 0, 0, 0, 0, 0, 0, 0}},			// FX_BITCRUSH
 	{{STDPARAMS, 1.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},				// FX_DECIMATE
 	{{STDPARAMS, 0.375, 0.5, 0, 0.5, 0, 0, 0, 0, 0, 0, 0, 0}},			// FX_DISTORTION
@@ -70,7 +70,7 @@ const std::array<const std::string, NR_FX> fxIconFileNames =
 		"Tape_start",
 		"Tape_speed",
 		"Scratch",
-		"Wobble",
+		"Wow_and_flutter",
 		"Bitcrush",
 		"Decimate",
 		"Distortion",

@@ -31,6 +31,7 @@
 #include "OptionChopper.hpp"
 #include "OptionTapeStop.hpp"
 #include "OptionTapeSpeed.hpp"
+#include "OptionWowFlutter.hpp"
 #include "OptionBitcrush.hpp"
 #include "OptionDecimate.hpp"
 #include "OptionDistortion.hpp"
@@ -871,6 +872,9 @@ void BNoname01GUI::setOptionWidget (const int slot)
 					break;
 
 		case FX_TAPE_SPEED:	slotParams[slot].optionWidget = new OptionTapeSpeed (430, 20, 80, 130, "widget");
+					break;
+
+		case FX_WOWFLUTTER:	slotParams[slot].optionWidget = new OptionWowFlutter (430, 20, 320, 130, "widget");
 					break;
 
 		case FX_BITCRUSH:	slotParams[slot].optionWidget = new OptionBitcrush (430, 20, 160, 130, "widget");

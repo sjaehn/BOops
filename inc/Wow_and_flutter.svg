@@ -13,8 +13,8 @@
    version="1.1"
    id="svg907"
    inkscape:version="1.0.1 (3bc2e813f5, 2020-09-07)"
-   sodipodi:docname="Wobble.svg"
-   inkscape:export-filename="/home/sven/dev/c/BNoname01/inc/Wobble.png"
+   sodipodi:docname="Wow_and_flutter.svg"
+   inkscape:export-filename="/home/sven/dev/c/BNoname01/inc/Wow_and_flutter.png"
    inkscape:export-xdpi="96"
    inkscape:export-ydpi="96">
   <defs
@@ -52,7 +52,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -72,6 +72,6 @@
          id="tspan1472"
          x="2.4489834"
          y="3.7951832"
-         style="font-size:3.175px;fill:#ffffff;stroke-width:0.264583">wobbLe</tspan></text>
+         style="font-size:3.175px;fill:#ffffff;stroke-width:0.264583">wow &amp; flutter</tspan></text>
   </g>
 </svg>

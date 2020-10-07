@@ -68,6 +68,7 @@ TODO
   * Jumble
   * Tape start
   * Tape speed
+  * Wow & Flutter
   * Crush
   * Decimate
   * Distortion
@@ -87,7 +88,6 @@ TODO
   * Stutter (?)
   * Tape start (?)
   * Scratch
-  * Wobble
   * Filter
   * Crackles
 * Messaging system

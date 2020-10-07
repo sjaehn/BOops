@@ -38,6 +38,7 @@
 #include "FxJumbler.hpp"
 #include "FxTapeStop.hpp"
 #include "FxTapeSpeed.hpp"
+#include "FxWowFlutter.hpp"
 #include "FxBitcrush.hpp"
 #include "FxDecimate.hpp"
 #include "FxDistortion.hpp"
@@ -128,6 +129,9 @@ struct Slot
 						break;
 
 			case FX_TAPE_SPEED:	fx = new FxTapeSpeed (&buffer, params, pads, &framesPerStep);
+						break;
+
+			case FX_WOWFLUTTER:	fx = new FxWowFlutter (&buffer, params, pads, &framesPerStep, &size);
 						break;
 
 			case FX_BITCRUSH:	fx = new FxBitcrush (&buffer, params, pads);
