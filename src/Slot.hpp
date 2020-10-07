@@ -40,6 +40,7 @@
 #include "FxTapeSpeed.hpp"
 #include "FxBitcrush.hpp"
 #include "FxDecimate.hpp"
+#include "FxDistortion.hpp"
 #include "FxNoise.hpp"
 
 struct Slot
@@ -133,6 +134,9 @@ struct Slot
 						break;
 
 			case FX_DECIMATE:	fx = new FxDecimate (&buffer, params, pads);
+						break;
+
+			case FX_DISTORTION:	fx = new FxDistortion (&buffer, params, pads);
 						break;
 
 			case FX_NOISE:		fx = new FxNoise (&buffer, params, pads);

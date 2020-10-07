@@ -31,8 +31,9 @@
 #include "OptionChopper.hpp"
 #include "OptionTapeStop.hpp"
 #include "OptionTapeSpeed.hpp"
-#include "OptionDecimate.hpp"
 #include "OptionBitcrush.hpp"
+#include "OptionDecimate.hpp"
+#include "OptionDistortion.hpp"
 #include "OptionNoise.hpp"
 
 inline double floorfrac (const double value) {return value - floor (value);}
@@ -878,6 +879,9 @@ void BNoname01GUI::setOptionWidget (const int slot)
 		case FX_DECIMATE:	slotParams[slot].optionWidget = new OptionDecimate (430, 20, 80, 130, "widget");
 					break;
 
+		case FX_DISTORTION:	slotParams[slot].optionWidget = new OptionDistortion (430, 20, 240, 130, "widget");
+					break;
+
 		case FX_NOISE:		slotParams[slot].optionWidget = new OptionNoise (430, 20, 80, 130, "widget");
 					break;
 
@@ -897,7 +901,8 @@ void BNoname01GUI::loadOptions (const int slot)
 			if (slotParams[slot].optionWidget->getWidget (i))
 			{
 				slotParams[slot].optionWidget->setOption (i, slotParams[slot].options[i].getValue());
-				slotParams[slot].optionWidget->getWidget (i)->rename (slotParams[slot].adsrDisplay.getName());
+				const std::string oName = slotParams[slot].optionWidget->getWidget (i)->getName();
+				if (oName.substr (0, 3) == "pad") slotParams[slot].optionWidget->getWidget (i)->rename (slotParams[slot].adsrDisplay.getName());
 			}
 		}
 	}

@@ -47,7 +47,7 @@ const std::array<const std::array<const float, NR_PARAMS>, NR_FX> fxDefaultValue
 	{{STDPARAMS, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},				// FX_WOBBLE
 	{{STDPARAMS, 0.5, 0, 0.46875, 0, 0, 0, 0, 0, 0, 0, 0, 0}},			// FX_BITCRUSH
 	{{STDPARAMS, 1.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},				// FX_DECIMATE
-	{{STDPARAMS, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},				// FX_DISTORTION
+	{{STDPARAMS, 0.375, 0.5, 0, 0.5, 0, 0, 0, 0, 0, 0, 0, 0}},			// FX_DISTORTION
 	{{STDPARAMS, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},				// FX_FILTER
 	{{STDPARAMS, 0.1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},				// FX_NOISE
 	{{STDPARAMS, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}				// FX_CRACKLES

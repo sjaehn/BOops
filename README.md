@@ -70,6 +70,7 @@ TODO
   * Tape speed
   * Crush
   * Decimate
+  * Distortion
   * Noise
 
 
@@ -83,10 +84,10 @@ TODO
 * Implement effects
   * Surprise box
   * Pitch (?)
+  * Stutter (?)
   * Tape start (?)
   * Scratch
   * Wobble
-  * Distortion
   * Filter
   * Crackles
 * Messaging system
