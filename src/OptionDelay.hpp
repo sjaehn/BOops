@@ -36,8 +36,8 @@ public:
 	{
 		try
 		{
-			options[0] = new Dial (10, 20, 60, 60, "dial", 0.5, 0.0, 1.0, 0.0, "%1.0f", "steps", [] (double x) {return LIMIT (1.0 + x * (NR_STEPS - 1.0), 1, NR_STEPS - 1);});
-			options[1] = new DialRange (90, 20, 60, 60, "dial", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.2f", "", [] (double x) {return x;});
+			options[0] = new Dial (10, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, "%1.0f", "steps", [] (double x) {return LIMIT (1.0 + x * (NR_STEPS - 1.0), 1, NR_STEPS - 1);});
+			options[1] = new DialRange (90, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.2f", "", [] (double x) {return x;});
 			options[2] = new BWidgets::ValueWidget (0, 0, 0, 0, "widget", 0.0);
 		}
 		catch (std::bad_alloc& ba) {throw ba;}
