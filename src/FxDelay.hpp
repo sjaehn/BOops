@@ -26,6 +26,8 @@
 #define FX_DELAY_RANGE 0
 #define FX_DELAY_DELAY 1
 #define FX_DELAY_DELAYRAND 2
+#define FX_DELAY_FEEDBACK 3
+#define FX_DELAY_FEEDBACKRAND 4
 
 class FxDelay : public Fx
 {
@@ -38,16 +40,18 @@ public:
 		framesPerStep (24000),
 		sizePtr (size),
 		size (1),
-		range (1.0f), delay (0.0f) {}
+		range (1.0f), delay (0.0f), feedback (0.0f) {}
 
 	virtual void start (const double position) override
 	{
 		Fx::start (position);
-		const double r = bidist (rnd);
-		range = floor (params ? LIMIT (1.0 + params[SLOTS_OPTPARAMS + FX_DELAY_RANGE] * (NR_STEPS - 1), 1.0, size - 1) : 1.0f);
-		delay = (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_DELAY_DELAY] + r * params[SLOTS_OPTPARAMS + FX_DELAY_DELAYRAND], 0.0, 1.0) : 0.5);
 		framesPerStep = (framesPerStepPtr ? *framesPerStepPtr : 24000.0);
 		size = (sizePtr ? *sizePtr : 1);
+		const double r1 = bidist (rnd);
+		const double r2 = bidist (rnd);
+		range = floor (params ? LIMIT (1.0 + params[SLOTS_OPTPARAMS + FX_DELAY_RANGE] * (NR_STEPS - 1), 1.0, size - 1) : 1.0f);
+		delay = (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_DELAY_DELAY] + r1 * params[SLOTS_OPTPARAMS + FX_DELAY_DELAYRAND], 0.0, 1.0) : 0.5);
+		feedback = (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_DELAY_FEEDBACK] + r2 * params[SLOTS_OPTPARAMS + FX_DELAY_FEEDBACKRAND], 0.0, 1.0) : 0.5);
 	}
 
 	virtual Stereo play (const double position) override
@@ -58,7 +62,10 @@ public:
 		const long frame = framesPerStep * range * delay;
 		Stereo s1 = (buffer && (*buffer) ? (**buffer)[frame] : Stereo {0, 0});
 		s1.mix (s0, 1.0f - pads[startPos].mix);
-		return s1.mix (s0, 1.0f - params[SLOTS_MIX] * adsr (position));
+		s1.mix (s0, 1.0f - params[SLOTS_MIX] * adsr (position));
+		Stereo s2 = s1;
+		if (buffer && (*buffer)) (**buffer)[0] = s2.mix (s0, 1.0f - feedback);
+		return s1;
 	}
 
 protected:
@@ -68,6 +75,7 @@ protected:
 	size_t size;
 	float range;
 	float delay;
+	float feedback;
 };
 
 #endif /* FXDELAY_HPP_ */

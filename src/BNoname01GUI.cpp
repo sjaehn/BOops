@@ -862,7 +862,7 @@ void BNoname01GUI::setOptionWidget (const int slot)
 		case FX_WIDTH:		slotParams[slot].optionWidget = new OptionWidth (430, 20, 80, 130, "widget");
 					break;
 
-		case FX_DELAY:		slotParams[slot].optionWidget = new OptionDelay (430, 20, 160, 130, "widget");
+		case FX_DELAY:		slotParams[slot].optionWidget = new OptionDelay (430, 20, 240, 130, "widget");
 					break;
 
 		case FX_CHOPPER:	slotParams[slot].optionWidget = new OptionChopper (430, 20, 480, 130, "widget");

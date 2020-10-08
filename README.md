@@ -64,6 +64,7 @@ TODO
 ## What's new
 
 * Show slot index and effect name for selected slot
+* Added feedback dial to delay effect
 * Implement effects
   * Jumble
   * Tape start

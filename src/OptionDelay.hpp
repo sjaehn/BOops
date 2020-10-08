@@ -32,13 +32,16 @@ public:
 	OptionDelay (const double x, const double y, const double width, const double height, const std::string& name) :
 		OptionWidget (x, y, width, height, name),
 		stepsLabel (10, 90, 60, 20, "ctlabel", "Range"),
-		delayLabel (90, 90, 60, 20, "ctlabel", "Delay")
+		delayLabel (90, 90, 60, 20, "ctlabel", "Delay"),
+		feedbackLabel (170, 90, 60, 20, "ctlabel", "Feedback")
 	{
 		try
 		{
 			options[0] = new Dial (10, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, "%1.0f", "steps", [] (double x) {return LIMIT (1.0 + x * (NR_STEPS - 1.0), 1, NR_STEPS - 1);});
-			options[1] = new DialRange (90, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.2f", "", [] (double x) {return x;});
+			options[1] = new DialRange (90, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.2f");
 			options[2] = new BWidgets::ValueWidget (0, 0, 0, 0, "widget", 0.0);
+			options[3] = new DialRange (170, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.2f");
+			options[4] = new BWidgets::ValueWidget (0, 0, 0, 0, "widget", 0.0);
 		}
 		catch (std::bad_alloc& ba) {throw ba;}
 
@@ -46,29 +49,35 @@ public:
 		options[1]->setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, valueChangedCallback);
 		((DialRange*)options[1])->range.setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, rangeChangedCallback);
 		options[2]->setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, valueChangedCallback);
+		options[3]->setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, valueChangedCallback);
+		((DialRange*)options[3])->range.setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, rangeChangedCallback);
+		options[4]->setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, valueChangedCallback);
 
 		add (stepsLabel);
 		add (delayLabel);
-		add (*options[0]);
-		add (*options[1]);
-		add (*options[2]);
+		add (feedbackLabel);
+		for (int i = 0; i < 5; ++i) add (*options[i]);
 	}
 
-	OptionDelay (const OptionDelay& that) : OptionWidget (that), stepsLabel (that.stepsLabel), delayLabel (that.delayLabel)
+	OptionDelay (const OptionDelay& that) : OptionWidget (that), stepsLabel (that.stepsLabel), delayLabel (that.delayLabel), feedbackLabel (that.feedbackLabel)
 	{
 		add (stepsLabel);
 		add (delayLabel);
+		add (feedbackLabel);
 	}
 
 	OptionDelay& operator= (const OptionDelay& that)
 	{
 		release (&stepsLabel);
 		release (&delayLabel);
+		release (&feedbackLabel);
 		OptionWidget::operator= (that);
 		stepsLabel = that.stepsLabel;
 		delayLabel = that.delayLabel;
+		feedbackLabel = that.feedbackLabel;
 		add (stepsLabel);
 		add (delayLabel);
+		add (feedbackLabel);
 
 		return *this;
 	}
@@ -82,6 +91,7 @@ public:
 		OptionWidget::applyTheme (theme, name);
 		stepsLabel.applyTheme (theme);
 		delayLabel.applyTheme (theme);
+		feedbackLabel.applyTheme (theme);
 	}
 
 	static void valueChangedCallback(BEvents::Event* event)
@@ -102,8 +112,9 @@ public:
 			((Dial*)widget)->setUnit (steps == 1? "step" : "steps");
 		}
 
-		// options[1] changed ? Send to range
+		// options[2 or 4] changed ? Send to range
 		if (widget == p->getWidget(2)) ((DialRange*)p->getWidget(1))->range.setValue (value);
+		if (widget == p->getWidget(4)) ((DialRange*)p->getWidget(3))->range.setValue (value);
 
 		// Forward all changed options to ui
 		ui->optionChangedCallback (event);
@@ -119,19 +130,24 @@ public:
 		OptionWidget* pp = (OptionWidget*) p->getParent();
 		if (!pp) return;
 
-		// Send changed range to options[1]
+		// Send changed range to options
 		if ((p == (DialRange*)pp->getWidget(1)) && (widget == (BWidgets::Widget*)&p->range))
 		{
 			p->update();
 			((BWidgets::ValueWidget*)pp->getWidget(2))->setValue (p->range.getValue ());
+		}
+
+		else if ((p == (DialRange*)pp->getWidget(3)) && (widget == (BWidgets::Widget*)&p->range))
+		{
+			p->update();
+			((BWidgets::ValueWidget*)pp->getWidget(4))->setValue (p->range.getValue ());
 		}
 	}
 
 protected:
 	BWidgets::Label stepsLabel;
 	BWidgets::Label delayLabel;
-
-
+	BWidgets::Label feedbackLabel;
 };
 
 #endif /* OPTIONDELAY_HPP_ */
