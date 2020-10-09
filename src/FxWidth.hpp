@@ -61,8 +61,7 @@ public:
 		const float x = (s0.left - s0.right) * width / 2;
 
 		Stereo s1 = Stereo {m + x, m - x};
-		s1.mix (s0, 1.0f - pads[startPos].mix);
-		return s1.mix (s0, 1.0f - params[SLOTS_MIX] * adsr (position));
+		return mix (s0, s1, position);
 	}
 
 protected:

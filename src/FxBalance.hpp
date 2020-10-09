@@ -66,8 +66,7 @@ public:
 			(balance < 0.0f ? (balance + 1.0f) * s0.right : s0.right + balance * s0.left)
 		};
 
-		s1.mix (s0, 1.0f - pads[startPos].mix);
-		return s1.mix (s0, 1.0f - params[SLOTS_MIX] * adsr (position));
+		return mix (s0, s1, position);
 	}
 
 protected:

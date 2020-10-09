@@ -40,7 +40,7 @@ public:
 
 	Fx (RingBuffer<Stereo>** buffer, float* params, Pad* pads) :
 		buffer (buffer), params (params), pads (pads), playing (false), startPos (0),
-		mixf {1.0f, 1.0f}, rnd (time (0)), unidist (0.0, 1.0), bidist (-1.0, 1.0)
+		panf {1.0f, 1.0f}, unpanf {0.0f, 0.0f}, rnd (time (0)), unidist (0.0, 1.0), bidist (-1.0, 1.0)
 	{}
 
 	virtual ~Fx () {};
@@ -75,12 +75,25 @@ public:
 	{
 		startPos = getStart (position);
 		playing = (isPad (position) && (unidist (rnd) < (pads ? pads[startPos >= 0 ? startPos : 0].gate : 0)));
-		mixf = (Stereo {1.0f, 1.0f}).pan (params ? params[SLOTS_PAN] : 0.0) * (pads ? pads[startPos >= 0 ? startPos : 0].mix : 0);
+		panf = (Stereo {1.0, 1.0}).pan ((params ? params[SLOTS_PAN] : 0.0));
+		unpanf = Stereo {1.0, 1.0} - panf;
 	}
 
 	virtual Stereo play (const double position) {return (buffer && (*buffer) ? (**buffer)[0] : Stereo {0, 0});}
 
 	virtual void end () {playing = false;}
+
+protected:
+	RingBuffer<Stereo>** buffer;
+	float* params;
+	Pad* pads;
+	bool playing;
+	int startPos;
+	Stereo panf;
+	Stereo unpanf;
+	std::minstd_rand rnd;
+	std::uniform_real_distribution<float> unidist;
+	std::uniform_real_distribution<float> bidist;
 
 	float adsr (const double position)
 	{
@@ -108,17 +121,14 @@ public:
 		return params[SLOTS_SUSTAIN];
 	}
 
-protected:
-	RingBuffer<Stereo>** buffer;
-	float* params;
-	Pad* pads;
-	bool playing;
-	int startPos;
-	Stereo mixf;
-	std::minstd_rand rnd;
-	std::uniform_real_distribution<float> unidist;
-	std::uniform_real_distribution<float> bidist;
-
+	Stereo mix (const Stereo& dry, const Stereo& wet, double position)
+	{
+		Stereo s1 = panf * wet;
+		const Stereo s2 = unpanf * dry;
+		s1 = s1 + s2;
+		s1.mix (dry, 1.0f - pads[startPos].mix);
+		return s1.mix (dry, 1.0f - params[SLOTS_MIX] * adsr (position));
+	}
 };
 
 #endif /* FX_HPP_ */

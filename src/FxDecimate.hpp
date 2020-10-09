@@ -77,9 +77,7 @@ public:
 			stack += s0;
 		}
 
-		Stereo s1 = live;
-		s1.mix (s0, 1.0f - pads[startPos].mix);
-		return s1.mix (s0, 1.0f - params[SLOTS_MIX] * adsr (position));
+		return mix (s0, live, position);
 	}
 
 protected:

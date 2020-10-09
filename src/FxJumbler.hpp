@@ -75,9 +75,8 @@ public:
 		if ((!playing) || (!pads) || (startPos < 0) || (!pads[startPos].mix) || (position < double (startPos)) || (position > double (startPos) + pads[startPos].size)) return s0;
 
 		const long frame = framesPerStep * delay;
-		Stereo s1 = (buffer && (*buffer) ? (**buffer)[frame] : Stereo {0, 0});
-		s1.mix (s0, 1.0f - pads[startPos].mix);
-		return s1.mix (s0, 1.0f - params[SLOTS_MIX] * adsr (position));
+		const Stereo s1 = (buffer && (*buffer) ? (**buffer)[frame] : Stereo {0, 0});
+		return mix (s0, s1, position);
 	}
 
 protected:

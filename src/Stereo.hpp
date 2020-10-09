@@ -42,6 +42,20 @@ struct Stereo
 		return *this;
 	}
 
+	Stereo& operator*= (const Stereo& rhs)
+	{
+		left *= rhs.left;
+		right *= rhs.right;
+		return *this;
+	}
+
+	Stereo& operator/= (const Stereo& rhs)
+	{
+		left /= rhs.left;
+		right /= rhs.right;
+		return *this;
+	}
+
 	Stereo& operator+= (const float rhs)
 	{
 		left += rhs;
@@ -74,6 +88,8 @@ struct Stereo
 	friend bool operator!= (const Stereo& lhs, const Stereo& rhs) {return !(lhs == rhs);}
 	friend Stereo operator+ (Stereo lhs, const Stereo& rhs) {return (lhs += rhs);}
 	friend Stereo operator- (Stereo lhs, const Stereo& rhs) {return (lhs -= rhs);}
+	friend Stereo operator* (Stereo lhs, const Stereo& rhs) {return (lhs *= rhs);}
+	friend Stereo operator/ (Stereo lhs, const Stereo& rhs) {return (lhs /= rhs);}
 	friend Stereo operator+ (Stereo lhs, const float rhs) {return (lhs += rhs);}
 	friend Stereo operator- (Stereo lhs, const float rhs) {return (lhs -= rhs);}
 	friend Stereo operator* (Stereo lhs, const float rhs) {return (lhs *= rhs);}

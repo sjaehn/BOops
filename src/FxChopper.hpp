@@ -82,8 +82,7 @@ public:
 			s1.mix (sn, 0.5 - (1.0 - frac) / smoothing);
 		}
 
-		s1.mix (s0, 1.0f - pads[startPos].mix);
-		return s1.mix (s0, 1.0f - params[SLOTS_MIX] * adsr (position));
+		return mix (s0, s1, position);
 	}
 
 protected:

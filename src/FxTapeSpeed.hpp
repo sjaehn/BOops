@@ -52,8 +52,7 @@ public:
 
 		const long frame = (1.0 - speed) * framesPerStep * (position - startPos);
 		Stereo s1 = (buffer && (*buffer) ? (**buffer)[frame] : Stereo {0, 0});
-		s1.mix (s0, 1.0f - pads[startPos].mix);
-		return s1.mix (s0, 1.0f - params[SLOTS_MIX] * adsr (position));
+		return mix (s0, s1, position);
 	}
 
 protected:

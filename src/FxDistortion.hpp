@@ -118,9 +118,7 @@ public:
 				break;
 		}
 
-		Stereo s1 = {float (l), float (r)};
-		s1.mix (s0, 1.0f - pads[startPos].mix);
-		return s1.mix (s0, 1.0f - params[SLOTS_MIX] * adsr (position));
+		return mix (s0, {float (l), float (r)}, position);
 	}
 
 protected:

@@ -60,9 +60,8 @@ public:
 		const float r1 = LIMIT (s0.right + limit, 0, 2.0 * limit) / (2.0 * limit);
 		const float r2 = round (r1 * f);
 		const float r3 = (r2 - 0.5 * f) * 2.0 * limit / f;
-		Stereo s1 = {l3, r3};
-		s1.mix (s0, 1.0f - pads[startPos].mix);
-		return s1.mix (s0, 1.0f - params[SLOTS_MIX] * adsr (position));
+
+		return mix (s0, {l3, r3}, position);
 	}
 
 protected:

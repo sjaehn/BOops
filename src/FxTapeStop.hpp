@@ -60,8 +60,7 @@ public:
 		const double p = (position - startPos);
 		const long frame = (log (exp (order * p) + exp (order * reach) - 1) / order - reach) * framesPerStep;
 		Stereo s1 = (buffer && (*buffer) ? (**buffer)[frame] : Stereo {0, 0});
-		s1.mix (s0, 1.0f - pads[startPos].mix);
-		return s1.mix (s0, 1.0f - params[SLOTS_MIX] * adsr (position));
+		return mix (s0, s1, position);
 	}
 
 protected:
