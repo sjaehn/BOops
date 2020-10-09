@@ -74,6 +74,7 @@ TODO
   * Decimate
   * Distortion
   * Noise
+  * Stutter
 
 
 ## TODO
@@ -86,7 +87,6 @@ TODO
 * Implement effects
   * Surprise box
   * Pitch (?)
-  * Stutter (?)
   * Tape start (?)
   * Scratch
   * Filter

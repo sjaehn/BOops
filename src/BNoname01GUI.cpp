@@ -36,6 +36,7 @@
 #include "OptionDecimate.hpp"
 #include "OptionDistortion.hpp"
 #include "OptionNoise.hpp"
+#include "OptionStutter.hpp"
 
 inline double floorfrac (const double value) {return value - floor (value);}
 inline double floormod (const double numer, const double denom) {return numer - floor(numer / denom) * denom;}
@@ -887,6 +888,9 @@ void BNoname01GUI::setOptionWidget (const int slot)
 					break;
 
 		case FX_NOISE:		slotParams[slot].optionWidget = new OptionNoise (430, 20, 80, 130, "widget");
+					break;
+
+		case FX_STUTTER:	slotParams[slot].optionWidget = new OptionStutter (430, 20, 160, 130, "widget");
 					break;
 
 		default:		slotParams[slot].optionWidget = new OptionWidget (0, 0, 0, 0, "widget");

@@ -186,9 +186,10 @@
 		lv2:scalePoint [ rdfs:label "Filter"; rdf:value 18 ] ;
 		lv2:scalePoint [ rdfs:label "Noise"; rdf:value 19 ] ;
 		lv2:scalePoint [ rdfs:label "Crackles"; rdf:value 20 ] ;
+		lv2:scalePoint [ rdfs:label "Stutter"; rdf:value 21 ] ;
                 lv2:default 0 ;
                 lv2:minimum 0 ;
-                lv2:maximum 20 ;
+                lv2:maximum 21 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
                 lv2:index 15 ;
@@ -369,9 +370,10 @@
 		lv2:scalePoint [ rdfs:label "Filter"; rdf:value 18 ] ;
 		lv2:scalePoint [ rdfs:label "Noise"; rdf:value 19 ] ;
 		lv2:scalePoint [ rdfs:label "Crackles"; rdf:value 20 ] ;
+		lv2:scalePoint [ rdfs:label "Stutter"; rdf:value 21 ] ;
                 lv2:default 0 ;
                 lv2:minimum 0 ;
-                lv2:maximum 20 ;
+                lv2:maximum 21 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
 	        lv2:index 35 ;
@@ -552,9 +554,10 @@
 		lv2:scalePoint [ rdfs:label "Filter"; rdf:value 18 ] ;
 		lv2:scalePoint [ rdfs:label "Noise"; rdf:value 19 ] ;
 		lv2:scalePoint [ rdfs:label "Crackles"; rdf:value 20 ] ;
+		lv2:scalePoint [ rdfs:label "Stutter"; rdf:value 21 ] ;
                 lv2:default 0 ;
                 lv2:minimum 0 ;
-                lv2:maximum 20 ;
+                lv2:maximum 21 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
 	        lv2:index 55 ;
@@ -735,9 +738,10 @@
 		lv2:scalePoint [ rdfs:label "Filter"; rdf:value 18 ] ;
 		lv2:scalePoint [ rdfs:label "Noise"; rdf:value 19 ] ;
 		lv2:scalePoint [ rdfs:label "Crackles"; rdf:value 20 ] ;
+		lv2:scalePoint [ rdfs:label "Stutter"; rdf:value 21 ] ;
                 lv2:default 0 ;
                 lv2:minimum 0 ;
-                lv2:maximum 20 ;
+                lv2:maximum 21 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
 	        lv2:index 75 ;
@@ -918,9 +922,10 @@
 		lv2:scalePoint [ rdfs:label "Filter"; rdf:value 18 ] ;
 		lv2:scalePoint [ rdfs:label "Noise"; rdf:value 19 ] ;
 		lv2:scalePoint [ rdfs:label "Crackles"; rdf:value 20 ] ;
+		lv2:scalePoint [ rdfs:label "Stutter"; rdf:value 21 ] ;
                 lv2:default 0 ;
                 lv2:minimum 0 ;
-                lv2:maximum 20 ;
+                lv2:maximum 21 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
 	        lv2:index 95 ;
@@ -1101,9 +1106,10 @@
 		lv2:scalePoint [ rdfs:label "Filter"; rdf:value 18 ] ;
 		lv2:scalePoint [ rdfs:label "Noise"; rdf:value 19 ] ;
 		lv2:scalePoint [ rdfs:label "Crackles"; rdf:value 20 ] ;
+		lv2:scalePoint [ rdfs:label "Stutter"; rdf:value 21 ] ;
                 lv2:default 0 ;
                 lv2:minimum 0 ;
-                lv2:maximum 20 ;
+                lv2:maximum 21 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
 	        lv2:index 115 ;
@@ -1284,9 +1290,10 @@
 		lv2:scalePoint [ rdfs:label "Filter"; rdf:value 18 ] ;
 		lv2:scalePoint [ rdfs:label "Noise"; rdf:value 19 ] ;
 		lv2:scalePoint [ rdfs:label "Crackles"; rdf:value 20 ] ;
+		lv2:scalePoint [ rdfs:label "Stutter"; rdf:value 21 ] ;
                 lv2:default 0 ;
                 lv2:minimum 0 ;
-                lv2:maximum 20 ;
+                lv2:maximum 21 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
 	        lv2:index 135 ;
@@ -1467,9 +1474,10 @@
 		lv2:scalePoint [ rdfs:label "Filter"; rdf:value 18 ] ;
 		lv2:scalePoint [ rdfs:label "Noise"; rdf:value 19 ] ;
 		lv2:scalePoint [ rdfs:label "Crackles"; rdf:value 20 ] ;
+		lv2:scalePoint [ rdfs:label "Stutter"; rdf:value 21 ] ;
                 lv2:default 0 ;
                 lv2:minimum 0 ;
-                lv2:maximum 20 ;
+                lv2:maximum 21 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
 	        lv2:index 155 ;
@@ -1650,9 +1658,10 @@
 		lv2:scalePoint [ rdfs:label "Filter"; rdf:value 18 ] ;
 		lv2:scalePoint [ rdfs:label "Noise"; rdf:value 19 ] ;
 		lv2:scalePoint [ rdfs:label "Crackles"; rdf:value 20 ] ;
+		lv2:scalePoint [ rdfs:label "Stutter"; rdf:value 21 ] ;
                 lv2:default 0 ;
                 lv2:minimum 0 ;
-                lv2:maximum 20 ;
+                lv2:maximum 21 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
 	        lv2:index 175 ;
@@ -1833,9 +1842,10 @@
 		lv2:scalePoint [ rdfs:label "Filter"; rdf:value 18 ] ;
 		lv2:scalePoint [ rdfs:label "Noise"; rdf:value 19 ] ;
 		lv2:scalePoint [ rdfs:label "Crackles"; rdf:value 20 ] ;
+		lv2:scalePoint [ rdfs:label "Stutter"; rdf:value 21 ] ;
                 lv2:default 0 ;
                 lv2:minimum 0 ;
-                lv2:maximum 20 ;
+                lv2:maximum 21 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
 	        lv2:index 195 ;
@@ -2016,9 +2026,10 @@
 		lv2:scalePoint [ rdfs:label "Filter"; rdf:value 18 ] ;
 		lv2:scalePoint [ rdfs:label "Noise"; rdf:value 19 ] ;
 		lv2:scalePoint [ rdfs:label "Crackles"; rdf:value 20 ] ;
+		lv2:scalePoint [ rdfs:label "Stutter"; rdf:value 21 ] ;
                 lv2:default 0 ;
                 lv2:minimum 0 ;
-                lv2:maximum 20 ;
+                lv2:maximum 21 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
 	        lv2:index 215 ;
@@ -2199,9 +2210,10 @@
 		lv2:scalePoint [ rdfs:label "Filter"; rdf:value 18 ] ;
 		lv2:scalePoint [ rdfs:label "Noise"; rdf:value 19 ] ;
 		lv2:scalePoint [ rdfs:label "Crackles"; rdf:value 20 ] ;
+		lv2:scalePoint [ rdfs:label "Stutter"; rdf:value 21 ] ;
                 lv2:default 0 ;
                 lv2:minimum 0 ;
-                lv2:maximum 20 ;
+                lv2:maximum 21 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
 	        lv2:index 235 ;

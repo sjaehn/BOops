@@ -43,6 +43,7 @@
 #include "FxDecimate.hpp"
 #include "FxDistortion.hpp"
 #include "FxNoise.hpp"
+#include "FxStutter.hpp"
 
 struct Slot
 {
@@ -144,6 +145,9 @@ struct Slot
 						break;
 
 			case FX_NOISE:		fx = new FxNoise (&buffer, params, pads);
+						break;
+
+			case FX_STUTTER:	fx = new FxStutter (&buffer, params, pads, &framesPerStep);
 						break;
 
 			case FX_INVALID:	fx = nullptr;

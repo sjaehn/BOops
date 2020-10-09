@@ -103,7 +103,8 @@ enum BNoname01EffectsIndex
 	FX_FILTER	= 18,
 	FX_NOISE	= 19,
 	FX_CRACKLES	= 20,
-	NR_FX		= 21,
+	FX_STUTTER	= 21,
+	NR_FX		= 22,
 	FX_INVALID	= 255
 };
 
@@ -119,7 +120,7 @@ enum BNoname01DistortionIndex
 #define BNONAME01FXNAMES \
 { \
 	{1, "Surprise box (TODO)"}, {2, "Amp"}, {3, "Balance"}, {4, "Width"}, {5, "Pitch (TODO)"}, \
-	{6, "Delay"}, {7, "Reverse"}, {8, "Chop"}, {9, "Jumble"}, \
+	{6, "Delay"}, {7, "Reverse"}, {8, "Chop"}, {21, "Stutter"}, {9, "Jumble"}, \
 	{10, "Tape stop"}, {11, "Tape start (TODO)"}, {12, "Tape speed"}, {13, "Scratch (TODO)"}, {14, "Wow & flutter"}, \
 	{15, "Crush"}, {16, "Decimate"}, {17, "Distortion"}, {18, "Filter (TODO)"}, \
 	{19, "Noise"}, {20, "Crackles (TODO)"} \
