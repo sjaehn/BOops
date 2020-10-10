@@ -76,6 +76,7 @@ TODO
   * Distortion
   * Filter
   * Noise
+  * Crackles
   * Stutter
 
 
@@ -91,7 +92,6 @@ TODO
   * Pitch (?)
   * Tape start (?)
   * Scratch
-  * Crackles
 * Messaging system
 * Enable GUI scaling
 * Show waveform

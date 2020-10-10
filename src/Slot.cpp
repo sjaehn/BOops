@@ -20,6 +20,7 @@
 
 
 #include "Slot.hpp"
+#include "BNoname01.hpp"
 #include <new>
 #include <iostream>
 #include "FxAmp.hpp"
@@ -37,6 +38,7 @@
 #include "FxDistortion.hpp"
 #include "FxFilter.hpp"
 #include "FxNoise.hpp"
+#include "FxCrackles.hpp"
 #include "FxStutter.hpp"
 
 Slot::Slot	() : Slot (nullptr, FX_INVALID, false, 0.0f, 0.0f, nullptr, nullptr, 0, 0.0) {}
@@ -137,10 +139,13 @@ Fx* Slot::newFx (const BNoname01EffectsIndex effect)
 		case FX_DISTORTION:	fx = new FxDistortion (&buffer, params, pads);
 					break;
 
-		case FX_FILTER:		fx = new FxFilter (&buffer, params, pads, ui);
+		case FX_FILTER:		fx = new FxFilter (&buffer, params, pads, ui ? ui->rate : 48000);
 					break;
 
 		case FX_NOISE:		fx = new FxNoise (&buffer, params, pads);
+					break;
+
+		case FX_CRACKLES:	fx = new FxCrackles (&buffer, params, pads, &framesPerStep, ui ? ui->rate : 48000);
 					break;
 
 		case FX_STUTTER:	fx = new FxStutter (&buffer, params, pads, &framesPerStep);

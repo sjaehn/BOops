@@ -123,7 +123,7 @@ enum BNoname01DistortionIndex
 	{6, "Delay"}, {7, "Reverse"}, {8, "Chop"}, {21, "Stutter"}, {9, "Jumble"}, \
 	{10, "Tape stop"}, {11, "Tape start (TODO)"}, {12, "Tape speed"}, {13, "Scratch (TODO)"}, {14, "Wow & flutter"}, \
 	{15, "Crush"}, {16, "Decimate"}, {17, "Distortion"}, {18, "Filter"}, \
-	{19, "Noise"}, {20, "Crackles (TODO)"} \
+	{19, "Noise"}, {20, "Crackles"} \
 }
 
 #endif /* PORTS_HPP_ */

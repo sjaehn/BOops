@@ -50,7 +50,7 @@ const std::array<const std::array<const float, NR_PARAMS>, NR_FX> fxDefaultValue
 	{{STDPARAMS, 0.375, 0.5, 0, 0.5, 0, 0, 0, 0, 0, 0, 0, 0}},			// FX_DISTORTION
 	{{STDPARAMS, 0.0, 0, 1.0, 0, 0.5, 0, 0, 0, 0, 0, 0, 0}},			// FX_FILTER
 	{{STDPARAMS, 0.1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},				// FX_NOISE
-	{{STDPARAMS, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},				// FX_CRACKLES
+	{{STDPARAMS, 0.25, 0, 0.5, 0, 0.3, 0, 0, 0, 0, 0, 0, 0}},			// FX_CRACKLES
 	{{STDPARAMS, 2.0/7.0, 0.1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}			// FX_STUTTER
 
 }};
