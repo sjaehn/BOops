@@ -619,7 +619,7 @@ void BNoname01GUI::sendSlot (const int slot)
 	lv2_atom_forge_set_buffer(&forge, obj_buf, sizeof(obj_buf));
 
 	LV2_Atom_Forge_Frame frame;
-	LV2_Atom* msg = (LV2_Atom*)lv2_atom_forge_object(&forge, &frame, 0, urids.bNoname01_padEvent);
+	LV2_Atom* msg = (LV2_Atom*)lv2_atom_forge_object(&forge, &frame, 0, urids.bNoname01_slotEvent);
 	lv2_atom_forge_key(&forge, urids.bNoname01_slot);
 	lv2_atom_forge_int(&forge, slot);
 	lv2_atom_forge_key(&forge, urids.bNoname01_pads);

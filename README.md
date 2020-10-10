@@ -78,6 +78,8 @@ TODO
   * Noise
   * Crackles
   * Stutter
+* Bugfixes
+  * Fix update pads in DSP if slot (and thus pads) in GUI changed (insert, delete, up, down)
 
 
 ## TODO
