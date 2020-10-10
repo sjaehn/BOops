@@ -25,6 +25,7 @@
 #include "BNoname01.hpp"
 #include "ControllerLimits.hpp"
 #include "BUtilities/stof.hpp"
+#include "getURIs.hpp"
 
 #ifndef LIMIT
 #define LIMIT(g , min, max) ((g) > (max) ? (max) : ((g) < (min) ? (min) : (g)))
@@ -72,7 +73,7 @@ BNoname01::BNoname01 (double samplerate, const LV2_Feature* const* features) :
 	lv2_atom_forge_init (&forge, map);
 
 	// Initialize slots
-	std::fill (slots, slots + NR_SLOTS, Slot (FX_NONE, true, 0.0f, 1.0f, nullptr, nullptr, 16, 0.25 * rate));
+	std::fill (slots, slots + NR_SLOTS, Slot (this, FX_NONE, true, 0.0f, 1.0f, nullptr, nullptr, 16, 0.25 * rate));
 }
 
 BNoname01::~BNoname01 () {}

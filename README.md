@@ -74,6 +74,7 @@ TODO
   * Crush
   * Decimate
   * Distortion
+  * Filter
   * Noise
   * Stutter
 
@@ -90,7 +91,6 @@ TODO
   * Pitch (?)
   * Tape start (?)
   * Scratch
-  * Filter
   * Crackles
 * Messaging system
 * Enable GUI scaling

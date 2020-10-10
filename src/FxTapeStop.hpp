@@ -22,13 +22,11 @@
 #define FXTAPESTOP_HPP_
 
 #include "Fx.hpp"
-#include "BUtilities/Point.hpp"
 
 #define FX_TAPESTOP_REACH 0
 #define FX_TAPESTOP_REACHRAND 1
 #define FX_TAPESTOP_ORDER 2
 #define FX_TAPESTOP_ORDERRAND 3
-#define MAPRES 100
 
 class FxTapeStop : public Fx
 {

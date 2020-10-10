@@ -46,7 +46,10 @@ INCFILES = inc/*.png
 
 B_FILES = $(addprefix $(BUNDLE)/, $(ROOTFILES) $(INCFILES))
 
-DSP_INCL = src/Message.cpp
+DSP_INCL = \
+	src/Message.cpp \
+	src/Slot.cpp \
+	src/FxFilter.cpp \
 
 GUI_INCL = \
 	src/SelectWidget.cpp \

@@ -22,13 +22,11 @@
 #define FXBITCRUSH_HPP_
 
 #include "Fx.hpp"
-#include "BUtilities/Point.hpp"
 
 #define FX_BITCRUSH_LIMIT 0
 #define FX_BITCRUSH_LIMITRAND 1
 #define FX_BITCRUSH_BIT 2
 #define FX_BITCRUSH_BITRAND 3
-#define MAPRES 100
 
 class FxBitcrush : public Fx
 {

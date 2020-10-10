@@ -22,7 +22,6 @@
 #define FXDISTORTION_HPP_
 
 #include "Fx.hpp"
-#include "BUtilities/Point.hpp"
 
 #define FX_DISTORTION_METHOD 0
 #define FX_DISTORTION_DRIVE 1

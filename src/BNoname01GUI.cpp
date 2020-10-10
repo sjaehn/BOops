@@ -20,6 +20,7 @@
 
 #include "BNoname01GUI.hpp"
 #include "BUtilities/to_string.hpp"
+#include "getURIs.hpp"
 #include "MessageDefinitions.hpp"
 #include "FxDefaults.hpp"
 
@@ -35,6 +36,7 @@
 #include "OptionBitcrush.hpp"
 #include "OptionDecimate.hpp"
 #include "OptionDistortion.hpp"
+#include "OptionFilter.hpp"
 #include "OptionNoise.hpp"
 #include "OptionStutter.hpp"
 
@@ -885,6 +887,9 @@ void BNoname01GUI::setOptionWidget (const int slot)
 					break;
 
 		case FX_DISTORTION:	slotParams[slot].optionWidget = new OptionDistortion (430, 20, 240, 130, "widget");
+					break;
+
+		case FX_FILTER:		slotParams[slot].optionWidget = new OptionFilter (430, 20, 240, 130, "widget");
 					break;
 
 		case FX_NOISE:		slotParams[slot].optionWidget = new OptionNoise (430, 20, 80, 130, "widget");

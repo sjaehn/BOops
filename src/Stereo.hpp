@@ -28,6 +28,10 @@ struct Stereo
 	float left;
 	float right;
 
+	Stereo() : Stereo (0, 0) {}
+
+	Stereo (const float left, const float right) : left (left), right (right) {}
+
 	Stereo& operator+= (const Stereo& rhs)
 	{
 		left += rhs.left;
