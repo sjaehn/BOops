@@ -40,7 +40,9 @@ public:
 			display_ (displayfunc),
 			transform_ (func),
 			reverse_ (revfunc)
-	{}
+	{
+		setDraggable (true);
+	}
 
 	virtual Widget* clone () const override {return new HSlider (*this);}
 
