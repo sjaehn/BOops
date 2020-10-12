@@ -36,12 +36,12 @@
        inkscape:collect="always"
        xlink:href="#linearGradient843"
        id="linearGradient845"
-       x1="148.7059"
-       y1="-18.198259"
+       x1="150.21806"
+       y1="-49.504765"
        x2="122.26572"
        y2="100.09043"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(0.73406571,0,0,0.73406576,30.238749,15.517125)" />
+       gradientTransform="matrix(0.66901891,0,0,0.66901896,31.381685,27.61134)" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -51,7 +51,7 @@
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.118"
-     inkscape:cx="500"
+     inkscape:cx="546.4575"
      inkscape:cy="75"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
@@ -75,7 +75,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -85,15 +85,15 @@
      id="layer1">
     <text
        xml:space="preserve"
-       style="font-size:72.137px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:sans-serif;fill:url(#linearGradient845);fill-opacity:1;stroke-width:0.500952"
-       x="113.19254"
-       y="72.477928"
+       style="font-size:65.7448px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:sans-serif;fill:url(#linearGradient845);fill-opacity:1;stroke-width:0.456562"
+       x="106.9848"
+       y="79.52475"
        id="text837"
-       transform="matrix(1.8973937,0,-0.53846341,0.52703875,0,0)"><tspan
+       transform="matrix(2.0818719,0,-0.59081667,0.48033696,0,0)"><tspan
          sodipodi:role="line"
          id="tspan835"
-         x="113.19254"
-         y="72.477928"
-         style="font-size:72.137px;fill:url(#linearGradient845);fill-opacity:1;stroke-width:0.500952">?</tspan></text>
+         x="106.9848"
+         y="79.52475"
+         style="font-size:65.7448px;fill:url(#linearGradient845);fill-opacity:1;stroke-width:0.456562">?</tspan></text>
   </g>
 </svg>

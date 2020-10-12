@@ -126,4 +126,30 @@ enum BNoname01DistortionIndex
 	{19, "Noise"}, {20, "Crackles"} \
 }
 
+#define BNONAME01FXBGNAMES \
+{ \
+	"", \
+	"", \
+	"inc/Amp_bg.png", \
+	"inc/Amp_bg.png", \
+	"inc/Amp_bg.png", \
+	"", \
+	"inc/Amp_bg.png", \
+	"inc/Amp_bg.png", \
+	"inc/Chop_bg.png", \
+	"inc/Chop_bg.png", \
+	"inc/Tape_bg.png", \
+	"", \
+	"inc/Tape_bg.png", \
+	"inc/Vinyl_bg.png", \
+	"inc/Tape_bg.png", \
+	"inc/Distortion_bg.png", \
+	"inc/Distortion_bg.png", \
+	"inc/Distortion_bg.png", \
+	"inc/Distortion_bg.png", \
+	"inc/Vinyl_bg.png", \
+	"inc/Vinyl_bg.png", \
+	"inc/Chop_bg.png" \
+}
+
 #endif /* PORTS_HPP_ */

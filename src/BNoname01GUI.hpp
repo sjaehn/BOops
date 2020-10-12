@@ -221,7 +221,7 @@ private:
 
 	struct SlotParam
 	{
-		BWidgets::Widget container;
+		BWidgets::ImageIcon container;
 		BWidgets::ImageIcon nrIcon;
 		BWidgets::ImageIcon nameIcon;
 		BWidgets::Label attackLabel;
@@ -291,6 +291,8 @@ private:
 		{{{0.0, 0.1, 0.9, 1.0}, {1.0, 1.0, 0.25, 1.0}, {0.1, 0.1, 0.1, 1.0}, {0.0, 0.0, 0.0, 0.0}}},
 		{{{0.0, 0.0, 1.0, 1.0}, {1.0, 1.0, 0.25, 1.0}, {0.1, 0.1, 0.1, 1.0}, {0.0, 0.0, 0.0, 0.0}}}
 	}};
+
+	std::array<std::string, NR_FX> fxBgFilenames = {BNONAME01FXBGNAMES};
 
 	BStyles::Border border = {{ink, 1.0}, 0.0, 2.0, 0.0};
 	BStyles::Border menuBorder = {{BColors::grey, 1.0}, 0.0, 0.0, 0.0};

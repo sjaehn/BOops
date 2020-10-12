@@ -64,6 +64,7 @@ TODO
 ## What's new
 
 * Show 'Getting started' information
+* Background images
 * Show slot index and effect name for selected slot
 * Enable effect panning
 * Added feedback dial to delay effect

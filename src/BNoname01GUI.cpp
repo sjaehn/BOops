@@ -118,7 +118,7 @@ BNoname01GUI::BNoname01GUI (const char *bundle_path, const LV2_Feature *const *f
 	// Init slot params
 	for (int i = 0; i < NR_SLOTS; ++i)
 	{
-		slotParams[i].container = BWidgets::Widget (20, 438, 1000, 150, "widget");
+		slotParams[i].container = BWidgets::ImageIcon (20, 438, 1000, 150, "widget", "");
 		slotParams[i].nrIcon = BWidgets::ImageIcon (20, 8, 40, 20, "widget", "");
 		slotParams[i].nameIcon = BWidgets::ImageIcon (60, 8, 160, 20, "widget", "");
 		slotParams[i].attackLabel = BWidgets::Label (190, 30, 20, 20, "ctlabel", "A");
@@ -1183,6 +1183,8 @@ void BNoname01GUI::valueChangedCallback(BEvents::Event* event)
 									ui->slotParams[slot].releaseSlider.rename (padstr);
 									ui->slotParams[slot].panDial.rename (padstr);
 									ui->slotParams[slot].mixDial.rename (padstr);
+
+									ui->slotParams[slot].container.loadImage (BColors::NORMAL, ui->pluginPath + ui->fxBgFilenames[fxnr]);
 
 									// Set new optionWidget
 									ui->setOptionWidget (slot);
