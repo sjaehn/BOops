@@ -119,11 +119,13 @@ enum BNoname01DistortionIndex
 
 #define BNONAME01FXNAMES \
 { \
-	{1, "Surprise box (TODO)"}, {2, "Amp"}, {3, "Balance"}, {4, "Width"}, {5, "Pitch (TODO)"}, \
-	{6, "Delay"}, {7, "Reverse"}, {8, "Chop"}, {21, "Stutter"}, {9, "Jumble"}, \
-	{10, "Tape stop"}, {11, "Tape start (TODO)"}, {12, "Tape speed"}, {13, "Scratch"}, {14, "Wow & flutter"}, \
-	{15, "Crush"}, {16, "Decimate"}, {17, "Distortion"}, {18, "Filter"}, \
-	{19, "Noise"}, {20, "Crackles"} \
+	{1, "Surprise box (TODO)"}, \
+	{2, "Amp"}, {3, "Balance"}, {4, "Width"}, {5, "Pitch (TODO)"}, \
+	{6, "Delay"}, {7, "Reverse"}, \
+	{8, "Chop"}, {21, "Stutter"}, {9, "Jumble"}, \
+	{10, "Tape stop"}, {11, "Tape start (TODO)"}, {12, "Tape speed"}, {14, "Wow & flutter"}, \
+	{13, "Scratch"}, {19, "Noise"}, {20, "Crackles"}, \
+	{15, "Crush"}, {16, "Decimate"}, {17, "Distortion"}, {18, "Filter"} \
 }
 
 #define BNONAME01FXBGNAMES \
