@@ -80,6 +80,18 @@ BNoname01GUI::BNoname01GUI (const char *bundle_path, const LV2_Feature *const *f
 	padSurface (310, 130, 910, 288, "padsurface"),
 	editContainer (658, 426, 284, 24, "widget"),
 
+	gettingstartedContainer (20, 438, 1000, 150, "widget", pluginPath + "inc/None_bg.png"),
+	gettingstartedText
+	(
+		20, 30, 960, 110, "lflabel",
+		"Getting started\n"
+		" \n"
+		"1) Add an effect by clicking on the [+] symbol.\n"
+		"2) Click on the menu symbol left to the effect name to change the effect\n"
+		"3) Set a pattern rigth to the effect name to define the timepoint(s) to apply the effect on the incoming audio signal.\n"
+		"4) Continue with point 1 to add another effects. Change the order of the effects by clicking on the respective symbol."
+	),
+
 	padParamContainer (1040, 458, 180, 130, "widget"),
 	padGateLabel (20, 90, 60, 20, "ctlabel", "Gate"),
 	padGateDial (20, 20, 60, 60, "dial", 1.0, 0.0, 1.0, 0.0, "%1.2f"),
@@ -240,6 +252,8 @@ BNoname01GUI::BNoname01GUI (const char *bundle_path, const LV2_Feature *const *f
 	for (HaloToggleButton& e1 : edit1Buttons) editContainer.add (e1);
 	for (HaloButton& e2 : edit2Buttons) editContainer.add (e2);
 
+	gettingstartedContainer.add (gettingstartedText);
+
 	for (SlotParam& s : slotParams)
 	{
 		s.container.add (s.nrIcon);
@@ -267,6 +281,7 @@ BNoname01GUI::BNoname01GUI (const char *bundle_path, const LV2_Feature *const *f
 
 	mContainer.add (padParamContainer);
 	for (SlotParam& s : slotParams) mContainer.add (s.container);
+	mContainer.add (gettingstartedContainer);
 	mContainer.add (editContainer);
 	for (Slot& s : slots) mContainer.add (s.container);
 	mContainer.add (padSurface);
@@ -595,7 +610,11 @@ void BNoname01GUI::applyTheme (BStyles::Theme& theme)
 
 	editContainer.applyTheme (theme);
 	for (HaloToggleButton& e1 : edit1Buttons) e1.applyTheme (theme);
-	for (HaloButton& e2 : edit2Buttons) e2.applyTheme (theme);;
+	for (HaloButton& e2 : edit2Buttons) e2.applyTheme (theme);
+
+	gettingstartedContainer.applyTheme (theme);
+	gettingstartedText.applyTheme (theme);
+
 
 	for (SlotParam& s : slotParams)
 	{
@@ -913,7 +932,12 @@ void BNoname01GUI::gotoSlot (const int slot)
 	const int slotSize = getSlotsSize();
 	for (int i = 0; i < NR_SLOTS; ++i)
 	{
-		if ((i == slot) && (i < slotSize)) slotParams[i].container.show();
+		if ((i == slot) && (i < slotSize))
+		{
+			gettingstartedContainer.hide();
+			slotParams[i].container.show();
+		}
+
 		else slotParams[i].container.hide();
 	}
 	drawPad();

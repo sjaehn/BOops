@@ -244,6 +244,9 @@ private:
 
 	std::array<SlotParam, NR_SLOTS> slotParams;
 
+	BWidgets::ImageIcon gettingstartedContainer;
+	BWidgets::Text gettingstartedText;
+
 	BWidgets::Widget padParamContainer;
 	BWidgets::Label padGateLabel;
 	Dial padGateDial;

@@ -63,6 +63,7 @@ TODO
 
 ## What's new
 
+* Show 'Getting started' information
 * Show slot index and effect name for selected slot
 * Enable effect panning
 * Added feedback dial to delay effect
@@ -95,6 +96,7 @@ TODO
   * Surprise box
   * Pitch (?)
   * Tape start (?)
+* Add background images
 * Messaging system
 * Enable GUI scaling
 * Show waveform
