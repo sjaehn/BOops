@@ -132,7 +132,7 @@ protected:
 					double h = getEffectiveHeight ();
 					cairo_rectangle (cr, x0, y0, w, h);
 					cairo_set_line_width (cr, 1.0);
-					cairo_set_source_rgba (cr, CAIRO_RGBA (BColors::yellow));
+					cairo_set_source_rgba (cr, CAIRO_RGBA (BColors::white));
 					cairo_stroke (cr);
 					cairo_destroy (cr);
 				}

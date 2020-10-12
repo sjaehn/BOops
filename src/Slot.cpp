@@ -32,6 +32,7 @@
 #include "FxJumbler.hpp"
 #include "FxTapeStop.hpp"
 #include "FxTapeSpeed.hpp"
+#include "FxScratch.hpp"
 #include "FxWowFlutter.hpp"
 #include "FxBitcrush.hpp"
 #include "FxDecimate.hpp"
@@ -41,12 +42,12 @@
 #include "FxCrackles.hpp"
 #include "FxStutter.hpp"
 
-Slot::Slot	() : Slot (nullptr, FX_INVALID, false, 0.0f, 0.0f, nullptr, nullptr, 0, 0.0) {}
+Slot::Slot () : Slot (nullptr, FX_INVALID, false, 0.0f, 0.0f, nullptr, nullptr, 0, 0.0) {}
 
-Slot::Slot 	(BNoname01* ui, const BNoname01EffectsIndex effect, const bool playing, const float pan,
+Slot::Slot (BNoname01* ui, const BNoname01EffectsIndex effect, const bool playing, const float pan,
 	const float mix, float* params, Pad* pads, const size_t size, const double framesPerStep) :
 	ui (ui), effect (FX_INVALID), fx (nullptr),
-	size (size), framesPerStep (framesPerStep), buffer (nullptr)
+	size (size), framesPerStep (framesPerStep), buffer (nullptr), shape ()
 {
 	buffer = new RingBuffer<Stereo> (1.5 * double (size) * framesPerStep);
 
@@ -55,6 +56,8 @@ Slot::Slot 	(BNoname01* ui, const BNoname01EffectsIndex effect, const bool playi
 
 	if (pads) std::copy (pads, pads + NR_STEPS, this->pads);
 	else std::fill (this->pads, this->pads + NR_STEPS, Pad());
+
+	shape.setDefaultShape();
 
 	fx = newFx (effect);
 }
@@ -125,6 +128,9 @@ Fx* Slot::newFx (const BNoname01EffectsIndex effect)
 					break;
 
 		case FX_TAPE_SPEED:	fx = new FxTapeSpeed (&buffer, params, pads, &framesPerStep);
+					break;
+
+		case FX_SCRATCH:	fx = new FxScratch (&buffer, params, pads, &framesPerStep, &shape);
 					break;
 
 		case FX_WOWFLUTTER:	fx = new FxWowFlutter (&buffer, params, pads, &framesPerStep, &size);

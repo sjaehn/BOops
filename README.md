@@ -70,6 +70,7 @@ TODO
   * Jumble
   * Tape start
   * Tape speed
+  * Scratch
   * Wow & Flutter
   * Crush
   * Decimate
@@ -80,6 +81,7 @@ TODO
   * Stutter
 * Bugfixes
   * Fix update pads in DSP if slot (and thus pads) in GUI changed (insert, delete, up, down)
+  * Enable dragging of sliders
 
 
 ## TODO
@@ -93,7 +95,6 @@ TODO
   * Surprise box
   * Pitch (?)
   * Tape start (?)
-  * Scratch
 * Messaging system
 * Enable GUI scaling
 * Show waveform

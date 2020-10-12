@@ -32,6 +32,7 @@
 #include "OptionChopper.hpp"
 #include "OptionTapeStop.hpp"
 #include "OptionTapeSpeed.hpp"
+#include "OptionScratch.hpp"
 #include "OptionWowFlutter.hpp"
 #include "OptionBitcrush.hpp"
 #include "OptionDecimate.hpp"
@@ -122,6 +123,8 @@ BNoname01GUI::BNoname01GUI (const char *bundle_path, const LV2_Feature *const *f
 		slotParams[i].mixLabel = BWidgets::Label (360, 110, 60, 20, "ctlabel", "Mix");
 		slotParams[i].mixDial = Dial (360, 40, 60, 60, "dial", 0.0, 0.0, 1.0, 0.0, "%1.2f");
 		for (int j = 0; j < NR_OPTPARAMS; ++j) slotParams[i].options[j] = Dial (0, 0, 0, 0, "widget", 0.0, 0.0, 1.0, 0.0);
+		slotParams[i].shape = Shape<SHAPE_MAXNODES>();
+		slotParams[i].shape.setDefaultShape();
 		slotParams[i].optionWidget = nullptr;
 	}
 
@@ -384,7 +387,7 @@ void BNoname01GUI::port_event(uint32_t port, uint32_t buffer_size,
 		{
 			const LV2_Atom_Object* obj = (const LV2_Atom_Object*) atom;
 
-			// Slot notification
+			// Slot pattern notification
 			if (obj->body.otype == urids.bNoname01_slotEvent)
 			{
 				LV2_Atom *oSl = NULL, *oPd = NULL;
@@ -418,6 +421,48 @@ void BNoname01GUI::port_event(uint32_t port, uint32_t buffer_size,
 						}
 						pattern.store ();
 						drawPad (slot);
+					}
+				}
+			}
+
+			// Slot shape notification
+			if (obj->body.otype == urids.bNoname01_shapeEvent)
+			{
+				LV2_Atom *oSl = NULL, *oSh = NULL;
+				int slot = -1;
+				lv2_atom_object_get(obj,
+						    urids.bNoname01_slot, &oSl,
+						    urids.bNoname01_shapeData, &oSh,
+						    NULL);
+
+				if (oSl && (oSl->type == urids.atom_Int))
+				{
+					slot = ((LV2_Atom_Int*)oSl)->body;
+				}
+
+				if (oSh && (oSh->type == urids.atom_Vector) && (slot >= 0) && (slot < NR_SLOTS))
+				{
+					const LV2_Atom_Vector* vec = (const LV2_Atom_Vector*) oSh;
+					if (vec->body.child_type == urids.atom_Float)
+					{
+						slotParams[slot].shape.clearShape ();
+						const uint32_t vecSize = (uint32_t) ((oSh->size - sizeof(LV2_Atom_Vector_Body)) / (7 * sizeof (float)));
+						float* data = (float*) (&vec->body + 1);
+						for (unsigned int i = 0; (i < vecSize) && (i < SHAPE_MAXNODES); ++i)
+						{
+							Node node;
+							node.nodeType = NodeType (int (data[i * 7]));
+							node.point.x = data[i * 7 + 1];
+							node.point.y = data[i * 7 + 2];
+							node.handle1.x = data[i * 7 + 3];
+							node.handle1.y = data[i * 7 + 4];
+							node.handle2.x = data[i * 7 + 5];
+							node.handle2.y = data[i * 7 + 6];
+							slotParams[slot].shape.appendNode (node);
+						}
+
+						// Forward to optionWidget
+						if (slotParams[slot].optionWidget) slotParams[slot].optionWidget->setShape (slotParams[slot].shape);
 					}
 				}
 			}
@@ -645,6 +690,38 @@ void BNoname01GUI::sendPad (const int slot, const int step)
 	lv2_atom_forge_vector(&forge, sizeof(float), urids.atom_Float, sizeof(Pad) / sizeof(float), (void*) &pad);
 	lv2_atom_forge_pop(&forge, &frame);
 	write_function(controller, CONTROL, lv2_atom_total_size(msg), urids.atom_eventTransfer, msg);
+}
+
+void BNoname01GUI::sendShape (const int slot)
+{
+	size_t size = slotParams[slot].shape.size ();
+
+	uint8_t obj_buf[4096];
+	lv2_atom_forge_set_buffer(&forge, obj_buf, sizeof(obj_buf));
+
+	// Load shapeBuffer
+	float shapeBuffer[SHAPE_MAXNODES * 7];
+	for (unsigned int i = 0; i < size; ++i)
+	{
+		Node node = slotParams[slot].shape.getNode (i);
+		shapeBuffer[i * 7 + 0] = (float)node.nodeType;
+		shapeBuffer[i * 7 + 1] = (float)node.point.x;
+		shapeBuffer[i * 7 + 2] = (float)node.point.y;
+		shapeBuffer[i * 7 + 3] = (float)node.handle1.x;
+		shapeBuffer[i * 7 + 4] = (float)node.handle1.y;
+		shapeBuffer[i * 7 + 5] = (float)node.handle2.x;
+		shapeBuffer[i * 7 + 6] = (float)node.handle2.y;
+	}
+
+	// Notify shapeBuffer
+	LV2_Atom_Forge_Frame frame;
+	LV2_Atom* msg = (LV2_Atom*)lv2_atom_forge_object (&forge, &frame, 0, urids.bNoname01_shapeEvent);
+	lv2_atom_forge_key(&forge, urids.bNoname01_slot);
+	lv2_atom_forge_int(&forge, slot);
+	lv2_atom_forge_key(&forge, urids.bNoname01_shapeData);
+	lv2_atom_forge_vector(&forge, sizeof(float), urids.atom_Float, (uint32_t) (7 * size), &shapeBuffer);
+	lv2_atom_forge_pop(&forge, &frame);
+	write_function (controller, CONTROL, lv2_atom_total_size(msg), urids.atom_eventTransfer, msg);
 }
 
 int BNoname01GUI::getSlotsSize () const
@@ -878,6 +955,10 @@ void BNoname01GUI::setOptionWidget (const int slot)
 		case FX_TAPE_SPEED:	slotParams[slot].optionWidget = new OptionTapeSpeed (430, 20, 80, 130, "widget");
 					break;
 
+		case FX_SCRATCH:	slotParams[slot].optionWidget = new OptionScratch (430, 20, 400, 130, "widget", pluginPath);
+					if (slotParams[slot].optionWidget) ((OptionScratch*)slotParams[slot].optionWidget)->setShape (slotParams[slot].shape);
+					break;
+
 		case FX_WOWFLUTTER:	slotParams[slot].optionWidget = new OptionWowFlutter (430, 20, 320, 130, "widget");
 					break;
 
@@ -913,13 +994,23 @@ void BNoname01GUI::loadOptions (const int slot)
 	{
 		slotParams[slot].container.add (*slotParams[slot].optionWidget);
 
+		// Load values
 		for (int i = 0; i < NR_OPTPARAMS; ++i)
 		{
-			if (slotParams[slot].optionWidget->getWidget (i))
+			if (slotParams[slot].optionWidget->getWidget (i)) slotParams[slot].optionWidget->setOption (i, slotParams[slot].options[i].getValue());
+		}
+
+		// ... and shape
+		slotParams[slot].optionWidget->setShape (slotParams[slot].shape);
+
+		// Load styles
+		std::vector<Widget*> children = slotParams[slot].optionWidget->getChildren();
+		for (Widget* w : children)
+		{
+			if (w)
 			{
-				slotParams[slot].optionWidget->setOption (i, slotParams[slot].options[i].getValue());
-				const std::string oName = slotParams[slot].optionWidget->getWidget (i)->getName();
-				if (oName.substr (0, 3) == "pad") slotParams[slot].optionWidget->getWidget (i)->rename (slotParams[slot].adsrDisplay.getName());
+				const std::string name = w->getName();
+				if (name.substr (0, 3) == "pad") w->rename (slotParams[slot].adsrDisplay.getName());
 			}
 		}
 	}
@@ -935,16 +1026,36 @@ void BNoname01GUI::optionChangedCallback(BEvents::Event* event)
 	BNoname01GUI* ui = (BNoname01GUI*) widget->getMainWindow();
 	if (!ui) return;
 
-	for (SlotParam& s : ui->slotParams)
+	if (dynamic_cast<ShapeWidget*>(widget))
 	{
-		if (s.optionWidget)
+		OptionWidget* p = (OptionWidget*)widget->getParent();
+		if (p)
 		{
-			for (int i = 0; i < NR_OPTPARAMS; ++i)
+			for (int i = 0; i < NR_SLOTS; ++i)
 			{
-				if (s.optionWidget->getWidget (i) && ((BWidgets::ValueWidget*)s.optionWidget->getWidget (i) == widget))
+				if (p == ui->slotParams[i].optionWidget)
 				{
-					s.options[i].setValue (value);
+					ui->slotParams[i].shape = (*(ShapeWidget*)widget);
+					ui->sendShape (i);
 					return;
+				}
+			}
+		}
+	}
+
+	else
+	{
+		for (SlotParam& s : ui->slotParams)
+		{
+			if (s.optionWidget)
+			{
+				for (int i = 0; i < NR_OPTPARAMS; ++i)
+				{
+					if (s.optionWidget->getWidget (i) && ((BWidgets::ValueWidget*)s.optionWidget->getWidget (i) == widget))
+					{
+						s.options[i].setValue (value);
+						return;
+					}
 				}
 			}
 		}

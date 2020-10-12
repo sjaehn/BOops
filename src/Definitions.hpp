@@ -22,6 +22,9 @@
 #define DEFINITIONS_HPP_
 
 #define NR_STEPS 32
+#define SHAPE_MAXNODES 32
+#define MAXUNDO 20
+#define GRIDSIZE 2.0
 #define BNONAME01_URI "https://www.jahnichen.de/plugins/lv2/BNoname01"
 #define BNONAME01_GUI_URI "https://www.jahnichen.de/plugins/lv2/BNoname01#gui"
 

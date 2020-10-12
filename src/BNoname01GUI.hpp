@@ -53,12 +53,12 @@
 #include "CurveChart.hpp"
 #include "HSlider.hpp"
 #include "Dial.hpp"
+#include "Shape.hpp"
 
 #define BG_FILE "inc/surface.png"
 #define HELP_URL "https://github.com/sjaehn/BNoname01/blob/master/README.md"
 #define YT_URL ""
 #define OPEN_CMD "xdg-open"
-#define MAXUNDO 20
 
 class OptionWidget;	// Forward declaration
 
@@ -89,6 +89,7 @@ public:
 	void sendUiOff ();
 	void sendSlot (const int slot);
 	void sendPad (const int slot, const int step);
+	void sendShape (const int slot);
 	virtual void onConfigureRequest (BEvents::ExposeEvent* event) override;
 	void applyTheme (BStyles::Theme& theme) override;
 
@@ -237,6 +238,7 @@ private:
 		BWidgets::Label mixLabel;
 		Dial mixDial;
 		std::array<BWidgets::ValueWidget, NR_OPTPARAMS> options;
+		Shape<SHAPE_MAXNODES> shape;
 		OptionWidget* optionWidget;
 	};
 

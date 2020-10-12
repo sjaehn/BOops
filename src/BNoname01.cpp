@@ -261,6 +261,7 @@ void BNoname01::run (uint32_t n_samples)
 			{
 				ui_on = true;
 				std::fill (scheduleNotifySlot, scheduleNotifySlot + NR_SLOTS, true);
+				std::fill (scheduleNotifyShape, scheduleNotifyShape + NR_SLOTS, true);
 			}
 
 			// Process GUI off status data
@@ -331,6 +332,48 @@ void BNoname01::run (uint32_t n_samples)
 							Pad* pad = (Pad*) (&vec->body + 1);
 							slots[slot].pads[step] = *pad;
 						}
+					}
+				}
+			}
+
+			// Process slot shape data
+			else if (obj->body.otype == urids.bNoname01_shapeEvent)
+			{
+				LV2_Atom *oSl = NULL, *oSh = NULL;
+				int slot = -1;
+				lv2_atom_object_get (obj,
+					 	     urids.bNoname01_slot, &oSl,
+						     urids.bNoname01_shapeData, &oSh,
+						     NULL);
+
+				// Slot nr notification
+				if (oSl && (oSl->type == urids.atom_Int) && (((LV2_Atom_Int*)oSl)->body >= 0) && (((LV2_Atom_Int*)oSl)->body < NR_SLOTS))
+				{
+					slot = ((LV2_Atom_Int*)oSl)->body;
+				}
+
+				// Shape notification
+				if (oSh && (oSh->type == urids.atom_Vector) && (slot >= 0))
+				{
+					const LV2_Atom_Vector* vec = (const LV2_Atom_Vector*) oSh;
+					if (vec->body.child_type == urids.atom_Float)
+					{
+						slots[slot].shape.clearShape ();
+						const uint32_t vecSize = (uint32_t) ((oSh->size - sizeof(LV2_Atom_Vector_Body)) / (7 * sizeof (float)));
+						float* data = (float*) (&vec->body + 1);
+						for (unsigned int i = 0; (i < vecSize) && (i < SHAPE_MAXNODES); ++i)
+						{
+							Node node;
+							node.nodeType = NodeType (int (data[i * 7]));
+							node.point.x = data[i * 7 + 1];
+							node.point.y = data[i * 7 + 2];
+							node.handle1.x = data[i * 7 + 3];
+							node.handle1.y = data[i * 7 + 4];
+							node.handle2.x = data[i * 7 + 5];
+							node.handle2.y = data[i * 7 + 6];
+							slots[slot].shape.appendNode (node);
+						}
+						slots[slot].shape.validateShape();
 					}
 				}
 			}
@@ -533,6 +576,7 @@ void BNoname01::run (uint32_t n_samples)
 		if (message.isScheduled ()) notifyMessageToGui ();
 		if (scheduleNotifyStatus) notifyStatusToGui ();
 		for (int i = 0; i < NR_SLOTS; ++i) {if (scheduleNotifySlot[i]) notifySlotToGui (i);}
+		for (int i = 0; i < NR_SLOTS; ++i) {if (scheduleNotifyShape[i]) notifyShapeToGui (i);}
 	}
 	lv2_atom_forge_pop (&forge, &notify_frame);
 }
@@ -562,6 +606,33 @@ void BNoname01::notifySlotToGui (const int slot)
 	lv2_atom_forge_pop(&forge, &frame);
 
 	scheduleNotifySlot[slot] = false;
+}
+
+void BNoname01::notifyShapeToGui (const int slot)
+{
+	float nodes[SHAPE_MAXNODES][7];
+	for (unsigned int i = 0; i < slots[slot].shape.size(); ++i)
+	{
+		Node n = slots[slot].shape.getNode (i);
+		nodes[i][0] = n.nodeType;
+		nodes[i][1] = n.point.x;
+		nodes[i][2] = n.point.y;
+		nodes[i][3] = n.handle1.x;
+		nodes[i][4] = n.handle1.y;
+		nodes[i][5] = n.handle2.x;
+		nodes[i][6] = n.handle2.y;
+	}
+
+	LV2_Atom_Forge_Frame frame;
+	lv2_atom_forge_frame_time(&forge, 0);
+	lv2_atom_forge_object(&forge, &frame, 0, urids.bNoname01_shapeEvent);
+	lv2_atom_forge_key(&forge, urids.bNoname01_slot);
+	lv2_atom_forge_int(&forge, slot);
+	lv2_atom_forge_key(&forge, urids.bNoname01_shapeData);
+	lv2_atom_forge_vector(&forge, sizeof(float), urids.atom_Float, 7 * slots[slot].shape.size(), (void*) nodes);
+	lv2_atom_forge_pop(&forge, &frame);
+
+	scheduleNotifyShape[slot] = false;
 }
 
 void BNoname01::notifyMessageToGui()
@@ -677,27 +748,61 @@ LV2_State_Status BNoname01::state_save (LV2_State_Store_Function store, LV2_Stat
 			const LV2_Feature* const* features)
 {
 	// Store pads
-	char padDataString[0x8010] = "\nMatrix data:\n";
-
-	for (int slotNr = 0; slotNr < NR_SLOTS; ++slotNr)
 	{
-		if ((slots[slotNr].effect == FX_NONE) || (slots[slotNr].effect == FX_INVALID)) continue;
+		char padDataString[0x8010] = "\nMatrix data:\n";
 
-		for (int stepNr = 0; stepNr < NR_STEPS; ++stepNr)
+		for (int slotNr = 0; slotNr < NR_SLOTS; ++slotNr)
 		{
-			Pad& p = slots[slotNr].pads[stepNr];
-			if ((p.gate > 0) && (p.size > 0) && (p.mix > 0))
-			{
-				char valueString[64];
-				snprintf (valueString, 62, "sl:%d; st:%d; gt:%1.3f; sz:%d; mx:%1.3f", slotNr, stepNr, p.gate, int (p.size), p.mix);
-				if ((slotNr < NR_SLOTS - 1) || (stepNr < NR_STEPS)) strcat (valueString, ";\n");
-				else strcat(valueString, "\n");
-				strcat (padDataString, valueString);
-			}
+			if ((slots[slotNr].effect == FX_NONE) || (slots[slotNr].effect == FX_INVALID)) continue;
 
+			for (int stepNr = 0; stepNr < NR_STEPS; ++stepNr)
+			{
+				Pad& p = slots[slotNr].pads[stepNr];
+				if ((p.gate > 0) && (p.size > 0) && (p.mix > 0))
+				{
+					char valueString[64];
+					snprintf (valueString, 62, "sl:%d; st:%d; gt:%1.3f; sz:%d; mx:%1.3f", slotNr, stepNr, p.gate, int (p.size), p.mix);
+					if ((slotNr < NR_SLOTS - 1) || (stepNr < NR_STEPS)) strcat (valueString, ";\n");
+					else strcat(valueString, "\n");
+					strcat (padDataString, valueString);
+				}
+
+			}
 		}
+		store (handle, urids.bNoname01_statePad, padDataString, strlen (padDataString) + 1, urids.atom_String, LV2_STATE_IS_POD);
 	}
-	store (handle, urids.bNoname01_statePad, padDataString, strlen (padDataString) + 1, urids.atom_String, LV2_STATE_IS_POD);
+
+	// Store shapes
+	{
+		char shapesDataString[0x10010] = "Shape data:\n";
+
+		for (int slotNr = 0; slotNr < NR_SLOTS; ++slotNr)
+		{
+			for (unsigned int nodeNr = 0; nodeNr < slots[slotNr].shape.size (); ++nodeNr)
+			{
+				char valueString[160];
+				Node node = slots[slotNr].shape.getNode (nodeNr);
+				snprintf
+				(
+					valueString,
+					126,
+					"slo:%d; typ:%d; ptx:%f; pty:%f; h1x:%f; h1y:%f; h2x:%f; h2y:%f",
+					slotNr,
+					int (node.nodeType),
+					node.point.x,
+					node.point.y,
+					node.handle1.x,
+					node.handle1.y,
+					node.handle2.x,
+					node.handle2.y
+				);
+				if ((slotNr < NR_SLOTS - 1) || (nodeNr < slots[slotNr].shape.size ())) strcat (valueString, ";\n");
+				else strcat(valueString, "\n");
+				strcat (shapesDataString, valueString);
+			}
+		}
+		store (handle, urids.bNoname01_shapeData, shapesDataString, strlen (shapesDataString) + 1, urids.atom_String, LV2_STATE_IS_POD);
+	}
 
 	return LV2_STATE_SUCCESS;
 }
@@ -710,6 +815,7 @@ LV2_State_Status BNoname01::state_restore (LV2_State_Retrieve_Function retrieve,
 	uint32_t valflags;
 	const void* padData = retrieve(handle, urids.bNoname01_statePad, &size, &type, &valflags);
 
+	// Retrieve pattern
 	if (padData && (type == urids.atom_String))
 	{
 		for (int slotNr = 0; slotNr < NR_SLOTS; ++slotNr)
@@ -735,7 +841,7 @@ LV2_State_Status BNoname01::state_restore (LV2_State_Retrieve_Function retrieve,
 			try {slotNr = BUtilities::stof (padDataString, &nextPos);}
 			catch  (const std::exception& e)
 			{
-				fprintf (stderr, "BGltchr.lv2: Restore pad state incomplete. Can't parse slot nr from \"%s...\"", padDataString.substr (0, 63).c_str());
+				fprintf (stderr, "BNoname01.lv2: Restore pad state incomplete. Can't parse slot nr from \"%s...\"", padDataString.substr (0, 63).c_str());
 				break;
 			}
 
@@ -756,7 +862,7 @@ LV2_State_Status BNoname01::state_restore (LV2_State_Retrieve_Function retrieve,
 			try {stepNr = BUtilities::stof (padDataString, &nextPos);}
 			catch  (const std::exception& e)
 			{
-				fprintf (stderr, "BGltchr.lv2: Restore pad state incomplete. Can't parse step nr from \"%s...\"", padDataString.substr (0, 63).c_str());
+				fprintf (stderr, "BNoname01.lv2: Restore pad state incomplete. Can't parse step nr from \"%s...\"", padDataString.substr (0, 63).c_str());
 				break;
 			}
 
@@ -806,6 +912,99 @@ LV2_State_Status BNoname01::state_restore (LV2_State_Retrieve_Function retrieve,
 		}
 
 		std::fill (scheduleNotifySlot, scheduleNotifySlot + NR_SLOTS, true);
+	}
+
+	// Retrieve shapes
+	const void* shapesData = retrieve(handle, urids.bNoname01_shapeData, &size, &type, &valflags);
+	if (shapesData && (type == urids.atom_String))
+	{
+		// Clear old shapes first
+		for (int sl = 0; sl < NR_SLOTS; ++sl) slots[sl].shape.clearShape();
+
+		// Parse retrieved data
+		std::string shapesDataString = (char*) shapesData;
+		const std::string keywords[8] = {"slo:", "typ:", "ptx:", "pty:", "h1x:", "h1y:", "h2x:", "h2y:"};
+		while (!shapesDataString.empty())
+		{
+			// Look for next "slo:"
+			size_t strPos = shapesDataString.find ("slo:");
+			size_t nextPos = 0;
+			if (strPos == std::string::npos) break;	// No "shp:" found => end
+			if (strPos + 4 > shapesDataString.length()) break;	// Nothing more after id => end
+			shapesDataString.erase (0, strPos + 4);
+
+			int sl;
+			try {sl = BUtilities::stof (shapesDataString, &nextPos);}
+			catch  (const std::exception& e)
+			{
+				fprintf (stderr, "BNoname01.lv2: Restore shape state incomplete. Can't parse shape number from \"%s...\"", shapesDataString.substr (0, 63).c_str());
+				break;
+			}
+
+			if (nextPos > 0) shapesDataString.erase (0, nextPos);
+			if ((sl < 0) || (sl >= NR_SLOTS))
+			{
+				fprintf (stderr, "BNoname01.lv2: Restore shape state incomplete. Invalid matrix data block loaded for shape %i.\n", sl);
+				break;
+			}
+
+			// Look for shape data
+			Node node = {NodeType::POINT_NODE, {0, 0}, {0, 0}, {0, 0}};
+			bool isTypeDef = false;
+			for (int i = 1; i < 9; ++i)
+			{
+				strPos = shapesDataString.find (keywords[i]);
+				if (strPos == std::string::npos) continue;	// Keyword not found => next keyword
+				if (strPos + 4 >= shapesDataString.length())	// Nothing more after keyword => end
+				{
+					shapesDataString ="";
+					break;
+				}
+				if (strPos > 0) shapesDataString.erase (0, strPos + 4);
+				float val;
+				try {val = BUtilities::stof (shapesDataString, &nextPos);}
+				catch  (const std::exception& e)
+				{
+					fprintf (stderr, "BNoname01.lv2: Restore shape state incomplete. Can't parse %s from \"%s...\"",
+							 keywords[i].substr(0,3).c_str(), shapesDataString.substr (0, 63).c_str());
+					break;
+				}
+
+				if (nextPos > 0) shapesDataString.erase (0, nextPos);
+				switch (i)
+				{
+					case 1: node.nodeType = (NodeType)((int)val);
+						isTypeDef = true;
+						break;
+					case 2: node.point.x = val;
+						break;
+					case 3:	node.point.y = val;
+						break;
+					case 4:	node.handle1.x = val;
+						break;
+					case 5:	node.handle1.y = val;
+						break;
+					case 6:	node.handle2.x = val;
+						break;
+					case 7:	node.handle2.y = val;
+						break;
+					default:break;
+				}
+			}
+
+			// Set data
+			if (isTypeDef) slots[sl].shape.appendNode (node);
+		}
+
+		// Validate all shapes
+		for (int sl = 0; sl < NR_SLOTS; ++sl)
+		{
+			if (slots[sl].shape.size () < 2) slots[sl].shape.setDefaultShape ();
+			else if (!slots[sl].shape.validateShape ()) slots[sl].shape.setDefaultShape ();
+		}
+
+		// Force GUI notification
+		std::fill (scheduleNotifyShape, scheduleNotifyShape + NR_SLOTS, true);
 	}
 
 	return LV2_STATE_SUCCESS;

@@ -55,6 +55,8 @@ void getURIs (LV2_URID_Map* m, BNoname01URIDs* uris)
 	uris->bNoname01_padEvent = m->map(m->handle, BNONAME01_URI "#padEvent");
 	uris->bNoname01_step = m->map(m->handle, BNONAME01_URI "#step");
 	uris->bNoname01_pad = m->map(m->handle, BNONAME01_URI "#pad");
+	uris->bNoname01_shapeEvent = m->map(m->handle, BNONAME01_URI "#shapeEvent");
+	uris->bNoname01_shapeData = m->map(m->handle, BNONAME01_URI "#shapeData");
 	uris->bNoname01_allocateBuffers = m->map(m->handle, BNONAME01_URI "#allocateBuffers");
 	uris->bNoname01_installBuffers = m->map(m->handle, BNONAME01_URI "#installBuffers");
 	uris->bNoname01_freeBuffers = m->map(m->handle, BNONAME01_URI "#freeBuffers");

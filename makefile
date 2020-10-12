@@ -48,9 +48,10 @@ B_FILES = $(addprefix $(BUNDLE)/, $(ROOTFILES) $(INCFILES))
 
 DSP_INCL = \
 	src/Message.cpp \
-	src/Slot.cpp 
+	src/Slot.cpp
 
 GUI_INCL = \
+	src/ShapeWidget.cpp \
 	src/SelectWidget.cpp \
 	src/ValueSelect.cpp \
 	src/DownClick.cpp \

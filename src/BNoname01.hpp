@@ -67,6 +67,7 @@ private:
 	void play(uint32_t start, uint32_t end);
 	void stepsChanged ();
 	void notifySlotToGui (const int slot);
+	void notifyShapeToGui (const int slot);
 	void notifyMessageToGui ();
 	void notifyStatusToGui ();
 	double getPositionFromBeats (double beats);
@@ -105,6 +106,7 @@ private:
 	Message message;
 	bool ui_on;
 	bool scheduleNotifySlot[NR_SLOTS];
+	bool scheduleNotifyShape[NR_SLOTS];
 	bool scheduleNotifyStatus;
 	bool scheduleResizeBuffers;
 	bool scheduleSetFx[NR_SLOTS];

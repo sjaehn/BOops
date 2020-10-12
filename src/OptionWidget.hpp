@@ -23,6 +23,7 @@
 #include "BWidgets/RangeWidget.hpp"
 #include "Ports.hpp"
 #include "BNoname01GUI.hpp"
+#include "Shape.hpp"
 
 class OptionWidget : public BWidgets::Widget
 {
@@ -97,6 +98,10 @@ public:
 	}
 
 	virtual BWidgets::Widget* getWidget (const int option) {return options[option];}
+
+	virtual void setShape (const Shape<SHAPE_MAXNODES>& shape) {}
+
+	virtual Shape<SHAPE_MAXNODES> getShape() const {return Shape<SHAPE_MAXNODES>();}
 
 	virtual void applyTheme (BStyles::Theme& theme) override {applyTheme (theme, name_);}
 

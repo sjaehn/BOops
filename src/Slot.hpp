@@ -27,6 +27,7 @@
 #include "Pad.hpp"
 #include "Ports.hpp"
 #include "Fx.hpp"
+#include "Shape.hpp"
 
 class BNoname01; // Forward declaration;
 
@@ -55,6 +56,7 @@ struct Slot
 	size_t size;
 	double framesPerStep;
 	RingBuffer<Stereo>* buffer;
+	Shape<SHAPE_MAXNODES> shape;
 };
 
 #endif /* SLOT_HPP_ */

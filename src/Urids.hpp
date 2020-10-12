@@ -58,6 +58,8 @@ struct BNoname01URIDs
 	LV2_URID bNoname01_padEvent;
 	LV2_URID bNoname01_step;
 	LV2_URID bNoname01_pad;
+	LV2_URID bNoname01_shapeEvent;
+	LV2_URID bNoname01_shapeData;
 	LV2_URID bNoname01_allocateBuffers;
 	LV2_URID bNoname01_installBuffers;
 	LV2_URID bNoname01_freeBuffers;
