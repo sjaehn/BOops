@@ -97,6 +97,8 @@ TODO
 * Implement effects
   * Surprise box
   * Pitch (?)
+  * Flanger /chorus
+  * Phaser
   * Tape start (?)
 * Messaging system
 * Enable GUI scaling
