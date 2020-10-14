@@ -50,6 +50,8 @@ public:
 		}
 		catch (std::bad_alloc& ba) {throw ba;}
 
+		((BWidgets::ListBox*)options[0])->setTop (2);
+
 		options[0]->setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, valueChangedCallback);
 		options[1]->setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, valueChangedCallback);
 		((DialRange*)options[1])->range.setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, rangeChangedCallback);
