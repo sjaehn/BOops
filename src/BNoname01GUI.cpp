@@ -78,10 +78,10 @@ BNoname01GUI::BNoname01GUI (const char *bundle_path, const LV2_Feature *const *f
 		     			{12, "12 Steps"}, {16, "16 Steps"}, {18, "18 Steps"}, {24, "24 Steps"}, {32, "32 Steps"}}), 16),
 
 
-	padSurface (310, 130, 910, 288, "padsurface"),
-	editContainer (658, 426, 284, 24, "widget"),
+	padSurface (290, 130, 820, 288, "padsurface"),
+	editContainer (578, 426, 284, 24, "widget"),
 
-	gettingstartedContainer (20, 438, 1000, 150, "widget", pluginPath + "inc/None_bg.png"),
+	gettingstartedContainer (20, 438, 1200, 150, "widget", pluginPath + "inc/None_bg.png"),
 	gettingstartedText
 	(
 		20, 30, 960, 110, "lflabel",
@@ -93,23 +93,23 @@ BNoname01GUI::BNoname01GUI (const char *bundle_path, const LV2_Feature *const *f
 		"4) Continue with point 1 to add another effects. Change the order of the effects by clicking on the respective symbol."
 	),
 
-	padParamContainer (1040, 458, 180, 130, "widget"),
+	padParamContainer (1120, 130, 100, 288, "widget"),
 	padGateLabel (20, 90, 60, 20, "ctlabel", "Gate"),
-	padGateDial (20, 20, 60, 60, "dial", 1.0, 0.0, 1.0, 0.0, "%1.2f"),
-	padMixLabel (100, 90, 60, 20, "ctlabel", "Mix"),
-	padMixDial (100, 20, 60, 60, "dial", 1.0, 0.0, 1.0, 0.0, "%1.2f")
+	padGateDial (20, 30, 60, 60, "dial", 1.0, 0.0, 1.0, 0.0, "%1.2f"),
+	padMixLabel (20, 180, 60, 20, "ctlabel", "Mix"),
+	padMixDial (20, 120, 60, 60, "dial", 1.0, 0.0, 1.0, 0.0, "%1.2f")
 {
 	// Init slots
 	for (int i = 0; i < NR_SLOTS; ++i)
 	{
-		slots[i].container = BWidgets::ValueWidget (20, 130 + i * 24, 280, 24, "padSurface", FX_NONE);
+		slots[i].container = BWidgets::ValueWidget (20, 130 + i * 24, 260, 24, "padSurface", FX_NONE);
 		slots[i].addPad = PadButton (0, 0, 20, 24, "pad0", ADDSYMBOL);
 		slots[i].delPad = PadButton (20, 0, 20, 24, "pad0", CLOSESYMBOL);
 		slots[i].upPad = PadButton (40, 0, 20, 24, "pad0", UPSYMBOL);
 		slots[i].downPad = PadButton (60, 0, 20, 24, "pad0", DOWNSYMBOL);
-		slots[i].effectPad = IconPadButton (80, 0, 180, 24, "pad0", pluginPath + "inc/Menu.png", "");
-		slots[i].effectsListbox = BWidgets::ListBox (80, 24, 180, 160, "listbox", BItems::ItemList (BNONAME01FXNAMES));
-		slots[i].playPad = PadToggleButton (260, 0, 20, 24, "pad0", PLAYSYMBOL);
+		slots[i].effectPad = IconPadButton (80, 0, 160, 24, "pad0", pluginPath + "inc/Menu.png", "");
+		slots[i].effectsListbox = BWidgets::ListBox (80, 24, 160, 160, "listbox", BItems::ItemList (BNONAME01FXNAMES));
+		slots[i].playPad = PadToggleButton (240, 0, 20, 24, "pad0", PLAYSYMBOL);
 	}
 
 	// Init editButtons
@@ -119,7 +119,7 @@ BNoname01GUI::BNoname01GUI (const char *bundle_path, const LV2_Feature *const *f
 	// Init slot params
 	for (int i = 0; i < NR_SLOTS; ++i)
 	{
-		slotParams[i].container = BWidgets::ImageIcon (20, 438, 1000, 150, "widget", "");
+		slotParams[i].container = BWidgets::ImageIcon (20, 438, 1200, 150, "widget", "");
 		slotParams[i].nrIcon = BWidgets::ImageIcon (20, 8, 40, 20, "widget", "");
 		slotParams[i].nameIcon = BWidgets::ImageIcon (60, 8, 160, 20, "widget", "");
 		slotParams[i].attackLabel = BWidgets::Label (190, 30, 20, 20, "ctlabel", "A");

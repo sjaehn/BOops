@@ -8,9 +8,9 @@
    xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="1000"
+   width="1200"
    height="150"
-   viewBox="0 0 264.58333 39.687501"
+   viewBox="0 0 317.5 39.687501"
    version="1.1"
    id="svg8"
    inkscape:version="1.0.1 (3bc2e813f5, 2020-09-07)"
@@ -41,7 +41,7 @@
        x2="122.26572"
        y2="100.09043"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(0.66901891,0,0,0.66901896,31.381685,27.61134)" />
+       gradientTransform="matrix(0.66901892,0,0,0.66901897,56.799517,27.61134)" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -75,7 +75,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -86,13 +86,13 @@
     <text
        xml:space="preserve"
        style="font-size:65.7448px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:sans-serif;fill:url(#linearGradient845);fill-opacity:1;stroke-width:0.456562"
-       x="106.9848"
+       x="132.40263"
        y="79.52475"
        id="text837"
-       transform="matrix(2.0818719,0,-0.59081667,0.48033696,0,0)"><tspan
+       transform="matrix(2.0818719,0,-0.59081666,0.48033696,0,0)"><tspan
          sodipodi:role="line"
          id="tspan835"
-         x="106.9848"
+         x="132.40263"
          y="79.52475"
          style="font-size:65.7448px;fill:url(#linearGradient845);fill-opacity:1;stroke-width:0.456562">?</tspan></text>
   </g>

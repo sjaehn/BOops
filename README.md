@@ -66,6 +66,7 @@ TODO
 * Show 'Getting started' information
 * Background images
 * Group colors
+* GUI re-design
 * Show slot index and effect name for selected slot
 * Enable effect panning
 * Added feedback dial to delay effect

@@ -7,9 +7,9 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="160"
+   width="140"
    height="20"
-   viewBox="0 0 42.333332 5.2916668"
+   viewBox="0 0 37.041666 5.2916668"
    version="1.1"
    id="svg907"
    inkscape:version="1.0.1 (3bc2e813f5, 2020-09-07)"
@@ -62,7 +62,7 @@
      id="layer1">
     <text
        xml:space="preserve"
-       style="font-size:3.175px;line-height:1.25;font-family:'Good Times';-inkscape-font-specification:'Good Times';fill:#000000;stroke-width:0.264583;"
+       style="font-size:3.175px;line-height:1.25;font-family:'Good Times';-inkscape-font-specification:'Good Times';fill:#000000;stroke-width:0.264583"
        x="2.6013832"
        y="3.7951832"
        id="text1474"
@@ -72,6 +72,6 @@
          id="tspan1472"
          x="2.6013832"
          y="3.7951832"
-         style="font-size:3.175px;fill:#000000;stroke-width:0.264583;">surprise box</tspan></text>
+         style="font-size:3.175px;fill:#000000;stroke-width:0.264583">surprise box</tspan></text>
   </g>
 </svg>
