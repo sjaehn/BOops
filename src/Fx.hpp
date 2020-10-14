@@ -99,12 +99,13 @@ protected:
 	{
 		if ((!pads) || (!params)) return 0;
 
-		float adr = params[SLOTS_ATTACK] + params[SLOTS_DECAY] + params[SLOTS_RELEASE];
-		if (adr < 1.0f) adr = 1.0f;
 		double padStart = getStart();
 		double padSize = pads[int (padStart)].size;
-
 		if ((position < padStart) || (position >= padStart + padSize)) return 0;
+
+		float adr = params[SLOTS_ATTACK] + params[SLOTS_DECAY] + params[SLOTS_RELEASE];
+		
+		if (adr < 1.0f) adr = 1.0f;
 
 		if (position < padStart + params[SLOTS_ATTACK] / adr) return (position - padStart) / (params[SLOTS_ATTACK] / adr);
 

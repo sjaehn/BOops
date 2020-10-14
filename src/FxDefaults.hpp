@@ -31,7 +31,7 @@ const std::array<const std::array<const float, NR_PARAMS>, NR_FX> fxDefaultValue
 {{
 	// SLOTS_PLAY, SLOTS_ATTACK, SLOTS_DECAY, SLOTS_SUSTAIN, SLOTS_RELEASE,	SLOTS_PAN, SLOTS_MIX, SLOTS_OPTPARAMS
 	{{STDPARAMS, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},				// FX_NONE
-	{{STDPARAMS, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},				// FX_SURPRISE
+	{{STDPARAMS, 0.5, 0, 0.5, 0, 0.5, 0, 0.5, 0, 0.5, 0, 0.5, 0}},			// FX_SURPRISE
 	{{STDPARAMS, 0.5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},				// FX_AMP
 	{{STDPARAMS, 0.5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},				// FX_BALANCE
 	{{STDPARAMS, 0.5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},				// FX_WIDTH
@@ -58,7 +58,7 @@ const std::array<const std::array<const float, NR_PARAMS>, NR_FX> fxDefaultValue
 const std::array<const std::string, NR_FX> fxIconFileNames =
 {{
 		"",
-		"",
+		"Surprise",
 		"Amp",
 		"Balance",
 		"Width",

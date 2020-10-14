@@ -70,6 +70,7 @@ TODO
 * Enable effect panning
 * Added feedback dial to delay effect
 * Implement effects
+  * Surprise box
   * Jumble
   * Tape start
   * Tape speed
@@ -95,7 +96,6 @@ TODO
   * MIDI triggering of playback
   * MIDI triggering of effects
 * Implement effects
-  * Surprise box
   * Pitch (?)
   * Flanger /chorus
   * Phaser

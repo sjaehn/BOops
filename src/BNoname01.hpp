@@ -101,7 +101,8 @@ private:
 	LV2_Atom_Forge_Frame notify_frame;
 
 	// Internals
-	Slot slots[NR_SLOTS];
+public:	Slot slots[NR_SLOTS];
+protected:
 	int oStep;
 	Message message;
 	bool ui_on;

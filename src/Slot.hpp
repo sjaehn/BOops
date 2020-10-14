@@ -34,7 +34,7 @@ class BNoname01; // Forward declaration;
 struct Slot
 {
 	Slot();
-	Slot (BNoname01* ui, const BNoname01EffectsIndex effect, const bool playing, const float pan,
+	Slot (BNoname01* plugin, const BNoname01EffectsIndex effect, const bool playing, const float pan,
 	      const float mix, float* params, Pad* pads, const size_t size, const double framesPerStep);
 	Slot (const Slot& that);
 	~Slot ();
@@ -48,8 +48,9 @@ struct Slot
 	Stereo play (const double position);
 	void end ();
 
-	BNoname01* ui;
+	BNoname01* plugin;
 	BNoname01EffectsIndex effect;
+	float mix;
 	float params [NR_PARAMS];
 	Pad pads[NR_STEPS];
 	Fx* fx;

@@ -25,6 +25,7 @@
 #include "FxDefaults.hpp"
 
 #include "OptionWidget.hpp"
+#include "OptionSurprise.hpp"
 #include "OptionAmp.hpp"
 #include "OptionBalance.hpp"
 #include "OptionWidth.hpp"
@@ -958,6 +959,9 @@ void BNoname01GUI::setOptionWidget (const int slot)
 
 	switch (fxnr)
 	{
+		case FX_SURPRISE:	slotParams[slot].optionWidget = new OptionSurprise (270, 20, 640, 130, "widget");
+					break;
+
 		case FX_AMP:		slotParams[slot].optionWidget = new OptionAmp (430, 20, 80, 130, "widget");
 					break;
 

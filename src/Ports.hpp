@@ -119,7 +119,7 @@ enum BNoname01DistortionIndex
 
 #define BNONAME01FXNAMES \
 { \
-	{1, "Surprise box (TODO)"}, \
+	{1, "Surprise box"}, \
 	{2, "Amp"}, {3, "Balance"}, {4, "Width"}, {5, "Pitch (TODO)"}, \
 	{6, "Delay"}, {7, "Reverse"}, \
 	{8, "Chop"}, {21, "Stutter"}, {9, "Jumble"}, \

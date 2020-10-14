@@ -20,9 +20,11 @@
 
 
 #include "Slot.hpp"
+#include "BUtilities/mix.hpp"
 #include "BNoname01.hpp"
 #include <new>
 #include <iostream>
+#include "FxSurprise.hpp"
 #include "FxAmp.hpp"
 #include "FxBalance.hpp"
 #include "FxWidth.hpp"
@@ -44,9 +46,9 @@
 
 Slot::Slot () : Slot (nullptr, FX_INVALID, false, 0.0f, 0.0f, nullptr, nullptr, 0, 0.0) {}
 
-Slot::Slot (BNoname01* ui, const BNoname01EffectsIndex effect, const bool playing, const float pan,
+Slot::Slot (BNoname01* plugin, const BNoname01EffectsIndex effect, const bool playing, const float pan,
 	const float mix, float* params, Pad* pads, const size_t size, const double framesPerStep) :
-	ui (ui), effect (FX_INVALID), fx (nullptr),
+	plugin (plugin), effect (FX_INVALID), mix (1.0f), fx (nullptr),
 	size (size), framesPerStep (framesPerStep), buffer (nullptr), shape ()
 {
 	buffer = new RingBuffer<Stereo> (1.5 * double (size) * framesPerStep);
@@ -63,7 +65,7 @@ Slot::Slot (BNoname01* ui, const BNoname01EffectsIndex effect, const bool playin
 }
 
 Slot:: Slot (const Slot& that) :
-	ui (that.ui), effect (that.effect), fx (nullptr),
+	plugin (that.plugin), effect (that.effect), fx (nullptr),
 	size (that.size), framesPerStep (that.framesPerStep), buffer (nullptr)
 {
 	if (that.params) std::copy (that.params, that.params + NR_PARAMS, params);
@@ -80,7 +82,7 @@ Slot::~Slot ()
 
 Slot& Slot::operator= (const Slot& that)
 {
-	ui = that.ui;
+	plugin = that.plugin;
 	effect = that.effect;
 	size = that.size;
 	framesPerStep = that.framesPerStep;
@@ -103,6 +105,9 @@ Fx* Slot::newFx (const BNoname01EffectsIndex effect)
 
 	switch (effect)
 	{
+		case FX_SURPRISE:	fx = new FxSurprise (&buffer, params, pads, plugin);
+					break;
+
 		case FX_AMP:		fx = new FxAmp (&buffer, params, pads);
 					break;
 
@@ -145,13 +150,13 @@ Fx* Slot::newFx (const BNoname01EffectsIndex effect)
 		case FX_DISTORTION:	fx = new FxDistortion (&buffer, params, pads);
 					break;
 
-		case FX_FILTER:		fx = new FxFilter (&buffer, params, pads, ui ? ui->rate : 48000);
+		case FX_FILTER:		fx = new FxFilter (&buffer, params, pads, plugin ? plugin->rate : 48000);
 					break;
 
 		case FX_NOISE:		fx = new FxNoise (&buffer, params, pads);
 					break;
 
-		case FX_CRACKLES:	fx = new FxCrackles (&buffer, params, pads, &framesPerStep, ui ? ui->rate : 48000);
+		case FX_CRACKLES:	fx = new FxCrackles (&buffer, params, pads, &framesPerStep, plugin ? plugin->rate : 48000);
 					break;
 
 		case FX_STUTTER:	fx = new FxStutter (&buffer, params, pads, &framesPerStep);
@@ -167,8 +172,21 @@ Fx* Slot::newFx (const BNoname01EffectsIndex effect)
 }
 
 int Slot::getStart () const {return (fx ? fx->getStart () : -1);}
+
 int Slot::getStart (const double position) const {return (fx ? fx->getStart (position) : -1);}
+
 bool Slot::isPad (const double position) const {return (fx ? fx->isPad (position) : false);}
+
 void Slot::start (const double position) {if (fx) fx->start (position);}
-Stereo Slot::play (const double position) {return (fx ? fx->play (position): Stereo ());}
+
+Stereo Slot::play (const double position)
+{
+	return
+	(
+		fx && buffer ?
+		BUtilities::mix<Stereo> ((*buffer)[0], fx->play (position), mix) :
+		Stereo ()
+	);
+}
+
 void Slot::end () {if (fx) fx->end ();}

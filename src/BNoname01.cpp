@@ -736,6 +736,7 @@ void BNoname01::play (uint32_t start, uint32_t end)
 
 			// Play music :-)
 			output = (iSlot.params[SLOTS_PLAY] ? iSlot.play (step) : input);
+			iSlot.mix = 1.0f;
 		}
 
 		oStep = iStep;
