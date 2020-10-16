@@ -125,6 +125,8 @@ private:
 	void gotoSlot (const int slot);
 	void setOptionWidget (const int slot);
 	void loadOptions (const int slot);
+	int getPadOrigin (const int slot, const int step) const;
+	void setPad (const int slot, const int step, const Pad pad);
 	void drawPad ();
 	void drawPad (const int slot);
 	void drawPad (const int slot, const int step);
@@ -179,6 +181,14 @@ private:
 	bool padPressed;
 	bool deleteMode;
 	int actSlot;
+
+	struct Coords
+	{
+		int x;
+		int y;
+	};
+
+	Coords dragOrigin;
 
 	//Widgets
 	BWidgets::Widget mContainer;

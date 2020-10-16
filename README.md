@@ -63,6 +63,7 @@ TODO
 
 ## What's new
 
+* Optional join consecutive pads
 * Show 'Getting started' information
 * Background images
 * Group colors
@@ -92,7 +93,6 @@ TODO
 ## TODO
 
 * Find a name
-* Optional join consecutive pads
 * MIDI support
   * MIDI triggering of playback
   * MIDI triggering of effects

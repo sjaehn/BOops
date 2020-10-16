@@ -55,7 +55,7 @@ BNoname01GUI::BNoname01GUI (const char *bundle_path, const LV2_Feature *const *f
 	pattern (),
 	clipBoard (),
 	cursor (0), wheelScrolled (false), padPressed (false), deleteMode (false),
-	actSlot (-1),
+	actSlot (-1), dragOrigin {-1, -1},
 
 	mContainer (0, 0, 1240, 608, "main"),
 	messageLabel (400, 45, 600, 20, "ctlabel", ""),
@@ -1620,8 +1620,6 @@ void BNoname01GUI::padsPressedCallback (BEvents::Event* event)
 
 			if ((row >= 0) && (row < NR_SLOTS) && (step >= 0) && (step < maxstep))
 			{
-				const Pad oldPad = ui->pattern.getPad (row, step);
-
 				// Left button
 				if (pointerEvent->getButton() == BDevices::LEFT_BUTTON)
 				{
@@ -1690,15 +1688,31 @@ void BNoname01GUI::padsPressedCallback (BEvents::Event* event)
 					// Set (or unset) pad
 					else
 					{
+						if ((ui->dragOrigin.x < 0) || (ui->dragOrigin.y < 0))
+						{
+							ui->dragOrigin.x = int ((pointerEvent->getOrigin ().x - widget->getXOffset()) / (width / double (maxstep)));
+							ui->dragOrigin.y = int (pointerEvent->getOrigin ().y - widget->getYOffset()) / (height / double (NR_SLOTS));
+						}
+						int s = (ui->dragOrigin.x < step ? ui->dragOrigin.x : step);
+						int size = 1 + LIMIT (abs (step - ui->dragOrigin.x), 0, NR_STEPS);
+
+						if (row != ui->dragOrigin.y)
+						{
+							ui->dragOrigin.x = step;
+							ui->dragOrigin.y = row;
+							s = step;
+							size = 1;
+						}
+
+						const Pad oldPad = ui->pattern.getPad (row, s);
+
 						if (!ui->padPressed) ui->deleteMode =
 						(
 							(oldPad.gate == float (ui->padGateDial.getValue())) &&
 							(oldPad.mix == float (ui->padMixDial.getValue()))
 						);
-						Pad newPad = (ui->deleteMode ? Pad () : Pad (ui->padGateDial.getValue(), 1.0, ui->padMixDial.getValue()));
-						ui->pattern.setPad (row, step, newPad);
-						ui->sendPad (row, step);
-						ui->drawPad (row,step);
+						Pad newPad = (ui->deleteMode ? Pad () : Pad (ui->padGateDial.getValue(), size, ui->padMixDial.getValue()));
+						if (newPad != oldPad) ui->setPad (row, s, newPad);
 					}
 
 					ui->padPressed = true;
@@ -1714,6 +1728,9 @@ void BNoname01GUI::padsPressedCallback (BEvents::Event* event)
 
 		else if ((event->getEventType () == BEvents::BUTTON_RELEASE_EVENT) && (pointerEvent->getButton() == BDevices::LEFT_BUTTON))
 		{
+			ui->dragOrigin.x = -1;
+			ui->dragOrigin.y = -1;
+
 			// Check if edit mode
 			int editNr = -1;
 			for (int i = 0; i < EDIT_RESET; ++i)
@@ -1867,7 +1884,7 @@ void BNoname01GUI::padsFocusedCallback (BEvents::Event* event)
 
 	if ((row >= 0) && (row < NR_SLOTS) && (step >= 0) && (step < maxstep))
 	{
-		const Pad pd = ui->pattern.getPad (row, step);
+		const Pad pd = ui->pattern.getPad (row, ui->getPadOrigin (row, step));
 
 		ui->padSurface.focusText.setText
 		(
@@ -1880,6 +1897,78 @@ void BNoname01GUI::padsFocusedCallback (BEvents::Event* event)
 	}
 }
 
+int BNoname01GUI::getPadOrigin (const int slot, const int step) const
+{
+	for (int i = step; i >= 0; --i)
+	{
+		Pad pd = pattern.getPad (slot, i);
+		if ((pd.gate != 0) && (pd.size != 0) && (pd.mix != 0))
+		{
+			if (i + pd.size > step) return i;
+			else return step;
+		}
+	}
+
+	return step;
+}
+
+void BNoname01GUI::setPad (const int slot, const int step, const Pad pad)
+{
+	const int size = LIMIT (pad.size, 1, NR_STEPS - step);
+	const Pad oPad = pattern.getPad (slot, step);
+
+	// Check if overlap with previous pad
+	if (step >= 1)
+	{
+		int pStep = getPadOrigin (slot, step - 1);
+		Pad pPad = pattern.getPad (slot, pStep);
+		if (pPad.gate && pPad.size && pPad.mix)
+		{
+			// Previous pad overlaps start of actual pad: clip previous pad
+			if (pStep + pPad.size > step)
+			{
+				Pad newPad = pPad;
+				newPad.size = step - pStep;
+				setPad (slot, pStep, newPad);
+			}
+
+			// Previous pad overlaps even the end of actual pad: create a pad after the end
+			if (pStep + pPad.size > step + size)
+			{
+				Pad newPad = pPad;
+				newPad.size = pPad.size - (step - pStep) - size;
+				setPad (slot, step + size, newPad);
+			}
+		}
+	}
+
+	// Actual pad hides start of next pad
+	for (int i = step + 1; i < step + size; ++i)
+	{
+		Pad nPad = pattern.getPad (slot, i);
+		if (nPad.gate && nPad.size && nPad.mix)
+		{
+			// Delete next pad
+			setPad (slot, i, Pad());
+
+			// Next pad exceeds end of actual pad: create a pad after the end
+			if (i + nPad.size > step + size)
+			{
+				Pad newPad = nPad;
+				newPad.size = nPad.size - (step - i) - size;
+				setPad (slot, step + size, newPad);
+			}
+		}
+	}
+
+	pattern.setPad (slot, step, pad);
+	sendPad (slot, step);
+	drawPad (slot, step);
+
+	// Show removed pads
+	for (int i = size; i < oPad.size; ++i) drawPad (slot, step + i);
+}
+
 void BNoname01GUI::drawPad ()
 {
 	cairo_surface_t* surface = padSurface.getDrawingSurface();
@@ -1887,7 +1976,7 @@ void BNoname01GUI::drawPad ()
 	int maxstep = controllerWidgets[STEPS]->getValue ();
 	for (int row = 0; row < NR_SLOTS; ++row)
 	{
-		for (int step = 0; step < maxstep; ++step) drawPad (cr, row, step);
+		for (int step = 0; step < maxstep; step += (pattern.getPad (row, step).size > 1 ? pattern.getPad (row, step).size : 1)) drawPad (cr, row, step);
 	}
 	cairo_destroy (cr);
 	padSurface.update();
@@ -1898,7 +1987,7 @@ void BNoname01GUI::drawPad (const int slot)
 	cairo_surface_t* surface = padSurface.getDrawingSurface();
 	cairo_t* cr = cairo_create (surface);
 	int maxstep = controllerWidgets[STEPS]->getValue ();
-	for (int step = 0; step < maxstep; ++step) drawPad (cr, slot, step);
+	for (int step = 0; step < maxstep; step += (pattern.getPad (slot, step).size > 1 ? pattern.getPad (slot, step).size : 1)) drawPad (cr, slot, step);
 	cairo_destroy (cr);
 	padSurface.update();
 }
@@ -1917,12 +2006,18 @@ void BNoname01GUI::drawPad (cairo_t* cr, const int row, const int step)
 	int maxstep = controllerWidgets[STEPS]->getValue ();
 	if ((!cr) || (cairo_status (cr) != CAIRO_STATUS_SUCCESS) || (row < 0) || (row >= NR_SLOTS) || (step < 0) || (step >= maxstep)) return;
 
+	// Get origin and size of pad data
+	const int p0 = getPadOrigin (row, step);
+	const Pad pd = pattern.getPad (row, p0);
+	const int ps = LIMIT (pd.size, 1.0, maxstep - p0);
+
 	// Get size of drawing area
 	const double width = padSurface.getEffectiveWidth ();
 	const double height = padSurface.getEffectiveHeight ();
-	const double w = width / maxstep;
+	const double w1 = width / double (maxstep);
+	const double w = double (ps) * w1;
 	const double h = height / NR_SLOTS;
-	const double x = step * w;
+	const double x = double (p0) * w1;
 	const double y = row * h;
 	const double xr = round (x);
 	const double yr = round (y);
@@ -1931,7 +2026,7 @@ void BNoname01GUI::drawPad (cairo_t* cr, const int row, const int step)
 
 	// Draw background
 	// Odd or even?
-	BColors::Color bg = ((int (step / 4) % 2) ? oddPadBgColor : evenPadBgColor);
+	BColors::Color bg = ((int (p0 / 4) % 2) ? oddPadBgColor : evenPadBgColor);
 	if (actSlot == row) bg.applyBrightness (0.2);
 
 	// Highlight selection
@@ -1951,10 +2046,11 @@ void BNoname01GUI::drawPad (cairo_t* cr, const int row, const int step)
 	// Draw pad
 	const int fxnr = LIMIT (slots[row].container.getValue(), FX_NONE, NR_FX - 1);
 	BColors::Color color = *padColors[fxnr].getColor(BColors::NORMAL);
-	color.applyBrightness (pattern.getPad (row, step).mix - 1.0);
-	if (step == int (cursor)) color.applyBrightness (0.75);
+	color.applyBrightness (pd.mix - 1.0);
+	if (p0 <= int (cursor) && (p0 + ps > int (cursor))) color.applyBrightness (0.75);
 	drawButton (cr, xr + 1, yr + 1, wr - 2, hr - 2, color);
 }
+
 
 LV2UI_Handle instantiate (const LV2UI_Descriptor *descriptor,
 						  const char *plugin_uri,
