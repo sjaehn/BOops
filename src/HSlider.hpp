@@ -98,9 +98,10 @@ public:
 
 		if ((w == 0) || (pos.x < x0) || (pos.x > x0 + w) || (getMin() == getMax())) return;
 
+		double step = (getStep() ? getStep() / (getMax() - getMin()) : 1.0 / w);
 		double dist = getMax() - getMin();
 		double valueTransformed = transform_ ((getValue() - getMin()) / dist);
-		double nval = LIMIT (valueTransformed + event->getDelta ().y / w, 0.0, 1.0);
+		double nval = LIMIT (valueTransformed + event->getDelta ().y * step, 0.0, 1.0);
 		setValue (getMin() + reverse_ (nval) * dist);
 	}
 
