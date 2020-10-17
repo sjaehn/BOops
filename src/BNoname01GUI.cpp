@@ -1545,7 +1545,7 @@ void BNoname01GUI::edit2ChangedCallback(BEvents::Event* event)
 			{
 				for (int s = 0; s < NR_STEPS; ++s)
 				{
-					if (s == r) ui->pattern.setPad (r, s, Pad ());
+					ui->pattern.setPad (r, s, Pad ());
 					ui->sendPad (r, s);
 				}
 			}

@@ -88,6 +88,7 @@ TODO
 * Bugfixes
   * Fix update pads in DSP if slot (and thus pads) in GUI changed (insert, delete, up, down)
   * Enable dragging of sliders
+  * Enable reset
 
 
 ## TODO
