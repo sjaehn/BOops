@@ -30,28 +30,30 @@
 const std::array<const std::array<const float, NR_PARAMS>, NR_FX> fxDefaultValues =
 {{
 	// SLOTS_PLAY, SLOTS_ATTACK, SLOTS_DECAY, SLOTS_SUSTAIN, SLOTS_RELEASE,	SLOTS_PAN, SLOTS_MIX, SLOTS_OPTPARAMS
-	{{STDPARAMS, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},				// FX_NONE
-	{{STDPARAMS, 0.5, 0, 0.5, 0, 0.5, 0, 0.5, 0, 0.5, 0, 0.5, 0}},			// FX_SURPRISE
-	{{STDPARAMS, 0.5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},				// FX_AMP
-	{{STDPARAMS, 0.5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},				// FX_BALANCE
-	{{STDPARAMS, 0.5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},				// FX_WIDTH
-	{{STDPARAMS, 0.5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},				// FX_PITCH
-	{{STDPARAMS, 0, 0.5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},				// FX_DELAY
-	{{STDPARAMS, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},				// FX_REVERSER
-	{{STDPARAMS, 8, 0.1, 1.0, 0.5, 0.75, 0.25, 1.0, 0.0, 0.75, 0.0, 0.0, 0}},	// FX_CHOPPER
-	{{STDPARAMS, 0.5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},				// FX_JUMBLER
-	{{STDPARAMS, 0.5, 0, 0.5, 0, 0, 0, 0, 0, 0, 0, 0, 0}},				// FX_TAPE_STOP
-	{{STDPARAMS, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},				// FX_TAPE_START
-	{{STDPARAMS, 1.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},				// FX_TAPE_SPEED
-	{{STDPARAMS, 1.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},				// FX_SCRATCH
-	{{STDPARAMS, 0.5, 0, 1.0, 0, 0.1, 0, 0.2, 0, 0, 0, 0, 0}},			// FX_WOWFLUTTER
-	{{STDPARAMS, 0.5, 0, 0.46875, 0, 0, 0, 0, 0, 0, 0, 0, 0}},			// FX_BITCRUSH
-	{{STDPARAMS, 1.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},				// FX_DECIMATE
-	{{STDPARAMS, 0.375, 0.5, 0, 0.5, 0, 0, 0, 0, 0, 0, 0, 0}},			// FX_DISTORTION
-	{{STDPARAMS, 0.0, 0, 1.0, 0, 0.5, 0, 0, 0, 0, 0, 0, 0}},			// FX_FILTER
-	{{STDPARAMS, 0.1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},				// FX_NOISE
-	{{STDPARAMS, 0.25, 0, 0.5, 0, 0.3, 0, 0, 0, 0, 0, 0, 0}},			// FX_CRACKLES
-	{{STDPARAMS, 2.0/7.0, 0.1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}			// FX_STUTTER
+	{{STDPARAMS, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},					// FX_NONE
+	{{STDPARAMS, 0.5, 0, 0.5, 0, 0.5, 0, 0.5, 0, 0.5, 0, 0.5, 0}},				// FX_SURPRISE
+	{{STDPARAMS, 0.5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},					// FX_AMP
+	{{STDPARAMS, 0.5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},					// FX_BALANCE
+	{{STDPARAMS, 0.5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},					// FX_WIDTH
+	{{STDPARAMS, 0.5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},					// FX_PITCH
+	{{STDPARAMS, 0, 0.5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},					// FX_DELAY
+	{{STDPARAMS, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},					// FX_REVERSER
+	{{STDPARAMS, 8, 0.1, 1.0, 0.5, 0.75, 0.25, 1.0, 0.0, 0.75, 0.0, 0.0, 0}},		// FX_CHOPPER
+	{{STDPARAMS, 0.5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},					// FX_JUMBLER
+	{{STDPARAMS, 0.5, 0, 0.5, 0, 0, 0, 0, 0, 0, 0, 0, 0}},					// FX_TAPE_STOP
+	{{STDPARAMS, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},					// FX_TAPE_START
+	{{STDPARAMS, 1.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},					// FX_TAPE_SPEED
+	{{STDPARAMS, 1.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},					// FX_SCRATCH
+	{{STDPARAMS, 0.5, 0, 1.0, 0, 0.1, 0, 0.2, 0, 0, 0, 0, 0}},				// FX_WOWFLUTTER
+	{{STDPARAMS, 0.5, 0, 0.46875, 0, 0, 0, 0, 0, 0, 0, 0, 0}},				// FX_BITCRUSH
+	{{STDPARAMS, 1.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},					// FX_DECIMATE
+	{{STDPARAMS, 0.375, 0.5, 0, 0.5, 0, 0, 0, 0, 0, 0, 0, 0}},				// FX_DISTORTION
+	{{STDPARAMS, 0.0, 0, 1.0, 0, 0.5, 0, 0, 0, 0, 0, 0, 0}},				// FX_FILTER
+	{{STDPARAMS, 0.1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},					// FX_NOISE
+	{{STDPARAMS, 0.25, 0, 0.5, 0, 0.3, 0, 0, 0, 0, 0, 0, 0}},				// FX_CRACKLES
+	{{STDPARAMS, 2.0/7.0, 0.1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},				// FX_STUTTER
+	{{1.0, 0.1, 0.1, 1.0, 0.1, 0.0, 0.5, 0.0, 0, 1.0, 0, 0.31623, 0, 0, 0, 0.5, 0, 0, 0}},	// FX_FLANGER
+	{{STDPARAMS, 0.5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}					// FX_PHASER
 
 }};
 
@@ -78,7 +80,9 @@ const std::array<const std::string, NR_FX> fxIconFileNames =
 		"Filter",
 		"Noise",
 		"Crackles",
-		"Stutter"
+		"Stutter",
+		"Flanger",
+		"Phaser"
 }};
 
 

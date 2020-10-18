@@ -104,7 +104,9 @@ enum BNoname01EffectsIndex
 	FX_NOISE	= 19,
 	FX_CRACKLES	= 20,
 	FX_STUTTER	= 21,
-	NR_FX		= 22,
+	FX_FLANGER	= 22,
+	FX_PHASER	= 23,
+	NR_FX		= 24,
 	FX_INVALID	= 255
 };
 
@@ -125,7 +127,8 @@ enum BNoname01DistortionIndex
 	{8, "Chop"}, {21, "Stutter"}, {9, "Jumble"}, \
 	{10, "Tape stop"}, {11, "Tape start (TODO)"}, {12, "Tape speed"}, {14, "Wow & flutter"}, \
 	{13, "Scratch"}, {19, "Noise"}, {20, "Crackles"}, \
-	{15, "Crush"}, {16, "Decimate"}, {17, "Distortion"}, {18, "Filter"} \
+	{15, "Crush"}, {16, "Decimate"}, {17, "Distortion"}, {18, "Filter"}, \
+	{22, "Flanger"}, {23, "Phaser (TODO)"} \
 }
 
 #define BNONAME01FXBGNAMES \
@@ -151,7 +154,9 @@ enum BNoname01DistortionIndex
 	"inc/Distortion_bg.png", \
 	"inc/Vinyl_bg.png", \
 	"inc/Vinyl_bg.png", \
-	"inc/Chop_bg.png" \
+	"inc/Chop_bg.png", \
+	"inc/Distortion_bg.png", \
+	"inc/Distortion_bg.png" \
 }
 
 #endif /* PORTS_HPP_ */
