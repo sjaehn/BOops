@@ -31,36 +31,43 @@ public:
 	OptionCrackles () : OptionCrackles (0.0, 0.0, 0.0, 0.0, "widget") {}
 	OptionCrackles (const double x, const double y, const double width, const double height, const std::string& name) :
 		OptionWidget (x, y, width, height, name),
-		rateLabel (10, 90, 60, 20, "ctlabel", "Rate"),
-		maxsizeLabel (90, 90, 60, 20, "ctlabel", "Max. size"),
-		distribLabel (160, 90, 80, 20, "ctlabel", "Distribution")
+		ampLabel (10, 90, 60, 20, "ctlabel", "Level"),
+		rateLabel (90, 90, 60, 20, "ctlabel", "Rate"),
+		maxsizeLabel (170, 90, 60, 20, "ctlabel", "Max. size"),
+		distribLabel (240, 90, 80, 20, "ctlabel", "Distribution")
 	{
 		try
 		{
-			options[0] = new DialRange (10, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.2f", "", [] (double x) {return 200 * x;});
+			options[0] = new DialRange (10, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.1f", "db", [] (double x) {return -36.0 + 48.0 * x;});
 			options[1] = new BWidgets::ValueWidget (0, 0, 0, 0, "widget", 0.0);
-			options[2] = new DialRange (90, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.2f", "", [] (double x) {return 0.2 * x;});
+			options[2] = new DialRange (90, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.2f", "", [] (double x) {return 200 * x;});
 			options[3] = new BWidgets::ValueWidget (0, 0, 0, 0, "widget", 0.0);
-			options[4] = new DialRange (170, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.2f", "", [] (double x) {return 10.0 * x;});
+			options[4] = new DialRange (170, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.2f", "", [] (double x) {return 0.2 * x;});
 			options[5] = new BWidgets::ValueWidget (0, 0, 0, 0, "widget", 0.0);
+			options[6] = new DialRange (250, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.2f", "", [] (double x) {return 10.0 * x;});
+			options[7] = new BWidgets::ValueWidget (0, 0, 0, 0, "widget", 0.0);
 		}
 		catch (std::bad_alloc& ba) {throw ba;}
 
-		for (int i = 0; i < 3; ++i)
+		for (int i = 0; i < 4; ++i)
 		{
 			options[2 * i]->setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, valueChangedCallback);
 			((DialRange*)options[2 * i])->range.setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, rangeChangedCallback);
 			options[2 * i + 1]->setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, valueChangedCallback);
 		}
 
+		add (ampLabel);
 		add (rateLabel);
 		add (maxsizeLabel);
 		add (distribLabel);
-		for (int i = 0; i < 6; ++i) add (*options[i]);
+		for (int i = 0; i < 8; ++i) add (*options[i]);
 	}
 
-	OptionCrackles (const OptionCrackles& that) : OptionWidget (that), rateLabel (that.rateLabel), maxsizeLabel (that.maxsizeLabel), distribLabel (that.distribLabel)
+	OptionCrackles (const OptionCrackles& that) :
+		OptionWidget (that), ampLabel (that.ampLabel), rateLabel (that.rateLabel),
+		maxsizeLabel (that.maxsizeLabel), distribLabel (that.distribLabel)
 	{
+		add (ampLabel);
 		add (rateLabel);
 		add (maxsizeLabel);
 		add (distribLabel);
@@ -68,13 +75,16 @@ public:
 
 	OptionCrackles& operator= (const OptionCrackles& that)
 	{
+		release (&ampLabel);
 		release (&rateLabel);
 		release (&maxsizeLabel);
 		release (&distribLabel);
 		OptionWidget::operator= (that);
+		ampLabel = that.ampLabel;
 		rateLabel = that.rateLabel;
 		maxsizeLabel = that.maxsizeLabel;
 		distribLabel = that.distribLabel;
+		add (ampLabel);
 		add (rateLabel);
 		add (maxsizeLabel);
 		add (distribLabel);
@@ -89,6 +99,7 @@ public:
 	virtual void applyTheme (BStyles::Theme& theme, const std::string& name) override
 	{
 		OptionWidget::applyTheme (theme, name);
+		ampLabel.applyTheme (theme);
 		rateLabel.applyTheme (theme);
 		maxsizeLabel.applyTheme (theme);
 		distribLabel.applyTheme (theme);
@@ -105,7 +116,7 @@ public:
 		if (!ui) return;
 
 		// options[1] changed ? Send to range
-		for (int i = 0; i < 3; ++i)
+		for (int i = 0; i < 4; ++i)
 		{
 			if (widget == p->getWidget(2 * i + 1)) ((DialRange*)p->getWidget(2 * i))->range.setValue (((BWidgets::ValueWidget*)widget)->getValue());
 		}
@@ -125,7 +136,7 @@ public:
 		if (!pp) return;
 
 		// Send changed range to options[1]
-		for (int i = 0; i < 3; ++i)
+		for (int i = 0; i < 4; ++i)
 		{
 			if ((p == (DialRange*)pp->getWidget(2 * i)) && (widget == (BWidgets::Widget*)&p->range))
 			{
@@ -136,6 +147,7 @@ public:
 	}
 
 protected:
+	BWidgets::Label ampLabel;
 	BWidgets::Label rateLabel;
 	BWidgets::Label maxsizeLabel;
 	BWidgets::Label distribLabel;

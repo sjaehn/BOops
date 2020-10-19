@@ -25,16 +25,21 @@
 #include "Crackle.hpp"
 #include "StaticArrayList.hpp"
 
-#define FX_CRACKLES_RATE 0
-#define FX_CRACKLES_RATERAND 1
-#define FX_CRACKLES_MAXSIZE 2
-#define FX_CRACKLES_MAXSIZERAND 3
-#define FX_CRACKLES_DISTRIBUTION 4
-#define FX_CRACKLES_DISTRIBUTIONRAND 5
+#ifndef DB2CO
+#define DB2CO(x) pow (10, 0.05 * (x))
+#endif
+
+#define FX_CRACKLES_AMP 0
+#define FX_CRACKLES_AMPRAND 1
+#define FX_CRACKLES_RATE 2
+#define FX_CRACKLES_RATERAND 3
+#define FX_CRACKLES_MAXSIZE 4
+#define FX_CRACKLES_MAXSIZERAND 5
+#define FX_CRACKLES_DISTRIBUTION 6
+#define FX_CRACKLES_DISTRIBUTIONRAND 7
 #define MAXCRACKLES 16
 #define CRACKLEFREQ 10000
 #define CRACKLEFREQRAND 2000
-#define CRACKLEMAXLEVEL 0.2
 
 class FxCrackles : public Fx
 {
@@ -54,10 +59,15 @@ public:
 	{
 		Fx::start (position);
 		framesPerStep = (framesPerStepPtr ? *framesPerStepPtr : 24000.0);
-		const double r = bidist (rnd);
-		rate = 200.0 * (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_CRACKLES_RATE] + r * params[SLOTS_OPTPARAMS + FX_CRACKLES_RATERAND], 0.0, 1.0) : 0.5);
-		maxsize = CRACKLEMAXLEVEL * (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_CRACKLES_MAXSIZE] + r * params[SLOTS_OPTPARAMS + FX_CRACKLES_MAXSIZERAND], 0.0, 1.0) : 0.5);
-		distrib = 10.0 * (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_CRACKLES_DISTRIBUTION] + r * params[SLOTS_OPTPARAMS + FX_CRACKLES_DISTRIBUTIONRAND], 0.0, 1.0) : 0.5);
+		const double r1 = bidist (rnd);
+		const float db = -36.0 + 48.0 * (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_CRACKLES_AMP] + r1 * params[SLOTS_OPTPARAMS + FX_CRACKLES_AMPRAND], 0.0, 1.0) : 0.5);
+		const float amp = DB2CO (db);
+		const double r2 = bidist (rnd);
+		rate = 200.0 * (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_CRACKLES_RATE] + r2 * params[SLOTS_OPTPARAMS + FX_CRACKLES_RATERAND], 0.0, 1.0) : 0.5);
+		const double r3 = bidist (rnd);
+		maxsize = amp * (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_CRACKLES_MAXSIZE] + r3 * params[SLOTS_OPTPARAMS + FX_CRACKLES_MAXSIZERAND], 0.0, 1.0) : 0.5);
+		const double r4 = bidist (rnd);
+		distrib = 10.0 * (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_CRACKLES_DISTRIBUTION] + r4 * params[SLOTS_OPTPARAMS + FX_CRACKLES_DISTRIBUTIONRAND], 0.0, 1.0) : 0.5);
 		c = 0;
 		crackles.clear();
 	}

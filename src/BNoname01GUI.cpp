@@ -1007,7 +1007,7 @@ void BNoname01GUI::setOptionWidget (const int slot)
 		case FX_NOISE:		slotParams[slot].optionWidget = new OptionNoise (430, 20, 80, 130, "widget");
 					break;
 
-		case FX_CRACKLES:	slotParams[slot].optionWidget = new OptionCrackles (430, 20, 240, 130, "widget");
+		case FX_CRACKLES:	slotParams[slot].optionWidget = new OptionCrackles (430, 20, 320, 130, "widget");
 					break;
 
 		case FX_STUTTER:	slotParams[slot].optionWidget = new OptionStutter (430, 20, 160, 130, "widget");
