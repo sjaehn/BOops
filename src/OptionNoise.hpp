@@ -31,11 +31,11 @@ public:
 	OptionNoise () : OptionNoise (0.0, 0.0, 0.0, 0.0, "widget") {}
 	OptionNoise (const double x, const double y, const double width, const double height, const std::string& name) :
 		OptionWidget (x, y, width, height, name),
-		ampLabel (10, 90, 60, 20, "ctlabel", "Amp")
+		ampLabel (10, 90, 60, 20, "ctlabel", "Level")
 	{
 		try
 		{
-			options[0] = new DialRange (10, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.2f");
+			options[0] = new DialRange (10, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.1f", "db", [] (double x) {return -90.0 + x * 102.0;});
 			options[1] = new BWidgets::ValueWidget (0, 0, 0, 0, "widget", 0.0);
 		}
 		catch (std::bad_alloc& ba) {throw ba;}

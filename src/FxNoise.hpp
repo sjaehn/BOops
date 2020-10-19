@@ -23,6 +23,10 @@
 
 #include "Fx.hpp"
 
+#ifndef DB2CO
+#define DB2CO(x) pow (10, 0.05 * (x))
+#endif
+
 #define FX_NOISE_AMP 0
 #define FX_NOISE_AMPRAND 1
 
@@ -40,7 +44,8 @@ public:
 	{
 		Fx::start (position);
 		const double r = bidist (rnd);
-		amp = (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_NOISE_AMP] + r * params[SLOTS_OPTPARAMS + FX_NOISE_AMPRAND], 0.0, 1.0) :1.0);
+		const float db = -90.0 + 102.0 * (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_NOISE_AMP] + r * params[SLOTS_OPTPARAMS + FX_NOISE_AMPRAND], 0.0, 1.0) :0.5);
+		amp = DB2CO (db);
 	}
 
 	virtual Stereo play (const double position) override
