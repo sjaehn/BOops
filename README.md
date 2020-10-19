@@ -86,6 +86,7 @@ TODO
   * Crackles
   * Stutter
   * Flanger
+  * Phaser
 * Bugfixes
   * Fix update pads in DSP if slot (and thus pads) in GUI changed (insert, delete, up, down)
   * Enable dragging of sliders
@@ -100,7 +101,6 @@ TODO
   * MIDI triggering of effects
 * Implement effects
   * Pitch (?)
-  * Phaser
   * Tape start (?)
 * Messaging system
 * Enable GUI scaling

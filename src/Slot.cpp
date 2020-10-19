@@ -44,6 +44,7 @@
 #include "FxCrackles.hpp"
 #include "FxStutter.hpp"
 #include "FxFlanger.hpp"
+#include "FxPhaser.hpp"
 
 Slot::Slot () : Slot (nullptr, FX_INVALID, false, 0.0f, 0.0f, nullptr, nullptr, 0, 0.0) {}
 
@@ -164,6 +165,9 @@ Fx* Slot::newFx (const BNoname01EffectsIndex effect)
 					break;
 
 		case FX_FLANGER:	fx = new FxFlanger (&buffer, params, pads, &framesPerStep, plugin ? plugin->rate : 48000);
+					break;
+
+		case FX_PHASER:		fx = new FxPhaser (&buffer, params, pads, &framesPerStep, plugin ? plugin->rate : 48000);
 					break;
 
 		case FX_INVALID:	fx = nullptr;

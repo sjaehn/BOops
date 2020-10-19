@@ -17,38 +17,40 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef OPTIONFLANGER_HPP_
-#define OPTIONFLANGER_HPP_
+#ifndef OPTIONPHASER_HPP_
+#define OPTIONPHASER_HPP_
 
 #include <new>
 #include "OptionWidget.hpp"
 #include "BWidgets/Label.hpp"
 #include "DialRange.hpp"
 
-class OptionFlanger : public OptionWidget
+class OptionPhaser : public OptionWidget
 {
 public:
-	OptionFlanger () : OptionFlanger (0.0, 0.0, 0.0, 0.0, "widget") {}
-	OptionFlanger (const double x, const double y, const double width, const double height, const std::string& name) :
+	OptionPhaser () : OptionPhaser (0.0, 0.0, 0.0, 0.0, "widget") {}
+	OptionPhaser (const double x, const double y, const double width, const double height, const std::string& name) :
 		OptionWidget (x, y, width, height, name),
-		minDelayLabel (10, 100, 60, 20, "ctlabel", "Delay"),
-		modDelayLabel (90, 100, 60, 20, "ctlabel", "Amount"),
-		freqLabel (160, 100, 80, 20, "ctlabel", "Modulation"),
-		phaseLabel (240, 100, 80, 20, "ctlabel", "Stereo phase"),
-		feedbackLabel (330, 100, 60, 20, "ctlabel", "Feedback")
+		loFreqLabel (10, 100, 60, 20, "ctlabel", "Low Freq."),
+		hiFreqLabel (90, 100, 60, 20, "ctlabel", "High Freq."),
+		modRateLabel (160, 100, 80, 20, "ctlabel", "Modulation"),
+		modPhaseLabel (240, 100, 80, 20, "ctlabel", "Stereo phase"),
+		stepsLabel (330, 100, 60, 20, "ctlabel", "Steps"),
+		feedbackLabel (410, 100, 60, 20, "ctlabel", "Feedback")
 	{
 		try
 		{
-			options[0] = new DialRange (10, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.2f", "ms", [] (double x) {return 10.0 * x;});
+			options[0] = new DialRange (10, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.0f", "Hz", [] (double x) {return 20.0 + 19980.0 * pow (x, 3.0);});
 			options[1] = new BWidgets::ValueWidget (0, 0, 0, 0, "widget", 0.0);
-			options[2] = new DialRange (90, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.2f", "ms", [] (double x) {return 10.0 * x;});
+			options[2] = new DialRange (90, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.0f", "Hz", [] (double x) {return 20.0 + 19980.0 * pow (x, 3.0);});
 			options[3] = new BWidgets::ValueWidget (0, 0, 0, 0, "widget", 0.0);
-			options[4] = new DialRange (170, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.2f", "Hz", [] (double x) {return 10.0 * pow (x, 3);});
+			options[4] = new DialRange (170, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.2f", "Hz", [] (double x) {return 10.0 * pow (x, 3.0);});
 			options[5] = new BWidgets::ValueWidget (0, 0, 0, 0, "widget", 0.0);
 			options[6] = new DialRange (250, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.1f", "°", [] (double x) {return 360.0 * x;});
 			options[7] = new BWidgets::ValueWidget (0, 0, 0, 0, "widget", 0.0);
-			options[8] = new DialRange (330, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.2f", "", [] (double x) {return 2.0 * x - 1.0;});
+			options[8] = new DialRange (410, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.2f", "", [] (double x) {return 2.0 * x - 1.0;});
 			options[9] = new BWidgets::ValueWidget (0, 0, 0, 0, "widget", 0.0);
+			options[10] = new Dial (330, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, "%1.0f", "", [] (double x) {return 1.0 + LIMIT (x * 10.0, 0, 9);});
 		}
 		catch (std::bad_alloc& ba) {throw ba;}
 
@@ -58,60 +60,67 @@ public:
 			((DialRange*)options[i])->range.setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, rangeChangedCallback);
 			options[i + 1]->setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, valueChangedCallback);
 		}
+		options[10]->setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, valueChangedCallback);
 
-		add (minDelayLabel);
-		add (modDelayLabel);
-		add (freqLabel);
-		add (phaseLabel);
+		add (loFreqLabel);
+		add (hiFreqLabel);
+		add (modRateLabel);
+		add (modPhaseLabel);
+		add (stepsLabel);
 		add (feedbackLabel);
-		for (int i = 0; i < 10; ++i) add (*options[i]);
+		for (int i = 0; i < 11; ++i) add (*options[i]);
 	}
 
-	OptionFlanger (const OptionFlanger& that) :
+	OptionPhaser (const OptionPhaser& that) :
 		OptionWidget (that),
-		minDelayLabel (that.minDelayLabel), modDelayLabel (that.modDelayLabel),
-		freqLabel (that.freqLabel), phaseLabel (that.phaseLabel), feedbackLabel (that.feedbackLabel)
+		loFreqLabel (that.loFreqLabel), hiFreqLabel (that.hiFreqLabel),
+		modRateLabel (that.modRateLabel), modPhaseLabel (that.modPhaseLabel),
+		stepsLabel (that.stepsLabel), feedbackLabel (that.feedbackLabel)
 	{
-		add (minDelayLabel);
-		add (modDelayLabel);
-		add (freqLabel);
-		add (phaseLabel);
+		add (loFreqLabel);
+		add (hiFreqLabel);
+		add (modRateLabel);
+		add (modPhaseLabel);
+		add (stepsLabel);
 		add (feedbackLabel);
 	}
 
-	OptionFlanger& operator= (const OptionFlanger& that)
+	OptionPhaser& operator= (const OptionPhaser& that)
 	{
-		release (&minDelayLabel);
-		release (&modDelayLabel);
-		release (&freqLabel);
-		release (&phaseLabel);
+		release (&loFreqLabel);
+		release (&hiFreqLabel);
+		release (&modRateLabel);
+		release (&modPhaseLabel);
+		release (&stepsLabel);
 		release (&feedbackLabel);
 		OptionWidget::operator= (that);
-		minDelayLabel = that.minDelayLabel;
-		modDelayLabel = that.modDelayLabel;
-		freqLabel = that.freqLabel;
-		phaseLabel = that.phaseLabel;
+		loFreqLabel = that.loFreqLabel;
+		hiFreqLabel = that.hiFreqLabel;
+		modRateLabel = that.modRateLabel;
+		modPhaseLabel = that.modPhaseLabel;
+		stepsLabel = that.stepsLabel;
 		feedbackLabel = that.feedbackLabel;
-		add (minDelayLabel);
-		add (modDelayLabel);
-		add (freqLabel);
-		add (phaseLabel);
+		add (loFreqLabel);
+		add (hiFreqLabel);
+		add (modRateLabel);
+		add (modPhaseLabel);
+		add (stepsLabel);
 		add (feedbackLabel);
 
 		return *this;
 	}
 
-	virtual Widget* clone () const override {return new OptionFlanger (*this);}
+	virtual Widget* clone () const override {return new OptionPhaser (*this);}
 
 	virtual void applyTheme (BStyles::Theme& theme) override {applyTheme (theme, name_);}
 
 	virtual void applyTheme (BStyles::Theme& theme, const std::string& name) override
 	{
 		OptionWidget::applyTheme (theme, name);
-		minDelayLabel.applyTheme (theme);
-		modDelayLabel.applyTheme (theme);
-		freqLabel.applyTheme (theme);
-		phaseLabel.applyTheme (theme);
+		loFreqLabel.applyTheme (theme);
+		hiFreqLabel.applyTheme (theme);
+		modRateLabel.applyTheme (theme);
+		modPhaseLabel.applyTheme (theme);
 		feedbackLabel.applyTheme (theme);
 	}
 
@@ -161,11 +170,12 @@ public:
 	}
 
 protected:
-	BWidgets::Label minDelayLabel;
-	BWidgets::Label modDelayLabel;
-	BWidgets::Label freqLabel;
-	BWidgets::Label phaseLabel;
+	BWidgets::Label loFreqLabel;
+	BWidgets::Label hiFreqLabel;
+	BWidgets::Label modRateLabel;
+	BWidgets::Label modPhaseLabel;
+	BWidgets::Label stepsLabel;
 	BWidgets::Label feedbackLabel;
 };
 
-#endif /* OPTIONFLANGER_HPP_ */
+#endif /* OPTIONPHASER_HPP_ */

@@ -59,7 +59,7 @@ public:
 		const double r2 = bidist (rnd);
 		modDelay = 0.01 * (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_FLANGER_MODDELAY] + r2 * params[SLOTS_OPTPARAMS + FX_FLANGER_MODDELAYRAND], 0.0, 1.0) : 0.3333);
 		const double r3 = bidist (rnd);
-		freq = 10.0 * 2.0 * M_PI * pow (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_FLANGER_FREQ] + r3 * params[SLOTS_OPTPARAMS + FX_FLANGER_FREQRAND], 0.0, 1.0) : 0.1, 2.0);
+		freq = 10.0 * 2.0 * M_PI * pow (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_FLANGER_FREQ] + r3 * params[SLOTS_OPTPARAMS + FX_FLANGER_FREQRAND], 0.0, 1.0) : 0.1, 3.0);
 		const double r4 = bidist (rnd);
 		phase = 2.0 * M_PI * (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_FLANGER_PHASE] + r4 * params[SLOTS_OPTPARAMS + FX_FLANGER_PHASERAND], 0.0, 1.0) : 0.0);
 		const double r5 = bidist (rnd);

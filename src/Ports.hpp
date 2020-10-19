@@ -128,7 +128,7 @@ enum BNoname01DistortionIndex
 	{10, "Tape stop"}, {11, "Tape start (TODO)"}, {12, "Tape speed"}, {14, "Wow & flutter"}, \
 	{13, "Scratch"}, {19, "Noise"}, {20, "Crackles"}, \
 	{15, "Crush"}, {16, "Decimate"}, {17, "Distortion"}, {18, "Filter"}, \
-	{22, "Flanger"}, {23, "Phaser (TODO)"} \
+	{22, "Flanger"}, {23, "Phaser"} \
 }
 
 #define BNONAME01FXBGNAMES \

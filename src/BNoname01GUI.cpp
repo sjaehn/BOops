@@ -43,6 +43,7 @@
 #include "OptionCrackles.hpp"
 #include "OptionStutter.hpp"
 #include "OptionFlanger.hpp"
+#include "OptionPhaser.hpp"
 
 inline double floorfrac (const double value) {return value - floor (value);}
 inline double floormod (const double numer, const double denom) {return numer - floor(numer / denom) * denom;}
@@ -1013,6 +1014,9 @@ void BNoname01GUI::setOptionWidget (const int slot)
 					break;
 
 		case FX_FLANGER:	slotParams[slot].optionWidget = new OptionFlanger (430, 20, 400, 130, "widget");
+					break;
+
+		case FX_PHASER:		slotParams[slot].optionWidget = new OptionPhaser (430, 20, 480, 130, "widget");
 					break;
 
 		default:		slotParams[slot].optionWidget = new OptionWidget (0, 0, 0, 0, "widget");
