@@ -58,6 +58,131 @@ Notes:
 
 ## Usage
 
+### Quickstart
+
+1) Add an effect by clicking on the [+] symbol.
+2) Click on the menu symbol left to the effect name to change the effect
+3) Set a pattern right to the effect name to define the timepoint(s) to apply the effect on the incoming audio signal.
+4) Continue with point 1 to add another effects. Change the order of the effects by clicking on the respective symbol.
+
+
+### User interface
+
+#### Transport buttons
+
+There are three transport buttons on the top left of the user interface. Play, bypass, and stop.
+
+
+#### Global settings
+
+The global settings on the top of the user interface contain options to control the transport and the size of the pattern.
+
+
+##### Mode
+
+Choose between autoplay and host controlled playback.
+
+You can manually change the beats per minute (bpm) and beats per bar (bpBar) in the autoplay mode. These values as well as
+the time or beat/bar position data are automatically used in the host controlled mode.  
+
+
+##### Pattern size
+
+Temporal size of a full pattern loop.
+
+
+##### Steps
+
+Pattern size in steps. Set up to 32 steps.
+
+
+#### Effect slots
+
+There are up to 12 slots on the left of the user interface. Each slot is linked to a pattern row right to the respective
+slot. The effect slots will be applied in the order from the top to the bottom.
+
+You can add (or insert) an effect by pressing the [+] button or remove an effect by pressing the [-] button. If you have
+created more than one slot, you can select a slot by clicking on its name. You can
+change an effect and select one out of more than 20 effects by pressing the menu button. You can move the effect slot
+(including its respective pattern row) by pressing the up or the down button. To mute or un-mute a slot, press the play
+button.
+
+
+#### Pattern
+
+The pattern matrix is located in the center of user interface. Each line of the pattern is linked to an effect slot in the
+left of the user interface. In the default drawing mode, the pattern is also connected with the pad properties in the right
+of the user interface.
+
+
+##### Drawing mode
+
+You are in the drawing mode if none of the cut, copy, x-flip, y-flip, or paste symbols is selected. Left click on a pad to
+set the pad and apply properties from the right of the user interface. If you click again, you will un-set this pad.
+Dragging results in linked pads. And right-clicking results in copying the properties of the respective pad to the pad
+properties in the right of the user interface. Directly change the pad mix property by mouse wheel scrolling.
+
+
+##### Cut, copy or flip mode
+
+Select the mode by clicking on the respective symbol below the pattern. Drag over an area of pads to cut, copy or flip. The
+selected pad area is stored in the clipboard.
+
+
+##### Paste mode
+
+Once you selected the paste, you can paste the clipboard pads by clicking to any pad in the pattern.
+
+
+##### Reset, undo and redo
+
+No description required.
+
+
+#### Pad properties
+
+The pad properties (relevant for the pattern drawing mode) are shown on the left of the user interface.
+
+
+##### Gate
+
+Likelihood of an effect pad.
+
+
+##### Mix
+
+Dry / wet mixing value of an effect pad.
+
+
+#### Slot properties
+
+The slot properties for the selected slot are shown on the bottom of the user interface. The slot properties are applied
+for all active pads of a slot. The slot properties consist of ADSR envelope, pan, mix and effect-dependent parameters.
+
+
+##### ADSR envelope
+
+The ADSR envelope parameters ((A)ttack, (D)ecay, (S)ustain, (R)elease) are used for each active pad. The values are
+relative to one step.
+
+##### Pan
+
+Panning the effect to the left (-1.00), to the right (1.00) or to both sides (0.00). If you pan to the full left, the
+right side will get the dry signal.
+
+
+##### Mix
+
+Dry / wet mixing value of an effect.
+
+
+##### Effect-dependent parameters
+
+See effects.
+
+
+### Effects
+
 TODO
 
 

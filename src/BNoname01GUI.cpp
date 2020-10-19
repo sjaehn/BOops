@@ -91,7 +91,7 @@ BNoname01GUI::BNoname01GUI (const char *bundle_path, const LV2_Feature *const *f
 		" \n"
 		"1) Add an effect by clicking on the [+] symbol.\n"
 		"2) Click on the menu symbol left to the effect name to change the effect\n"
-		"3) Set a pattern rigth to the effect name to define the timepoint(s) to apply the effect on the incoming audio signal.\n"
+		"3) Set a pattern right to the effect name to define the timepoint(s) to apply the effect on the incoming audio signal.\n"
 		"4) Continue with point 1 to add another effects. Change the order of the effects by clicking on the respective symbol."
 	),
 
