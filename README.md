@@ -183,7 +183,121 @@ See effects.
 
 ### Effects
 
-TODO
+Once an effect is added to the slots or selected, the effect parameters of the respective slot are shown in the bottom of the
+user interface. Temporal parameters refer (like delay) to the size of one step if not stated otherwise.
+
+Some parameters may be provided with a random range option. Drag (or scroll) the white arrows to set the randomization range.
+
+
+#### Amp
+
+Amplifies (amp > 1.0) or attenuates (amp < 1.0) the input signal.
+
+
+#### Balance
+
+Balances the input signal to the left (balance < 0.0) or the right (balance > 0.0).
+
+
+#### Width
+
+Stereo widening of the input signal.
+
+
+#### Delay
+
+Delays the input signal by range * delay steps. Optional feedback.
+
+
+#### Reverse
+
+Reverse playback.
+
+
+#### Chop
+
+Chops each step into a number of segments (Nr chops). Each segment can be leveled up or down. Set the random factor to introduce
+some variation to the step levels. Soft transition between the segments can be achieved by increasing the smoothness
+parameter.
+
+
+#### Stutter
+
+Stutter effect. Divides each step into segments given by the number of stutters. Soft transition between the segments can be achieved by increasing the smoothness
+parameter.
+
+
+#### Jumble
+
+Plays randomly one of the pads of the respective slot.
+
+
+#### Tape stop
+
+Slowing and stopping the playback. Set the time point of the stop by the reach parameter. Set the slowing rate by the deceleration
+parameter.
+
+
+#### Tape speed
+
+Reduces the playback speed (and thus the pitch).
+
+
+#### Wow & flutter
+
+Mimics the wobbling of old tapes. Divided in low frequency (< 1 Hz, wow) and high frequency (> 1 Hz, flutter) wobbling. You can
+set the frequency (rate) and the amplitude (depth) of the wobbling.
+
+
+#### Scratch
+
+Vinyl scratching. Draw a scratching shape by setting points up and down between 0.0 and -1.0. This will cause a movement of the
+playback forward and backward (= scratching). Set the range parameter to change the amplitude of movement.
+
+
+#### Noise
+
+Creates white noise with the given level.
+
+
+#### Crackles
+
+Creates crackles with the given level. You can change the number of crackles per step (rate), the size distribution (0.0 = all the
+same) and the maximum crackle size.
+
+
+#### Crush
+
+Bitcrusher. Set the upper level limit and the number of bits.
+
+
+#### Decimate
+
+Lo-Fi effect. Reduces the sample rate.
+
+
+#### Distortion
+
+Choose between five different distortion methods. Set drive and level limit to achieve distortion.
+
+
+#### Filter
+
+Set lower limit (high pass) and higher limit (low pass) of the  filter range. The roll off parameter is responsible for the
+sharpness of the cut off.
+
+
+#### Flanger
+
+Set the flanger modulation frequency by the modulation parameter and the flanger delay times by the delay (predelay) and
+the amount (delay amplitude) parameter. Use mix for the flanger depth. You can add a stereo phase shift and / or a feedback.
+
+
+#### Phaser
+
+Set the phaser modulation frequency by the modulation parameter and the phaser filter range by the low freq. and
+the high freq. parameter. As the phaser passes the signal through a number of all-pass filters, you can set the number of filters
+by the steps parameter. Use mix for the phaser depth. You can add a stereo phase shift and / or a feedback.
 
 
 ## What's new
