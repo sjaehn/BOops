@@ -75,7 +75,7 @@ BNoname01GUI::BNoname01GUI (const char *bundle_path, const LV2_Feature *const *f
 	autoplayBpbSlider (640, 10, 80, 20, "slider", 4, 1, 16, 1, "%1.0f"),
 	sequenceSizeSelect (910, 12, 80, 16, "select", 1, 1, 16, 0.01),
 	sequenceBaseListBox (1010, 10, 90, 20, 0, 20, 90, 80, "menu", BItems::ItemList ({{0, "Seconds"}, {1, "Beats"}, {2, "Bars"}}), 1),
-	stepsListBox (1120, 10, 90, 20, 0, 20, 100, 240, "menu",
+	stepsListBox (1120, 10, 90, 20, 0, 20, 90, 240, "menu",
 		     BItems::ItemList ({{2, "2 Steps"}, {3, "3 Steps"}, {4, "4 Steps"}, {6, "6 Steps"}, {8, "8 Steps"}, {9, "9 Steps"},
 		     			{12, "12 Steps"}, {16, "16 Steps"}, {18, "18 Steps"}, {24, "24 Steps"}, {32, "32 Steps"}}), 16),
 
@@ -571,7 +571,79 @@ void BNoname01GUI::resize ()
 	RESIZE (mContainer, 0, 0, 1240, 608, sz);
 	RESIZE (messageLabel, 400, 45, 600, 20, sz);
 
-	// TODO The rest
+	RESIZE (settingsContainer, 10, 90, 1220, 40, sz);
+	RESIZE (playButton, 8, 8, 24, 24, sz);
+	RESIZE (bypassButton, 38, 8, 24, 24, sz);
+	RESIZE (stopButton, 68, 8, 24, 24, sz);
+	RESIZE (playModeListBox, 300, 10, 220, 20, sz);
+	playModeListBox.resizeListBox(BUtilities::Point (220 * sz, 80 * sz));
+	playModeListBox.moveListBox(BUtilities::Point (0, 20 * sz));
+	playModeListBox.resizeListBoxItems(BUtilities::Point (220 * sz, 20 * sz));
+	RESIZE (onMidiListBox, 540, 10, 120, 20, sz);
+	onMidiListBox.resizeListBox(BUtilities::Point (120 * sz, 80 * sz));
+	onMidiListBox.moveListBox(BUtilities::Point (0, 20 * sz));
+	onMidiListBox.resizeListBoxItems(BUtilities::Point (120 * sz, 20 * sz));
+	RESIZE (midiButton, 680, 10, 20, 20, sz);
+	RESIZE (autoplayBpmLabel, 540, 0, 80, 8, sz);
+	RESIZE (autoplayBpmSlider, 540, 10, 80, 20, sz);
+	RESIZE (autoplayBpbLabel, 640, 0, 80, 8, sz);
+	RESIZE (autoplayBpbSlider, 640, 10, 80, 20, sz);
+	RESIZE (sequenceSizeSelect, 910, 12, 80, 16, sz);
+	RESIZE (sequenceBaseListBox, 1010, 10, 90, 20, sz);
+	sequenceBaseListBox.resizeListBox(BUtilities::Point (90 * sz, 80 * sz));
+	sequenceBaseListBox.moveListBox(BUtilities::Point (0, 20 * sz));
+	sequenceBaseListBox.resizeListBoxItems(BUtilities::Point (90 * sz, 20 * sz));
+	RESIZE (stepsListBox, 1120, 10, 90, 20, sz);
+	stepsListBox.resizeListBox(BUtilities::Point (90 * sz, 240 * sz));
+	stepsListBox.moveListBox(BUtilities::Point (0, 20 * sz));
+	stepsListBox.resizeListBoxItems(BUtilities::Point (90 * sz, 20 * sz));
+	RESIZE (padSurface, 290, 130, 820, 288, sz);
+	RESIZE (editContainer, 578, 426, 284, 24, sz);
+
+	RESIZE (gettingstartedContainer, 20, 438, 1200, 150, sz);
+	RESIZE (gettingstartedText, 20, 30, 960, 110, sz);
+
+	RESIZE (padParamContainer, 1120, 130, 100, 288, sz);
+	RESIZE (padGateLabel, 20, 90, 60, 20, sz);
+	RESIZE (padGateDial, 20, 30, 60, 60, sz);
+	RESIZE (padMixLabel, 20, 180, 60, 20, sz);
+	RESIZE (padMixDial, 20, 120, 60, 60, sz);
+
+	for (int i = 0; i < NR_SLOTS; ++i)
+	{
+		RESIZE (slots[i].container, 20, 130 + i * 24, 260, 24, sz);
+		RESIZE (slots[i].addPad, 0, 0, 20, 24, sz);
+		RESIZE (slots[i].delPad, 20, 0, 20, 24, sz);
+		RESIZE (slots[i].upPad, 40, 0, 20, 24, sz);
+		RESIZE (slots[i].downPad , 60, 0, 20, 24, sz);
+		RESIZE (slots[i].effectPad, 80, 0, 160, 24, sz);
+		RESIZE (slots[i].effectsListbox, 80, 24, 160, 160, sz);
+		RESIZE (slots[i].playPad, 240, 0, 20, 24, sz);
+	}
+
+	for (int i = 0; i < EDIT_RESET; ++i) RESIZE (edit1Buttons[i], i * 30, 0, 24, 24, sz);
+	for (int i = 0; i < MAXEDIT - EDIT_RESET; ++i) RESIZE (edit2Buttons[i], 170 + i * 30, 0, 24, 24, sz);
+
+	for (int i = 0; i < NR_SLOTS; ++i)
+	{
+		RESIZE (slotParams[i].container, 20, 438, 1200, 150, sz);
+		RESIZE (slotParams[i].nrIcon, 20, 8, 40, 20, sz);
+		RESIZE (slotParams[i].nameIcon, 60, 8, 160, 20, sz);
+		RESIZE (slotParams[i].attackLabel, 190, 30, 20, 20, sz);
+		RESIZE (slotParams[i].decayLabel, 190, 60, 20, 20, sz);
+		RESIZE (slotParams[i].sustainLabel, 190, 90, 20, 20, sz);
+		RESIZE (slotParams[i].releaseLabel, 190, 120, 20, 20, sz);
+		RESIZE (slotParams[i].attackSlider, 210, 30, 60, 20, sz);
+		RESIZE (slotParams[i].decaySlider, 210, 60, 60, 20, sz);
+		RESIZE (slotParams[i].sustainSlider, 210, 90, 60, 20, sz);
+		RESIZE (slotParams[i].releaseSlider, 210, 120, 60, 20, sz);
+		RESIZE (slotParams[i].adsrDisplay, 10, 30, 170, 110, sz);
+		RESIZE (slotParams[i].panLabel, 280, 110, 60, 20, sz);
+		RESIZE (slotParams[i].panDial, 280, 40, 60, 60, sz);
+		RESIZE (slotParams[i].mixLabel, 360, 110, 60, 20, sz);
+		RESIZE (slotParams[i].mixDial, 360, 40, 60, 60, sz);
+		if (slotParams[i].optionWidget) slotParams[i].optionWidget->zoom (sz);
+	}
 
 	applyTheme (theme);
 	drawPad ();
@@ -652,7 +724,7 @@ void BNoname01GUI::onConfigureRequest (BEvents::ExposeEvent* event)
 {
 	Window::onConfigureRequest (event);
 
-	sz = (getWidth() / 1020 > getHeight() / 620 ? getHeight() / 620 : getWidth() / 1020);
+	sz = (getWidth() / 1240 > getHeight() / 608 ? getHeight() / 608 : getWidth() / 1240);
 	resize ();
 }
 
@@ -1021,6 +1093,8 @@ void BNoname01GUI::setOptionWidget (const int slot)
 
 		default:		slotParams[slot].optionWidget = new OptionWidget (0, 0, 0, 0, "widget");
 	}
+
+	if (slotParams[slot].optionWidget) slotParams[slot].optionWidget->zoom (sz);
 }
 
 void BNoname01GUI::loadOptions (const int slot)

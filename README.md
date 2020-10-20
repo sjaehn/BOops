@@ -307,6 +307,7 @@ by the steps parameter. Use mix for the phaser depth. You can add a stereo phase
 * Background images
 * Group colors
 * GUI re-design
+* Enable GUI scaling
 * Show slot index and effect name for selected slot
 * Enable effect panning
 * Added feedback dial to delay effect
@@ -342,7 +343,6 @@ by the steps parameter. Use mix for the phaser depth. You can add a stereo phase
 * Implement effects
   * Pitch (?)
   * Tape start (?)
-* Enable GUI scaling
 * Show waveform
 * Optionally load a sample (?)
 * Latency ? (Pitch, Tape start)

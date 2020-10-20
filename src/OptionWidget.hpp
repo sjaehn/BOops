@@ -30,12 +30,13 @@ class OptionWidget : public BWidgets::Widget
 public:
 	OptionWidget () : OptionWidget (0.0, 0.0, 0.0, 0.0, "widget") {}
 	OptionWidget (const double x, const double y, const double width, const double height, const std::string& name) :
-		Widget (x, y, width, height, name)
+		Widget (x, y, width, height, name),
+		zoom_ (1.0)
 	{
 		options.fill (nullptr);
 	}
 
-	OptionWidget (const OptionWidget& that) : Widget (that)
+	OptionWidget (const OptionWidget& that) : Widget (that), zoom_ (that.zoom_)
 	{
 		for (int i = 0; i < NR_SLOTS; ++i)
 		{
@@ -79,6 +80,7 @@ public:
 			if (options[i]) add (*options[i]);
 		}
 
+		zoom_ = that.zoom_;
 		Widget::operator= (that);
 
 		return *this;
@@ -103,6 +105,25 @@ public:
 
 	virtual Shape<SHAPE_MAXNODES> getShape() const {return Shape<SHAPE_MAXNODES>();}
 
+	virtual void zoom (const double f)
+	{
+		if (f == zoom_) return;
+
+		for (Widget* c : getChildren())
+		{
+			if (c)
+			{
+				c->moveTo (c->getPosition().x * f / zoom_, c->getPosition().y * f / zoom_);
+				c->resize (c->getWidth() * f / zoom_, c->getHeight() * f / zoom_);
+			}
+		}
+
+		moveTo (getPosition().x * f / zoom_, getPosition().y * f / zoom_);
+		resize (getWidth() * f / zoom_, getHeight() * f / zoom_);
+		
+		zoom_ = f;
+	}
+
 	virtual void applyTheme (BStyles::Theme& theme) override {applyTheme (theme, name_);}
 
 	virtual void applyTheme (BStyles::Theme& theme, const std::string& name) override
@@ -122,6 +143,7 @@ public:
 
 protected:
 	std::array<BWidgets::Widget*, NR_SLOTS> options;
+	double zoom_;
 };
 
 #endif /* OPTIONWIDGET_HPP_ */
