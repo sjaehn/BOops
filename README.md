@@ -310,6 +310,7 @@ by the steps parameter. Use mix for the phaser depth. You can add a stereo phase
 * Show slot index and effect name for selected slot
 * Enable effect panning
 * Added feedback dial to delay effect
+* Messaging system activated
 * Implement effects
   * Surprise box
   * Jumble
@@ -341,7 +342,6 @@ by the steps parameter. Use mix for the phaser depth. You can add a stereo phase
 * Implement effects
   * Pitch (?)
   * Tape start (?)
-* Messaging system
 * Enable GUI scaling
 * Show waveform
 * Optionally load a sample (?)

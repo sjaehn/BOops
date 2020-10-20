@@ -28,9 +28,10 @@ enum MessageNr
 {
 	NO_MSG		= 0,
 	JACK_STOP_MSG	= 1,
-	MAX_MSG		= 1
+	OTHER_MSG	= 2,
+	MAX_MSG		= 2
 };
 
-const std::array<const std::string, MAX_MSG + 1> messageStrings = {{"", "Msg: Jack transport off or halted. Plugin halted."}};
+const std::array<const std::string, MAX_MSG + 1> messageStrings = {{"", "Msg: Jack transport off or halted. Plugin halted.", "Msg:"}};
 
 #endif /* MESSAGEDEFINITIONS_HPP_*/
