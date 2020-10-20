@@ -110,7 +110,7 @@ BNoname01GUI::BNoname01GUI (const char *bundle_path, const LV2_Feature *const *f
 		slots[i].upPad = PadButton (40, 0, 20, 24, "pad0", UPSYMBOL);
 		slots[i].downPad = PadButton (60, 0, 20, 24, "pad0", DOWNSYMBOL);
 		slots[i].effectPad = IconPadButton (80, 0, 160, 24, "pad0", pluginPath + "inc/Menu.png", "");
-		slots[i].effectsListbox = BWidgets::ListBox (80, 24, 160, 160, "listbox", BItems::ItemList (BNONAME01FXNAMES));
+		slots[i].effectsListbox = BWidgets::ListBox (80, 24, 160, 160, "menu/listbox", BItems::ItemList (BNONAME01FXNAMES));
 		slots[i].playPad = PadToggleButton (240, 0, 20, 24, "pad0", PLAYSYMBOL);
 	}
 
@@ -678,6 +678,7 @@ void BNoname01GUI::applyTheme (BStyles::Theme& theme)
 		s.upPad.applyTheme (theme);
 		s.downPad.applyTheme (theme);
 		s.effectPad.applyTheme (theme);
+		s.effectsListbox.applyTheme (theme);
 		s.playPad.applyTheme (theme);
 	};
 
