@@ -32,7 +32,7 @@ public:
 	OptionChopper () : OptionChopper (0.0, 0.0, 0.0, 0.0, "widget") {}
 	OptionChopper (const double x, const double y, const double width, const double height, const std::string& name) :
 		OptionWidget (x, y, width, height, name),
-		stepsLabel (90, 90, 80, 20, "ctlabel", "Nr chops"),
+		stepsLabel (0, 90, 80, 20, "ctlabel", "Nr chops"),
 		smoothLabel (90, 90, 60, 20, "ctlabel", "Smooth"),
 		chopLabel (170, 90, 220, 20, "ctlabel", "Chops"),
 		randLabel (410, 90, 60, 20, "ctlabel", "Random")
