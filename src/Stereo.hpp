@@ -108,18 +108,9 @@ struct Stereo
 		};
 	}
 
-	Stereo mix (const Stereo& s1, const float f)
-	{
-		*this =  BUtilities::mix (*this, s1, f);
-		return *this;
-	}
+	Stereo mix (const Stereo& s1, const float f) {return *this = BUtilities::mix (*this, s1, f);}
 
-	Stereo mix (const Stereo& s1, const Stereo& f)
-	{
-		left =  BUtilities::mix (left, s1.left, f.left);
-		right = BUtilities::mix (right, s1.right, f.right);
-		return *this;
-	}
+	Stereo mix (const Stereo& s1, const Stereo& f) {return *this = {BUtilities::mix (left, s1.left, f.left), BUtilities::mix (right, s1.right, f.right)};}
 };
 
 #endif /* PAD_HPP_ */

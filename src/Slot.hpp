@@ -41,12 +41,12 @@ struct Slot
 
 	Slot& operator= (const Slot& that);
 	Fx* newFx (const BNoname01EffectsIndex effect);
-	int getStart () const;
-	int getStart (const double position) const;
-	bool isPad (const double position) const;
-	void start (const double position);
-	Stereo play (const double position);
-	void end ();
+	int getStart () const {return (fx ? fx->getStart () : -1);}
+	int getStart (const double position) const {return (fx ? fx->getStart (position) : -1);}
+	bool isPad (const double position) const {return (fx && fx->isPad (position));}
+	void start (const double position)  {if (fx) fx->start (position);}
+	Stereo play (const double position) {return (fx && buffer ? BUtilities::mix<Stereo> ((*buffer)[0], fx->play (position), mix) : Stereo ());}
+	void end () {if (fx) fx->end ();}
 
 	BNoname01* plugin;
 	BNoname01EffectsIndex effect;

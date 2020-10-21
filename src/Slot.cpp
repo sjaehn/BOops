@@ -178,23 +178,3 @@ Fx* Slot::newFx (const BNoname01EffectsIndex effect)
 
 	return fx;
 }
-
-int Slot::getStart () const {return (fx ? fx->getStart () : -1);}
-
-int Slot::getStart (const double position) const {return (fx ? fx->getStart (position) : -1);}
-
-bool Slot::isPad (const double position) const {return (fx ? fx->isPad (position) : false);}
-
-void Slot::start (const double position) {if (fx) fx->start (position);}
-
-Stereo Slot::play (const double position)
-{
-	return
-	(
-		fx && buffer ?
-		BUtilities::mix<Stereo> ((*buffer)[0], fx->play (position), mix) :
-		Stereo ()
-	);
-}
-
-void Slot::end () {if (fx) fx->end ();}
