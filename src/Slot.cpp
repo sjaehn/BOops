@@ -152,22 +152,22 @@ Fx* Slot::newFx (const BNoname01EffectsIndex effect)
 		case FX_DISTORTION:	fx = new FxDistortion (&buffer, params, pads);
 					break;
 
-		case FX_FILTER:		fx = new FxFilter (&buffer, params, pads, plugin ? plugin->rate : 48000);
+		case FX_FILTER:		fx = new FxFilter (&buffer, params, pads, plugin ? plugin->host.rate : 48000);
 					break;
 
 		case FX_NOISE:		fx = new FxNoise (&buffer, params, pads);
 					break;
 
-		case FX_CRACKLES:	fx = new FxCrackles (&buffer, params, pads, &framesPerStep, plugin ? plugin->rate : 48000);
+		case FX_CRACKLES:	fx = new FxCrackles (&buffer, params, pads, &framesPerStep, plugin ? plugin->host.rate : 48000);
 					break;
 
 		case FX_STUTTER:	fx = new FxStutter (&buffer, params, pads, &framesPerStep);
 					break;
 
-		case FX_FLANGER:	fx = new FxFlanger (&buffer, params, pads, &framesPerStep, plugin ? plugin->rate : 48000);
+		case FX_FLANGER:	fx = new FxFlanger (&buffer, params, pads, &framesPerStep, plugin ? plugin->host.rate : 48000);
 					break;
 
-		case FX_PHASER:		fx = new FxPhaser (&buffer, params, pads, &framesPerStep, plugin ? plugin->rate : 48000);
+		case FX_PHASER:		fx = new FxPhaser (&buffer, params, pads, &framesPerStep, plugin ? plugin->host.rate : 48000);
 					break;
 
 		case FX_INVALID:	fx = nullptr;

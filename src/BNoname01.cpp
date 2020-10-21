@@ -35,10 +35,8 @@ inline double floorfrac (const double value) {return value - floor (value);}
 
 
 BNoname01::BNoname01 (double samplerate, const LV2_Feature* const* features) :
-	Transport {samplerate, 120.0f, 1.0f, 0ul, 0.0f, 4.0f, 4},
 	map(NULL), workerSchedule (NULL), urids (),
-	host {samplerate, 120.0f, 1.0f, 0ul, 0.0f, 4.0f, 4},
-	position(0), offset(0), refFrame(0),
+	host {samplerate, 120.0f, 1.0f, 0ul, 0.0f, 4.0f, 4}, positions (),
 	controlPort(NULL), notifyPort(NULL),
 	audioInput1(NULL), audioInput2(NULL), audioOutput1(NULL), audioOutput2(NULL),
 	new_controllers {NULL}, globalControllers {0},
@@ -73,7 +71,11 @@ BNoname01::BNoname01 (double samplerate, const LV2_Feature* const* features) :
 	lv2_atom_forge_init (&forge, map);
 
 	// Initialize slots
-	std::fill (slots, slots + NR_SLOTS, Slot (this, FX_NONE, true, 0.0f, 1.0f, nullptr, nullptr, 16, 0.25 * rate));
+	std::fill (slots, slots + NR_SLOTS, Slot (this, FX_NONE, true, 0.0f, 1.0f, nullptr, nullptr, 16, 0.25 * samplerate));
+
+	// Initialize positions
+	positions.clear();
+	positions.push_back ({0.0, 0.0, 0, {samplerate, 120.0f, 1.0f, 0ul, 0.0f, 4.0f, 4}, 1.0});
 }
 
 BNoname01::~BNoname01 () {}
@@ -109,49 +111,54 @@ void BNoname01::connect_port(uint32_t port, void *data)
 	}
 }
 
-double BNoname01::getPositionFromBeats (double beats)
+double BNoname01::getPositionFromBeats (const Transport& transport, const double beats)
 {
 	if (globalControllers[BASE_VALUE] == 0.0) return 0.0;
 
 	switch (int (globalControllers[BASE]))
 	{
-		case SECONDS: 	return (bpm ? beats / (globalControllers[BASE_VALUE] * (bpm / 60.0)) : 0.0);
+		case SECONDS: 	return (transport.bpm ? beats / (globalControllers[BASE_VALUE] * (transport.bpm / 60.0)) : 0.0);
 		case BEATS:	return beats / globalControllers[BASE_VALUE];
-		case BARS:	return (beatsPerBar ? beats / (globalControllers[BASE_VALUE] * beatsPerBar) : 0.0);
+		case BARS:	return (transport.beatsPerBar ? beats / (globalControllers[BASE_VALUE] * transport.beatsPerBar) : 0.0);
 		default:	return 0.0;
 	}
 }
 
-double BNoname01::getPositionFromFrames (uint64_t frames)
+double BNoname01::getPositionFromFrames (const Transport& transport, const uint64_t frames)
 {
-	if ((globalControllers[BASE_VALUE] == 0.0) || (rate == 0)) return 0.0;
+	if ((globalControllers[BASE_VALUE] == 0.0) || (transport.rate == 0)) return 0.0;
 
 	switch (int (globalControllers[BASE]))
 	{
-		case SECONDS: 	return frames * (1.0 / rate) / globalControllers[BASE_VALUE] ;
-		case BEATS:	return (bpm ? frames * (speed / (rate / (bpm / 60))) / globalControllers[BASE_VALUE] : 0.0);
-		case BARS:	return (bpm && beatsPerBar ? frames * (speed / (rate / (bpm / 60))) / (globalControllers[BASE_VALUE] * beatsPerBar) : 0.0);
+		case SECONDS: 	return frames * (1.0 / transport.rate) / globalControllers[BASE_VALUE] ;
+		case BEATS:	return (transport.bpm ? frames * (transport.speed / (transport.rate / (transport.bpm / 60))) / globalControllers[BASE_VALUE] : 0.0);
+		case BARS:	return
+				(
+					transport.bpm && transport.beatsPerBar ?
+					frames * (transport.speed / (transport.rate / (transport.bpm / 60))) / (globalControllers[BASE_VALUE] * transport.beatsPerBar) :
+					0.0
+				);
 		default:	return 0.0;
 	}
 }
 
-double BNoname01::getPositionFromSeconds (double seconds)
+double BNoname01::getPositionFromSeconds (const Transport& transport, const double seconds)
 {
 	if (globalControllers[BASE_VALUE] == 0.0) return 0.0;
 
 	switch (int (globalControllers[BASE]))
 	{
 		case SECONDS :	return seconds / globalControllers[BASE_VALUE];
-		case BEATS:	return seconds * (bpm / 60.0) / globalControllers[BASE_VALUE];
-		case BARS:	return (beatsPerBar ? seconds * (bpm / 60.0 / beatsPerBar) / globalControllers[BASE_VALUE] : 0.0);
+		case BEATS:	return seconds * (transport.bpm / 60.0) / globalControllers[BASE_VALUE];
+		case BARS:	return (transport.beatsPerBar ? seconds * (transport.bpm / 60.0 / transport.beatsPerBar) / globalControllers[BASE_VALUE] : 0.0);
 		default:	return 0;
 	}
 }
 
-double BNoname01::getFramesPerStep ()
+double BNoname01::getFramesPerStep (const Transport& transport)
 {
-	double bps = (globalControllers[PLAY_MODE] == 0 ? globalControllers[AUTOPLAY_BPM] : this->bpm) / 60.0;
-	double bpB = (globalControllers[PLAY_MODE] == 0 ? globalControllers[AUTOPLAY_BPB] : beatsPerBar);
+	double bps = (globalControllers[PLAY_MODE] == 0 ? globalControllers[AUTOPLAY_BPM] : transport.bpm) / 60.0;
+	double bpB = (globalControllers[PLAY_MODE] == 0 ? globalControllers[AUTOPLAY_BPB] :transport. beatsPerBar);
 	double s =
 	(
 		globalControllers[BASE] == 0 ?
@@ -162,7 +169,7 @@ double BNoname01::getFramesPerStep ()
 			globalControllers[BASE_VALUE] * bpB / bps
 		)
 	);
-	return rate * s / globalControllers[STEPS];
+	return transport.rate * s / globalControllers[STEPS];
 }
 
 void BNoname01::run (uint32_t n_samples)
@@ -187,13 +194,18 @@ void BNoname01::run (uint32_t n_samples)
 
 			if (i == PLAY_MODE)
 			{
+				Position& np = positions.back();
+
 				if (newValue == AUTOPLAY)
 				{
-					bpm = globalControllers[AUTOPLAY_BPM];
-					speed = 1.0;
-					beatsPerBar = globalControllers[AUTOPLAY_BPB];
+
+					np.transport.bpm = globalControllers[AUTOPLAY_BPM];
+					np.transport.speed = 1.0;
+					np.transport.beatsPerBar = globalControllers[AUTOPLAY_BPB];
 				}
-				else Transport::operator= (host);
+
+				else np.transport = host;
+
 				stepsChanged ();
 			}
 
@@ -205,13 +217,13 @@ void BNoname01::run (uint32_t n_samples)
 
 			else if (i == AUTOPLAY_BPM)
 			{
-				if (globalControllers[PLAY_MODE] == AUTOPLAY) bpm = globalControllers[AUTOPLAY_BPM];
+				if (globalControllers[PLAY_MODE] == AUTOPLAY) positions.back().transport.bpm = globalControllers[AUTOPLAY_BPM];
 				stepsChanged ();
 			}
 
 			else if (i == AUTOPLAY_BPB)
 			{
-				if (globalControllers[PLAY_MODE] == AUTOPLAY) beatsPerBar = globalControllers[AUTOPLAY_BPB];
+				if (globalControllers[PLAY_MODE] == AUTOPLAY) positions.back().transport.beatsPerBar = globalControllers[AUTOPLAY_BPB];
 				stepsChanged ();
 			}
 
@@ -440,10 +452,11 @@ void BNoname01::run (uint32_t n_samples)
 						{
 
 							// Started ?
-							if (speed == 0)
-							{
-								// TODO Clear all audio buffers
-							}
+							// TODO Clear all audio buffers
+							// if (speed == 0)
+							// {
+							//
+							// }
 
 							// Stopped ?
 							if (nspeed == 0)
@@ -475,15 +488,19 @@ void BNoname01::run (uint32_t n_samples)
 
 				if (scheduleUpdatePosition)
 				{
-					// Hard set new position if new data received
+					// Fade if new data received
 					if (globalControllers[PLAY_MODE] != AUTOPLAY)
 					{
-						Transport::operator= (host);
-						double pos = getPositionFromBeats (barBeat + beatsPerBar * bar);
-						double npos = floorfrac (pos - offset);
-						if (int (npos * globalControllers[STEPS]) != int (position * globalControllers[STEPS])) scheduleNotifyStatus = true;
-						position = npos;
-						refFrame = ev->time.frames;
+						Position np = positions.back();
+						np.fader = 0.0;
+						np.transport = host;
+						double pos = getPositionFromBeats (host, host.barBeat + host.beatsPerBar * host.bar);
+						double npos = floorfrac (pos - np.offset);
+						np.position = npos;
+						np.refFrame = ev->time.frames;
+						if (int (npos * globalControllers[STEPS]) != int (positions.back().position * globalControllers[STEPS])) scheduleNotifyStatus = true;
+
+						positions.push_back (np);
 					}
 				}
 
@@ -564,11 +581,28 @@ void BNoname01::run (uint32_t n_samples)
 	if (last_t < n_samples) play (last_t, n_samples);
 
 	// Update position in case of no new barBeat submitted on next call
-	double relpos = getPositionFromFrames (n_samples - refFrame);	// Position relative to reference frame
-	double npos = floorfrac (position + relpos);
-	if (int (npos * globalControllers[STEPS]) != int (position * globalControllers[STEPS])) scheduleNotifyStatus = true;
-	position = npos;
-	refFrame = 0;
+	for (unsigned int i = 0; i < positions.size; ++i)
+	{
+		uint64_t diff = n_samples - positions[i].refFrame;
+		double relpos = getPositionFromFrames (positions[i].transport, diff);	// Position relative to reference frame
+		double npos = floorfrac (positions[i].position + relpos);
+		if (int (npos * globalControllers[STEPS]) != int (positions[i].position * globalControllers[STEPS])) scheduleNotifyStatus = true;
+		positions[i].position = npos;
+		positions[i].refFrame = 0;
+
+		if (i < positions.size - 1) positions[i].fader -= diff / (FADINGTIME * positions[i].transport.rate);
+		else if (positions[i].fader + diff / (FADINGTIME * positions.back().transport.rate) < 1.0) positions[i].fader += diff / (0.01 * positions.back().transport.rate);
+		else positions[i].fader = 1.0;
+	}
+
+	// Cleanup position data
+	for (Position** p = positions.begin(); (p < positions.end()) && (positions.size > 1); )
+	{
+		if ((**p).fader <= 0) p = positions.erase (p);
+		else ++p;
+	}
+
+	// TODO: At least one free positions
 
 	// Send collected data to GUI
 	if (ui_on)
@@ -583,7 +617,7 @@ void BNoname01::run (uint32_t n_samples)
 
 void BNoname01::stepsChanged ()
 {
-	double fpst = getFramesPerStep ();
+	double fpst = getFramesPerStep (positions.back().transport);
 	for (int i = 0; i < NR_SLOTS; ++i) slots[i].framesPerStep = fpst;
 
 	if (!scheduleResizeBuffers)
@@ -650,17 +684,18 @@ void BNoname01::notifyMessageToGui()
 
 void BNoname01::notifyStatusToGui()
 {
-	double pos = (globalControllers[PLAY] != PLAY_OFF ? floorfrac (position) * globalControllers[STEPS] : -1);
+	Position& p = positions.back();
+	double pos = (globalControllers[PLAY] != PLAY_OFF ? floorfrac (p.position) * globalControllers[STEPS] : -1);
 	// Send notifications
 	LV2_Atom_Forge_Frame frame;
 	lv2_atom_forge_frame_time(&forge, 0);
 	lv2_atom_forge_object(&forge, &frame, 0, urids.bNoname01_statusEvent);
 	lv2_atom_forge_key(&forge, urids.time_beatsPerBar);
-	lv2_atom_forge_float(&forge, beatsPerBar);
+	lv2_atom_forge_float(&forge, p.transport.beatsPerBar);
 	lv2_atom_forge_key(&forge, urids.time_beatUnit);
-	lv2_atom_forge_int(&forge, beatUnit);
+	lv2_atom_forge_int(&forge, p.transport.beatUnit);
 	lv2_atom_forge_key(&forge, urids.time_beatsPerMinute);
-	lv2_atom_forge_float(&forge, bpm);
+	lv2_atom_forge_float(&forge, p.transport.bpm);
 	lv2_atom_forge_key(&forge, urids.bNoname01_position);
 	lv2_atom_forge_double(&forge, pos);
 	lv2_atom_forge_pop(&forge, &frame);
@@ -671,14 +706,6 @@ void BNoname01::notifyStatusToGui()
 void BNoname01::play (uint32_t start, uint32_t end)
 {
 	if (end < start) return;
-
-	// Return if halted or bpm == 0
-	if (((speed == 0.0f) && (globalControllers[BASE] != SECONDS)) || (bpm < 1.0f))
-	{
-		memset(&audioOutput1[start], 0, (end - start) * sizeof(float));
-		memset(&audioOutput2[start], 0, (end - start) * sizeof(float));
-		return;
-	}
 
 	if (globalControllers[PLAY] == PLAY_OFF)
 	{
@@ -704,44 +731,67 @@ void BNoname01::play (uint32_t start, uint32_t end)
 
 	for (uint32_t i = start; i < end; ++i)
 	{
-		// Interpolate position within the loop
-		double relpos = getPositionFromFrames (i - refFrame);	// Position relative to reference frame
-		double pos = floorfrac (position + relpos);		// 0..1 position sequence
-		double step = pos * globalControllers[STEPS];
-		int iStep = LIMIT (step, 0, globalControllers[STEPS] - 1);
+		double sumFaders = 0;
 
-		Stereo input = Stereo {audioInput1[i], audioInput2[i]};
-		Stereo output = input;
-
-		for (int j = 0; j < NR_SLOTS; ++j)
+		for (unsigned int j = 0; j < positions.size; ++j)
 		{
-			input = output;
-			Slot& iSlot = slots[j];
-			iSlot.buffer->push_front (input);
-			if ((iSlot.effect == FX_INVALID) || (iSlot.effect == FX_NONE)) break;
+			Position& p = positions[j];
+			double fader =
+			(
+				j < positions.size - 1 ?
+				p.fader - (j - p.refFrame) / (FADINGTIME * p.transport.rate) :
+				p.fader + (j - p.refFrame) / (FADINGTIME * p.transport.rate)
+			);
 
-			// Next step ?
-			if (oStep != iStep)
+			fader = LIMIT (fader, 0.0, 1.0);
+
+			Stereo input = Stereo {audioInput1[i], audioInput2[i]};
+			Stereo output = input;
+
+			if (((p.transport.speed == 0.0f) && (globalControllers[BASE] != SECONDS)) || (p.transport.bpm < 1.0f)) output = Stereo();
+			else
 			{
-				// Old pad ended?
-				if (iSlot.getStart (oStep) != iSlot.getStart (iStep))
-				{
-					// Stop old pad
-					iSlot.end ();
+				// Interpolate position within the loop
+				double relpos = getPositionFromFrames (p.transport, i - p.refFrame);	// Position relative to reference frame
+				double pos = floorfrac (p.position + relpos);		// 0..1 position sequence
+				double step = pos * globalControllers[STEPS];
+				int iStep = LIMIT (step, 0, globalControllers[STEPS] - 1);
 
-					// Start new pad (if set)
-					iSlot.start (step);
+				for (int j = 0; j < NR_SLOTS; ++j)
+				{
+					input = output;
+					Slot& iSlot = slots[j];
+					iSlot.buffer->push_front (input);
+					if ((iSlot.effect == FX_INVALID) || (iSlot.effect == FX_NONE)) break;
+
+					// Next step ?
+					if (oStep != iStep)
+					{
+						// Old pad ended?
+						if (iSlot.getStart (oStep) != iSlot.getStart (iStep))
+						{
+							// Stop old pad
+							iSlot.end ();
+
+							// Start new pad (if set)
+							iSlot.start (step);
+						}
+					}
+
+					// Play music :-)
+					output = (iSlot.params[SLOTS_PLAY] ? iSlot.play (step) : input);
+					iSlot.mix = 1.0f;
 				}
+
+				oStep = iStep;
 			}
 
-			// Play music :-)
-			output = (iSlot.params[SLOTS_PLAY] ? iSlot.play (step) : input);
-			iSlot.mix = 1.0f;
+			audioOutput1[i] = (sumFaders * audioOutput1[i] + fader * output.left) / (sumFaders + fader);
+			audioOutput2[i] = (sumFaders * audioOutput2[i] + fader * output.right) / (sumFaders + fader);;
+
+			sumFaders += fader;
 		}
 
-		oStep = iStep;
-		audioOutput1[i] = output.left;
-		audioOutput2[i] = output.right;
 	}
 }
 
@@ -1036,7 +1086,7 @@ LV2_Worker_Status BNoname01::work (LV2_Worker_Respond_Function respond, LV2_Work
 	else if (atom->type == urids.bNoname01_allocateBuffers)
 	{
 		//Required buffer size
-		double fpst = getFramesPerStep ();
+		double fpst = getFramesPerStep (positions.back().transport);
 		size_t bSize = slots[0].buffer->size();
 
 		if ((bSize < globalControllers[STEPS] * fpst) || (bSize > 2.0 * globalControllers[STEPS] * fpst))

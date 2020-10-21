@@ -1,7 +1,7 @@
-/* B.Shapr
- * Beat / envelope shaper LV2 plugin
+/* B.Noname01
+ * Glitch effect sequencer LV2 plugin
  *
- * Copyright (C) 2019 by Sven Jähnichen
+ * Copyright (C) 219, 2020 by Sven Jähnichen
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

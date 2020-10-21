@@ -36,6 +36,7 @@
 #include "Pad.hpp"
 #include "Slot.hpp"
 #include "Message.hpp"
+#include "StaticArrayList.hpp"
 
 struct Transport
 {
@@ -48,7 +49,16 @@ struct Transport
 	int beatUnit;
 };
 
-class BNoname01 : public Transport
+struct Position
+{
+	double position;
+	double offset;
+	uint64_t refFrame;
+	Transport transport;
+	double fader;
+};
+
+class BNoname01
 {
 public:
 	BNoname01 (double samplerate, const LV2_Feature* const* features);
@@ -70,18 +80,16 @@ private:
 	void notifyShapeToGui (const int slot);
 	void notifyMessageToGui ();
 	void notifyStatusToGui ();
-	double getPositionFromBeats (double beats);
-	double getPositionFromFrames (uint64_t frames);
-	double getPositionFromSeconds (double seconds);
-	double getFramesPerStep ();
+	double getPositionFromBeats (const Transport& transport, const double beats);
+	double getPositionFromFrames (const Transport& transport, const uint64_t frames);
+	double getPositionFromSeconds (const Transport& transport, const double seconds);
+	double getFramesPerStep (const Transport& transport);
 
 	BNoname01URIDs urids;
 
-	Transport host;
-
-	double position;
-	double offset;
-	uint64_t refFrame;
+public:	Transport host;
+protected:
+	StaticArrayList<Position, MAXFADERS> positions;
 
 	// Atom ports
 	LV2_Atom_Sequence* controlPort;
