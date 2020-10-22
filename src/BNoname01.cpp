@@ -757,10 +757,10 @@ void BNoname01::play (uint32_t start, uint32_t end)
 				double step = pos * globalControllers[STEPS];
 				int iStep = LIMIT (step, 0, globalControllers[STEPS] - 1);
 
-				for (int j = 0; j < NR_SLOTS; ++j)
+				for (int k = 0; k < NR_SLOTS; ++k)
 				{
 					input = output;
-					Slot& iSlot = slots[j];
+					Slot& iSlot = slots[k];
 					iSlot.buffer->push_front (input);
 					if ((iSlot.effect == FX_INVALID) || (iSlot.effect == FX_NONE)) break;
 
@@ -768,13 +768,14 @@ void BNoname01::play (uint32_t start, uint32_t end)
 					if (oStep != iStep)
 					{
 						// Old pad ended?
-						if (iSlot.getStart (oStep) != iSlot.getStart (iStep))
+						const int iStart = iSlot.getStart (iStep);
+						if (iSlot.getStart (oStep) != iStart)
 						{
 							// Stop old pad
 							iSlot.end ();
 
 							// Start new pad (if set)
-							iSlot.start (step);
+							if (iStart >= 0) iSlot.start (step);
 						}
 					}
 

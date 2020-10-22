@@ -57,7 +57,11 @@ public:
 
 		for (int i = position; i >= 0; --i)
 		{
-			if ((pads[i].gate > 0) && (pads[i].mix > 0)) return i;
+			if ((pads[i].gate > 0) && (pads[i].mix > 0))
+			{
+				if (i + pads[i].size > position) return i;
+				else return -1;
+			}
 		}
 
 		return -1;
@@ -65,16 +69,13 @@ public:
 
 	bool isPad (const double position) const
 	{
-		if (!pads) return false;
-
-		int start = getStart (position);
-		return ((start >= 0) && (start + pads[start].size > position));
+		return (getStart (position) >= 0);
 	}
 
 	virtual void start (const double position)
 	{
 		startPos = getStart (position);
-		playing = (isPad (position) && (unidist (rnd) < (pads ? pads[startPos >= 0 ? startPos : 0].gate : 0)));
+		playing = (unidist (rnd) < (pads ? pads[startPos >= 0 ? startPos : 0].gate : 0));
 		panf = (Stereo {1.0, 1.0}).pan ((params ? params[SLOTS_PAN] : 0.0));
 		unpanf = Stereo {1.0, 1.0} - panf;
 	}
@@ -104,7 +105,7 @@ protected:
 		if ((position < padStart) || (position >= padStart + padSize)) return 0;
 
 		float adr = params[SLOTS_ATTACK] + params[SLOTS_DECAY] + params[SLOTS_RELEASE];
-		
+
 		if (adr < 1.0f) adr = 1.0f;
 
 		if (position < padStart + params[SLOTS_ATTACK] / adr) return (position - padStart) / (params[SLOTS_ATTACK] / adr);

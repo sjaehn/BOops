@@ -332,6 +332,7 @@ by the steps parameter. Use mix for the phaser depth. You can add a stereo phase
   * Fix update pads in DSP if slot (and thus pads) in GUI changed (insert, delete, up, down)
   * Enable dragging of sliders
   * Enable reset
+  * Fix first step not played
 
 
 ## TODO
