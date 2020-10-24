@@ -486,9 +486,9 @@ void BNoname01::run (uint32_t n_samples)
 					scheduleUpdatePosition = true;
 				}
 
+				// Bar or beat position data changed in host or midi controlled mode: fade
 				if (scheduleUpdatePosition)
 				{
-					// Fade if new data received
 					if (globalControllers[PLAY_MODE] != AUTOPLAY)
 					{
 						Position np = positions.back();
@@ -498,11 +498,18 @@ void BNoname01::run (uint32_t n_samples)
 						double npos = floorfrac (pos - np.offset);
 						np.position = npos;
 						np.refFrame = ev->time.frames;
-						if (int (npos * globalControllers[STEPS]) != int (positions.back().position * globalControllers[STEPS])) scheduleNotifyStatus = true;
+						if (int (npos * globalControllers[STEPS]) != int (positions.back().position * globalControllers[STEPS]))
+						{
+							scheduleNotifyStatus = true;
+							scheduleStepsChanged = true;
+						}
 
 						positions.push_back (np);
 					}
 				}
+
+				// Other data changed in host or midi controlled mode: copy
+				else if (globalControllers[PLAY_MODE] != AUTOPLAY) positions.back().transport = host;
 
 				if (scheduleStepsChanged && (globalControllers[PLAY_MODE] != AUTOPLAY)) stepsChanged();
 			}
