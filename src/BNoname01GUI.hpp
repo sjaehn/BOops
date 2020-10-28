@@ -34,6 +34,8 @@
 #include "BWidgets/Window.hpp"
 #include "BWidgets/Label.hpp"
 #include "BWidgets/PopupListBox.hpp"
+#include "BWidgets/HPianoRoll.hpp"
+#include "BWidgets/TextButton.hpp"
 #include "screen.h"
 
 #include "HaloButton.hpp"
@@ -90,6 +92,7 @@ public:
 	void sendSlot (const int slot);
 	void sendPad (const int slot, const int step);
 	void sendShape (const int slot);
+	void sendTransportGateKeys();
 	virtual void onConfigureRequest (BEvents::ExposeEvent* event) override;
 	void applyTheme (BStyles::Theme& theme) override;
 
@@ -113,6 +116,7 @@ private:
 	static void padsPressedCallback (BEvents::Event* event);
 	static void padsScrolledCallback (BEvents::Event* event);
 	static void padsFocusedCallback (BEvents::Event* event);
+	static void transportGateButtonClickedCallback (BEvents::Event* event);
 	virtual void resize () override;
 	int getSlotsSize () const;
 	void clearSlot (int slot);
@@ -200,7 +204,7 @@ private:
 	HaloButton stopButton;
 	BWidgets::PopupListBox playModeListBox;
 	BWidgets::PopupListBox onMidiListBox;
-	MidiToggleButton midiButton;
+	BWidgets::HPianoRoll transportGateButton;
 	BWidgets::Label autoplayBpmLabel;
 	HSlider autoplayBpmSlider;
 	BWidgets::Label autoplayBpbLabel;
@@ -208,6 +212,13 @@ private:
 	ValueSelect sequenceSizeSelect;
 	BWidgets::PopupListBox sequenceBaseListBox;
 	BWidgets::PopupListBox stepsListBox;
+
+	BWidgets::Widget transportGateContainer;
+	BWidgets::Label transportGateLabel;
+	BWidgets::HPianoRoll transportGatePiano;
+	BWidgets::TextButton transportGateOkButton;
+	BWidgets::TextButton transportGateCancelButton;
+	std::vector<bool> transportGateKeys;
 
 	struct Slot
 	{

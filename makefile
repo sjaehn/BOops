@@ -56,6 +56,8 @@ GUI_INCL = \
 	src/ValueSelect.cpp \
 	src/DownClick.cpp \
 	src/UpClick.cpp \
+	src/BWidgets/HPianoRoll.cpp \
+	src/BWidgets/PianoWidget.cpp \
 	src/BWidgets/MessageBox.cpp \
 	src/BWidgets/TextButton.cpp \
 	src/BWidgets/DrawingSurface.cpp \

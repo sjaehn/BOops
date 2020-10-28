@@ -67,6 +67,8 @@ struct BNoname01URIDs
 	LV2_URID bNoname01_installFx;
 	LV2_URID bNoname01_freeFx;
 	LV2_URID bNoname01_statePad;
+	LV2_URID bNoname01_transportGateKeyEvent;
+	LV2_URID bNoname01_transportGateKeys;
 };
 
 #endif /* URIDS_HPP_ */

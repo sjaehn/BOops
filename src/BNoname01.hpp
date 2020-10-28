@@ -56,6 +56,7 @@ struct Position
 	uint64_t refFrame;
 	Transport transport;
 	double fader;
+	bool playing;
 };
 
 class BNoname01
@@ -75,11 +76,12 @@ public:
 
 private:
 	void play(uint32_t start, uint32_t end);
-	void stepsChanged ();
+	void resizeSteps ();
 	void notifySlotToGui (const int slot);
 	void notifyShapeToGui (const int slot);
 	void notifyMessageToGui ();
 	void notifyStatusToGui ();
+	void notifyTransportGateKeysToGui ();
 	double getPositionFromBeats (const Transport& transport, const double beats);
 	double getPositionFromFrames (const Transport& transport, const uint64_t frames);
 	double getPositionFromSeconds (const Transport& transport, const double seconds);
@@ -90,6 +92,7 @@ private:
 public:	Transport host;
 protected:
 	StaticArrayList<Position, MAXFADERS> positions;
+	bool transportGateKeys[NR_PIANO_KEYS];
 
 	// Atom ports
 	LV2_Atom_Sequence* controlPort;
@@ -119,11 +122,18 @@ protected:
 	bool scheduleNotifyStatus;
 	bool scheduleResizeBuffers;
 	bool scheduleSetFx[NR_SLOTS];
+	bool scheduleNotifyTransportGateKeys;
 
 	struct Atom_BufferList
 	{
 		LV2_Atom atom;
 		RingBuffer<Stereo>* buffers[NR_SLOTS];
+	};
+
+	struct AtomKeys
+	{
+		LV2_Atom_Vector_Body body;
+		int keys[NR_PIANO_KEYS];
 	};
 
 	struct Atom_Fx

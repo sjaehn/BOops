@@ -43,6 +43,7 @@
 		atom:bufferType atom:Sequence ;
 		atom:supports time:Position ;
 		atom:supports midi:MidiEvent ;
+		lv2:designation lv2:control ;
 		lv2:index 0 ;
 		lv2:symbol "control" ;
 		lv2:name "Control" ;
@@ -94,7 +95,7 @@
                 lv2:portProperty lv2:integer, lv2:enumeration ;
 		lv2:scalePoint [ rdfs:label "Autoplay"; rdf:value 0 ] ;
 		lv2:scalePoint [ rdfs:label "MIDI controlled"; rdf:value 1 ] ;
-		lv2:scalePoint [ rdfs:label "Host-controlled playback"; rdf:value 2 ] ;
+		lv2:scalePoint [ rdfs:label "Host-controlled"; rdf:value 2 ] ;
                 lv2:default 0 ;
                 lv2:minimum 0 ;
                 lv2:maximum 2 ;

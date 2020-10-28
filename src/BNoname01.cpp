@@ -37,13 +37,15 @@ inline double floorfrac (const double value) {return value - floor (value);}
 BNoname01::BNoname01 (double samplerate, const LV2_Feature* const* features) :
 	map(NULL), workerSchedule (NULL), urids (),
 	host {samplerate, 120.0f, 1.0f, 0ul, 0.0f, 4.0f, 4}, positions (),
+	transportGateKeys {false},
 	controlPort(NULL), notifyPort(NULL),
 	audioInput1(NULL), audioInput2(NULL), audioOutput1(NULL), audioOutput2(NULL),
 	new_controllers {NULL}, globalControllers {0},
 	forge (), notify_frame (),
 	oStep (0), message (),
 	ui_on(false), scheduleNotifySlot {false},
-	scheduleNotifyStatus (false), scheduleResizeBuffers (false), scheduleSetFx {false}
+	scheduleNotifyStatus (false), scheduleResizeBuffers (false), scheduleSetFx {false},
+	scheduleNotifyTransportGateKeys (false)
 
 {
 	//Scan host features for URID map
@@ -75,7 +77,7 @@ BNoname01::BNoname01 (double samplerate, const LV2_Feature* const* features) :
 
 	// Initialize positions
 	positions.clear();
-	positions.push_back ({0.0, 0.0, 0, {samplerate, 120.0f, 1.0f, 0ul, 0.0f, 4.0f, 4}, 1.0});
+	positions.push_back ({0.0, 0.0, 0, {samplerate, 120.0f, 1.0f, 0ul, 0.0f, 4.0f, 4}, 1.0, true});
 }
 
 BNoname01::~BNoname01 () {}
@@ -194,41 +196,52 @@ void BNoname01::run (uint32_t n_samples)
 
 			if (i == PLAY_MODE)
 			{
-				Position& np = positions.back();
+				Position np = positions.back();
 
-				if (newValue == AUTOPLAY)
+				switch (int (newValue))
 				{
+					case AUTOPLAY:
+						np.playing = true;
+						np.transport.bpm = globalControllers[AUTOPLAY_BPM];
+						np.transport.speed = 1.0;
+						np.transport.beatsPerBar = globalControllers[AUTOPLAY_BPB];
+						break;
 
-					np.transport.bpm = globalControllers[AUTOPLAY_BPM];
-					np.transport.speed = 1.0;
-					np.transport.beatsPerBar = globalControllers[AUTOPLAY_BPB];
+					case HOST_CONTROLLED:
+						np.playing = true;
+						np.transport = host;
+						break;
+
+					default:
+						np.playing = false;
+						np.transport = host;
 				}
 
-				else np.transport = host;
+				positions.push_back (np);
 
-				stepsChanged ();
+				resizeSteps ();
 			}
 
 			else if (i == STEPS)
 			{
 				for (int i = 0; i < NR_SLOTS; ++i) slots[i].size = newValue;
-				stepsChanged ();
+				resizeSteps ();
 			}
 
 			else if (i == AUTOPLAY_BPM)
 			{
 				if (globalControllers[PLAY_MODE] == AUTOPLAY) positions.back().transport.bpm = globalControllers[AUTOPLAY_BPM];
-				stepsChanged ();
+				resizeSteps ();
 			}
 
 			else if (i == AUTOPLAY_BPB)
 			{
 				if (globalControllers[PLAY_MODE] == AUTOPLAY) positions.back().transport.beatsPerBar = globalControllers[AUTOPLAY_BPB];
-				stepsChanged ();
+				resizeSteps ();
 			}
 
 			else if
-			((i == BASE) || (i == BASE_VALUE)) stepsChanged ();
+			((i == BASE) || (i == BASE_VALUE)) resizeSteps ();
 		}
 	}
 
@@ -274,10 +287,36 @@ void BNoname01::run (uint32_t n_samples)
 				ui_on = true;
 				std::fill (scheduleNotifySlot, scheduleNotifySlot + NR_SLOTS, true);
 				std::fill (scheduleNotifyShape, scheduleNotifyShape + NR_SLOTS, true);
+				scheduleNotifyTransportGateKeys = true;
 			}
 
 			// Process GUI off status data
 			else if (obj->body.otype == urids.bNoname01_uiOff) ui_on = false;
+
+			// Process transportGateKey data
+			else if (obj->body.otype == urids.bNoname01_transportGateKeyEvent)
+			{
+				LV2_Atom *oKeys = NULL;
+				lv2_atom_object_get (obj,
+					 	     urids.bNoname01_transportGateKeys, &oKeys,
+						     NULL);
+
+				if (oKeys && (oKeys->type == urids.atom_Vector))
+				{
+					const LV2_Atom_Vector* vec = (const LV2_Atom_Vector*) oKeys;
+					if (vec->body.child_type == urids.atom_Int)
+					{
+						const int keysize = LIMIT ((int) ((oKeys->size - sizeof(LV2_Atom_Vector_Body)) / sizeof (int)), 0, NR_PIANO_KEYS);
+						const int* keys = (int*) (&vec->body + 1);
+						std::fill (transportGateKeys, transportGateKeys + NR_PIANO_KEYS, false);
+						for (int i = 0; i < keysize; ++i)
+						{
+							int keyNr = keys[i];
+							if ((keyNr >=0) && (keyNr < NR_PIANO_KEYS)) transportGateKeys[keyNr] = true;
+						}
+					}
+				}
+			}
 
 			// Process slot pads data
 			else if (obj->body.otype == urids.bNoname01_slotEvent)
@@ -394,7 +433,7 @@ void BNoname01::run (uint32_t n_samples)
 			else if (obj->body.otype == urids.time_Position)
 			{
 				bool scheduleUpdatePosition = false;
-				bool scheduleStepsChanged = false;
+				bool scheduleResizeSteps = false;
 
 				// Update bpm, speed, position
 				LV2_Atom *oBbeat = NULL, *oBpm = NULL, *oSpeed = NULL, *oBpb = NULL, *oBu = NULL, *oBar = NULL;
@@ -421,7 +460,7 @@ void BNoname01::run (uint32_t n_samples)
 						if (nbpm < 1.0) message.setMessage (JACK_STOP_MSG);
 						else message.deleteMessage (JACK_STOP_MSG);
 
-						scheduleStepsChanged = true;
+						scheduleResizeSteps = true;
 					}
 				}
 
@@ -430,7 +469,7 @@ void BNoname01::run (uint32_t n_samples)
 				{
 					host.beatsPerBar = ((LV2_Atom_Float*)oBpb)->body;
 					scheduleNotifyStatus = true;
-					scheduleStepsChanged = true;
+					scheduleResizeSteps = true;
 				}
 
 				// BeatUnit changed?
@@ -501,7 +540,6 @@ void BNoname01::run (uint32_t n_samples)
 						if (int (npos * globalControllers[STEPS]) != int (positions.back().position * globalControllers[STEPS]))
 						{
 							scheduleNotifyStatus = true;
-							scheduleStepsChanged = true;
 						}
 
 						positions.push_back (np);
@@ -511,55 +549,68 @@ void BNoname01::run (uint32_t n_samples)
 				// Other data changed in host or midi controlled mode: copy
 				else if (globalControllers[PLAY_MODE] != AUTOPLAY) positions.back().transport = host;
 
-				if (scheduleStepsChanged && (globalControllers[PLAY_MODE] != AUTOPLAY)) stepsChanged();
+				if (scheduleResizeSteps && (globalControllers[PLAY_MODE] != AUTOPLAY)) resizeSteps();
 			}
 		}
 
 		// TODO Read incoming MIDI events
-		/* if (ev->body.type == urids.midi_Event)
+		if (ev->body.type == urids.midi_Event)
 		{
 			const uint8_t* const msg = (const uint8_t*)(ev + 1);
 
-			// Forward MIDI event
-			if (controllers[MIDI_THRU] != 0.0f)
-			{
-				LV2_Atom midiatom;
-				midiatom.type = urids.midi_Event;
-				midiatom.size = ev->body.size;
-
-				lv2_atom_forge_frame_time (&forge, ev->time.frames);
-				lv2_atom_forge_raw (&forge, &midiatom, sizeof (LV2_Atom));
-				lv2_atom_forge_raw (&forge, msg, midiatom.size);
-				lv2_atom_forge_pad (&forge, sizeof (LV2_Atom) + midiatom.size);
-			}
-
 			// Analyze MIDI event
-			if (controllers[MIDI_CONTROL] == 1.0f)
+			if (globalControllers[PLAY_MODE] == MIDI_CONTROLLED)
 			{
-				uint8_t typ = lv2_midi_message_type(msg);
+				const uint8_t typ = lv2_midi_message_type(msg);
 				// uint8_t chn = msg[0] & 0x0F;
-				uint8_t note = msg[1];
-				uint32_t filter = controllers[MIDI_KEYS];
+				const uint8_t note = msg[1];
+				const bool isTransportGateKey = ((note < NR_PIANO_KEYS) && transportGateKeys[note]);
+
 
 				switch (typ)
 				{
 					case LV2_MIDI_MSG_NOTE_ON:
 					{
-						if (filter & (1 << (note % 12)))
+						if (isTransportGateKey)
 						{
-							key = note;
-							offset = floorfrac (position + offset);
-							position = 0;
-							refFrame = ev->time.frames;
+							Position p = positions.back();
+
+							switch (int (globalControllers[ON_MIDI]))
+							{
+								case 0:	// Restart
+									p.offset = floorfrac (p.position + p.offset);
+									p.position = 0;
+									p.refFrame = ev->time.frames;
+									break;
+
+								case 2: // Restart & sync
+									{
+										double steppos = fmod (p.position, 1.0 / double (globalControllers[STEPS]));
+										p.offset = floorfrac (1.0 + p.position + p.offset - steppos);
+										p.position = steppos;
+										p.refFrame = ev->time.frames;
+									}
+									break;
+
+								default:// Continue
+									break;
+							}
+
+							p.playing = true;
+							positions.push_back (p);
+							scheduleNotifyStatus = true;
 						}
 					}
 					break;
 
 					case LV2_MIDI_MSG_NOTE_OFF:
 					{
-						if (key == note)
+						if (isTransportGateKey)
 						{
-							key = 0xFF;
+							Position p = positions.back();
+							p.playing = false;
+							positions.push_back (p);
+							scheduleNotifyStatus = true;
 						}
 					}
 					break;
@@ -569,7 +620,10 @@ void BNoname01::run (uint32_t n_samples)
 						if ((note == LV2_MIDI_CTL_ALL_NOTES_OFF) ||
 						    (note == LV2_MIDI_CTL_ALL_SOUNDS_OFF))
 						{
-							key = 0xFF;
+							Position p = positions.back();
+							p.playing = false;
+							positions.push_back (p);
+							scheduleNotifyStatus = true;
 						}
 					}
 					break;
@@ -577,7 +631,7 @@ void BNoname01::run (uint32_t n_samples)
 					default: break;
 				}
 			}
-		} */
+		}
 
 		uint32_t next_t = (ev->time.frames < n_samples ? ev->time.frames : n_samples);
 		play (last_t, next_t);
@@ -622,7 +676,7 @@ void BNoname01::run (uint32_t n_samples)
 	lv2_atom_forge_pop (&forge, &notify_frame);
 }
 
-void BNoname01::stepsChanged ()
+void BNoname01::resizeSteps ()
 {
 	double fpst = getFramesPerStep (positions.back().transport);
 	for (int i = 0; i < NR_SLOTS; ++i) slots[i].framesPerStep = fpst;
@@ -692,7 +746,12 @@ void BNoname01::notifyMessageToGui()
 void BNoname01::notifyStatusToGui()
 {
 	Position& p = positions.back();
-	double pos = (globalControllers[PLAY] != PLAY_OFF ? floorfrac (p.position) * globalControllers[STEPS] : -1);
+	double pos =
+	(
+		(globalControllers[PLAY] != PLAY_OFF) && p.playing && ((p.transport.speed != 0.0f) || (globalControllers[BASE] == SECONDS)) && (p.transport.bpm >= 1.0f)?
+		floorfrac (p.position) * globalControllers[STEPS] :
+		-1
+	);
 	// Send notifications
 	LV2_Atom_Forge_Frame frame;
 	lv2_atom_forge_frame_time(&forge, 0);
@@ -708,6 +767,29 @@ void BNoname01::notifyStatusToGui()
 	lv2_atom_forge_pop(&forge, &frame);
 
 	scheduleNotifyStatus = false;
+}
+
+void BNoname01::notifyTransportGateKeysToGui()
+{
+	// Create buffer
+	int keys[NR_PIANO_KEYS];
+	int keysize = 0;
+	std::fill (keys, keys + NR_PIANO_KEYS, 0);
+	for (int i = 0; i < NR_PIANO_KEYS; ++i)
+	{
+		if (transportGateKeys[i]) keys[keysize] = i;
+		++keysize;
+	}
+
+	// Send notifications
+	LV2_Atom_Forge_Frame frame;
+	lv2_atom_forge_frame_time(&forge, 0);
+	lv2_atom_forge_object(&forge, &frame, 0, urids.bNoname01_transportGateKeyEvent);
+	lv2_atom_forge_key(&forge, urids.bNoname01_transportGateKeys);
+	lv2_atom_forge_vector(&forge, sizeof(int), urids.atom_Int, keysize, (void*) keys);
+	lv2_atom_forge_pop(&forge, &frame);
+
+	scheduleNotifyTransportGateKeys = false;
 }
 
 void BNoname01::play (uint32_t start, uint32_t end)
@@ -755,8 +837,12 @@ void BNoname01::play (uint32_t start, uint32_t end)
 			Stereo input = Stereo {audioInput1[i], audioInput2[i]};
 			Stereo output = input;
 
-			if (((p.transport.speed == 0.0f) && (globalControllers[BASE] != SECONDS)) || (p.transport.bpm < 1.0f)) output = Stereo();
-			else
+			if
+			(
+				(p.playing) &&
+				((p.transport.speed != 0.0f) || (globalControllers[BASE] == SECONDS)) &&
+				(p.transport.bpm >= 1.0f)
+			) 
 			{
 				// Interpolate position within the loop
 				double relpos = getPositionFromFrames (p.transport, i - p.refFrame);	// Position relative to reference frame
@@ -806,6 +892,22 @@ void BNoname01::play (uint32_t start, uint32_t end)
 LV2_State_Status BNoname01::state_save (LV2_State_Store_Function store, LV2_State_Handle handle, uint32_t flags,
 			const LV2_Feature* const* features)
 {
+	// Store transportGateKeys
+	{
+		// Create atom:Vector
+
+		AtomKeys atom;
+		int keysize = 0;
+		std::fill (atom.keys, atom.keys + NR_PIANO_KEYS, 0);
+		for (int i = 0; i < NR_PIANO_KEYS; ++i)
+		{
+			if (transportGateKeys[i]) atom.keys[keysize] = i;
+			++keysize;
+		}
+
+		store (handle, urids.bNoname01_transportGateKeys, &atom, keysize * sizeof (int) + sizeof(LV2_Atom_Vector_Body), urids.atom_Vector, LV2_STATE_IS_POD);
+	}
+
 	// Store pads
 	{
 		char padDataString[0x8010] = "\nMatrix data:\n";
@@ -872,9 +974,25 @@ LV2_State_Status BNoname01::state_restore (LV2_State_Retrieve_Function retrieve,
 	size_t   size;
 	uint32_t type;
 	uint32_t valflags;
-	const void* padData = retrieve(handle, urids.bNoname01_statePad, &size, &type, &valflags);
+
+	// Retrieve transportGateKeys
+	const void* transportGateKeysData = retrieve(handle, urids.bNoname01_transportGateKeys, &size, &type, &valflags);
+	if (transportGateKeysData && (type == urids.atom_Vector))
+	{
+		const AtomKeys* atom = (const AtomKeys*) transportGateKeysData;
+		const int nr = LIMIT ((size - sizeof (LV2_Atom_Vector_Body)) / sizeof(int), 0, NR_PIANO_KEYS);
+		std::fill (transportGateKeys, transportGateKeys + NR_PIANO_KEYS, false);
+		for (int i = 0; i < nr; ++i)
+		{
+			const int keyNr = atom->keys[i];
+			if ((keyNr >= 0) && (keyNr < NR_PIANO_KEYS)) transportGateKeys[keyNr] = true;
+		}
+
+        }
+
 
 	// Retrieve pattern
+	const void* padData = retrieve(handle, urids.bNoname01_statePad, &size, &type, &valflags);
 	if (padData && (type == urids.atom_String))
 	{
 		for (int slotNr = 0; slotNr < NR_SLOTS; ++slotNr)

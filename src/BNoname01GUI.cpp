@@ -66,9 +66,9 @@ BNoname01GUI::BNoname01GUI (const char *bundle_path, const LV2_Feature *const *f
 	playButton (8, 8, 24, 24, "widget", "Play"),
 	bypassButton (38, 8, 24, 24, "widget", "Bypass"),
 	stopButton (68, 8, 24, 24, "widget", "Stop"),
-	playModeListBox (300, 10, 220, 20, 220, 80, "menu", BItems::ItemList ({{0, "Autoplay"}, {2, "Host-controlled playback"} , {1, "MIDI-controlled playback"}})),
+	playModeListBox (300, 10, 220, 20, 220, 80, "menu", BItems::ItemList ({{0, "Autoplay"}, {2, "Host-controlled"} , {1, "MIDI-controlleds"}})),
 	onMidiListBox (540, 10, 120, 20, 120, 80, "menu", BItems::ItemList ({{0, "Restart"}, {2, "Restart & sync"}, {1, "Continue"}})),
-	midiButton (680, 10, 20, 20, "button"),
+	transportGateButton (680, 10, 60, 20, "widget", 48, 59),
 	autoplayBpmLabel (540, 0, 80, 8, "smlabel", "bpm"),
 	autoplayBpmSlider (540, 10, 80, 20, "slider", 120, 1, 300, 0, "%1.0f"),
 	autoplayBpbLabel (640, 0, 80, 8, "smlabel", "bpBar"),
@@ -79,6 +79,12 @@ BNoname01GUI::BNoname01GUI (const char *bundle_path, const LV2_Feature *const *f
 		     BItems::ItemList ({{2, "2 Steps"}, {3, "3 Steps"}, {4, "4 Steps"}, {6, "6 Steps"}, {8, "8 Steps"}, {9, "9 Steps"},
 		     			{12, "12 Steps"}, {16, "16 Steps"}, {18, "18 Steps"}, {24, "24 Steps"}, {32, "32 Steps"}}), 16),
 
+	transportGateContainer (420, 130, 600, 110, "screen"),
+	transportGateLabel (210, 10, 180, 20, "ctlabel", "Select keys"),
+	transportGatePiano (10, 40, 580, 30, "widget", 0, NR_PIANO_KEYS),
+	transportGateOkButton (320, 80, 40, 20, "menu/button", "OK"),
+	transportGateCancelButton (240, 80, 60, 20, "menu/button", "Cancel"),
+	transportGateKeys (NR_PIANO_KEYS, false),
 
 	padSurface (290, 130, 820, 288, "padsurface"),
 	editContainer (578, 426, 284, 24, "widget"),
@@ -172,6 +178,9 @@ BNoname01GUI::BNoname01GUI (const char *bundle_path, const LV2_Feature *const *f
 	for (int i = 0; i < NR_CONTROLLERS; ++i) controllerWidgets[i]->setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, valueChangedCallback);
 	bypassButton.setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, playStopBypassChangedCallback);
 	stopButton.setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, playStopBypassChangedCallback);
+	transportGateButton.setCallbackFunction (BEvents::BUTTON_CLICK_EVENT, transportGateButtonClickedCallback);
+	transportGateOkButton.setCallbackFunction (BEvents::BUTTON_CLICK_EVENT, transportGateButtonClickedCallback);
+	transportGateCancelButton.setCallbackFunction (BEvents::BUTTON_CLICK_EVENT, transportGateButtonClickedCallback);
 
 	for (Slot& s : slots)
 	{
@@ -189,7 +198,9 @@ BNoname01GUI::BNoname01GUI (const char *bundle_path, const LV2_Feature *const *f
 
 	// Configure widgets
 	onMidiListBox.hide();
-	midiButton.hide ();
+	transportGateButton.hide ();
+	transportGatePiano.setKeysToggleable (true);
+	transportGateContainer.hide();
 
 	pattern.clear();
 	padSurface.setDraggable (true);
@@ -232,7 +243,7 @@ BNoname01GUI::BNoname01GUI (const char *bundle_path, const LV2_Feature *const *f
 	settingsContainer.add (stopButton);
 	settingsContainer.add (playModeListBox);
 	settingsContainer.add (onMidiListBox);
-	settingsContainer.add (midiButton);
+	settingsContainer.add (transportGateButton);
 	settingsContainer.add (autoplayBpmLabel);
 	settingsContainer.add (autoplayBpmSlider);
 	settingsContainer.add (autoplayBpbLabel);
@@ -240,6 +251,11 @@ BNoname01GUI::BNoname01GUI (const char *bundle_path, const LV2_Feature *const *f
 	settingsContainer.add (sequenceSizeSelect);
 	settingsContainer.add (sequenceBaseListBox);
 	settingsContainer.add (stepsListBox);
+
+	transportGateContainer.add (transportGateLabel);
+	transportGateContainer.add (transportGatePiano);
+	transportGateContainer.add (transportGateOkButton);
+	transportGateContainer.add (transportGateCancelButton);
 
 	for (Slot& s : slots)
 	{
@@ -288,6 +304,7 @@ BNoname01GUI::BNoname01GUI (const char *bundle_path, const LV2_Feature *const *f
 	mContainer.add (editContainer);
 	for (Slot& s : slots) mContainer.add (s.container);
 	mContainer.add (padSurface);
+	mContainer.add (transportGateContainer);
 	mContainer.add (settingsContainer);
 	mContainer.add (messageLabel);
 
@@ -404,6 +421,32 @@ void BNoname01GUI::port_event(uint32_t port, uint32_t buffer_size,
 		if ((atom->type == urids.atom_Blank) || (atom->type == urids.atom_Object))
 		{
 			const LV2_Atom_Object* obj = (const LV2_Atom_Object*) atom;
+
+			// transportGateKey notification
+			if (obj->body.otype == urids.bNoname01_transportGateKeyEvent)
+			{
+				LV2_Atom *oKeys = NULL;
+				lv2_atom_object_get (obj,
+					 	     urids.bNoname01_transportGateKeys, &oKeys,
+						     NULL);
+
+				if (oKeys && (oKeys->type == urids.atom_Vector))
+				{
+					const LV2_Atom_Vector* vec = (const LV2_Atom_Vector*) oKeys;
+					if (vec->body.child_type == urids.atom_Int)
+					{
+						const int keysize = LIMIT ((int) ((oKeys->size - sizeof(LV2_Atom_Vector_Body)) / sizeof (int)), 0, NR_PIANO_KEYS);
+						const int* keys = (int*) (&vec->body + 1);
+						transportGateKeys = std::vector<bool> (NR_PIANO_KEYS, false);
+						for (int i = 0; i < keysize; ++i)
+						{
+							int keyNr = keys[i];
+							if ((keyNr >=0) && (keyNr < NR_PIANO_KEYS)) transportGateKeys[keyNr] = true;
+						}
+						transportGatePiano.pressKeys (transportGateKeys);
+					}
+				}
+			}
 
 			// Slot pattern notification
 			if (obj->body.otype == urids.bNoname01_slotEvent)
@@ -583,7 +626,7 @@ void BNoname01GUI::resize ()
 	onMidiListBox.resizeListBox(BUtilities::Point (120 * sz, 80 * sz));
 	onMidiListBox.moveListBox(BUtilities::Point (0, 20 * sz));
 	onMidiListBox.resizeListBoxItems(BUtilities::Point (120 * sz, 20 * sz));
-	RESIZE (midiButton, 680, 10, 20, 20, sz);
+	RESIZE (transportGateButton, 680, 10, 60, 20, sz);
 	RESIZE (autoplayBpmLabel, 540, 0, 80, 8, sz);
 	RESIZE (autoplayBpmSlider, 540, 10, 80, 20, sz);
 	RESIZE (autoplayBpbLabel, 640, 0, 80, 8, sz);
@@ -597,6 +640,13 @@ void BNoname01GUI::resize ()
 	stepsListBox.resizeListBox(BUtilities::Point (90 * sz, 240 * sz));
 	stepsListBox.moveListBox(BUtilities::Point (0, 20 * sz));
 	stepsListBox.resizeListBoxItems(BUtilities::Point (90 * sz, 20 * sz));
+
+	RESIZE (transportGateContainer, 420, 130, 600, 110, sz);
+	RESIZE (transportGateLabel, 210, 10, 180, 20, sz);
+	RESIZE (transportGatePiano, 10, 40, 580, 30, sz);
+	RESIZE (transportGateOkButton, 320, 80, 40, 20, sz);
+	RESIZE (transportGateCancelButton, 240, 80, 60, 20, sz);
+
 	RESIZE (padSurface, 290, 130, 820, 288, sz);
 	RESIZE (editContainer, 578, 426, 284, 24, sz);
 
@@ -661,7 +711,7 @@ void BNoname01GUI::applyTheme (BStyles::Theme& theme)
 	stopButton.applyTheme (theme);
 	playModeListBox.applyTheme (theme);
 	onMidiListBox.applyTheme (theme);
-	midiButton.applyTheme (theme);
+	transportGateButton.applyTheme (theme);
 	autoplayBpmLabel.applyTheme (theme);
 	autoplayBpmSlider.applyTheme (theme);
 	autoplayBpbLabel.applyTheme (theme);
@@ -669,6 +719,12 @@ void BNoname01GUI::applyTheme (BStyles::Theme& theme)
 	sequenceSizeSelect.applyTheme (theme);
 	sequenceBaseListBox.applyTheme (theme);
 	stepsListBox.applyTheme (theme);
+
+	transportGateContainer.applyTheme (theme);
+	transportGateLabel.applyTheme (theme);
+	transportGatePiano.applyTheme (theme);
+	transportGateOkButton.applyTheme (theme);
+	transportGateCancelButton.applyTheme (theme);
 
 	for (Slot& s : slots)
 	{
@@ -815,6 +871,26 @@ void BNoname01GUI::sendShape (const int slot)
 	lv2_atom_forge_int(&forge, slot);
 	lv2_atom_forge_key(&forge, urids.bNoname01_shapeData);
 	lv2_atom_forge_vector(&forge, sizeof(float), urids.atom_Float, (uint32_t) (7 * size), &shapeBuffer);
+	lv2_atom_forge_pop(&forge, &frame);
+	write_function (controller, CONTROL, lv2_atom_total_size(msg), urids.atom_eventTransfer, msg);
+}
+
+void BNoname01GUI::sendTransportGateKeys()
+{
+	uint8_t obj_buf[1024];
+	lv2_atom_forge_set_buffer(&forge, obj_buf, sizeof(obj_buf));
+
+	std::vector<int> keys = {};
+	for (unsigned int i = 0; (i < NR_PIANO_KEYS) && (i < transportGateKeys.size()); ++i)
+	{
+		if (transportGateKeys[i]) keys.push_back (i);
+	}
+
+	// Send notifications
+	LV2_Atom_Forge_Frame frame;
+	LV2_Atom* msg = (LV2_Atom*)lv2_atom_forge_object (&forge, &frame, 0, urids.bNoname01_transportGateKeyEvent);
+	lv2_atom_forge_key(&forge, urids.bNoname01_transportGateKeys);
+	lv2_atom_forge_vector(&forge, sizeof(int), urids.atom_Int, keys.size(), (void*) keys.data());
 	lv2_atom_forge_pop(&forge, &frame);
 	write_function (controller, CONTROL, lv2_atom_total_size(msg), urids.atom_eventTransfer, msg);
 }
@@ -1222,12 +1298,13 @@ void BNoname01GUI::valueChangedCallback(BEvents::Event* event)
 						if  (value == MIDI_CONTROLLED)
 						{
 							ui->onMidiListBox.show();
-							ui->midiButton.show();
+							ui->transportGateButton.show();
 						}
 						else
 						{
 							ui->onMidiListBox.hide();
-							ui->midiButton.hide();
+							ui->transportGateButton.hide();
+							ui->transportGateContainer.hide();
 						}
 
 						break;
@@ -1978,6 +2055,26 @@ void BNoname01GUI::padsFocusedCallback (BEvents::Event* event)
 			"Mix: " + BUtilities::to_string (pd.mix, "%1.2f")
 		);
 	}
+}
+
+void BNoname01GUI::transportGateButtonClickedCallback (BEvents::Event* event)
+{
+	if (!event) return;
+	BWidgets::Widget* widget = event->getWidget ();
+	if (!widget) return;
+	BNoname01GUI* ui = (BNoname01GUI*) widget->getMainWindow();
+	if (!ui) return;
+
+	if (widget == (BWidgets::Widget*)&ui->transportGateOkButton)
+	{
+		ui->transportGateKeys = ui->transportGatePiano.getPressedKeys();
+		ui->sendTransportGateKeys();
+	}
+
+	else if (widget == (BWidgets::Widget*)&ui->transportGateCancelButton) ui->transportGatePiano.pressKeys (ui->transportGateKeys);
+
+	if (ui->transportGateContainer.isVisible()) ui->transportGateContainer.hide();
+	else ui->transportGateContainer.show();
 }
 
 int BNoname01GUI::getPadOrigin (const int slot, const int step) const
