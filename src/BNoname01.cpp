@@ -41,8 +41,7 @@ BNoname01::BNoname01 (double samplerate, const LV2_Feature* const* features) :
 	controlPort(NULL), notifyPort(NULL),
 	audioInput1(NULL), audioInput2(NULL), audioOutput1(NULL), audioOutput2(NULL),
 	new_controllers {NULL}, globalControllers {0},
-	forge (), notify_frame (),
-	oStep (0), message (),
+	forge (), notify_frame (), message (),
 	ui_on(false), scheduleNotifySlot {false},
 	scheduleNotifyStatus (false), scheduleResizeBuffers (false), scheduleSetFx {false},
 	scheduleNotifyTransportGateKeys (false)
@@ -73,11 +72,11 @@ BNoname01::BNoname01 (double samplerate, const LV2_Feature* const* features) :
 	lv2_atom_forge_init (&forge, map);
 
 	// Initialize slots
-	std::fill (slots, slots + NR_SLOTS, Slot (this, FX_NONE, true, 0.0f, 1.0f, nullptr, nullptr, 16, 0.25 * samplerate));
+	std::fill (slots, slots + NR_SLOTS, Slot (this, FX_NONE, nullptr, nullptr, 16, 1.0f, 0.25 * samplerate));
 
 	// Initialize positions
 	positions.clear();
-	positions.push_back ({0.0, 0.0, 0, {samplerate, 120.0f, 1.0f, 0ul, 0.0f, 4.0f, 4}, 1.0, true});
+	positions.push_back ({0.0, 0, 0.0, 0, {samplerate, 120.0f, 1.0f, 0ul, 0.0f, 4.0f, 4}, 1.0, true});
 }
 
 BNoname01::~BNoname01 () {}
@@ -342,7 +341,7 @@ void BNoname01::run (uint32_t n_samples)
 					{
 						const uint32_t size = (uint32_t) ((oPd->size - sizeof(LV2_Atom_Vector_Body)) / sizeof (Pad));
 						Pad* pad = (Pad*) (&vec->body + 1);
-						std::copy (pad, pad + LIMIT (size, 0, NR_STEPS), slots[slot].pads);
+						for (unsigned int i = 0; (i < size) && (i < NR_STEPS); ++i) slots[slot].setPad (i, pad[i]);
 					}
 				}
 			}
@@ -381,7 +380,7 @@ void BNoname01::run (uint32_t n_samples)
 						if (size == 1)
 						{
 							Pad* pad = (Pad*) (&vec->body + 1);
-							slots[slot].pads[step] = *pad;
+							slots[slot].setPad (step, *pad);
 						}
 					}
 				}
@@ -536,11 +535,9 @@ void BNoname01::run (uint32_t n_samples)
 						double pos = getPositionFromBeats (host, host.barBeat + host.beatsPerBar * host.bar);
 						double npos = floorfrac (pos - np.offset);
 						np.position = npos;
+						np.step = npos * npos * globalControllers[STEPS];
 						np.refFrame = ev->time.frames;
-						if (int (npos * globalControllers[STEPS]) != int (positions.back().position * globalControllers[STEPS]))
-						{
-							scheduleNotifyStatus = true;
-						}
+						if (np.step != positions.back().step) scheduleNotifyStatus = true;
 
 						positions.push_back (np);
 					}
@@ -644,10 +641,11 @@ void BNoname01::run (uint32_t n_samples)
 	// Update position in case of no new barBeat submitted on next call
 	for (unsigned int i = 0; i < positions.size; ++i)
 	{
-		uint64_t diff = n_samples - positions[i].refFrame;
-		double relpos = getPositionFromFrames (positions[i].transport, diff);	// Position relative to reference frame
-		double npos = floorfrac (positions[i].position + relpos);
-		if (int (npos * globalControllers[STEPS]) != int (positions[i].position * globalControllers[STEPS])) scheduleNotifyStatus = true;
+		const uint64_t diff = n_samples - positions[i].refFrame;
+		const double relpos = getPositionFromFrames (positions[i].transport, diff);	// Position relative to reference frame
+		const double npos = floorfrac (positions[i].position + relpos);
+		const int nstep = LIMIT (npos * globalControllers[STEPS], 0, globalControllers[STEPS] - 1);
+		if (nstep != int (positions[i].position * globalControllers[STEPS])) scheduleNotifyStatus = true;
 		positions[i].position = npos;
 		positions[i].refFrame = 0;
 
@@ -691,13 +689,16 @@ void BNoname01::resizeSteps ()
 
 void BNoname01::notifySlotToGui (const int slot)
 {
+	Pad pads[NR_STEPS];
+	for (unsigned int i = 0; i < NR_STEPS; ++i) pads[i] = slots[slot].getPad (i);
+
 	LV2_Atom_Forge_Frame frame;
 	lv2_atom_forge_frame_time(&forge, 0);
 	lv2_atom_forge_object(&forge, &frame, 0, urids.bNoname01_slotEvent);
 	lv2_atom_forge_key(&forge, urids.bNoname01_slot);
 	lv2_atom_forge_int(&forge, slot);
 	lv2_atom_forge_key(&forge, urids.bNoname01_pads);
-	lv2_atom_forge_vector(&forge, sizeof(float), urids.atom_Float, sizeof(Pad) / sizeof(float) * NR_STEPS, (void*) slots[slot].pads);
+	lv2_atom_forge_vector(&forge, sizeof(float), urids.atom_Float, sizeof(Pad) / sizeof(float) * NR_STEPS, (void*) pads);
 	lv2_atom_forge_pop(&forge, &frame);
 
 	scheduleNotifySlot[slot] = false;
@@ -842,11 +843,11 @@ void BNoname01::play (uint32_t start, uint32_t end)
 				(p.playing) &&
 				((p.transport.speed != 0.0f) || (globalControllers[BASE] == SECONDS)) &&
 				(p.transport.bpm >= 1.0f)
-			) 
+			)
 			{
 				// Interpolate position within the loop
 				double relpos = getPositionFromFrames (p.transport, i - p.refFrame);	// Position relative to reference frame
-				double pos = floorfrac (p.position + relpos);		// 0..1 position sequence
+				double pos = floorfrac (p.position + relpos);				// 0..1 position sequence
 				double step = pos * globalControllers[STEPS];
 				int iStep = LIMIT (step, 0, globalControllers[STEPS] - 1);
 
@@ -858,26 +859,26 @@ void BNoname01::play (uint32_t start, uint32_t end)
 					if ((iSlot.effect == FX_INVALID) || (iSlot.effect == FX_NONE)) break;
 
 					// Next step ?
-					if (oStep != iStep)
+					if (positions[j].step != iStep)
 					{
 						// Old pad ended?
-						const int iStart = iSlot.getStart (iStep);
-						if (iSlot.getStart (oStep) != iStart)
+						const int iStart = iSlot.startPos[iStep];
+						if (iSlot.startPos[positions[j].step] != iStart)
 						{
 							// Stop old pad
 							iSlot.end ();
 
 							// Start new pad (if set)
-							if (iStart >= 0) iSlot.start (step);
+							if (iStart >= 0) iSlot.init (iStart);
 						}
 					}
 
 					// Play music :-)
 					output = (iSlot.params[SLOTS_PLAY] ? iSlot.play (step) : input);
-					iSlot.mix = 1.0f;
+					iSlot.mixf = 1.0f;
 				}
 
-				oStep = iStep;
+				positions[j].step = iStep;
 			}
 
 			audioOutput1[i] = (sumFaders * audioOutput1[i] + fader * output.left) / (sumFaders + fader);
@@ -918,7 +919,7 @@ LV2_State_Status BNoname01::state_save (LV2_State_Store_Function store, LV2_Stat
 
 			for (int stepNr = 0; stepNr < NR_STEPS; ++stepNr)
 			{
-				Pad& p = slots[slotNr].pads[stepNr];
+				Pad p = slots[slotNr].getPad (stepNr);
 				if ((p.gate > 0) && (p.size > 0) && (p.mix > 0))
 				{
 					char valueString[64];
@@ -997,8 +998,7 @@ LV2_State_Status BNoname01::state_restore (LV2_State_Retrieve_Function retrieve,
 	{
 		for (int slotNr = 0; slotNr < NR_SLOTS; ++slotNr)
 		{
-			Slot& s = slots[slotNr];
-			std::fill (s.pads, s.pads + NR_STEPS, Pad());
+			for (unsigned int i = 0; i < NR_STEPS; ++i) slots[slotNr].setPad (i, Pad());
 		}
 
 		std::string padDataString = (char*) padData;
@@ -1072,19 +1072,22 @@ LV2_State_Status BNoname01::state_restore (LV2_State_Retrieve_Function retrieve,
 				}
 
 				if (nextPos > 0) padDataString.erase (0, nextPos);
+
+				Pad p = slots[slotNr].getPad (stepNr);
 				switch (i)
 				{
-					case 2:	slots[slotNr].pads[stepNr].gate = LIMIT (val, 0, 1);
+					case 2:	p.gate = LIMIT (val, 0, 1);
 						break;
 
-					case 3:	slots[slotNr].pads[stepNr].size = LIMIT (val, 1, NR_STEPS - stepNr);
+					case 3:	p.size = LIMIT (val, 1, NR_STEPS - stepNr);
 						break;
 
-					case 4:	slots[slotNr].pads[stepNr].mix = LIMIT (val, 0, 1);
+					case 4:	p.mix = LIMIT (val, 0, 1);
 						break;
 
 					default:break;
 				}
+				slots[slotNr].setPad (stepNr, p);
 			}
 		}
 

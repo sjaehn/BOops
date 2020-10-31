@@ -37,9 +37,9 @@ public:
 		decimate (0.0f), stack {0.0, 0.0}, live {0.0, 0.0}, count (0)
 	{}
 
-	virtual void start (const double position) override
+	virtual void init (const double position) override
 	{
-		Fx::start (position);
+		Fx::init (position);
 		const double r = bidist (rnd);
 		decimate =
 		(
@@ -57,10 +57,10 @@ public:
 		count = 0;
 	}
 
-	virtual Stereo play (const double position) override
+	virtual Stereo play (const double position, const double size, const double mixf) override
 	{
 		const Stereo s0 = (buffer && (*buffer) ? (**buffer)[0] : Stereo {0, 0});
-		if ((!playing) || (!pads) || (startPos < 0) || (!pads[startPos].mix) || (position < double (startPos)) || (position > double (startPos) + pads[startPos].size)) return s0;
+		if ((!playing) || (!pads)) return s0;
 
 		if (count + 1.0 >= 1.0 / decimate)
 		{
@@ -77,7 +77,7 @@ public:
 			stack += s0;
 		}
 
-		return mix (s0, live, position);
+		return mix (s0, live, position, size, mixf);
 	}
 
 protected:

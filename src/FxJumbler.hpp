@@ -36,9 +36,9 @@ public:
 		size (1),
 		delay (0) {}
 
-	virtual void start (const double position) override
+	virtual void init (const double position) override
 	{
-		Fx::start (position);
+		Fx::init (position);
 		framesPerStep = (framesPerStepPtr ? *framesPerStepPtr : 24000.0);
 		size = (sizePtr ? *sizePtr : 1);
 
@@ -69,14 +69,14 @@ public:
 		}
 	}
 
-	virtual Stereo play (const double position) override
+	virtual Stereo play (const double position, const double padsize, const double mixf) override
 	{
 		const Stereo s0 = (buffer && (*buffer) ? (**buffer)[0] : Stereo {0, 0});
-		if ((!playing) || (!pads) || (startPos < 0) || (!pads[startPos].mix) || (position < double (startPos)) || (position > double (startPos) + pads[startPos].size)) return s0;
+		if ((!playing) || (!pads)) return s0;
 
 		const long frame = framesPerStep * delay;
 		const Stereo s1 = (buffer && (*buffer) ? (**buffer)[frame] : Stereo {0, 0});
-		return mix (s0, s1, position);
+		return mix (s0, s1, position, padsize, mixf);
 	}
 
 protected:

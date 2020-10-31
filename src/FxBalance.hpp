@@ -38,9 +38,9 @@ public:
 		balance (0.0f)
 	{}
 
-	virtual void start (const double position) override
+	virtual void init (const double position) override
 	{
-		Fx::start (position);
+		Fx::init (position);
 		const double r = bidist (rnd);
 		balance =
 		(
@@ -55,18 +55,18 @@ public:
 		);
 	}
 
-	virtual Stereo play (const double position) override
+	virtual Stereo play (const double position, const double size, const double mixf) override
 	{
 		const Stereo s0 = (buffer && (*buffer) ? (**buffer)[0] : Stereo {0, 0});
-		if ((!playing) || (!pads) || (startPos < 0) || (!pads[startPos].mix) || (position < double (startPos)) || (position > double (startPos) + pads[startPos].size)) return s0;
+		if ((!playing) || (!pads)) return s0;
 
-		Stereo s1 = Stereo
+		const Stereo s1 = Stereo
 		{
 			(balance < 0.0f ? s0.left + (0.0f - balance) * s0.right : (1.0f - balance) * s0.left),
 			(balance < 0.0f ? (balance + 1.0f) * s0.right : s0.right + balance * s0.left)
 		};
 
-		return mix (s0, s1, position);
+		return mix (s0, s1, position, size, mixf);
 	}
 
 protected:

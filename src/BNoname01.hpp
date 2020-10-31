@@ -52,6 +52,7 @@ struct Transport
 struct Position
 {
 	double position;
+	int step;
 	double offset;
 	uint64_t refFrame;
 	Transport transport;
@@ -114,7 +115,6 @@ protected:
 	// Internals
 public:	Slot slots[NR_SLOTS];
 protected:
-	int oStep;
 	Message message;
 	bool ui_on;
 	bool scheduleNotifySlot[NR_SLOTS];

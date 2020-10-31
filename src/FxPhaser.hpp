@@ -57,9 +57,9 @@ public:
 		modDelta (0)
 	{}
 
-	virtual void start (const double position) override
+	virtual void init (const double position) override
 	{
-		Fx::start (position);
+		Fx::init (position);
 		const double r1 = bidist (rnd);
 		loFreq = 20.0 + 19980.0 * pow (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_PHASER_LOFREQ] + r1 * params[SLOTS_OPTPARAMS + FX_PHASER_LOFREQRAND], 0.0, 1.0) : 0.0, 3.0);
 		const double r2 = bidist (rnd);
@@ -80,13 +80,13 @@ public:
 		framesPerStep = (framesPerStepPtr ? *framesPerStepPtr : 24000.0);
 	}
 
-	virtual Stereo play (const double position) override
+	virtual Stereo play (const double position, const double size, const double mixf) override
 	{
 		const Stereo s0 = (buffer && (*buffer) ? (**buffer)[0] : Stereo {0, 0});
-		if ((!playing) || (!pads) || (startPos < 0) || (!pads[startPos].mix) || (position < double (startPos)) || (position > double (startPos) + pads[startPos].size)) return s0;
+		if ((!playing) || (!pads)) return s0;
 
-		const double delayL = minDelta + (0.5 - 0.5 * cos (modRate * (position - startPos) * framesPerStep / samplerate)) * modDelta;
-		const double delayR = minDelta + (0.5 - 0.5 * cos (modPhase + modRate * (position - startPos) * framesPerStep / samplerate)) * modDelta;
+		const double delayL = minDelta + (0.5 - 0.5 * cos (modRate * position * framesPerStep / samplerate)) * modDelta;
+		const double delayR = minDelta + (0.5 - 0.5 * cos (modPhase + modRate * position * framesPerStep / samplerate)) * modDelta;
 		for (int i = 0; i < steps; ++i)
 		{
 			lFilters[i].setDelay (delayL);
@@ -101,7 +101,7 @@ public:
 		}
 		lastSample = s1;
 
-		return mix (s0, s1, position);
+		return mix (s0, s1, position, size, mixf);
 	}
 
 protected:

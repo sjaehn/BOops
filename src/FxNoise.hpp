@@ -40,21 +40,21 @@ public:
 		amp (0.0f)
 	{}
 
-	virtual void start (const double position) override
+	virtual void init (const double position) override
 	{
-		Fx::start (position);
+		Fx::init (position);
 		const double r = bidist (rnd);
 		const float db = -90.0 + 102.0 * (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_NOISE_AMP] + r * params[SLOTS_OPTPARAMS + FX_NOISE_AMPRAND], 0.0, 1.0) :0.5);
 		amp = DB2CO (db);
 	}
 
-	virtual Stereo play (const double position) override
+	virtual Stereo play (const double position, const double size, const double mixf) override
 	{
 		const Stereo s0 = (buffer && (*buffer) ? (**buffer)[0] : Stereo {0, 0});
-		if ((!playing) || (!pads) || (startPos < 0) || (!pads[startPos].mix) || (position < double (startPos)) || (position > double (startPos) + pads[startPos].size)) return s0;
+		if ((!playing) || (!pads)) return s0;
 
 		Stereo s1 = Stereo {unidist (rnd) * amp, unidist (rnd) * amp};
-		return mix (s0, s1, position);
+		return mix (s0, s1, position, size, mixf);
 	}
 
 protected:

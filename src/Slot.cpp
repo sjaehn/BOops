@@ -46,12 +46,11 @@
 #include "FxFlanger.hpp"
 #include "FxPhaser.hpp"
 
-Slot::Slot () : Slot (nullptr, FX_INVALID, false, 0.0f, 0.0f, nullptr, nullptr, 0, 0.0) {}
+Slot::Slot () : Slot (nullptr, FX_INVALID, nullptr, nullptr, 0, 0.0f, 0.0) {}
 
-Slot::Slot (BNoname01* plugin, const BNoname01EffectsIndex effect, const bool playing, const float pan,
-	const float mix, float* params, Pad* pads, const size_t size, const double framesPerStep) :
-	plugin (plugin), effect (FX_INVALID), mix (1.0f), fx (nullptr),
-	size (size), framesPerStep (framesPerStep), buffer (nullptr), shape ()
+Slot::Slot (BNoname01* plugin, const BNoname01EffectsIndex effect, float* params, Pad* pads, const size_t size, const float mixf, const double framesPerStep) :
+	plugin (plugin), effect (FX_INVALID), fx (nullptr),
+	size (size), mixf (mixf), framesPerStep (framesPerStep), buffer (nullptr), shape ()
 {
 	buffer = new RingBuffer<Stereo> (1.5 * double (size) * framesPerStep);
 
@@ -71,7 +70,8 @@ Slot:: Slot (const Slot& that) :
 	size (that.size), framesPerStep (that.framesPerStep), buffer (nullptr)
 {
 	if (that.params) std::copy (that.params, that.params + NR_PARAMS, params);
-	if (that.pads) std::copy (that.pads, that.pads + NR_PARAMS, pads);
+	if (that.pads) std::copy (that.pads, that.pads + NR_STEPS, pads);
+	if (that.startPos) std::copy (that.startPos, that.startPos + NR_STEPS, startPos);
 	if (that.buffer) buffer = new RingBuffer<Stereo> (*that.buffer);
 	if (that.fx) fx = newFx (effect);
 }
@@ -90,7 +90,8 @@ Slot& Slot::operator= (const Slot& that)
 	framesPerStep = that.framesPerStep;
 
 	if (that.params) std::copy (that.params, that.params + NR_PARAMS, params);
-	if (that.pads) std::copy (that.pads, that.pads + NR_PARAMS, pads);
+	if (that.pads) std::copy (that.pads, that.pads + NR_STEPS, pads);
+	if (that.startPos) std::copy (that.startPos, that.startPos + NR_STEPS, startPos);
 
 	if (fx) {delete fx; fx = nullptr;}
 	if (buffer) {delete buffer; buffer = nullptr;}
@@ -99,6 +100,28 @@ Slot& Slot::operator= (const Slot& that)
 	if (that.fx) fx = newFx (effect);
 
 	return *this;
+}
+
+void Slot::setPad (const int index, const Pad& pad)
+{
+	const int size = (pad.size > pads[index].size ? pad.size : pads[index].size);
+	pads[index] = pad;
+	startPos[index] = getStartPad (index);
+	for (int i = 1; (i < size) && (index + i < NR_STEPS); ++i) startPos[index + i] = getStartPad (index + i);
+}
+
+int Slot::getStartPad (const int index) const
+{
+	for (int i = index; i >= 0; --i)
+	{
+		if ((pads[i].gate > 0) && (pads[i].mix > 0))
+		{
+			if (i + pads[i].size > index) return i;
+			else return -1;
+		}
+	}
+
+	return -1;
 }
 
 Fx* Slot::newFx (const BNoname01EffectsIndex effect)
@@ -140,7 +163,7 @@ Fx* Slot::newFx (const BNoname01EffectsIndex effect)
 		case FX_SCRATCH:	fx = new FxScratch (&buffer, params, pads, &framesPerStep, &shape);
 					break;
 
-		case FX_WOWFLUTTER:	fx = new FxWowFlutter (&buffer, params, pads, &framesPerStep, &size);
+		case FX_WOWFLUTTER:	fx = new FxWowFlutter (&buffer, params, pads, &framesPerStep);
 					break;
 
 		case FX_BITCRUSH:	fx = new FxBitcrush (&buffer, params, pads);
@@ -177,4 +200,19 @@ Fx* Slot::newFx (const BNoname01EffectsIndex effect)
 	}
 
 	return fx;
+}
+
+Stereo Slot::play (const double position)
+{
+	if ((!fx) || (!buffer) || (!params)) return Stereo();
+	if (!isPadSet(position)) return (*buffer)[0];
+
+	const int index = startPos[int(position)];
+	if (!params[SLOTS_PLAY]) return (*buffer)[0];
+
+	// Get effect
+	const double relpos = position - double (index);
+	const Stereo s0 = (*buffer)[0];
+	const Stereo s1 = fx->play (relpos, pads[index].size, pads[index].mix);
+	return BUtilities::mix<Stereo> (s0, s1, mixf);
 }

@@ -39,8 +39,9 @@ public:
 	Fx () : Fx (nullptr, nullptr, nullptr) {}
 
 	Fx (RingBuffer<Stereo>** buffer, float* params, Pad* pads) :
-		buffer (buffer), params (params), pads (pads), playing (false), startPos (0),
-		panf {1.0f, 1.0f}, unpanf {0.0f, 0.0f}, rnd (time (0)), unidist (0.0, 1.0), bidist (-1.0, 1.0)
+		buffer (buffer), params (params), pads (pads),
+		playing (false), panf (), unpanf(),
+		rnd (time (0)), unidist (0.0, 1.0), bidist (-1.0, 1.0)
 	{}
 
 	virtual ~Fx () {};
@@ -49,38 +50,18 @@ public:
 	// This class is not responsible for the imported pointers
 	// buffer, params, and pads!
 
-	int getStart () const {return startPos;}
-
-	int getStart (const double position) const
+	virtual void init (const double position)
 	{
-		if (!pads) return -1;
-
-		for (int i = position; i >= 0; --i)
-		{
-			if ((pads[i].gate > 0) && (pads[i].mix > 0))
-			{
-				if (i + pads[i].size > position) return i;
-				else return -1;
-			}
-		}
-
-		return -1;
-	}
-
-	bool isPad (const double position) const
-	{
-		return (getStart (position) >= 0);
-	}
-
-	virtual void start (const double position)
-	{
-		startPos = getStart (position);
+		const int startPos = position;
 		playing = (unidist (rnd) < (pads ? pads[startPos >= 0 ? startPos : 0].gate : 0));
-		panf = (Stereo {1.0, 1.0}).pan ((params ? params[SLOTS_PAN] : 0.0));
+		panf = (Stereo {1.0, 1.0}).pan (params[SLOTS_PAN]);
 		unpanf = Stereo {1.0, 1.0} - panf;
 	}
 
-	virtual Stereo play (const double position) {return (buffer && (*buffer) ? (**buffer)[0] : Stereo {0, 0});}
+	virtual Stereo play (const double position, const double size, const double mixf)
+	{
+		return (buffer && (*buffer) ? (**buffer)[0] : Stereo {0, 0});
+	}
 
 	virtual void end () {playing = false;}
 
@@ -89,48 +70,45 @@ protected:
 	float* params;
 	Pad* pads;
 	bool playing;
-	int startPos;
 	Stereo panf;
 	Stereo unpanf;
 	std::minstd_rand rnd;
 	std::uniform_real_distribution<float> unidist;
 	std::uniform_real_distribution<float> bidist;
 
-	float adsr (const double position)
+	float adsr (const double position, const double size) const
 	{
 		if ((!pads) || (!params)) return 0;
 
-		double padStart = getStart();
-		double padSize = pads[int (padStart)].size;
-		if ((position < padStart) || (position >= padStart + padSize)) return 0;
+		if ((position < 0) || (position >= size)) return 0;
 
 		float adr = params[SLOTS_ATTACK] + params[SLOTS_DECAY] + params[SLOTS_RELEASE];
 
 		if (adr < 1.0f) adr = 1.0f;
 
-		if (position < padStart + params[SLOTS_ATTACK] / adr) return (position - padStart) / (params[SLOTS_ATTACK] / adr);
+		if (position < params[SLOTS_ATTACK] / adr) return position / (params[SLOTS_ATTACK] / adr);
 
-		if (position < padStart + params[SLOTS_DECAY] / adr) return
+		if (position < params[SLOTS_DECAY] / adr) return
 		(
 			1.0f -
 			(1.0f - params[SLOTS_SUSTAIN]) *
-			(position - padStart - (params[SLOTS_ATTACK] / adr)) /
+			(position - (params[SLOTS_ATTACK] / adr)) /
 			((params[SLOTS_DECAY] - params[SLOTS_ATTACK]) / adr)
 		);
 
-		if (position > padStart + padSize - params[SLOTS_RELEASE] / adr) return params[SLOTS_SUSTAIN] * (padStart + padSize - position) / (params[SLOTS_RELEASE] / adr);
+		if (position > size - params[SLOTS_RELEASE] / adr) return params[SLOTS_SUSTAIN] * (size - position) / (params[SLOTS_RELEASE] / adr);
 
 		return params[SLOTS_SUSTAIN];
 	}
 
-	Stereo mix (const Stereo& dry, const Stereo& wet, double position)
+	Stereo pan (const Stereo s0, const Stereo s1) const {return panf * s1 + unpanf * s0;}
+
+	Stereo mix (const Stereo s0, const Stereo s1, const double position, const double size, const float mixf) const
 	{
-		Stereo s1 = panf * wet;
-		const Stereo s2 = unpanf * dry;
-		s1 = s1 + s2;
-		s1.mix (dry, 1.0f - pads[startPos].mix);
-		return s1.mix (dry, 1.0f - params[SLOTS_MIX] * adsr (position));
+		return BUtilities::mix<Stereo> (s0, pan (s0, s1), params[SLOTS_MIX] * adsr (position, size) * mixf);
 	}
+
+
 };
 
 #endif /* FX_HPP_ */

@@ -41,9 +41,9 @@ public:
 		slots.fill (-1);
 	}
 
-	virtual void start (const double position) override
+	virtual void init (const double position) override
 	{
-		Fx::start (position);
+		Fx::init (position);
 
 		float sr = 0;
 		for (int i = 0; i < FX_SURPRISE_NR; ++i)
@@ -72,13 +72,13 @@ public:
 		}
 	}
 
-	virtual Stereo play (const double position) override
+	virtual Stereo play (const double position, const double size, const double mixf) override
 	{
 		if (playing && pads && plugin)
 		{
 			for (int i = 0; i < FX_SURPRISE_NR; ++i)
 			{
-				if (slots[i] >= 0) plugin->slots[slots[i]].mix = ((startPos >= 0) && (i == act) ? adsr (position) : 0);
+				if (slots[i] >= 0) plugin->slots[slots[i]].mixf = (i == act ? adsr (position, size) : 0);
 			}
 		}
 

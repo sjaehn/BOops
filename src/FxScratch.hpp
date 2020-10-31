@@ -40,23 +40,23 @@ public:
 		range (0.0f)
 	{}
 
-	virtual void start (const double position) override
+	virtual void init (const double position) override
 	{
-		Fx::start (position);
+		Fx::init (position);
 		framesPerStep = (framesPerStepPtr ? *framesPerStepPtr : 24000.0);
 		const double r = bidist (rnd);
 		range = (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_SCRATCH_RANGE] + r * params[SLOTS_OPTPARAMS + FX_SCRATCH_RANGERAND], 0.0, 1.0) : 0.5);
 	}
 
-	virtual Stereo play (const double position) override
+	virtual Stereo play (const double position, const double size, const double mixf) override
 	{
 		const Stereo s0 = (buffer && (*buffer) ? (**buffer)[0] : Stereo {0, 0});
-		if ((!playing) || (!pads) || (startPos < 0) || (!pads[startPos].mix) || (position < double (startPos)) || (position > double (startPos) + pads[startPos].size)) return s0;
+		if ((!playing) || (!pads)) return s0;
 
-		const double f = (shape ? shape->getMapValue (fmod (position - startPos, 1.0)): 0.0);
+		const double f = (shape ? shape->getMapValue (fmod (position, 1.0)): 0.0);
 		const long frame = framesPerStep * range * (-LIMIT (f, -1.0, 0.0));
 		Stereo s1 = (buffer && (*buffer) ? (**buffer)[frame] : Stereo {0, 0});
-		return mix (s0, s1, position);
+		return mix (s0, s1, position, size, mixf);
 	}
 
 protected:

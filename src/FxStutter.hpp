@@ -37,22 +37,22 @@ public:
 		stutters (1), smoothing (0.1f)
 	{}
 
-	virtual void start (const double position) override
+	virtual void init (const double position) override
 	{
-		Fx::start (position);
+		Fx::init (position);
 		framesPerStep = (framesPerStepPtr ? *framesPerStepPtr : 24000.0);
 		smoothing = (params ? params[SLOTS_OPTPARAMS + FX_STUTTER_SMOOTH] : 0.1f);
 		stutters = (params ? LIMIT (2.0 + 7.0 * params[SLOTS_OPTPARAMS + FX_STUTTER_STUTTERS], 2, 8) : 4);
 		framesPerStutter = framesPerStep / double (stutters);
 	}
 
-	virtual Stereo play (const double position) override
+	virtual Stereo play (const double position, const double size, const double mixf) override
 	{
 		const Stereo s0 = (buffer && (*buffer) ? (**buffer)[0] : Stereo {0, 0});
-		if ((!playing) || (!pads) || (startPos < 0) || (!pads[startPos].mix) || (position < double (startPos)) || (position > double (startPos) + pads[startPos].size)) return s0;
+		if ((!playing) || (!pads)) return s0;
 
-		const long nr = (position - startPos) * double (stutters);
-		const double frac = fmod (position - startPos, 1.0 / double (stutters));
+		const long nr = position * double (stutters);
+		const double frac = fmod (position, 1.0 / double (stutters));
 		const long frame = nr * framesPerStutter;
 		Stereo s1 = (buffer && (*buffer) ? (**buffer)[frame] : Stereo {0, 0});
 
@@ -70,7 +70,7 @@ public:
 			s1.mix (s2, 0.5 - (1.0 - frac) / smoothing);
 		}
 
-		return mix (s0, s1, position);
+		return mix (s0, s1, position, size, mixf);
 	}
 
 protected:

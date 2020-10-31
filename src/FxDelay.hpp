@@ -42,9 +42,9 @@ public:
 		size (1),
 		range (1.0f), delay (0.0f), feedback (0.0f) {}
 
-	virtual void start (const double position) override
+	virtual void init (const double position) override
 	{
-		Fx::start (position);
+		Fx::init (position);
 		framesPerStep = (framesPerStepPtr ? *framesPerStepPtr : 24000.0);
 		size = (sizePtr ? *sizePtr : 1);
 		const double r1 = bidist (rnd);
@@ -54,14 +54,14 @@ public:
 		feedback = (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_DELAY_FEEDBACK] + r2 * params[SLOTS_OPTPARAMS + FX_DELAY_FEEDBACKRAND], 0.0, 1.0) : 0.5);
 	}
 
-	virtual Stereo play (const double position) override
+	virtual Stereo play (const double position, const double padsize, const double mixf) override
 	{
 		const Stereo s0 = (buffer && (*buffer) ? (**buffer)[0] : Stereo {0, 0});
-		if ((!playing) || (!pads) || (startPos < 0) || (!pads[startPos].mix) || (position < double (startPos)) || (position > double (startPos) + pads[startPos].size)) return s0;
+		if ((!playing) || (!pads)) return s0;
 
 		const long frame = framesPerStep * range * delay;
 		Stereo s1 = (buffer && (*buffer) ? (**buffer)[frame] : Stereo {0, 0});
-		s1 = mix (s0, s1, position);
+		s1 = mix (s0, s1, position, padsize, mixf);
 		Stereo s2 = s1;
 		if (buffer && (*buffer)) (**buffer)[0] = s2.mix (s0, 1.0f - feedback);
 		return s1;

@@ -329,7 +329,8 @@ by the steps parameter. Use mix for the phaser depth. You can add a stereo phase
   * Flanger
   * Phaser
 * MIDI support
-  * MIDI triggering of playback
+  * MIDI triggering of sequencer transport
+* Fader rewritten to enable MIDI triggered sequencer transport
 * Bugfixes
   * Fix update pads in DSP if slot (and thus pads) in GUI changed (insert, delete, up, down)
   * Enable dragging of sliders
@@ -340,7 +341,7 @@ by the steps parameter. Use mix for the phaser depth. You can add a stereo phase
 ## TODO
 
 * Find a name
-* MIDI triggering of effects
+* MIDI triggering effects
 * Implement effects
   * Pitch (?)
   * Tape start (?)
@@ -348,4 +349,5 @@ by the steps parameter. Use mix for the phaser depth. You can add a stereo phase
 * Show waveform
 * Optionally load a sample (?)
 * Latency ? (Pitch, Tape start)
+* Reduce CPU load
 * Make some presets

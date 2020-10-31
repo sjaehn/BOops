@@ -37,9 +37,9 @@ public:
 		Fx (buffer, params, pads),
 		limit (1.0), bit (16.0), f (65536) {}
 
-	virtual void start (const double position) override
+	virtual void init (const double position) override
 	{
-		Fx::start (position);
+		Fx::init (position);
 		const double r1 = bidist (rnd);
 		limit = (params ? LIMIT (0.01 + 1.99 * params[SLOTS_OPTPARAMS + FX_BITCRUSH_LIMIT] + 1.99 * r1 * params[SLOTS_OPTPARAMS + FX_BITCRUSH_LIMITRAND], 0.01, 2.0) : 1.0);
 		const double r2 = bidist (rnd);
@@ -47,10 +47,10 @@ public:
 		f = pow (2, bit - 1);
 	}
 
-	virtual Stereo play (const double position) override
+	virtual Stereo play (const double position, const double size, const double mixf) override
 	{
 		const Stereo s0 = (buffer && (*buffer) ? (**buffer)[0] : Stereo {0, 0});
-		if ((!playing) || (!pads) || (startPos < 0) || (!pads[startPos].mix) || (position < double (startPos)) || (position > double (startPos) + pads[startPos].size)) return s0;
+		if ((!playing) || (!pads)) return s0;
 
 		const float l1 = LIMIT (s0.left + limit, 0, 2.0 * limit) / (2.0 * limit);
 		const float l2 = round (l1 * f);
@@ -59,7 +59,7 @@ public:
 		const float r2 = round (r1 * f);
 		const float r3 = (r2 - 0.5 * f) * 2.0 * limit / f;
 
-		return mix (s0, {l3, r3}, position);
+		return mix (s0, Stereo (l3, r3), position, size, mixf);
 	}
 
 protected:

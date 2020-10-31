@@ -38,9 +38,9 @@ public:
 		nr (0), smoothing (0.1f)
 	{}
 
-	virtual void start (const double position) override
+	virtual void init (const double position) override
 	{
-		Fx::start (position);
+		Fx::init (position);
 		if (params)
 		{
 			nr = LIMIT (1 + 8.0f * params[SLOTS_OPTPARAMS + FX_CHOPPER_NR], 1, 8);
@@ -58,10 +58,10 @@ public:
 		}
 	}
 
-	virtual Stereo play (const double position) override
+	virtual Stereo play (const double position, const double size, const double mixf) override
 	{
 		const Stereo s0 = (buffer && (*buffer) ? (**buffer)[0] : Stereo {0, 0});
-		if ((!playing) || (!pads) || (startPos < 0) || (!pads[startPos].mix) || (position < double (startPos)) || (position > double (startPos) + pads[startPos].size)) return s0;
+		if ((!playing) || (!pads)) return s0;
 
 		const int p = nr * fmod (position, 1.0);
 		const double frac = double (nr) * fmod (position, 1.0) - double (p);
@@ -82,7 +82,7 @@ public:
 			s1.mix (sn, 0.5 - (1.0 - frac) / smoothing);
 		}
 
-		return mix (s0, s1, position);
+		return mix (s0, s1, position, size, mixf);
 	}
 
 protected:

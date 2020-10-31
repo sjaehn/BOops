@@ -39,26 +39,26 @@ public:
 		framesPerStep (24000),
 		reach (1.0), order (1.0), r (0.0) {}
 
-	virtual void start (const double position) override
+	virtual void init (const double position) override
 	{
-		Fx::start (position);
+		Fx::init (position);
 		const double r1 = bidist (rnd);
 		reach = (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_TAPESTOP_REACH] + r1 * params[SLOTS_OPTPARAMS + FX_TAPESTOP_REACHRAND], 0.0, 1.0) : 1.0);
+		const int startPos = position;
 		r = reach * pads[startPos].size;
 		const double r2 = bidist (rnd);
 		order = (params ? LIMIT (1.0 + 9.0 * (params[SLOTS_OPTPARAMS + FX_TAPESTOP_ORDER] + r2 * params[SLOTS_OPTPARAMS + FX_TAPESTOP_ORDERRAND]), 1.0, 10.0) : 2.0);
 		framesPerStep = (framesPerStepPtr ? *framesPerStepPtr : 24000.0);
 	}
 
-	virtual Stereo play (const double position) override
+	virtual Stereo play (const double position, const double size, const double mixf) override
 	{
 		const Stereo s0 = (buffer && (*buffer) ? (**buffer)[0] : Stereo {0, 0});
-		if ((!playing) || (!pads) || (startPos < 0) || (!pads[startPos].mix) || (position < double (startPos)) || (position > double (startPos) + pads[startPos].size)) return s0;
+		if ((!playing) || (!pads)) return s0;
 
-		const double p = (position - startPos);
-		const long frame = (log (exp (order * p) + exp (order * reach) - 1) / order - reach) * framesPerStep;
+		const long frame = (log (exp (order * position) + exp (order * reach) - 1) / order - reach) * framesPerStep;
 		Stereo s1 = (buffer && (*buffer) ? (**buffer)[frame] : Stereo {0, 0});
-		return mix (s0, s1, position);
+		return mix (s0, s1, position, size, mixf);
 	}
 
 protected:

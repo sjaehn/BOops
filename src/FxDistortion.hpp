@@ -50,9 +50,9 @@ public:
 		Fx (buffer, params, pads),
 		method (OVERDRIVE), drive (1.0), level (1.0) {}
 
-	virtual void start (const double position) override
+	virtual void init (const double position) override
 	{
-		Fx::start (position);
+		Fx::init (position);
 		method = BNoname01DistortionIndex (LIMIT (int (round (params[SLOTS_OPTPARAMS + FX_DISTORTION_METHOD] * 8)), 0, 4));
 		const double r1 = bidist (rnd);
 		drive = DB2CO (-30.0 + 100.0 * (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_DISTORTION_DRIVE] + r1 * params[SLOTS_OPTPARAMS + FX_DISTORTION_DRIVERAND], 0.00, 1.0) : 0.5));
@@ -60,10 +60,10 @@ public:
 		level = DB2CO (-70.0 + 100.0 * (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_DISTORTION_LEVEL] + r2 * params[SLOTS_OPTPARAMS + FX_DISTORTION_LEVELRAND], 0.0, 1.0) : 0.5));
 	}
 
-	virtual Stereo play (const double position) override
+	virtual Stereo play (const double position, const double size, const double mixf) override
 	{
 		const Stereo s0 = (buffer && (*buffer) ? (**buffer)[0] : Stereo {0, 0});
-		if ((!playing) || (!pads) || (startPos < 0) || (!pads[startPos].mix) || (position < double (startPos)) || (position > double (startPos) + pads[startPos].size)) return s0;
+		if ((!playing) || (!pads)) return s0;
 
 		double l = s0.left * drive / level;
 		double r = s0.right * drive / level;
@@ -117,7 +117,7 @@ public:
 				break;
 		}
 
-		return mix (s0, {float (l), float (r)}, position);
+		return mix (s0, {float (l), float (r)}, position, size, mixf);
 	}
 
 protected:

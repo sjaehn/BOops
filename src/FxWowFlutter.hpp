@@ -35,20 +35,18 @@
 class FxWowFlutter : public Fx
 {
 public:
-	FxWowFlutter () : FxWowFlutter (nullptr, nullptr, nullptr, nullptr, nullptr) {}
+	FxWowFlutter () : FxWowFlutter (nullptr, nullptr, nullptr, nullptr) {}
 
-	FxWowFlutter (RingBuffer<Stereo>** buffer, float* params, Pad* pads, double* framesPerStep, size_t* size) :
+	FxWowFlutter (RingBuffer<Stereo>** buffer, float* params, Pad* pads, double* framesPerStep) :
 		Fx (buffer, params, pads),
 		framesPerStepPtr (framesPerStep),
 		framesPerStep (24000),
-		sizePtr (size),
-		size (1),
 		wowDepth (0.0f), wowRate (1.0f), flutterDepth (0.0f), flutterRate (1.0f)
 	{}
 
-	virtual void start (const double position) override
+	virtual void init (const double position) override
 	{
-		Fx::start (position);
+		Fx::init (position);
 		const double r1 = bidist (rnd);
 		wowDepth = 0.01 * (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_WOWFLUTTER_WOWDEPTH] + r1 * params[SLOTS_OPTPARAMS + FX_WOWFLUTTER_WOWDEPTHRAND], 0.0, 1.0) : 0.5);
 		const double r2 = bidist (rnd);
@@ -58,36 +56,33 @@ public:
 		const double r4 = bidist (rnd);
 		flutterRate = 1.0 + 15.0 * (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_WOWFLUTTER_FLUTTERRATE] + r4 * params[SLOTS_OPTPARAMS + FX_WOWFLUTTER_FLUTTERRATERAND], 0.0, 1.0) : 0.2);
 		framesPerStep = (framesPerStepPtr ? *framesPerStepPtr : 24000.0);
-		size = (sizePtr ? *sizePtr : 1);
 	}
 
-	virtual Stereo play (const double position) override
+	virtual Stereo play (const double position, const double padsize, const double mixf) override
 	{
 		const Stereo s0 = (buffer && (*buffer) ? (**buffer)[0] : Stereo {0, 0});
-		if ((!playing) || (!pads) || (startPos < 0) || (!pads[startPos].mix) || (position < double (startPos)) || (position > double (startPos) + pads[startPos].size)) return s0;
+		if ((!playing) || (!pads)) return s0;
 
 		const double wow = (0.5 - 0.5 * cos (2 * M_PI * position * wowRate)) * wowDepth;
 		const double flutter = (0.5 - 0.5 * cos (2 * M_PI * position * flutterRate)) * flutterDepth;
 		const double fade =
 		(
-			position < startPos + 0.5 ?
-			0.5 - 0.5 * cos (2 * M_PI * (position - startPos)) :
+			position < 0.5 ?
+			0.5 - 0.5 * cos (2 * M_PI * position) :
 			(
-				position > startPos + double (size) - 0.5 ?
-				0.5 - 0.5 * cos (2 * M_PI * (startPos + double (size) - position)) :
+				position > padsize - 0.5 ?
+				0.5 - 0.5 * cos (2 * M_PI * (padsize - position)) :
 				1.0
 			)
 		);
 		const long frame = framesPerStep * fade * (wow + flutter);
 		Stereo s1 = (buffer && (*buffer) ? (**buffer)[frame] : Stereo {0, 0});
-		return mix (s0, s1, position);
+		return mix (s0, s1, position, padsize, mixf);
 	}
 
 protected:
 	double* framesPerStepPtr;
 	double framesPerStep;
-	size_t* sizePtr;
-	size_t size;
 	float wowDepth;
 	float wowRate;
 	float flutterDepth;

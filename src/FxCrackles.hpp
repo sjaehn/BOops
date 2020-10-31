@@ -55,9 +55,9 @@ public:
 		c (0)
 	{}
 
-	virtual void start (const double position) override
+	virtual void init (const double position) override
 	{
-		Fx::start (position);
+		Fx::init (position);
 		framesPerStep = (framesPerStepPtr ? *framesPerStepPtr : 24000.0);
 		const double r1 = bidist (rnd);
 		const float db = -36.0 + 48.0 * (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_CRACKLES_AMP] + r1 * params[SLOTS_OPTPARAMS + FX_CRACKLES_AMPRAND], 0.0, 1.0) : 0.5);
@@ -72,13 +72,13 @@ public:
 		crackles.clear();
 	}
 
-	virtual Stereo play (const double position) override
+	virtual Stereo play (const double position, const double size, const double mixf) override
 	{
 		double t = double (c) / samplerate;
 		++c;
 
 		const Stereo s0 = (buffer && (*buffer) ? (**buffer)[0] : Stereo {0, 0});
-		if ((!playing) || (!pads) || (startPos < 0) || (!pads[startPos].mix) || (position < double (startPos)) || (position > double (startPos) + pads[startPos].size)) return s0;
+		if ((!playing) || (!pads)) return s0;
 
 		// Randomly generate new crackles
 		const double r = unidist (rnd);
@@ -103,7 +103,7 @@ public:
 			else ++iit;
 		}
 
-		return mix (s0, s1, position);
+		return mix (s0, s1, position, size, mixf);
 	}
 
 protected:
