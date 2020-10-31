@@ -64,6 +64,9 @@ void getURIs (LV2_URID_Map* m, BNoname01URIDs* uris)
 	uris->bNoname01_installFx = m->map(m->handle, BNONAME01_URI "#installFx");
 	uris->bNoname01_freeFx = m->map(m->handle, BNONAME01_URI "#freeFx");
 	uris->bNoname01_statePad = m->map(m->handle, BNONAME01_URI "#statePad");
+	uris->bNoname01_waveformEvent = m->map(m->handle, BNONAME01_URI "#waveformEvent");
+	uris->bNoname01_waveformStart = m->map(m->handle, BNONAME01_URI "#waveformStart");
+	uris->bNoname01_waveformData = m->map(m->handle, BNONAME01_URI "#notify_waveformData");
 	uris->bNoname01_transportGateKeyEvent = m->map(m->handle, BNONAME01_URI "#transportGateKeyEvent");
 	uris->bNoname01_transportGateKeys = m->map(m->handle, BNONAME01_URI "#transportGateKeys");
 }

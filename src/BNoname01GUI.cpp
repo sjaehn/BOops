@@ -86,6 +86,7 @@ BNoname01GUI::BNoname01GUI (const char *bundle_path, const LV2_Feature *const *f
 	transportGateCancelButton (240, 80, 60, 20, "menu/button", "Cancel"),
 	transportGateKeys (NR_PIANO_KEYS, false),
 
+	monitor (290, 130, 820, 288, "monitor"),
 	padSurface (290, 130, 820, 288, "padsurface"),
 	editContainer (578, 426, 284, 24, "widget"),
 
@@ -304,12 +305,15 @@ BNoname01GUI::BNoname01GUI (const char *bundle_path, const LV2_Feature *const *f
 	mContainer.add (editContainer);
 	for (Slot& s : slots) mContainer.add (s.container);
 	mContainer.add (padSurface);
+	mContainer.add (monitor);
 	mContainer.add (transportGateContainer);
 	mContainer.add (settingsContainer);
 	mContainer.add (messageLabel);
 
 	drawPad();
 	add (mContainer);
+
+	getKeyGrabStack()->add (this);
 
 	//Scan host features for URID map
 	LV2_URID_Map* map = NULL;
@@ -449,7 +453,7 @@ void BNoname01GUI::port_event(uint32_t port, uint32_t buffer_size,
 			}
 
 			// Slot pattern notification
-			if (obj->body.otype == urids.bNoname01_slotEvent)
+			else if (obj->body.otype == urids.bNoname01_slotEvent)
 			{
 				LV2_Atom *oSl = NULL, *oPd = NULL;
 				int slot = -1;
@@ -487,7 +491,7 @@ void BNoname01GUI::port_event(uint32_t port, uint32_t buffer_size,
 			}
 
 			// Slot shape notification
-			if (obj->body.otype == urids.bNoname01_shapeEvent)
+			else if (obj->body.otype == urids.bNoname01_shapeEvent)
 			{
 				LV2_Atom *oSl = NULL, *oSh = NULL;
 				int slot = -1;
@@ -578,6 +582,34 @@ void BNoname01GUI::port_event(uint32_t port, uint32_t buffer_size,
 					if (int (nCursor) != int (oCursor)) drawPad();
 				}
 			}
+
+			// Monitor notification
+			else if (obj->body.otype == urids.bNoname01_waveformEvent)
+			{
+				int start = -1;
+
+				const LV2_Atom *oStart = NULL, *oData = NULL;
+				lv2_atom_object_get (obj,
+						     urids.bNoname01_waveformStart, &oStart,
+						     urids.bNoname01_waveformData, &oData,
+						     NULL);
+				if (oStart && (oStart->type == urids.atom_Int)) start = ((LV2_Atom_Int*)oStart)->body;
+
+				if (oData && (oData->type == urids.atom_Vector))
+				{
+					const LV2_Atom_Vector* vec = (const LV2_Atom_Vector*) oData;
+					if (vec->body.child_type == urids.atom_Float)
+					{
+						uint32_t size = (uint32_t) ((oData->size - sizeof(LV2_Atom_Vector_Body)) / sizeof (float));
+						float* data = (float*) (&vec->body + 1);
+						if ((start >= 0) && (size > 0))
+						{
+							monitor.addData (start, size, data);
+							monitor.redrawRange (start, size);
+						}
+					}
+				}
+			}
 		}
 	}
 
@@ -647,6 +679,7 @@ void BNoname01GUI::resize ()
 	RESIZE (transportGateOkButton, 320, 80, 40, 20, sz);
 	RESIZE (transportGateCancelButton, 240, 80, 60, 20, sz);
 
+	RESIZE (monitor, 290, 130, 820, 288, sz);
 	RESIZE (padSurface, 290, 130, 820, 288, sz);
 	RESIZE (editContainer, 578, 426, 284, 24, sz);
 
@@ -738,6 +771,7 @@ void BNoname01GUI::applyTheme (BStyles::Theme& theme)
 		s.playPad.applyTheme (theme);
 	};
 
+	monitor.applyTheme (theme);
 	padSurface.applyTheme (theme);
 
 	editContainer.applyTheme (theme);
@@ -783,6 +817,22 @@ void BNoname01GUI::onConfigureRequest (BEvents::ExposeEvent* event)
 
 	sz = (getWidth() / 1240 > getHeight() / 608 ? getHeight() / 608 : getWidth() / 1240);
 	resize ();
+}
+
+void BNoname01GUI::onKeyPressed (BEvents::KeyEvent* event)
+{
+	if ((event) && (event->getKey() == BDevices::KEY_SHIFT))
+	{
+		monitor.setScrollable (true);
+	}
+}
+
+void BNoname01GUI::onKeyReleased (BEvents::KeyEvent* event)
+{
+	if ((event) && (event->getKey() == BDevices::KEY_SHIFT))
+	{
+		monitor.setScrollable (false);
+	}
 }
 
 void BNoname01GUI::sendUiOn ()

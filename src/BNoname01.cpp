@@ -41,10 +41,11 @@ BNoname01::BNoname01 (double samplerate, const LV2_Feature* const* features) :
 	controlPort(NULL), notifyPort(NULL),
 	audioInput1(NULL), audioInput2(NULL), audioOutput1(NULL), audioOutput2(NULL),
 	new_controllers {NULL}, globalControllers {0},
-	forge (), notify_frame (), message (),
-	ui_on(false), scheduleNotifySlot {false},
+	forge (), notify_frame (),
+	waveform {0}, waveformCounter (0), lastWaveformCounter (0),
+	message (), ui_on(false), scheduleNotifySlot {false},
 	scheduleNotifyStatus (false), scheduleResizeBuffers (false), scheduleSetFx {false},
-	scheduleNotifyTransportGateKeys (false)
+	scheduleNotifyWaveformToGui (false), scheduleNotifyTransportGateKeys (false)
 
 {
 	//Scan host features for URID map
@@ -664,12 +665,14 @@ void BNoname01::run (uint32_t n_samples)
 	// TODO: At least one free positions
 
 	// Send collected data to GUI
+	if (waveformCounter != lastWaveformCounter) scheduleNotifyWaveformToGui = true;
 	if (ui_on)
 	{
 		if (message.isScheduled ()) notifyMessageToGui ();
 		if (scheduleNotifyStatus) notifyStatusToGui ();
 		for (int i = 0; i < NR_SLOTS; ++i) {if (scheduleNotifySlot[i]) notifySlotToGui (i);}
 		for (int i = 0; i < NR_SLOTS; ++i) {if (scheduleNotifyShape[i]) notifyShapeToGui (i);}
+		if (scheduleNotifyWaveformToGui) notifyWaveformToGui (lastWaveformCounter, waveformCounter);
 	}
 	lv2_atom_forge_pop (&forge, &notify_frame);
 }
@@ -770,6 +773,37 @@ void BNoname01::notifyStatusToGui()
 	scheduleNotifyStatus = false;
 }
 
+void BNoname01::notifyWaveformToGui (const int start, const int end)
+{
+	int p1 = (start <= end ? end : WAVEFORMSIZE - 1);
+
+	// Notify shapeBuffer (position to end)
+	LV2_Atom_Forge_Frame frame;
+	lv2_atom_forge_frame_time(&forge, 0);
+	lv2_atom_forge_object(&forge, &frame, 0, urids.bNoname01_waveformEvent);
+	lv2_atom_forge_key(&forge, urids.bNoname01_waveformStart);
+	lv2_atom_forge_int(&forge, start);
+	lv2_atom_forge_key(&forge, urids.bNoname01_waveformData);
+	lv2_atom_forge_vector(&forge, sizeof(float), urids.atom_Float, (uint32_t) (p1 + 1 - start), &waveform[start]);
+	lv2_atom_forge_pop(&forge, &frame);
+
+	// Additional notification if position exceeds end
+	if (start > waveformCounter)
+	{
+		LV2_Atom_Forge_Frame frame;
+		lv2_atom_forge_frame_time(&forge, 0);
+		lv2_atom_forge_object(&forge, &frame, 0, urids.bNoname01_waveformEvent);
+		lv2_atom_forge_key(&forge, urids.bNoname01_waveformStart);
+		lv2_atom_forge_int(&forge, 0);
+		lv2_atom_forge_key(&forge, urids.bNoname01_waveformData);
+		lv2_atom_forge_vector(&forge, sizeof(float), urids.atom_Float, (uint32_t) (end), &waveform[0]);
+		lv2_atom_forge_pop(&forge, &frame);
+	}
+
+	scheduleNotifyWaveformToGui = false;
+	lastWaveformCounter = end;
+}
+
 void BNoname01::notifyTransportGateKeysToGui()
 {
 	// Create buffer
@@ -812,8 +846,17 @@ void BNoname01::play (uint32_t start, uint32_t end)
 	{
 		for (uint32_t i = start; i < end; ++i)
 		{
+			// Load samples to buffer
 			for (int j = 0; j < NR_SLOTS; ++j) slots[j].buffer->push_front (Stereo {audioInput1[i], audioInput2[i]});
+
+			// Waveform
+			Position& p = positions.back();
+			double relpos = getPositionFromFrames (p.transport, i - p.refFrame);	// Position relative to reference frame
+			double pos = floorfrac (p.position + relpos);				// 0..1 position sequence
+			waveformCounter = int (pos * WAVEFORMSIZE) % WAVEFORMSIZE;
+			waveform[waveformCounter] = (audioInput1[i] + audioInput2[i]) / 2;
 		}
+
 		if (audioOutput1 != audioInput1) memmove(&audioOutput1[start], &audioInput1[start], (end - start) * sizeof(float));
 		if (audioOutput2 != audioInput2) memmove(&audioOutput2[start], &audioInput2[start], (end - start) * sizeof(float));
 		return;
@@ -838,6 +881,10 @@ void BNoname01::play (uint32_t start, uint32_t end)
 			Stereo input = Stereo {audioInput1[i], audioInput2[i]};
 			Stereo output = input;
 
+			// Interpolate position within the loop
+			double relpos = getPositionFromFrames (p.transport, i - p.refFrame);	// Position relative to reference frame
+			double pos = floorfrac (p.position + relpos);				// 0..1 position sequence
+
 			if
 			(
 				(p.playing) &&
@@ -845,9 +892,6 @@ void BNoname01::play (uint32_t start, uint32_t end)
 				(p.transport.bpm >= 1.0f)
 			)
 			{
-				// Interpolate position within the loop
-				double relpos = getPositionFromFrames (p.transport, i - p.refFrame);	// Position relative to reference frame
-				double pos = floorfrac (p.position + relpos);				// 0..1 position sequence
 				double step = pos * globalControllers[STEPS];
 				int iStep = LIMIT (step, 0, globalControllers[STEPS] - 1);
 
@@ -885,8 +929,14 @@ void BNoname01::play (uint32_t start, uint32_t end)
 			audioOutput2[i] = (sumFaders * audioOutput2[i] + fader * output.right) / (sumFaders + fader);;
 
 			sumFaders += fader;
-		}
 
+			// Waveform
+			if (j == positions.size - 1)
+			{
+				waveformCounter = int (pos * WAVEFORMSIZE) % WAVEFORMSIZE;
+				waveform[waveformCounter] = (audioInput1[i] + audioInput2[i]) / 2;
+			}
+		}
 	}
 }
 

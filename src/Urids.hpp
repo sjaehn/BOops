@@ -67,6 +67,9 @@ struct BNoname01URIDs
 	LV2_URID bNoname01_installFx;
 	LV2_URID bNoname01_freeFx;
 	LV2_URID bNoname01_statePad;
+	LV2_URID bNoname01_waveformEvent;
+	LV2_URID bNoname01_waveformStart;
+	LV2_URID bNoname01_waveformData;
 	LV2_URID bNoname01_transportGateKeyEvent;
 	LV2_URID bNoname01_transportGateKeys;
 };

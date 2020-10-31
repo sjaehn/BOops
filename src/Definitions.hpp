@@ -28,6 +28,7 @@
 #define FADINGTIME 0.01
 #define GRIDSIZE 2.0
 #define NR_PIANO_KEYS 120
+#define WAVEFORMSIZE 1024
 #define BNONAME01_URI "https://www.jahnichen.de/plugins/lv2/BNoname01"
 #define BNONAME01_GUI_URI "https://www.jahnichen.de/plugins/lv2/BNoname01#gui"
 

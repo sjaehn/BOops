@@ -56,6 +56,7 @@
 #include "HSlider.hpp"
 #include "Dial.hpp"
 #include "Shape.hpp"
+#include "MonitorWidget.hpp"
 
 #define BG_FILE "inc/surface.png"
 #define HELP_URL "https://github.com/sjaehn/BNoname01/blob/master/README.md"
@@ -94,6 +95,8 @@ public:
 	void sendShape (const int slot);
 	void sendTransportGateKeys();
 	virtual void onConfigureRequest (BEvents::ExposeEvent* event) override;
+	virtual void onKeyPressed (BEvents::KeyEvent* event) override;
+	virtual void onKeyReleased (BEvents::KeyEvent* event) override;
 	void applyTheme (BStyles::Theme& theme) override;
 
 	static void optionChangedCallback(BEvents::Event* event);
@@ -234,6 +237,7 @@ private:
 
 	std::array<Slot, NR_SLOTS> slots;
 
+	MonitorWidget monitor;
 	PadSurface padSurface;
 
 	BWidgets::Widget editContainer;

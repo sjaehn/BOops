@@ -139,6 +139,12 @@ Once you selected the paste, you can paste the clipboard pads by clicking to any
 No description required.
 
 
+#### Waveform
+
+This input signal waveform is displayed on top of the pattern matrix. Press the shift key and use mouse wheel scrolling to
+scale the waveform.
+
+
 #### Pad properties
 
 The pad properties (relevant for the pattern drawing mode) are shown on the left of the user interface.
@@ -312,6 +318,7 @@ by the steps parameter. Use mix for the phaser depth. You can add a stereo phase
 * Enable effect panning
 * Added feedback dial to delay effect
 * Messaging system activated
+* Show input signal waveform
 * Implement effects
   * Surprise box
   * Jumble
@@ -330,7 +337,7 @@ by the steps parameter. Use mix for the phaser depth. You can add a stereo phase
   * Phaser
 * MIDI support
   * MIDI triggering of sequencer transport
-* Fader rewritten to enable MIDI triggered sequencer transport
+* Fader rewritten to enable click-free MIDI triggered sequencer transport
 * Bugfixes
   * Fix update pads in DSP if slot (and thus pads) in GUI changed (insert, delete, up, down)
   * Enable dragging of sliders
@@ -346,7 +353,6 @@ by the steps parameter. Use mix for the phaser depth. You can add a stereo phase
   * Pitch (?)
   * Tape start (?)
   * Ring modulator
-* Show waveform
 * Optionally load a sample (?)
 * Latency ? (Pitch, Tape start)
 * Reduce CPU load

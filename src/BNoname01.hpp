@@ -82,6 +82,7 @@ private:
 	void notifyShapeToGui (const int slot);
 	void notifyMessageToGui ();
 	void notifyStatusToGui ();
+	void notifyWaveformToGui (const int start, const int end);
 	void notifyTransportGateKeysToGui ();
 	double getPositionFromBeats (const Transport& transport, const double beats);
 	double getPositionFromFrames (const Transport& transport, const uint64_t frames);
@@ -115,6 +116,10 @@ protected:
 	// Internals
 public:	Slot slots[NR_SLOTS];
 protected:
+	float waveform[WAVEFORMSIZE];
+	int waveformCounter;
+	int lastWaveformCounter;
+
 	Message message;
 	bool ui_on;
 	bool scheduleNotifySlot[NR_SLOTS];
@@ -122,6 +127,7 @@ protected:
 	bool scheduleNotifyStatus;
 	bool scheduleResizeBuffers;
 	bool scheduleSetFx[NR_SLOTS];
+	bool scheduleNotifyWaveformToGui;
 	bool scheduleNotifyTransportGateKeys;
 
 	struct Atom_BufferList
