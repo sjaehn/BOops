@@ -316,7 +316,8 @@ private:
 		{{{0.8, 0.0, 0.7, 1.0}, {1.0, 1.0, 0.25, 1.0}, {0.1, 0.1, 0.1, 1.0}, {0.0, 0.0, 0.0, 0.0}}},		// FX_CRACKLES
 		{{{0.0, 0.75, 0.75, 1.0}, {1.0, 1.0, 0.25, 1.0}, {0.1, 0.1, 0.1, 1.0}, {0.0, 0.0, 0.0, 0.0}}},		// FX_STUTTER
 		{{{0.95, 0.35, 0.0, 1.0}, {1.0, 1.0, 0.25, 1.0}, {0.1, 0.1, 0.1, 1.0}, {0.0, 0.0, 0.0, 0.0}}},		// FX_FLANGER
-		{{{0.9, 0.5, 0.0, 1.0}, {1.0, 1.0, 0.25, 1.0}, {0.1, 0.1, 0.1, 1.0}, {0.0, 0.0, 0.0, 0.0}}}		// FX_PHASER
+		{{{0.9, 0.5, 0.0, 1.0}, {1.0, 1.0, 0.25, 1.0}, {0.1, 0.1, 0.1, 1.0}, {0.0, 0.0, 0.0, 0.0}}},		// FX_PHASER
+		{{{0.85, 0.6, 0.0, 1.0}, {1.0, 1.0, 0.25, 1.0}, {0.1, 0.1, 0.1, 1.0}, {0.0, 0.0, 0.0, 0.0}}}		// FX_RINGMOD
 	}};
 
 	std::array<std::string, NR_FX> fxBgFilenames = {BNONAME01FXBGNAMES};
@@ -484,7 +485,9 @@ private:
 		{"pad22",		{{"uses", STYLEPTR (&padStyles)},
 					 {"fgcolors", STYLEPTR (&padColors[22])}}},
 		{"pad23",		{{"uses", STYLEPTR (&padStyles)},
-					 {"fgcolors", STYLEPTR (&padColors[23])}}}
+					 {"fgcolors", STYLEPTR (&padColors[23])}}},
+		{"pad24",		{{"uses", STYLEPTR (&padStyles)},
+					 {"fgcolors", STYLEPTR (&padColors[24])}}}
 	});
 };
 

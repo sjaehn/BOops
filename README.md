@@ -306,6 +306,12 @@ the high freq. parameter. As the phaser passes the signal through a number of al
 by the steps parameter. Use mix for the phaser depth. You can add a stereo phase shift and / or a feedback.
 
 
+#### Ring modulator
+
+Set the modulator frequency and select the waveform from the menu. The amount of modulation is set using the ratio parameter
+(0 = full input signal, 1 = full modulator signal).
+
+
 ## What's new
 
 * Optional join consecutive pads
@@ -335,6 +341,7 @@ by the steps parameter. Use mix for the phaser depth. You can add a stereo phase
   * Stutter
   * Flanger
   * Phaser
+  * Ring modulator
 * MIDI support
   * MIDI triggering of sequencer transport
 * Fader rewritten to enable click-free MIDI triggered sequencer transport
@@ -352,7 +359,6 @@ by the steps parameter. Use mix for the phaser depth. You can add a stereo phase
 * Implement effects
   * Pitch (?)
   * Tape start (?)
-  * Ring modulator
 * Optionally load a sample (?)
 * Latency ? (Pitch, Tape start)
 * Reduce CPU load

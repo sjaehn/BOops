@@ -45,6 +45,7 @@
 #include "FxStutter.hpp"
 #include "FxFlanger.hpp"
 #include "FxPhaser.hpp"
+#include "FxRingModulator.hpp"
 
 Slot::Slot () : Slot (nullptr, FX_INVALID, nullptr, nullptr, 0, 0.0f, 0.0) {}
 
@@ -191,6 +192,9 @@ Fx* Slot::newFx (const BNoname01EffectsIndex effect)
 					break;
 
 		case FX_PHASER:		fx = new FxPhaser (&buffer, params, pads, &framesPerStep, plugin ? plugin->host.rate : 48000);
+					break;
+
+		case FX_RINGMOD:	fx = new FxRingModulator (&buffer, params, pads, &framesPerStep, plugin ? plugin->host.rate : 48000);
 					break;
 
 		case FX_INVALID:	fx = nullptr;

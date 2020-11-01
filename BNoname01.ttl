@@ -171,13 +171,13 @@
 		lv2:scalePoint [ rdfs:label "Amp"; rdf:value 2 ] ;
 		lv2:scalePoint [ rdfs:label "Balance"; rdf:value 3 ] ;
 		lv2:scalePoint [ rdfs:label "Width"; rdf:value 4 ] ;
-		lv2:scalePoint [ rdfs:label "Pitch"; rdf:value 5 ] ;
+#		lv2:scalePoint [ rdfs:label "Pitch"; rdf:value 5 ] ;
 		lv2:scalePoint [ rdfs:label "Delay"; rdf:value 6 ] ;
 		lv2:scalePoint [ rdfs:label "Reverser"; rdf:value 7 ] ;
 		lv2:scalePoint [ rdfs:label "Chopper"; rdf:value 8 ] ;
 		lv2:scalePoint [ rdfs:label "Jumbler"; rdf:value 9 ] ;
 		lv2:scalePoint [ rdfs:label "Tape stop"; rdf:value 10 ] ;
-		lv2:scalePoint [ rdfs:label "Tape start"; rdf:value 11 ] ;
+#		lv2:scalePoint [ rdfs:label "Tape start"; rdf:value 11 ] ;
 		lv2:scalePoint [ rdfs:label "Tape speed"; rdf:value 12 ] ;
 		lv2:scalePoint [ rdfs:label "Scratch"; rdf:value 13 ] ;
 		lv2:scalePoint [ rdfs:label "Wow & flutter"; rdf:value 14 ] ;
@@ -190,9 +190,10 @@
 		lv2:scalePoint [ rdfs:label "Stutter"; rdf:value 21 ] ;
 		lv2:scalePoint [ rdfs:label "Flanger"; rdf:value 22 ] ;
 		lv2:scalePoint [ rdfs:label "Phaser"; rdf:value 23 ] ;
+		lv2:scalePoint [ rdfs:label "Ring modulator"; rdf:value 24 ] ;
                 lv2:default 0 ;
                 lv2:minimum 0 ;
-                lv2:maximum 23 ;
+                lv2:maximum 24 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
                 lv2:index 15 ;
@@ -357,13 +358,13 @@
 		lv2:scalePoint [ rdfs:label "Amp"; rdf:value 2 ] ;
 		lv2:scalePoint [ rdfs:label "Balance"; rdf:value 3 ] ;
 		lv2:scalePoint [ rdfs:label "Width"; rdf:value 4 ] ;
-		lv2:scalePoint [ rdfs:label "Pitch"; rdf:value 5 ] ;
+#		lv2:scalePoint [ rdfs:label "Pitch"; rdf:value 5 ] ;
 		lv2:scalePoint [ rdfs:label "Delay"; rdf:value 6 ] ;
 		lv2:scalePoint [ rdfs:label "Reverser"; rdf:value 7 ] ;
 		lv2:scalePoint [ rdfs:label "Chopper"; rdf:value 8 ] ;
 		lv2:scalePoint [ rdfs:label "Jumbler"; rdf:value 9 ] ;
 		lv2:scalePoint [ rdfs:label "Tape stop"; rdf:value 10 ] ;
-		lv2:scalePoint [ rdfs:label "Tape start"; rdf:value 11 ] ;
+#		lv2:scalePoint [ rdfs:label "Tape start"; rdf:value 11 ] ;
 		lv2:scalePoint [ rdfs:label "Tape speed"; rdf:value 12 ] ;
 		lv2:scalePoint [ rdfs:label "Scratch"; rdf:value 13 ] ;
 		lv2:scalePoint [ rdfs:label "Wow & flutter"; rdf:value 14 ] ;
@@ -376,9 +377,10 @@
 		lv2:scalePoint [ rdfs:label "Stutter"; rdf:value 21 ] ;
 		lv2:scalePoint [ rdfs:label "Flanger"; rdf:value 22 ] ;
 		lv2:scalePoint [ rdfs:label "Phaser"; rdf:value 23 ] ;
+		lv2:scalePoint [ rdfs:label "Ring modulator"; rdf:value 24 ] ;
                 lv2:default 0 ;
                 lv2:minimum 0 ;
-                lv2:maximum 23 ;
+                lv2:maximum 24 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
 	        lv2:index 35 ;
@@ -543,13 +545,13 @@
 		lv2:scalePoint [ rdfs:label "Amp"; rdf:value 2 ] ;
 		lv2:scalePoint [ rdfs:label "Balance"; rdf:value 3 ] ;
 		lv2:scalePoint [ rdfs:label "Width"; rdf:value 4 ] ;
-		lv2:scalePoint [ rdfs:label "Pitch"; rdf:value 5 ] ;
+#		lv2:scalePoint [ rdfs:label "Pitch"; rdf:value 5 ] ;
 		lv2:scalePoint [ rdfs:label "Delay"; rdf:value 6 ] ;
 		lv2:scalePoint [ rdfs:label "Reverser"; rdf:value 7 ] ;
 		lv2:scalePoint [ rdfs:label "Chopper"; rdf:value 8 ] ;
 		lv2:scalePoint [ rdfs:label "Jumbler"; rdf:value 9 ] ;
 		lv2:scalePoint [ rdfs:label "Tape stop"; rdf:value 10 ] ;
-		lv2:scalePoint [ rdfs:label "Tape start"; rdf:value 11 ] ;
+#		lv2:scalePoint [ rdfs:label "Tape start"; rdf:value 11 ] ;
 		lv2:scalePoint [ rdfs:label "Tape speed"; rdf:value 12 ] ;
 		lv2:scalePoint [ rdfs:label "Scratch"; rdf:value 13 ] ;
 		lv2:scalePoint [ rdfs:label "Wow & flutter"; rdf:value 14 ] ;
@@ -562,9 +564,10 @@
 		lv2:scalePoint [ rdfs:label "Stutter"; rdf:value 21 ] ;
 		lv2:scalePoint [ rdfs:label "Flanger"; rdf:value 22 ] ;
 		lv2:scalePoint [ rdfs:label "Phaser"; rdf:value 23 ] ;
+		lv2:scalePoint [ rdfs:label "Ring modulator"; rdf:value 24 ] ;
                 lv2:default 0 ;
                 lv2:minimum 0 ;
-                lv2:maximum 23 ;
+                lv2:maximum 24 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
 	        lv2:index 55 ;
@@ -729,13 +732,13 @@
 		lv2:scalePoint [ rdfs:label "Amp"; rdf:value 2 ] ;
 		lv2:scalePoint [ rdfs:label "Balance"; rdf:value 3 ] ;
 		lv2:scalePoint [ rdfs:label "Width"; rdf:value 4 ] ;
-		lv2:scalePoint [ rdfs:label "Pitch"; rdf:value 5 ] ;
+#		lv2:scalePoint [ rdfs:label "Pitch"; rdf:value 5 ] ;
 		lv2:scalePoint [ rdfs:label "Delay"; rdf:value 6 ] ;
 		lv2:scalePoint [ rdfs:label "Reverser"; rdf:value 7 ] ;
 		lv2:scalePoint [ rdfs:label "Chopper"; rdf:value 8 ] ;
 		lv2:scalePoint [ rdfs:label "Jumbler"; rdf:value 9 ] ;
 		lv2:scalePoint [ rdfs:label "Tape stop"; rdf:value 10 ] ;
-		lv2:scalePoint [ rdfs:label "Tape start"; rdf:value 11 ] ;
+#		lv2:scalePoint [ rdfs:label "Tape start"; rdf:value 11 ] ;
 		lv2:scalePoint [ rdfs:label "Tape speed"; rdf:value 12 ] ;
 		lv2:scalePoint [ rdfs:label "Scratch"; rdf:value 13 ] ;
 		lv2:scalePoint [ rdfs:label "Wow & flutter"; rdf:value 14 ] ;
@@ -748,9 +751,10 @@
 		lv2:scalePoint [ rdfs:label "Stutter"; rdf:value 21 ] ;
 		lv2:scalePoint [ rdfs:label "Flanger"; rdf:value 22 ] ;
 		lv2:scalePoint [ rdfs:label "Phaser"; rdf:value 23 ] ;
+		lv2:scalePoint [ rdfs:label "Ring modulator"; rdf:value 24 ] ;
                 lv2:default 0 ;
                 lv2:minimum 0 ;
-                lv2:maximum 23 ;
+                lv2:maximum 24 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
 	        lv2:index 75 ;
@@ -915,13 +919,13 @@
 		lv2:scalePoint [ rdfs:label "Amp"; rdf:value 2 ] ;
 		lv2:scalePoint [ rdfs:label "Balance"; rdf:value 3 ] ;
 		lv2:scalePoint [ rdfs:label "Width"; rdf:value 4 ] ;
-		lv2:scalePoint [ rdfs:label "Pitch"; rdf:value 5 ] ;
+#		lv2:scalePoint [ rdfs:label "Pitch"; rdf:value 5 ] ;
 		lv2:scalePoint [ rdfs:label "Delay"; rdf:value 6 ] ;
 		lv2:scalePoint [ rdfs:label "Reverser"; rdf:value 7 ] ;
 		lv2:scalePoint [ rdfs:label "Chopper"; rdf:value 8 ] ;
 		lv2:scalePoint [ rdfs:label "Jumbler"; rdf:value 9 ] ;
 		lv2:scalePoint [ rdfs:label "Tape stop"; rdf:value 10 ] ;
-		lv2:scalePoint [ rdfs:label "Tape start"; rdf:value 11 ] ;
+#		lv2:scalePoint [ rdfs:label "Tape start"; rdf:value 11 ] ;
 		lv2:scalePoint [ rdfs:label "Tape speed"; rdf:value 12 ] ;
 		lv2:scalePoint [ rdfs:label "Scratch"; rdf:value 13 ] ;
 		lv2:scalePoint [ rdfs:label "Wow & flutter"; rdf:value 14 ] ;
@@ -934,9 +938,10 @@
 		lv2:scalePoint [ rdfs:label "Stutter"; rdf:value 21 ] ;
 		lv2:scalePoint [ rdfs:label "Flanger"; rdf:value 22 ] ;
 		lv2:scalePoint [ rdfs:label "Phaser"; rdf:value 23 ] ;
+		lv2:scalePoint [ rdfs:label "Ring modulator"; rdf:value 24 ] ;
                 lv2:default 0 ;
                 lv2:minimum 0 ;
-                lv2:maximum 23 ;
+                lv2:maximum 24 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
 	        lv2:index 95 ;
@@ -1101,13 +1106,13 @@
 		lv2:scalePoint [ rdfs:label "Amp"; rdf:value 2 ] ;
 		lv2:scalePoint [ rdfs:label "Balance"; rdf:value 3 ] ;
 		lv2:scalePoint [ rdfs:label "Width"; rdf:value 4 ] ;
-		lv2:scalePoint [ rdfs:label "Pitch"; rdf:value 5 ] ;
+#		lv2:scalePoint [ rdfs:label "Pitch"; rdf:value 5 ] ;
 		lv2:scalePoint [ rdfs:label "Delay"; rdf:value 6 ] ;
 		lv2:scalePoint [ rdfs:label "Reverser"; rdf:value 7 ] ;
 		lv2:scalePoint [ rdfs:label "Chopper"; rdf:value 8 ] ;
 		lv2:scalePoint [ rdfs:label "Jumbler"; rdf:value 9 ] ;
 		lv2:scalePoint [ rdfs:label "Tape stop"; rdf:value 10 ] ;
-		lv2:scalePoint [ rdfs:label "Tape start"; rdf:value 11 ] ;
+#		lv2:scalePoint [ rdfs:label "Tape start"; rdf:value 11 ] ;
 		lv2:scalePoint [ rdfs:label "Tape speed"; rdf:value 12 ] ;
 		lv2:scalePoint [ rdfs:label "Scratch"; rdf:value 13 ] ;
 		lv2:scalePoint [ rdfs:label "Wow & flutter"; rdf:value 14 ] ;
@@ -1120,9 +1125,10 @@
 		lv2:scalePoint [ rdfs:label "Stutter"; rdf:value 21 ] ;
 		lv2:scalePoint [ rdfs:label "Flanger"; rdf:value 22 ] ;
 		lv2:scalePoint [ rdfs:label "Phaser"; rdf:value 23 ] ;
+		lv2:scalePoint [ rdfs:label "Ring modulator"; rdf:value 24 ] ;
                 lv2:default 0 ;
                 lv2:minimum 0 ;
-                lv2:maximum 23 ;
+                lv2:maximum 24 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
 	        lv2:index 115 ;
@@ -1287,13 +1293,13 @@
 		lv2:scalePoint [ rdfs:label "Amp"; rdf:value 2 ] ;
 		lv2:scalePoint [ rdfs:label "Balance"; rdf:value 3 ] ;
 		lv2:scalePoint [ rdfs:label "Width"; rdf:value 4 ] ;
-		lv2:scalePoint [ rdfs:label "Pitch"; rdf:value 5 ] ;
+#		lv2:scalePoint [ rdfs:label "Pitch"; rdf:value 5 ] ;
 		lv2:scalePoint [ rdfs:label "Delay"; rdf:value 6 ] ;
 		lv2:scalePoint [ rdfs:label "Reverser"; rdf:value 7 ] ;
 		lv2:scalePoint [ rdfs:label "Chopper"; rdf:value 8 ] ;
 		lv2:scalePoint [ rdfs:label "Jumbler"; rdf:value 9 ] ;
 		lv2:scalePoint [ rdfs:label "Tape stop"; rdf:value 10 ] ;
-		lv2:scalePoint [ rdfs:label "Tape start"; rdf:value 11 ] ;
+#		lv2:scalePoint [ rdfs:label "Tape start"; rdf:value 11 ] ;
 		lv2:scalePoint [ rdfs:label "Tape speed"; rdf:value 12 ] ;
 		lv2:scalePoint [ rdfs:label "Scratch"; rdf:value 13 ] ;
 		lv2:scalePoint [ rdfs:label "Wow & flutter"; rdf:value 14 ] ;
@@ -1306,9 +1312,10 @@
 		lv2:scalePoint [ rdfs:label "Stutter"; rdf:value 21 ] ;
 		lv2:scalePoint [ rdfs:label "Flanger"; rdf:value 22 ] ;
 		lv2:scalePoint [ rdfs:label "Phaser"; rdf:value 23 ] ;
+		lv2:scalePoint [ rdfs:label "Ring modulator"; rdf:value 24 ] ;
                 lv2:default 0 ;
                 lv2:minimum 0 ;
-                lv2:maximum 23 ;
+                lv2:maximum 24 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
 	        lv2:index 135 ;
@@ -1473,13 +1480,13 @@
 		lv2:scalePoint [ rdfs:label "Amp"; rdf:value 2 ] ;
 		lv2:scalePoint [ rdfs:label "Balance"; rdf:value 3 ] ;
 		lv2:scalePoint [ rdfs:label "Width"; rdf:value 4 ] ;
-		lv2:scalePoint [ rdfs:label "Pitch"; rdf:value 5 ] ;
+#		lv2:scalePoint [ rdfs:label "Pitch"; rdf:value 5 ] ;
 		lv2:scalePoint [ rdfs:label "Delay"; rdf:value 6 ] ;
 		lv2:scalePoint [ rdfs:label "Reverser"; rdf:value 7 ] ;
 		lv2:scalePoint [ rdfs:label "Chopper"; rdf:value 8 ] ;
 		lv2:scalePoint [ rdfs:label "Jumbler"; rdf:value 9 ] ;
 		lv2:scalePoint [ rdfs:label "Tape stop"; rdf:value 10 ] ;
-		lv2:scalePoint [ rdfs:label "Tape start"; rdf:value 11 ] ;
+#		lv2:scalePoint [ rdfs:label "Tape start"; rdf:value 11 ] ;
 		lv2:scalePoint [ rdfs:label "Tape speed"; rdf:value 12 ] ;
 		lv2:scalePoint [ rdfs:label "Scratch"; rdf:value 13 ] ;
 		lv2:scalePoint [ rdfs:label "Wow & flutter"; rdf:value 14 ] ;
@@ -1492,9 +1499,10 @@
 		lv2:scalePoint [ rdfs:label "Stutter"; rdf:value 21 ] ;
 		lv2:scalePoint [ rdfs:label "Flanger"; rdf:value 22 ] ;
 		lv2:scalePoint [ rdfs:label "Phaser"; rdf:value 23 ] ;
+		lv2:scalePoint [ rdfs:label "Ring modulator"; rdf:value 24 ] ;
                 lv2:default 0 ;
                 lv2:minimum 0 ;
-                lv2:maximum 23 ;
+                lv2:maximum 24 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
 	        lv2:index 155 ;
@@ -1659,13 +1667,13 @@
 		lv2:scalePoint [ rdfs:label "Amp"; rdf:value 2 ] ;
 		lv2:scalePoint [ rdfs:label "Balance"; rdf:value 3 ] ;
 		lv2:scalePoint [ rdfs:label "Width"; rdf:value 4 ] ;
-		lv2:scalePoint [ rdfs:label "Pitch"; rdf:value 5 ] ;
+#		lv2:scalePoint [ rdfs:label "Pitch"; rdf:value 5 ] ;
 		lv2:scalePoint [ rdfs:label "Delay"; rdf:value 6 ] ;
 		lv2:scalePoint [ rdfs:label "Reverser"; rdf:value 7 ] ;
 		lv2:scalePoint [ rdfs:label "Chopper"; rdf:value 8 ] ;
 		lv2:scalePoint [ rdfs:label "Jumbler"; rdf:value 9 ] ;
 		lv2:scalePoint [ rdfs:label "Tape stop"; rdf:value 10 ] ;
-		lv2:scalePoint [ rdfs:label "Tape start"; rdf:value 11 ] ;
+#		lv2:scalePoint [ rdfs:label "Tape start"; rdf:value 11 ] ;
 		lv2:scalePoint [ rdfs:label "Tape speed"; rdf:value 12 ] ;
 		lv2:scalePoint [ rdfs:label "Scratch"; rdf:value 13 ] ;
 		lv2:scalePoint [ rdfs:label "Wow & flutter"; rdf:value 14 ] ;
@@ -1678,9 +1686,10 @@
 		lv2:scalePoint [ rdfs:label "Stutter"; rdf:value 21 ] ;
 		lv2:scalePoint [ rdfs:label "Flanger"; rdf:value 22 ] ;
 		lv2:scalePoint [ rdfs:label "Phaser"; rdf:value 23 ] ;
+		lv2:scalePoint [ rdfs:label "Ring modulator"; rdf:value 24 ] ;
                 lv2:default 0 ;
                 lv2:minimum 0 ;
-                lv2:maximum 23 ;
+                lv2:maximum 24 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
 	        lv2:index 175 ;
@@ -1845,13 +1854,13 @@
 		lv2:scalePoint [ rdfs:label "Amp"; rdf:value 2 ] ;
 		lv2:scalePoint [ rdfs:label "Balance"; rdf:value 3 ] ;
 		lv2:scalePoint [ rdfs:label "Width"; rdf:value 4 ] ;
-		lv2:scalePoint [ rdfs:label "Pitch"; rdf:value 5 ] ;
+#		lv2:scalePoint [ rdfs:label "Pitch"; rdf:value 5 ] ;
 		lv2:scalePoint [ rdfs:label "Delay"; rdf:value 6 ] ;
 		lv2:scalePoint [ rdfs:label "Reverser"; rdf:value 7 ] ;
 		lv2:scalePoint [ rdfs:label "Chopper"; rdf:value 8 ] ;
 		lv2:scalePoint [ rdfs:label "Jumbler"; rdf:value 9 ] ;
 		lv2:scalePoint [ rdfs:label "Tape stop"; rdf:value 10 ] ;
-		lv2:scalePoint [ rdfs:label "Tape start"; rdf:value 11 ] ;
+#		lv2:scalePoint [ rdfs:label "Tape start"; rdf:value 11 ] ;
 		lv2:scalePoint [ rdfs:label "Tape speed"; rdf:value 12 ] ;
 		lv2:scalePoint [ rdfs:label "Scratch"; rdf:value 13 ] ;
 		lv2:scalePoint [ rdfs:label "Wow & flutter"; rdf:value 14 ] ;
@@ -1864,9 +1873,10 @@
 		lv2:scalePoint [ rdfs:label "Stutter"; rdf:value 21 ] ;
 		lv2:scalePoint [ rdfs:label "Flanger"; rdf:value 22 ] ;
 		lv2:scalePoint [ rdfs:label "Phaser"; rdf:value 23 ] ;
+		lv2:scalePoint [ rdfs:label "Ring modulator"; rdf:value 24 ] ;
                 lv2:default 0 ;
                 lv2:minimum 0 ;
-                lv2:maximum 23 ;
+                lv2:maximum 24 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
 	        lv2:index 195 ;
@@ -2031,13 +2041,13 @@
 		lv2:scalePoint [ rdfs:label "Amp"; rdf:value 2 ] ;
 		lv2:scalePoint [ rdfs:label "Balance"; rdf:value 3 ] ;
 		lv2:scalePoint [ rdfs:label "Width"; rdf:value 4 ] ;
-		lv2:scalePoint [ rdfs:label "Pitch"; rdf:value 5 ] ;
+#		lv2:scalePoint [ rdfs:label "Pitch"; rdf:value 5 ] ;
 		lv2:scalePoint [ rdfs:label "Delay"; rdf:value 6 ] ;
 		lv2:scalePoint [ rdfs:label "Reverser"; rdf:value 7 ] ;
 		lv2:scalePoint [ rdfs:label "Chopper"; rdf:value 8 ] ;
 		lv2:scalePoint [ rdfs:label "Jumbler"; rdf:value 9 ] ;
 		lv2:scalePoint [ rdfs:label "Tape stop"; rdf:value 10 ] ;
-		lv2:scalePoint [ rdfs:label "Tape start"; rdf:value 11 ] ;
+#		lv2:scalePoint [ rdfs:label "Tape start"; rdf:value 11 ] ;
 		lv2:scalePoint [ rdfs:label "Tape speed"; rdf:value 12 ] ;
 		lv2:scalePoint [ rdfs:label "Scratch"; rdf:value 13 ] ;
 		lv2:scalePoint [ rdfs:label "Wow & flutter"; rdf:value 14 ] ;
@@ -2050,9 +2060,10 @@
 		lv2:scalePoint [ rdfs:label "Stutter"; rdf:value 21 ] ;
 		lv2:scalePoint [ rdfs:label "Flanger"; rdf:value 22 ] ;
 		lv2:scalePoint [ rdfs:label "Phaser"; rdf:value 23 ] ;
+		lv2:scalePoint [ rdfs:label "Ring modulator"; rdf:value 24 ] ;
                 lv2:default 0 ;
                 lv2:minimum 0 ;
-                lv2:maximum 23 ;
+                lv2:maximum 24 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
 	        lv2:index 215 ;
@@ -2217,13 +2228,13 @@
 		lv2:scalePoint [ rdfs:label "Amp"; rdf:value 2 ] ;
 		lv2:scalePoint [ rdfs:label "Balance"; rdf:value 3 ] ;
 		lv2:scalePoint [ rdfs:label "Width"; rdf:value 4 ] ;
-		lv2:scalePoint [ rdfs:label "Pitch"; rdf:value 5 ] ;
+#		lv2:scalePoint [ rdfs:label "Pitch"; rdf:value 5 ] ;
 		lv2:scalePoint [ rdfs:label "Delay"; rdf:value 6 ] ;
 		lv2:scalePoint [ rdfs:label "Reverser"; rdf:value 7 ] ;
 		lv2:scalePoint [ rdfs:label "Chopper"; rdf:value 8 ] ;
 		lv2:scalePoint [ rdfs:label "Jumbler"; rdf:value 9 ] ;
 		lv2:scalePoint [ rdfs:label "Tape stop"; rdf:value 10 ] ;
-		lv2:scalePoint [ rdfs:label "Tape start"; rdf:value 11 ] ;
+#		lv2:scalePoint [ rdfs:label "Tape start"; rdf:value 11 ] ;
 		lv2:scalePoint [ rdfs:label "Tape speed"; rdf:value 12 ] ;
 		lv2:scalePoint [ rdfs:label "Scratch"; rdf:value 13 ] ;
 		lv2:scalePoint [ rdfs:label "Wow & flutter"; rdf:value 14 ] ;
@@ -2236,9 +2247,10 @@
 		lv2:scalePoint [ rdfs:label "Stutter"; rdf:value 21 ] ;
 		lv2:scalePoint [ rdfs:label "Flanger"; rdf:value 22 ] ;
 		lv2:scalePoint [ rdfs:label "Phaser"; rdf:value 23 ] ;
+		lv2:scalePoint [ rdfs:label "Ring modulator"; rdf:value 24 ] ;
                 lv2:default 0 ;
                 lv2:minimum 0 ;
-                lv2:maximum 23 ;
+                lv2:maximum 24 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
 	        lv2:index 235 ;
