@@ -964,6 +964,11 @@ void BNoname01GUI::clearSlot (int slot)
 	}
 
 	for (int j = 0; j < NR_STEPS; ++j) pattern.setPad (slot, j, Pad());
+
+	slotParams[slot].shape.setDefaultShape();
+	sendShape (slot);
+	if (slotParams[slot].optionWidget) slotParams[slot].optionWidget->setShape (slotParams[slot].shape);
+
 	sendSlot (slot);
 	drawPad (slot);
 }
@@ -977,6 +982,11 @@ void BNoname01GUI::copySlot (int dest, int source)
 	}
 
 	for (int j = 0; j < NR_STEPS; ++j) pattern.setPad (dest, j, pattern.getPad (source, j));
+
+	slotParams[dest].shape = slotParams[source].shape;
+	sendShape (dest);
+	if (slotParams[dest].optionWidget) slotParams[dest].optionWidget->setShape (slotParams[dest].shape);
+
 	sendSlot (dest);
 	drawPad (dest);
 }
@@ -1000,6 +1010,9 @@ void BNoname01GUI::insertSlot (int slot, const BNoname01EffectsIndex effect)
 	controllerWidgets[SLOTS + slot * (SLOTS_PARAMS + NR_PARAMS) + SLOTS_EFFECT]->setValue (effect);
 	for (int j = 0; j < NR_PARAMS; ++j) controllerWidgets[SLOTS + slot * (SLOTS_PARAMS + NR_PARAMS) + SLOTS_PARAMS + j]->setValue (fxDefaultValues[effect][j]);
 	for (int j = 0; j < NR_STEPS; ++j) pattern.setPad (slot, j, Pad());
+	slotParams[slot].shape.setDefaultShape();
+	sendShape (slot);
+	if (slotParams[slot].optionWidget) slotParams[slot].optionWidget->setShape (slotParams[slot].shape);
 
 	pattern.store();
 	//updateSlots();
@@ -1049,6 +1062,15 @@ void BNoname01GUI::swapSlots (int slot1, int slot2)
 		controllerWidgets[SLOTS + slot1 * (SLOTS_PARAMS + NR_PARAMS) + j]->setValue (controllerWidgets[SLOTS + slot2 * (SLOTS_PARAMS + NR_PARAMS) + j]->getValue());
 		controllerWidgets[SLOTS + slot2 * (SLOTS_PARAMS + NR_PARAMS) + j]->setValue (slot1Value);
 	}
+
+	// Swap shapes
+	Shape<SHAPE_MAXNODES> slot1Shape = slotParams[slot1].shape;
+	slotParams[slot1].shape = slotParams[slot2].shape;
+	slotParams[slot2].shape = slot1Shape;
+	sendShape (slot1);
+	sendShape (slot2);
+	if (slotParams[slot1].optionWidget) slotParams[slot1].optionWidget->setShape (slotParams[slot1].shape);
+	if (slotParams[slot2].optionWidget) slotParams[slot2].optionWidget->setShape (slotParams[slot2].shape);
 
 	pattern.store();
 	updateSlot (slot1);

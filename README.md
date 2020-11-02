@@ -352,6 +352,8 @@ Set the modulator frequency and select the waveform from the menu. The amount of
   * Enable reset
   * Fix first step not played
   * Fix crash on state_save
+  * Update GUI slots if changed in DSP
+  * Fix move shapes linked to slots
 
 
 ## TODO
