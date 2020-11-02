@@ -351,6 +351,7 @@ Set the modulator frequency and select the waveform from the menu. The amount of
   * Enable dragging of sliders
   * Enable reset
   * Fix first step not played
+  * Fix crash on state_save
 
 
 ## TODO

@@ -49,7 +49,7 @@ BNoname01::BNoname01 (double samplerate, const char* bundle_path, const LV2_Feat
 
 {
 	if (bundle_path) strncpy (pluginPath, bundle_path, 1023);
-	
+
 	//Scan host features for URID map
 	LV2_URID_Map* m = NULL;
 	for (int i = 0; features[i]; ++i)
@@ -957,8 +957,10 @@ LV2_State_Status BNoname01::state_save (LV2_State_Store_Function store, LV2_Stat
 			if (transportGateKeys[i]) atom.keys[keysize] = i;
 			++keysize;
 		}
+		atom.body.child_type = urids.atom_Int;
+		atom.body.child_size = sizeof(LV2_Atom_Int);
 
-		store (handle, urids.bNoname01_transportGateKeys, &atom, keysize * sizeof (int) + sizeof(LV2_Atom_Vector_Body), urids.atom_Vector, LV2_STATE_IS_POD);
+		store (handle, urids.bNoname01_transportGateKeys, &atom, keysize * sizeof (LV2_Atom_Int) + sizeof(LV2_Atom_Vector_Body), urids.atom_Vector, LV2_STATE_IS_POD);
 	}
 
 	// Store pads
