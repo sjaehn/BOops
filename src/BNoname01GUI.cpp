@@ -1002,7 +1002,7 @@ void BNoname01GUI::insertSlot (int slot, const BNoname01EffectsIndex effect)
 	for (int j = 0; j < NR_STEPS; ++j) pattern.setPad (slot, j, Pad());
 
 	pattern.store();
-	updateSlots();
+	//updateSlots();
 	sendSlot (slot);
 	drawPad (slot);
 }
@@ -1429,6 +1429,7 @@ void BNoname01GUI::valueChangedCallback(BEvents::Event* event)
 									ui->loadOptions (slot);
 
 									ui->applyTheme(ui->theme);
+									ui->updateSlots();
 									ui->drawPad (slot);
 								}
 							}
