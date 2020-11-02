@@ -83,7 +83,7 @@ BNoname01GUI::BNoname01GUI (const char *bundle_path, const LV2_Feature *const *f
 
 	transportGateContainer (420, 130, 600, 110, "screen"),
 	transportGateLabel (210, 10, 180, 20, "ctlabel", "Select keys"),
-	transportGatePiano (10, 40, 580, 30, "widget", 0, NR_PIANO_KEYS),
+	transportGatePiano (10, 40, 580, 30, "widget", 0, NR_PIANO_KEYS - 1),
 	transportGateOkButton (320, 80, 40, 20, "menu/button", "OK"),
 	transportGateCancelButton (240, 80, 60, 20, "menu/button", "Cancel"),
 	transportGateKeys (NR_PIANO_KEYS, false),

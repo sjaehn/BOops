@@ -674,6 +674,7 @@ void BNoname01::run (uint32_t n_samples)
 		if (scheduleNotifyStatus) notifyStatusToGui ();
 		for (int i = 0; i < NR_SLOTS; ++i) {if (scheduleNotifySlot[i]) notifySlotToGui (i);}
 		for (int i = 0; i < NR_SLOTS; ++i) {if (scheduleNotifyShape[i]) notifyShapeToGui (i);}
+		if (scheduleNotifyTransportGateKeys) notifyTransportGateKeysToGui();
 		if (scheduleNotifyWaveformToGui) notifyWaveformToGui (lastWaveformCounter, waveformCounter);
 	}
 	lv2_atom_forge_pop (&forge, &notify_frame);
@@ -814,8 +815,11 @@ void BNoname01::notifyTransportGateKeysToGui()
 	std::fill (keys, keys + NR_PIANO_KEYS, 0);
 	for (int i = 0; i < NR_PIANO_KEYS; ++i)
 	{
-		if (transportGateKeys[i]) keys[keysize] = i;
-		++keysize;
+		if (transportGateKeys[i])
+		{
+			keys[keysize] = i;
+			++keysize;
+		}
 	}
 
 	// Send notifications
@@ -954,13 +958,16 @@ LV2_State_Status BNoname01::state_save (LV2_State_Store_Function store, LV2_Stat
 		std::fill (atom.keys, atom.keys + NR_PIANO_KEYS, 0);
 		for (int i = 0; i < NR_PIANO_KEYS; ++i)
 		{
-			if (transportGateKeys[i]) atom.keys[keysize] = i;
-			++keysize;
+			if (transportGateKeys[i])
+			{
+				atom.keys[keysize] = i;
+				++keysize;
+			}
 		}
 		atom.body.child_type = urids.atom_Int;
-		atom.body.child_size = sizeof(LV2_Atom_Int);
+		atom.body.child_size = sizeof(int);
 
-		store (handle, urids.bNoname01_transportGateKeys, &atom, keysize * sizeof (LV2_Atom_Int) + sizeof(LV2_Atom_Vector_Body), urids.atom_Vector, LV2_STATE_IS_POD);
+		store (handle, urids.bNoname01_transportGateKeys, &atom, keysize * sizeof (int) + sizeof(LV2_Atom_Vector_Body), urids.atom_Vector, LV2_STATE_IS_POD);
 	}
 
 	// Store pads
@@ -1042,7 +1049,7 @@ LV2_State_Status BNoname01::state_restore (LV2_State_Retrieve_Function retrieve,
 			const int keyNr = atom->keys[i];
 			if ((keyNr >= 0) && (keyNr < NR_PIANO_KEYS)) transportGateKeys[keyNr] = true;
 		}
-
+		scheduleNotifyTransportGateKeys = true;
         }
 
 
