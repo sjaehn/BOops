@@ -24,7 +24,127 @@
 #include "OptionWidget.hpp"
 #include "BWidgets/Label.hpp"
 #include "DialRange.hpp"
-#include "BWidgets/ListBox.hpp"
+
+class WaveformSelect : public BWidgets::ValueWidget
+{
+public:
+	WaveformSelect () : WaveformSelect (0, 0, 0, 0, "widget", 0) {}
+	WaveformSelect (const double x, const double y, const double width, const double height, const std::string& name, double value = 0.0) :
+		ValueWidget (x, y, width, height, name, value)
+	{}
+
+	virtual void applyTheme (BStyles::Theme& theme) override {applyTheme (theme, name_);}
+
+	virtual void applyTheme (BStyles::Theme& theme, const std::string& name) override
+	{
+		ValueWidget::applyTheme (theme, name);
+
+		void* fgPtr = theme.getStyle(name, BWIDGETS_KEYWORD_FGCOLORS);
+		if (fgPtr)
+		{
+			fgColors = *((BColors::ColorSet*) fgPtr);
+			update ();
+		}
+
+		void* txPtr = theme.getStyle(name, BWIDGETS_KEYWORD_TEXTCOLORS);
+		if (txPtr)
+		{
+			txColors = *((BColors::ColorSet*) txPtr);
+			update ();
+		}
+	}
+
+	virtual void onButtonPressed (BEvents::PointerEvent* event) override
+	{
+		double x0 = getXOffset ();
+		double y0 = getYOffset ();
+		double w = getEffectiveWidth ();
+		double h = getEffectiveHeight ();
+
+		int col = LIMIT (3.0 * (event->getPosition().x - x0) / w, 0, 2);
+		int row = LIMIT (2.0 * (event->getPosition().y - y0) / h, 0, 1);
+		int nr = LIMIT (row * 3 + col, 0, 4);
+		setValue (0.125 * double (nr));
+	}
+
+protected:
+	BColors::ColorSet fgColors;
+	BColors::ColorSet txColors;
+
+	virtual void draw (const BUtilities::RectArea& area) override
+	{
+		if ((!widgetSurface_) || (cairo_surface_status (widgetSurface_) != CAIRO_STATUS_SUCCESS)) return;
+
+		if ((getWidth () >= 6) && (getHeight () >= 6))
+		{
+			// Draw super class widget elements first
+			Widget::draw (area);
+
+			cairo_t* cr = cairo_create (widgetSurface_);
+			if (cairo_status (cr) == CAIRO_STATUS_SUCCESS)
+			{
+				// Limit cairo-drawing area
+				cairo_rectangle (cr, area.getX (), area.getY (), area.getWidth (), area.getHeight ());
+				cairo_clip (cr);
+
+				double x0 = getXOffset ();
+				double y0 = getYOffset ();
+				double w = getEffectiveWidth ();
+				double h = getEffectiveHeight ();
+
+				BColors::Color aColor = *fgColors.getColor (getState ());
+				BColors::Color iaColor = *txColors.getColor (getState ());
+
+				cairo_set_line_width (cr, 2.0);
+
+				if (getValue() == 0) cairo_rectangle (cr, x0, y0, 0.28 * w, 0.45 * h);
+				cairo_move_to (cr, x0 + 0.04 * w, y0 + 0.225 * h);
+				for (double d = 0; d <= 2 * M_PI; d += 0.1 * M_PI) cairo_line_to (cr, x0 + 0.04 * w + 0.2 * w * d / (2.0 * M_PI), y0 + 0.225 * h - 0.175 * h * sin (d));
+				if (getValue() == 0) cairo_set_source_rgba (cr, CAIRO_RGBA (aColor));
+				else cairo_set_source_rgba (cr, CAIRO_RGBA (iaColor));
+				cairo_stroke (cr);
+
+				if (getValue() == 0.125) cairo_rectangle (cr, x0 + 0.36 * w, y0, 0.28 * w, 0.45 * h);
+				cairo_move_to (cr, x0 + 0.40 * w, y0 + 0.225 * h);
+				cairo_line_to (cr, x0 + 0.45 * w, y0 + 0.05 * h);
+				cairo_line_to (cr, x0 + 0.55 * w, y0 + 0.4 * h);
+				cairo_line_to (cr, x0 + 0.6 * w, y0 + 0.225 * h);
+				if (getValue() == 0.125) cairo_set_source_rgba (cr, CAIRO_RGBA (aColor));
+				else cairo_set_source_rgba (cr, CAIRO_RGBA (iaColor));
+				cairo_stroke (cr);
+
+				if (getValue() == 0.25) cairo_rectangle (cr, x0 + 0.72 * w, y0, 0.28 * w, 0.45 * h);
+				cairo_move_to (cr, x0 + 0.76 * w, y0 + 0.225 * h);
+				cairo_line_to (cr, x0 + 0.76 * w, y0 + 0.05 * h);
+				cairo_line_to (cr, x0 + 0.86 * w, y0 + 0.05 * h);
+				cairo_line_to (cr, x0 + 0.86 * w, y0 + 0.4 * h);
+				cairo_line_to (cr, x0 + 0.96 * w, y0 + 0.4 * h);
+				cairo_line_to (cr, x0 + 0.96 * w, y0 + 0.225 * h);
+				if (getValue() == 0.25) cairo_set_source_rgba (cr, CAIRO_RGBA (aColor));
+				else cairo_set_source_rgba (cr, CAIRO_RGBA (iaColor));
+				cairo_stroke (cr);
+
+				if (getValue() == 0.375) cairo_rectangle (cr, x0, y0 + 0.55 * h, 0.28 * w, 0.45 * h);
+				cairo_move_to (cr, x0 + 0.04 * w, y0 + 0.95 * h);
+				cairo_line_to (cr, x0 + 0.24 * w, y0 + 0.6 * h);
+				cairo_line_to (cr, x0 + 0.24 * w, y0 + 0.95 * h);
+				if (getValue() == 0.375) cairo_set_source_rgba (cr, CAIRO_RGBA (aColor));
+				else cairo_set_source_rgba (cr, CAIRO_RGBA (iaColor));
+				cairo_stroke (cr);
+
+				if (getValue() == 0.5) cairo_rectangle (cr, x0 + 0.36 * w, y0 + 0.55 * h, 0.28 * w, 0.45 * h);
+				cairo_move_to (cr, x0 + 0.4 * w, y0 + 0.95 * h);
+				cairo_line_to (cr, x0 + 0.4 * w, y0 + 0.6 * h);
+				cairo_line_to (cr, x0 + 0.6 * w, y0 + 0.95 * h);
+				if (getValue() == 0.5) cairo_set_source_rgba (cr, CAIRO_RGBA (aColor));
+				else cairo_set_source_rgba (cr, CAIRO_RGBA (iaColor));
+				cairo_stroke (cr);
+
+				cairo_destroy (cr);
+			}
+		}
+	}
+};
 
 class OptionRingModulator : public OptionWidget
 {
@@ -33,7 +153,8 @@ public:
 	OptionRingModulator (const double x, const double y, const double width, const double height, const std::string& name) :
 		OptionWidget (x, y, width, height, name),
 		ratioLabel (10, 90, 60, 20, "ctlabel", "Ratio"),
-		freqLabel (80, 90, 80, 20, "ctlabel", "Frequency")
+		freqLabel (80, 90, 80, 20, "ctlabel", "Frequency"),
+		waveformLabel (170, 90, 90, 20, "ctlabel", "Waveform")
 	{
 		try
 		{
@@ -41,12 +162,7 @@ public:
 			options[1] = new BWidgets::ValueWidget (0, 0, 0, 0, "widget", 0.0);
 			options[2] = new DialRange (90, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.0f", "Hz", [] (double x) {return 20000.0 * pow (x, 4.0);});
 			options[3] = new BWidgets::ValueWidget (0, 0, 0, 0, "widget", 0.0);
-			options[4] = new BWidgets::ListBox
-			(
-				160, 20, 80, 90, "menu",
-				BItems::ItemList ({{0.0, "Sine"}, {0.125, "Triangle"}, {0.25, "Square"}, {0.375, "Saw"}, {0.5, "Reverse saw"}}),
-				0.3
-			);
+			options[4] = new WaveformSelect (170, 20, 90, 60, "pad0", 0.0);
 		}
 		catch (std::bad_alloc& ba) {throw ba;}
 
@@ -60,6 +176,7 @@ public:
 
 		add (ratioLabel);
 		add (freqLabel);
+		add (waveformLabel);
 		add (*options[0]);
 		add (*options[1]);
 		add (*options[2]);
@@ -67,21 +184,26 @@ public:
 		add (*options[4]);
 	}
 
-	OptionRingModulator (const OptionRingModulator& that) : OptionWidget (that), ratioLabel (that.ratioLabel), freqLabel (that.freqLabel)
+	OptionRingModulator (const OptionRingModulator& that) :
+		OptionWidget (that), ratioLabel (that.ratioLabel), freqLabel (that.freqLabel), waveformLabel (that.waveformLabel)
 	{
 		add (ratioLabel);
 		add (freqLabel);
+		add (waveformLabel);
 	}
 
 	OptionRingModulator& operator= (const OptionRingModulator& that)
 	{
 		release (&ratioLabel);
 		release (&freqLabel);
+		release (&waveformLabel);
 		OptionWidget::operator= (that);
 		ratioLabel = that.ratioLabel;
 		freqLabel = that.freqLabel;
+		waveformLabel = that.waveformLabel;
 		add (ratioLabel);
 		add (freqLabel);
+		add (waveformLabel);
 
 		return *this;
 	}
@@ -95,6 +217,7 @@ public:
 		OptionWidget::applyTheme (theme, name);
 		ratioLabel.applyTheme (theme);
 		freqLabel.applyTheme (theme);
+		waveformLabel.applyTheme (theme);
 	}
 
 	static void valueChangedCallback(BEvents::Event* event)
@@ -142,6 +265,7 @@ public:
 protected:
 	BWidgets::Label ratioLabel;
 	BWidgets::Label freqLabel;
+	BWidgets::Label waveformLabel;
 
 
 };
