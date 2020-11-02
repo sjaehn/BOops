@@ -34,8 +34,8 @@
 inline double floorfrac (const double value) {return value - floor (value);}
 
 
-BNoname01::BNoname01 (double samplerate, const LV2_Feature* const* features) :
-	map(NULL), workerSchedule (NULL), urids (),
+BNoname01::BNoname01 (double samplerate, const char* bundle_path, const LV2_Feature* const* features) :
+	map(NULL), workerSchedule (NULL), pluginPath {0}, urids (),
 	host {samplerate, 120.0f, 1.0f, 0ul, 0.0f, 4.0f, 4}, positions (),
 	transportGateKeys {false},
 	controlPort(NULL), notifyPort(NULL),
@@ -48,6 +48,8 @@ BNoname01::BNoname01 (double samplerate, const LV2_Feature* const* features) :
 	scheduleNotifyWaveformToGui (false), scheduleNotifyTransportGateKeys (false)
 
 {
+	if (bundle_path) strncpy (pluginPath, bundle_path, 1023);
+	
 	//Scan host features for URID map
 	LV2_URID_Map* m = NULL;
 	for (int i = 0; features[i]; ++i)
@@ -1353,7 +1355,7 @@ LV2_Handle instantiate (const LV2_Descriptor* descriptor, double samplerate, con
 {
 	// New instance
 	BNoname01* instance;
-	try {instance = new BNoname01(samplerate, features);}
+	try {instance = new BNoname01(samplerate, bundle_path, features);}
 	catch (std::exception& exc)
 	{
 		fprintf (stderr, "BNoname01.lv2: Plugin instantiation failed. %s\n", exc.what ());

@@ -46,6 +46,7 @@
 #include "FxFlanger.hpp"
 #include "FxPhaser.hpp"
 #include "FxRingModulator.hpp"
+#include "FxOops.hpp"
 
 Slot::Slot () : Slot (nullptr, FX_INVALID, nullptr, nullptr, 0, 0.0f, 0.0) {}
 
@@ -195,6 +196,9 @@ Fx* Slot::newFx (const BNoname01EffectsIndex effect)
 					break;
 
 		case FX_RINGMOD:	fx = new FxRingModulator (&buffer, params, pads, &framesPerStep, plugin ? plugin->host.rate : 48000);
+					break;
+
+		case FX_OOPS:		fx = new FxOops (&buffer, params, pads, &framesPerStep, plugin ? plugin->host.rate : 48000, plugin ? plugin->pluginPath : nullptr);
 					break;
 
 		case FX_INVALID:	fx = nullptr;

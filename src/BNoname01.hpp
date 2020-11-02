@@ -63,7 +63,7 @@ struct Position
 class BNoname01
 {
 public:
-	BNoname01 (double samplerate, const LV2_Feature* const* features);
+	BNoname01 (double samplerate, const char* bundle_path, const LV2_Feature* const* features);
 	~BNoname01();
 	void connect_port (uint32_t port, void *data);
 	void run (uint32_t n_samples);
@@ -89,10 +89,12 @@ private:
 	double getPositionFromSeconds (const Transport& transport, const double seconds);
 	double getFramesPerStep (const Transport& transport);
 
+public:	char pluginPath[1024];
+private:
 	BNoname01URIDs urids;
 
 public:	Transport host;
-protected:
+private:
 	StaticArrayList<Position, MAXFADERS> positions;
 	bool transportGateKeys[NR_PIANO_KEYS];
 
@@ -115,7 +117,7 @@ protected:
 
 	// Internals
 public:	Slot slots[NR_SLOTS];
-protected:
+private:
 	float waveform[WAVEFORMSIZE];
 	int waveformCounter;
 	int lastWaveformCounter;

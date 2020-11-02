@@ -16,10 +16,10 @@ b) Build your own binaries in the following three steps.
 Step 1: [Download the latest published version](https://github.com/sjaehn/BNoname01/releases) of B.Noname01. Or clone or
 [download the master](https://github.com/sjaehn/BNoname01/archive/master.zip) of this repository.
 
-Step 2: Install pkg-config and the development packages for x11, cairo, and lv2 if not done yet. On
+Step 2: Install pkg-config and the development packages for x11, cairo, soundfile, and lv2 if not done yet. On
 Debian-based systems you may run:
 ```
-sudo apt-get install pkg-config libx11-dev libcairo2-dev lv2-dev
+sudo apt-get install pkg-config libx11-dev libcairo2-dev libsndfile-dev lv2-dev
 ```
 
 Step 3: Building and installing into the default lv2 directory (/usr/lib/lv2/) is easy. Simply call:
@@ -342,6 +342,7 @@ Set the modulator frequency and select the waveform from the menu. The amount of
   * Flanger
   * Phaser
   * Ring modulator
+  * Oops!
 * MIDI support
   * MIDI triggering of sequencer transport
 * Fader rewritten to enable click-free MIDI triggered sequencer transport
@@ -363,3 +364,7 @@ Set the modulator frequency and select the waveform from the menu. The amount of
 * Latency ? (Pitch, Tape start)
 * Reduce CPU load
 * Make some presets
+
+## Acknowledgments
+
+* inc/oops44100.wav by WIM https://freesound.org/people/WIM/sounds/9020/ (CC-BY-3.0)

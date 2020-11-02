@@ -107,7 +107,8 @@ enum BNoname01EffectsIndex
 	FX_FLANGER	= 22,
 	FX_PHASER	= 23,
 	FX_RINGMOD	= 24,
-	NR_FX		= 25,
+	FX_OOPS		= 25,
+	NR_FX		= 26,
 	FX_INVALID	= 255
 };
 
@@ -138,7 +139,7 @@ enum BNoname01WaveformIndex
 	{10, "Tape stop"}, {11, "Tape start (TODO)"}, {12, "Tape speed"}, {14, "Wow & flutter"}, \
 	{13, "Scratch"}, {19, "Noise"}, {20, "Crackles"}, \
 	{15, "Crush"}, {16, "Decimate"}, {17, "Distortion"}, {18, "Filter"}, \
-	{22, "Flanger"}, {23, "Phaser"}, {24, "Ring modulator"} \
+	{22, "Flanger"}, {23, "Phaser"}, {24, "Ring modulator"}, {25, "Oops"} \
 }
 
 #define BNONAME01FXBGNAMES \
@@ -167,7 +168,8 @@ enum BNoname01WaveformIndex
 	"inc/Chop_bg.png", \
 	"inc/Distortion_bg.png", \
 	"inc/Distortion_bg.png", \
-	"inc/Distortion_bg.png" \
+	"inc/Distortion_bg.png", \
+	"" \
 }
 
 #endif /* PORTS_HPP_ */

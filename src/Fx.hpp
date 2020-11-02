@@ -44,7 +44,8 @@ public:
 		rnd (time (0)), unidist (0.0, 1.0), bidist (-1.0, 1.0)
 	{}
 
-	virtual ~Fx () {};
+	virtual ~Fx ()
+	{};
 
 	// DO NOT OVERRIDE DEFAULT COPY CONSTRUCTOR AND ASSIGNMENT OPERATOR
 	// This class is not responsible for the imported pointers

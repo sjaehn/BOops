@@ -34,7 +34,7 @@ const Limit controllerLimits[NR_CONTROLLERS] =
 	{1, 32, 1},		// STEPS
 	{0, 2, 1},		// BASE
 	{1.0, 16.0, 0.0},	// BASE_VALUE
-	{0, 24, 1},		// SLOTS = 1; SLOTS_EFFECT
+	{0, 25, 1},		// SLOTS = 1; SLOTS_EFFECT
 	{0, 1, 1},		// SLOTS_PLAY
 	{0.0, 1.0, 0.0},	// SLOTS_ATTACK
 	{0.0, 1.0, 0.0},	// SLOTS_DECAY
@@ -54,7 +54,7 @@ const Limit controllerLimits[NR_CONTROLLERS] =
 	{0.0, 1.0, 0.0},
 	{0.0, 1.0, 0.0},
 	{0.0, 1.0, 0.0},
-	{0, 24, 1},		// SLOTS = 2; SLOTS_EFFECT
+	{0, 25, 1},		// SLOTS = 2; SLOTS_EFFECT
 	{0, 1, 1},		// SLOTS_PLAY
 	{0.0, 1.0, 0.0},	// SLOTS_ATTACK
 	{0.0, 1.0, 0.0},	// SLOTS_DECAY
@@ -74,7 +74,7 @@ const Limit controllerLimits[NR_CONTROLLERS] =
 	{0.0, 1.0, 0.0},
 	{0.0, 1.0, 0.0},
 	{0.0, 1.0, 0.0},
-	{0, 24, 1},		// SLOTS = 3; SLOTS_EFFECT
+	{0, 25, 1},		// SLOTS = 3; SLOTS_EFFECT
 	{0, 1, 1},		// SLOTS_PLAY
 	{0.0, 1.0, 0.0},	// SLOTS_ATTACK
 	{0.0, 1.0, 0.0},	// SLOTS_DECAY
@@ -94,7 +94,7 @@ const Limit controllerLimits[NR_CONTROLLERS] =
 	{0.0, 1.0, 0.0},
 	{0.0, 1.0, 0.0},
 	{0.0, 1.0, 0.0},
-	{0, 24, 1},		// SLOTS = 4; SLOTS_EFFECT
+	{0, 25, 1},		// SLOTS = 4; SLOTS_EFFECT
 	{0, 1, 1},		// SLOTS_PLAY
 	{0.0, 1.0, 0.0},	// SLOTS_ATTACK
 	{0.0, 1.0, 0.0},	// SLOTS_DECAY
@@ -114,7 +114,7 @@ const Limit controllerLimits[NR_CONTROLLERS] =
 	{0.0, 1.0, 0.0},
 	{0.0, 1.0, 0.0},
 	{0.0, 1.0, 0.0},
-	{0, 24, 1},		// SLOTS = 5; SLOTS_EFFECT
+	{0, 25, 1},		// SLOTS = 5; SLOTS_EFFECT
 	{0, 1, 1},		// SLOTS_PLAY
 	{0.0, 1.0, 0.0},	// SLOTS_ATTACK
 	{0.0, 1.0, 0.0},	// SLOTS_DECAY
@@ -134,7 +134,7 @@ const Limit controllerLimits[NR_CONTROLLERS] =
 	{0.0, 1.0, 0.0},
 	{0.0, 1.0, 0.0},
 	{0.0, 1.0, 0.0},
-	{0, 24, 1},		// SLOTS = 6; SLOTS_EFFECT
+	{0, 25, 1},		// SLOTS = 6; SLOTS_EFFECT
 	{0, 1, 1},		// SLOTS_PLAY
 	{0.0, 1.0, 0.0},	// SLOTS_ATTACK
 	{0.0, 1.0, 0.0},	// SLOTS_DECAY
@@ -154,7 +154,7 @@ const Limit controllerLimits[NR_CONTROLLERS] =
 	{0.0, 1.0, 0.0},
 	{0.0, 1.0, 0.0},
 	{0.0, 1.0, 0.0},
-	{0, 24, 1},		// SLOTS = 7; SLOTS_EFFECT
+	{0, 25, 1},		// SLOTS = 7; SLOTS_EFFECT
 	{0, 1, 1},		// SLOTS_PLAY
 	{0.0, 1.0, 0.0},	// SLOTS_ATTACK
 	{0.0, 1.0, 0.0},	// SLOTS_DECAY
@@ -174,7 +174,7 @@ const Limit controllerLimits[NR_CONTROLLERS] =
 	{0.0, 1.0, 0.0},
 	{0.0, 1.0, 0.0},
 	{0.0, 1.0, 0.0},
-	{0, 24, 1},		// SLOTS = 8; SLOTS_EFFECT
+	{0, 25, 1},		// SLOTS = 8; SLOTS_EFFECT
 	{0, 1, 1},		// SLOTS_PLAY
 	{0.0, 1.0, 0.0},	// SLOTS_ATTACK
 	{0.0, 1.0, 0.0},	// SLOTS_DECAY
@@ -194,7 +194,7 @@ const Limit controllerLimits[NR_CONTROLLERS] =
 	{0.0, 1.0, 0.0},
 	{0.0, 1.0, 0.0},
 	{0.0, 1.0, 0.0},
-	{0, 24, 1},		// SLOTS = 9; SLOTS_EFFECT
+	{0, 25, 1},		// SLOTS = 9; SLOTS_EFFECT
 	{0, 1, 1},		// SLOTS_PLAY
 	{0.0, 1.0, 0.0},	// SLOTS_ATTACK
 	{0.0, 1.0, 0.0},	// SLOTS_DECAY
@@ -214,7 +214,7 @@ const Limit controllerLimits[NR_CONTROLLERS] =
 	{0.0, 1.0, 0.0},
 	{0.0, 1.0, 0.0},
 	{0.0, 1.0, 0.0},
-	{0, 24, 1},		// SLOTS = 10; SLOTS_EFFECT
+	{0, 25, 1},		// SLOTS = 10; SLOTS_EFFECT
 	{0, 1, 1},		// SLOTS_PLAY
 	{0.0, 1.0, 0.0},	// SLOTS_ATTACK
 	{0.0, 1.0, 0.0},	// SLOTS_DECAY
@@ -234,7 +234,7 @@ const Limit controllerLimits[NR_CONTROLLERS] =
 	{0.0, 1.0, 0.0},
 	{0.0, 1.0, 0.0},
 	{0.0, 1.0, 0.0},
-	{0, 24, 1},		// SLOTS = 11; SLOTS_EFFECT
+	{0, 25, 1},		// SLOTS = 11; SLOTS_EFFECT
 	{0, 1, 1},		// SLOTS_PLAY
 	{0.0, 1.0, 0.0},	// SLOTS_ATTACK
 	{0.0, 1.0, 0.0},	// SLOTS_DECAY
@@ -254,7 +254,7 @@ const Limit controllerLimits[NR_CONTROLLERS] =
 	{0.0, 1.0, 0.0},
 	{0.0, 1.0, 0.0},
 	{0.0, 1.0, 0.0},
-	{0, 24, 1},		// SLOTS = 12; SLOTS_EFFECT
+	{0, 25, 1},		// SLOTS = 12; SLOTS_EFFECT
 	{0, 1, 1},		// SLOTS_PLAY
 	{0.0, 1.0, 0.0},	// SLOTS_ATTACK
 	{0.0, 1.0, 0.0},	// SLOTS_DECAY
