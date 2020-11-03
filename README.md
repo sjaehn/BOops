@@ -312,6 +312,11 @@ Set the modulator frequency and select the waveform from the menu. The amount of
 (0 = full input signal, 1 = full modulator signal).
 
 
+#### Oops
+
+This is the most important one. Don't run B.Noname01 without some oops! 
+
+
 ## What's new
 
 * Optional join consecutive pads

@@ -133,10 +133,10 @@ enum BNoname01WaveformIndex
 #define BNONAME01FXNAMES \
 { \
 	{1, "Surprise box"}, \
-	{2, "Amp"}, {3, "Balance"}, {4, "Width"}, {5, "Pitch (TODO)"}, \
+	{2, "Amp"}, {3, "Balance"}, {4, "Width"}, /*{5, "Pitch (TODO)"}, */ \
 	{6, "Delay"}, {7, "Reverse"}, \
 	{8, "Chop"}, {21, "Stutter"}, {9, "Jumble"}, \
-	{10, "Tape stop"}, {11, "Tape start (TODO)"}, {12, "Tape speed"}, {14, "Wow & flutter"}, \
+	{10, "Tape stop"}, /*{11, "Tape start (TODO)"}, */{12, "Tape speed"}, {14, "Wow & flutter"}, \
 	{13, "Scratch"}, {19, "Noise"}, {20, "Crackles"}, \
 	{15, "Crush"}, {16, "Decimate"}, {17, "Distortion"}, {18, "Filter"}, \
 	{22, "Flanger"}, {23, "Phaser"}, {24, "Ring modulator"}, {25, "Oops"} \
@@ -145,13 +145,13 @@ enum BNoname01WaveformIndex
 #define BNONAME01FXBGNAMES \
 { \
 	"", \
-	"", \
+	"inc/Surprise_bg.png", \
 	"inc/Amp_bg.png", \
 	"inc/Amp_bg.png", \
 	"inc/Amp_bg.png", \
 	"", \
-	"inc/Amp_bg.png", \
-	"inc/Amp_bg.png", \
+	"inc/Delay_bg.png", \
+	"inc/Delay_bg.png", \
 	"inc/Chop_bg.png", \
 	"inc/Chop_bg.png", \
 	"inc/Tape_bg.png", \
@@ -166,10 +166,10 @@ enum BNoname01WaveformIndex
 	"inc/Vinyl_bg.png", \
 	"inc/Vinyl_bg.png", \
 	"inc/Chop_bg.png", \
-	"inc/Distortion_bg.png", \
-	"inc/Distortion_bg.png", \
-	"inc/Distortion_bg.png", \
-	"" \
+	"inc/Flanger_bg.png", \
+	"inc/Flanger_bg.png", \
+	"inc/Flanger_bg.png", \
+	"inc/Oops_bg.png" \
 }
 
 #endif /* PORTS_HPP_ */
