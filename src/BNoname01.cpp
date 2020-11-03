@@ -1001,27 +1001,30 @@ LV2_State_Status BNoname01::state_save (LV2_State_Store_Function store, LV2_Stat
 
 		for (int slotNr = 0; slotNr < NR_SLOTS; ++slotNr)
 		{
-			for (unsigned int nodeNr = 0; nodeNr < slots[slotNr].shape.size (); ++nodeNr)
+			if (!slots[slotNr].shape.isDefault())
 			{
-				char valueString[160];
-				Node node = slots[slotNr].shape.getNode (nodeNr);
-				snprintf
-				(
-					valueString,
-					126,
-					"slo:%d; typ:%d; ptx:%f; pty:%f; h1x:%f; h1y:%f; h2x:%f; h2y:%f",
-					slotNr,
-					int (node.nodeType),
-					node.point.x,
-					node.point.y,
-					node.handle1.x,
-					node.handle1.y,
-					node.handle2.x,
-					node.handle2.y
-				);
-				if ((slotNr < NR_SLOTS - 1) || (nodeNr < slots[slotNr].shape.size ())) strcat (valueString, ";\n");
-				else strcat(valueString, "\n");
-				strcat (shapesDataString, valueString);
+				for (unsigned int nodeNr = 0; nodeNr < slots[slotNr].shape.size (); ++nodeNr)
+				{
+					char valueString[160];
+					Node node = slots[slotNr].shape.getNode (nodeNr);
+					snprintf
+					(
+						valueString,
+						126,
+						"slo:%d; typ:%d; ptx:%f; pty:%f; h1x:%f; h1y:%f; h2x:%f; h2y:%f",
+						slotNr,
+						int (node.nodeType),
+						node.point.x,
+						node.point.y,
+						node.handle1.x,
+						node.handle1.y,
+						node.handle2.x,
+						node.handle2.y
+					);
+					if ((slotNr < NR_SLOTS - 1) || (nodeNr < slots[slotNr].shape.size ())) strcat (valueString, ";\n");
+					else strcat(valueString, "\n");
+					strcat (shapesDataString, valueString);
+				}
 			}
 		}
 		store (handle, urids.bNoname01_shapeData, shapesDataString, strlen (shapesDataString) + 1, urids.atom_String, LV2_STATE_IS_POD);
