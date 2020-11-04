@@ -1,4 +1,4 @@
-/* B.Noname01
+/* B.Oops
  * Glitch effect sequencer LV2 plugin
  *
  * Copyright (C) 2020 by Sven Jähnichen
@@ -53,7 +53,7 @@ public:
 	virtual void init (const double position) override
 	{
 		Fx::init (position);
-		method = BNoname01DistortionIndex (LIMIT (int (round (params[SLOTS_OPTPARAMS + FX_DISTORTION_METHOD] * 8)), 0, 4));
+		method = BOopsDistortionIndex (LIMIT (int (round (params[SLOTS_OPTPARAMS + FX_DISTORTION_METHOD] * 8)), 0, 4));
 		const double r1 = bidist (rnd);
 		drive = DB2CO (-30.0 + 100.0 * (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_DISTORTION_DRIVE] + r1 * params[SLOTS_OPTPARAMS + FX_DISTORTION_DRIVERAND], 0.00, 1.0) : 0.5));
 		const double r2 = bidist (rnd);
@@ -121,7 +121,7 @@ public:
 	}
 
 protected:
-	BNoname01DistortionIndex method;
+	BOopsDistortionIndex method;
 	double drive;
 	double level;
 };

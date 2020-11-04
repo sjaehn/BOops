@@ -1,4 +1,4 @@
-/* B.Noname01
+/* B.Oops
  * Glitch effect sequencer LV2 plugin
  *
  * Copyright (C) 2020 by Sven Jähnichen
@@ -101,7 +101,7 @@ public:
 		if (!widget) return;
 		OptionWidget* p = (OptionWidget*) widget->getParent();
 		if (!p) return;
-		BNoname01GUI* ui = (BNoname01GUI*) widget->getMainWindow();
+		BOopsGUI* ui = (BOopsGUI*) widget->getMainWindow();
 		if (!ui) return;
 
 		const float value = ((BWidgets::ValueWidget*)widget)->getValue();

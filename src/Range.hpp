@@ -1,4 +1,4 @@
-/* B.Noname01
+/* B.Oops
  * Glitch effect sequencer LV2 plugin
  *
  * Copyright (C) 2019 by Sven Jähnichen

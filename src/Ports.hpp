@@ -1,4 +1,4 @@
-/* B.Noname01
+/* B.Oops
  * Glitch effect sequencer LV2 plugin
  *
  * Copyright (C) 2020 by Sven Jähnichen
@@ -21,7 +21,7 @@
 #ifndef PORTS_HPP_
 #define PORTS_HPP_
 
-enum BNoname01PortIndex
+enum BOopsPortIndex
 {
 	CONTROL		= 0,
 	NOTIFY		= 1,
@@ -59,28 +59,28 @@ enum BNoname01PortIndex
 	NR_CONTROLLERS	= SLOTS + (SLOTS_PARAMS + SLOTS_OPTPARAMS + NR_OPTPARAMS) * NR_SLOTS
 };
 
-enum BNoname01PlayIndex
+enum BOopsPlayIndex
 {
 	PLAY_OFF	= 0,
 	PLAY_ON		= 1,
 	PLAY_BYPASS	= 2
 };
 
-enum BNoname01PlayModeIndex
+enum BOopsPlayModeIndex
 {
 	AUTOPLAY	= 0,
 	MIDI_CONTROLLED	= 1,
 	HOST_CONTROLLED	= 2
 };
 
-enum BNoname01BaseIndex
+enum BOopsBaseIndex
 {
 	SECONDS		= 0,
 	BEATS		= 1,
 	BARS		= 2
 };
 
-enum BNoname01EffectsIndex
+enum BOopsEffectsIndex
 {
 	FX_NONE		= 0,
 	FX_SURPRISE	= 1,
@@ -112,7 +112,7 @@ enum BNoname01EffectsIndex
 	FX_INVALID	= 255
 };
 
-enum BNoname01DistortionIndex
+enum BOopsDistortionIndex
 {
 	HARDCLIP	= 0,
 	SOFTCLIP	= 1,
@@ -121,7 +121,7 @@ enum BNoname01DistortionIndex
 	FUZZ		= 4
 };
 
-enum BNoname01WaveformIndex
+enum BOopsWaveformIndex
 {
 	SINE_WAVE	= 0,
 	TRIANGLE_WAVE	= 1,
@@ -130,7 +130,7 @@ enum BNoname01WaveformIndex
 	REVERSE_SAW_WAVE= 4
 };
 
-#define BNONAME01FXNAMES \
+#define BOOPSFXNAMES \
 { \
 	{1, "Surprise box"}, \
 	{2, "Amp"}, {3, "Balance"}, {4, "Width"}, /*{5, "Pitch (TODO)"}, */ \
@@ -142,7 +142,7 @@ enum BNoname01WaveformIndex
 	{22, "Flanger"}, {23, "Phaser"}, {24, "Ring modulator"}, {25, "Oops"} \
 }
 
-#define BNONAME01FXBGNAMES \
+#define BOOPSFXBGNAMES \
 { \
 	"", \
 	"inc/Surprise_bg.png", \

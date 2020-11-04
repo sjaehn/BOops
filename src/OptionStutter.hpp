@@ -1,4 +1,4 @@
-/* B.Noname01
+/* B.Oops
  * Glitch effect sequencer LV2 plugin
  *
  * Copyright (C) 2020 by Sven Jähnichen
@@ -88,7 +88,7 @@ public:
 		if (!widget) return;
 		OptionStutter* p = (OptionStutter*) widget->getParent();
 		if (!p) return;
-		BNoname01GUI* ui = (BNoname01GUI*) widget->getMainWindow();
+		BOopsGUI* ui = (BOopsGUI*) widget->getMainWindow();
 		if (!ui) return;
 
 		// Forward all changed options to ui

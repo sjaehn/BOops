@@ -1,4 +1,4 @@
-/* B.Noname01
+/* B.Oops
  * Glitch effect sequencer LV2 plugin
  *
  * Copyright (C) 2020 by Sven Jähnichen
@@ -22,7 +22,7 @@
 
 #include "BWidgets/RangeWidget.hpp"
 #include "Ports.hpp"
-#include "BNoname01GUI.hpp"
+#include "BOopsGUI.hpp"
 #include "Shape.hpp"
 
 class OptionWidget : public BWidgets::Widget
@@ -137,7 +137,7 @@ public:
 		if (!event) return;
 		BWidgets::Widget* widget = event->getWidget ();
 		if (!widget) return;
-		BNoname01GUI* ui = (BNoname01GUI*) widget->getMainWindow();
+		BOopsGUI* ui = (BOopsGUI*) widget->getMainWindow();
 		if (ui) ui->optionChangedCallback (event);
 	}
 

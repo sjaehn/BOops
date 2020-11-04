@@ -1,4 +1,4 @@
-/* B.Noname01
+/* B.Oops
  * Glitch effect sequencer LV2 plugin
  *
  * Copyright (C) 2020 by Sven Jähnichen
@@ -27,7 +27,7 @@
 #include <lv2/lv2plug.in/ns/ext/midi/midi.h>
 #include <lv2/lv2plug.in/ns/ext/time/time.h>
 
-struct BNoname01URIDs
+struct BOopsURIDs
 {
 	LV2_URID atom_Float;
 	LV2_URID atom_Double;
@@ -46,32 +46,32 @@ struct BNoname01URIDs
 	LV2_URID time_beatsPerBar;
 	LV2_URID time_beatUnit;
 	LV2_URID time_speed;
-	LV2_URID bNoname01_uiOn;
-	LV2_URID bNoname01_uiOff;
-	LV2_URID bNoname01_messageEvent;
-	LV2_URID bNoname01_message;
-	LV2_URID bNoname01_statusEvent;
-	LV2_URID bNoname01_position;
-	LV2_URID bNoname01_slotEvent;
-	LV2_URID bNoname01_slot;
-	LV2_URID bNoname01_pads;
-	LV2_URID bNoname01_padEvent;
-	LV2_URID bNoname01_step;
-	LV2_URID bNoname01_pad;
-	LV2_URID bNoname01_shapeEvent;
-	LV2_URID bNoname01_shapeData;
-	LV2_URID bNoname01_allocateBuffers;
-	LV2_URID bNoname01_installBuffers;
-	LV2_URID bNoname01_freeBuffers;
-	LV2_URID bNoname01_allocateFx;
-	LV2_URID bNoname01_installFx;
-	LV2_URID bNoname01_freeFx;
-	LV2_URID bNoname01_statePad;
-	LV2_URID bNoname01_waveformEvent;
-	LV2_URID bNoname01_waveformStart;
-	LV2_URID bNoname01_waveformData;
-	LV2_URID bNoname01_transportGateKeyEvent;
-	LV2_URID bNoname01_transportGateKeys;
+	LV2_URID bOops_uiOn;
+	LV2_URID bOops_uiOff;
+	LV2_URID bOops_messageEvent;
+	LV2_URID bOops_message;
+	LV2_URID bOops_statusEvent;
+	LV2_URID bOops_position;
+	LV2_URID bOops_slotEvent;
+	LV2_URID bOops_slot;
+	LV2_URID bOops_pads;
+	LV2_URID bOops_padEvent;
+	LV2_URID bOops_step;
+	LV2_URID bOops_pad;
+	LV2_URID bOops_shapeEvent;
+	LV2_URID bOops_shapeData;
+	LV2_URID bOops_allocateBuffers;
+	LV2_URID bOops_installBuffers;
+	LV2_URID bOops_freeBuffers;
+	LV2_URID bOops_allocateFx;
+	LV2_URID bOops_installFx;
+	LV2_URID bOops_freeFx;
+	LV2_URID bOops_statePad;
+	LV2_URID bOops_waveformEvent;
+	LV2_URID bOops_waveformStart;
+	LV2_URID bOops_waveformData;
+	LV2_URID bOops_transportGateKeyEvent;
+	LV2_URID bOops_transportGateKeys;
 };
 
 #endif /* URIDS_HPP_ */

@@ -1,4 +1,4 @@
-/* B.Noname01
+/* B.Oops
  * Glitch effect sequencer LV2 plugin
  *
  * Copyright (C) 2020 by Sven Jähnichen
@@ -24,7 +24,7 @@
 #include "Urids.hpp"
 #include "Definitions.hpp"
 
-void getURIs (LV2_URID_Map* m, BNoname01URIDs* uris)
+void getURIs (LV2_URID_Map* m, BOopsURIDs* uris)
 {
 	uris->atom_Float = m->map(m->handle, LV2_ATOM__Float);
 	uris->atom_Double = m->map(m->handle, LV2_ATOM__Double);
@@ -43,32 +43,32 @@ void getURIs (LV2_URID_Map* m, BNoname01URIDs* uris)
 	uris->time_beatUnit = m->map(m->handle, LV2_TIME__beatUnit);
 	uris->time_beatsPerBar = m->map(m->handle, LV2_TIME__beatsPerBar);
 	uris->time_speed = m->map(m->handle, LV2_TIME__speed);
-	uris->bNoname01_uiOn = m->map(m->handle, BNONAME01_URI "#UIon");
-	uris->bNoname01_uiOff = m->map(m->handle, BNONAME01_URI "#UIoff");
-	uris->bNoname01_messageEvent = m->map(m->handle, BNONAME01_URI "#messageEvent");
-	uris->bNoname01_message = m->map(m->handle, BNONAME01_URI "#message");
-	uris->bNoname01_statusEvent = m->map(m->handle, BNONAME01_URI "#statusEvent");
-	uris->bNoname01_position = m->map(m->handle, BNONAME01_URI "#position");
-	uris->bNoname01_slotEvent = m->map(m->handle, BNONAME01_URI "#slotEvent");
-	uris->bNoname01_slot = m->map(m->handle, BNONAME01_URI "#slot");
-	uris->bNoname01_pads = m->map(m->handle, BNONAME01_URI "#pads");
-	uris->bNoname01_padEvent = m->map(m->handle, BNONAME01_URI "#padEvent");
-	uris->bNoname01_step = m->map(m->handle, BNONAME01_URI "#step");
-	uris->bNoname01_pad = m->map(m->handle, BNONAME01_URI "#pad");
-	uris->bNoname01_shapeEvent = m->map(m->handle, BNONAME01_URI "#shapeEvent");
-	uris->bNoname01_shapeData = m->map(m->handle, BNONAME01_URI "#shapeData");
-	uris->bNoname01_allocateBuffers = m->map(m->handle, BNONAME01_URI "#allocateBuffers");
-	uris->bNoname01_installBuffers = m->map(m->handle, BNONAME01_URI "#installBuffers");
-	uris->bNoname01_freeBuffers = m->map(m->handle, BNONAME01_URI "#freeBuffers");
-	uris->bNoname01_allocateFx = m->map(m->handle, BNONAME01_URI "#allocateFx");
-	uris->bNoname01_installFx = m->map(m->handle, BNONAME01_URI "#installFx");
-	uris->bNoname01_freeFx = m->map(m->handle, BNONAME01_URI "#freeFx");
-	uris->bNoname01_statePad = m->map(m->handle, BNONAME01_URI "#statePad");
-	uris->bNoname01_waveformEvent = m->map(m->handle, BNONAME01_URI "#waveformEvent");
-	uris->bNoname01_waveformStart = m->map(m->handle, BNONAME01_URI "#waveformStart");
-	uris->bNoname01_waveformData = m->map(m->handle, BNONAME01_URI "#notify_waveformData");
-	uris->bNoname01_transportGateKeyEvent = m->map(m->handle, BNONAME01_URI "#transportGateKeyEvent");
-	uris->bNoname01_transportGateKeys = m->map(m->handle, BNONAME01_URI "#transportGateKeys");
+	uris->bOops_uiOn = m->map(m->handle, BOOPS_URI "#UIon");
+	uris->bOops_uiOff = m->map(m->handle, BOOPS_URI "#UIoff");
+	uris->bOops_messageEvent = m->map(m->handle, BOOPS_URI "#messageEvent");
+	uris->bOops_message = m->map(m->handle, BOOPS_URI "#message");
+	uris->bOops_statusEvent = m->map(m->handle, BOOPS_URI "#statusEvent");
+	uris->bOops_position = m->map(m->handle, BOOPS_URI "#position");
+	uris->bOops_slotEvent = m->map(m->handle, BOOPS_URI "#slotEvent");
+	uris->bOops_slot = m->map(m->handle, BOOPS_URI "#slot");
+	uris->bOops_pads = m->map(m->handle, BOOPS_URI "#pads");
+	uris->bOops_padEvent = m->map(m->handle, BOOPS_URI "#padEvent");
+	uris->bOops_step = m->map(m->handle, BOOPS_URI "#step");
+	uris->bOops_pad = m->map(m->handle, BOOPS_URI "#pad");
+	uris->bOops_shapeEvent = m->map(m->handle, BOOPS_URI "#shapeEvent");
+	uris->bOops_shapeData = m->map(m->handle, BOOPS_URI "#shapeData");
+	uris->bOops_allocateBuffers = m->map(m->handle, BOOPS_URI "#allocateBuffers");
+	uris->bOops_installBuffers = m->map(m->handle, BOOPS_URI "#installBuffers");
+	uris->bOops_freeBuffers = m->map(m->handle, BOOPS_URI "#freeBuffers");
+	uris->bOops_allocateFx = m->map(m->handle, BOOPS_URI "#allocateFx");
+	uris->bOops_installFx = m->map(m->handle, BOOPS_URI "#installFx");
+	uris->bOops_freeFx = m->map(m->handle, BOOPS_URI "#freeFx");
+	uris->bOops_statePad = m->map(m->handle, BOOPS_URI "#statePad");
+	uris->bOops_waveformEvent = m->map(m->handle, BOOPS_URI "#waveformEvent");
+	uris->bOops_waveformStart = m->map(m->handle, BOOPS_URI "#waveformStart");
+	uris->bOops_waveformData = m->map(m->handle, BOOPS_URI "#notify_waveformData");
+	uris->bOops_transportGateKeyEvent = m->map(m->handle, BOOPS_URI "#transportGateKeyEvent");
+	uris->bOops_transportGateKeys = m->map(m->handle, BOOPS_URI "#transportGateKeys");
 }
 
 #endif /* GETURIS_HPP_ */

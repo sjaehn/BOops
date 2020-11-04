@@ -1,4 +1,4 @@
-/* B.Noname01
+/* B.Oops
  * Glitch effect sequencer LV2 plugin
  *
  * Copyright (C) 2020 by Sven Jähnichen
@@ -22,7 +22,7 @@
 #define FXSURPRISE_HPP_
 
 #include "Fx.hpp"
-#include "BNoname01.hpp"
+#include "BOops.hpp"
 #include <array>
 
 #define FX_SURPRISE_RATIO 0
@@ -34,7 +34,7 @@ class FxSurprise : public Fx
 public:
 	FxSurprise () : FxSurprise (nullptr, nullptr, nullptr, nullptr) {}
 
-	FxSurprise (RingBuffer<Stereo>** buffer, float* params, Pad* pads, BNoname01* plugin) :
+	FxSurprise (RingBuffer<Stereo>** buffer, float* params, Pad* pads, BOops* plugin) :
 		Fx (buffer, params, pads), plugin (plugin), act (0)
 	{
 		ratios.fill (0);
@@ -86,7 +86,7 @@ public:
 	}
 
 protected:
-	BNoname01* plugin;
+	BOops* plugin;
 	std::array<float, FX_SURPRISE_NR> ratios;
 	std::array<int, FX_SURPRISE_NR> slots;
 	int act;

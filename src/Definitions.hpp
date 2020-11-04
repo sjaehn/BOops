@@ -1,4 +1,4 @@
-/* B.Noname01
+/* B.Oops
  * Glitch effect sequencer LV2 plugin
  *
  * Copyright (C) 2020 by Sven Jähnichen
@@ -29,7 +29,7 @@
 #define GRIDSIZE 2.0
 #define NR_PIANO_KEYS 120
 #define WAVEFORMSIZE 1024
-#define BNONAME01_URI "https://www.jahnichen.de/plugins/lv2/BNoname01"
-#define BNONAME01_GUI_URI "https://www.jahnichen.de/plugins/lv2/BNoname01#gui"
+#define BOOPS_URI "https://www.jahnichen.de/plugins/lv2/BOops"
+#define BOOPS_GUI_URI "https://www.jahnichen.de/plugins/lv2/BOops#gui"
 
 #endif /* DEFINITIONS_HPP_ */

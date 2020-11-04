@@ -1,4 +1,4 @@
-/* B.Noname01
+/* B.Oops
  * Glitch effect sequencer LV2 plugin
  *
  * Copyright (C) 2020 by Sven Jähnichen
@@ -49,7 +49,7 @@ public:
 		ratio = (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_RINGMOD_RATIO] + r1 * params[SLOTS_OPTPARAMS + FX_RINGMOD_RATIORAND], 0.0, 1.0) : 0.5);
 		const double r2 = bidist (rnd);
 		freq = 20000.0f * pow (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_RINGMOD_FREQ] + r2 * params[SLOTS_OPTPARAMS + FX_RINGMOD_FREQRAND], 0.0, 1.0) : 1.0, 4.0);
-		env = BNoname01WaveformIndex (LIMIT (int (round (params[SLOTS_OPTPARAMS + FX_RINGMOD_ENV] * 8)), 0, 4));
+		env = BOopsWaveformIndex (LIMIT (int (round (params[SLOTS_OPTPARAMS + FX_RINGMOD_ENV] * 8)), 0, 4));
 		framesPerStep = (framesPerStepPtr ? *framesPerStepPtr : 24000.0);
 	}
 
@@ -88,7 +88,7 @@ protected:
 	double framesPerStep;
 	float ratio;
 	float freq;
-	BNoname01WaveformIndex env;
+	BOopsWaveformIndex env;
 
 };
 

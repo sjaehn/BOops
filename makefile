@@ -28,18 +28,18 @@ GUIPPFLAGS += -DPUGL_HAVE_CAIRO
 DSPFLAGS += `$(PKG_CONFIG) --cflags --libs $(LV2_LIBS)`
 GUIFLAGS += `$(PKG_CONFIG) --cflags --libs $(LV2_LIBS) $(GUI_LIBS)`
 
-BUNDLE = BNoname01.lv2
-DSP = BNoname01
-DSP_SRC = ./src/BNoname01.cpp
-GUI = BNoname01GUI
-GUI_SRC = ./src/BNoname01GUI.cpp
+BUNDLE = BOops.lv2
+DSP = BOops
+DSP_SRC = ./src/BOops.cpp
+GUI = BOopsGUI
+GUI_SRC = ./src/BOopsGUI.cpp
 OBJ_EXT = .so
 DSP_OBJ = $(DSP)$(OBJ_EXT)
 GUI_OBJ = $(GUI)$(OBJ_EXT)
 B_OBJECTS = $(addprefix $(BUNDLE)/, $(DSP_OBJ) $(GUI_OBJ))
 ROOTFILES = \
 	manifest.ttl \
-	BNoname01.ttl \
+	BOops.ttl \
 	LICENSE
 
 INCFILES = inc/*.png inc/*.wav

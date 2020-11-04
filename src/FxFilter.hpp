@@ -1,4 +1,4 @@
-/* B.Noname01
+/* B.Oops
  * Glitch effect sequencer LV2 plugin
  *
  * Copyright (C) 2020 by Sven Jähnichen
@@ -30,7 +30,7 @@
 #define FX_FILTER_HIGHRAND 3
 #define FX_FILTER_ORDER 4
 
-class BNoname01; // Forward declaration
+class BOops; // Forward declaration
 
 class FxFilter : public Fx
 {

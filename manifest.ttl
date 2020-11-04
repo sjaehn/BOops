@@ -2,12 +2,12 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix ui:   <http://lv2plug.in/ns/extensions/ui#>.
 
-<https://www.jahnichen.de/plugins/lv2/BNoname01>
+<https://www.jahnichen.de/plugins/lv2/BOops>
         a lv2:Plugin ;
-        lv2:binary <BNoname01.so> ;
-        rdfs:seeAlso <BNoname01.ttl> .
+        lv2:binary <BOops.so> ;
+        rdfs:seeAlso <BOops.ttl> .
 
-<https://www.jahnichen.de/plugins/lv2/BNoname01#gui>
+<https://www.jahnichen.de/plugins/lv2/BOops#gui>
         a ui:X11UI;
-	ui:binary <BNoname01GUI.so>;
-	rdfs:seeAlso <BNoname01.ttl>.
+	ui:binary <BOopsGUI.so>;
+	rdfs:seeAlso <BOops.ttl>.

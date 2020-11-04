@@ -1,4 +1,4 @@
-/* B.Noname01
+/* B.Oops
  * Glitch effect sequencer LV2 plugin
  *
  * Copyright (C) 2020 by Sven Jähnichen
@@ -21,7 +21,7 @@
 
 #include "Slot.hpp"
 #include "BUtilities/mix.hpp"
-#include "BNoname01.hpp"
+#include "BOops.hpp"
 #include <new>
 #include <iostream>
 #include "FxSurprise.hpp"
@@ -50,7 +50,7 @@
 
 Slot::Slot () : Slot (nullptr, FX_INVALID, nullptr, nullptr, 0, 0.0f, 0.0) {}
 
-Slot::Slot (BNoname01* plugin, const BNoname01EffectsIndex effect, float* params, Pad* pads, const size_t size, const float mixf, const double framesPerStep) :
+Slot::Slot (BOops* plugin, const BOopsEffectsIndex effect, float* params, Pad* pads, const size_t size, const float mixf, const double framesPerStep) :
 	plugin (plugin), effect (FX_INVALID), fx (nullptr),
 	size (size), mixf (mixf), framesPerStep (framesPerStep), buffer (nullptr), shape ()
 {
@@ -126,7 +126,7 @@ int Slot::getStartPad (const int index) const
 	return -1;
 }
 
-Fx* Slot::newFx (const BNoname01EffectsIndex effect)
+Fx* Slot::newFx (const BOopsEffectsIndex effect)
 {
 	Fx* fx = nullptr;
 

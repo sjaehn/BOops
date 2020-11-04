@@ -1,4 +1,4 @@
-/* B.Noname01
+/* B.Oops
  * Glitch effect sequencer LV2 plugin
  *
  * Copyright (C) 2020 by Sven Jähnichen
@@ -29,28 +29,28 @@
 #include "Fx.hpp"
 #include "Shape.hpp"
 
-class BNoname01; // Forward declaration;
+class BOops; // Forward declaration;
 
 class Slot
 {
 public:
 	Slot();
-	Slot (BNoname01* plugin, const BNoname01EffectsIndex effect, float* params, Pad* pads, const size_t size, const float mixf, const double framesPerStep);
+	Slot (BOops* plugin, const BOopsEffectsIndex effect, float* params, Pad* pads, const size_t size, const float mixf, const double framesPerStep);
 	Slot (const Slot& that);
 	~Slot ();
 
 	Slot& operator= (const Slot& that);
 	void setPad (const int index, const Pad& pad);
 	Pad getPad (const int index) const {return pads[index];}
-	Fx* newFx (const BNoname01EffectsIndex effect);
+	Fx* newFx (const BOopsEffectsIndex effect);
 	int getStartPad (const int index) const;
 	bool isPadSet (const int index) const {return ((startPos[index] >= 0) && (startPos[index] + pads[startPos[index]].size > index));}
 	void init (const double position) {if (fx) fx->init (position);}
 	Stereo play (const double position);
 	void end () {if (fx) fx->end ();}
 
-	BNoname01* plugin;
-	BNoname01EffectsIndex effect;
+	BOops* plugin;
+	BOopsEffectsIndex effect;
 	float params [NR_PARAMS];
 protected:
 	float adsr (const double position, const double size) const;
