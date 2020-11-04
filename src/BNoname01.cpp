@@ -891,6 +891,13 @@ void BNoname01::play (uint32_t start, uint32_t end)
 			double relpos = getPositionFromFrames (p.transport, i - p.refFrame);	// Position relative to reference frame
 			double pos = floorfrac (p.position + relpos);				// 0..1 position sequence
 
+			// Waveform
+			if (j == positions.size - 1)
+			{
+				waveformCounter = int (pos * WAVEFORMSIZE) % WAVEFORMSIZE;
+				waveform[waveformCounter] = (audioInput1[i] + audioInput2[i]) / 2;
+			}
+
 			if
 			(
 				(p.playing) &&
@@ -935,13 +942,6 @@ void BNoname01::play (uint32_t start, uint32_t end)
 			audioOutput2[i] = (sumFaders * audioOutput2[i] + fader * output.right) / (sumFaders + fader);;
 
 			sumFaders += fader;
-
-			// Waveform
-			if (j == positions.size - 1)
-			{
-				waveformCounter = int (pos * WAVEFORMSIZE) % WAVEFORMSIZE;
-				waveform[waveformCounter] = (audioInput1[i] + audioInput2[i]) / 2;
-			}
 		}
 	}
 }
