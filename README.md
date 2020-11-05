@@ -1,8 +1,14 @@
 # B.Oops
 Description: Glitch effect sequencer LV2 plugin (** experimental **)
 
+Key features:
+* Multi-effect plugin controlled by a step sequencer pattern
+* 23 effects
+* Up to 12 effect slots, freely select effects and effect order
+* Random effects: 3 different ways of randomization
+
 **Warning: B.Oops is in an early stage of development.
-Not for production use! No guarantees! Some essential features are not (fully) implemented yet.
+Not for production use! No guarantees! Some features are not (fully) implemented yet.
 Major changes in the plugin definition need to be expected. Therefore, future versions of this
 plugin may be completely incompatible to this version.**
 
@@ -319,53 +325,14 @@ Set the modulator frequency and select the waveform from the menu. The amount of
 This is the most important one. Don't run B.Oops without some oops!
 
 
-## What's new
+#### Surprise box
 
-* Optional join consecutive pads
-* Show 'Getting started' information
-* Background images
-* Group colors
-* GUI re-design
-* Enable GUI scaling
-* Show slot index and effect name for selected slot
-* Enable effect panning
-* Added feedback dial to delay effect
-* Messaging system activated
-* Show input signal waveform
-* Implement effects
-  * Surprise box
-  * Jumble
-  * Tape start
-  * Tape speed
-  * Scratch
-  * Wow & Flutter
-  * Crush
-  * Decimate
-  * Distortion
-  * Filter
-  * Noise
-  * Crackles
-  * Stutter
-  * Flanger
-  * Phaser
-  * Ring modulator
-  * Oops!
-* MIDI support
-  * MIDI triggering of sequencer transport
-* Fader rewritten to enable click-free MIDI triggered sequencer transport
-* Bugfixes
-  * Fix update pads in DSP if slot (and thus pads) in GUI changed (insert, delete, up, down)
-  * Enable dragging of sliders
-  * Enable reset
-  * Fix first step not played
-  * Fix crash on state_save
-  * Update GUI slots if changed in DSP
-  * Fix move shapes linked to slots
+The surprise box isn't an effect by itself. The surprise box controls the effect of one of the other slots is applied or not.
+Select at least two slots and set the Likelihood ratio for each slot.
 
 
 ## TODO
 
-* Find a name
 * MIDI triggering effects
 * Implement effects
   * Pitch (?)
