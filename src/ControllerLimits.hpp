@@ -31,6 +31,7 @@ const Limit controllerLimits[NR_CONTROLLERS] =
 	{0, 2, 1},		// ON_MIDI
 	{1.0, 300.0, 0.0},	// AUTOPLAY_BPM
 	{1, 16, 1},		// AUTOPLAY_BPB
+	{-0.5, 0.5, 0.0},	// AUTOPLAY_POSITION
 	{1, 32, 1},		// STEPS
 	{0, 2, 1},		// BASE
 	{1.0, 16.0, 0.0},	// BASE_VALUE

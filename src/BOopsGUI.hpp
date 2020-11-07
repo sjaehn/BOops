@@ -36,6 +36,7 @@
 #include "BWidgets/PopupListBox.hpp"
 #include "BWidgets/HPianoRoll.hpp"
 #include "BWidgets/TextButton.hpp"
+#include "BWidgets/HSlider.hpp"
 #include "screen.h"
 
 #include "HaloButton.hpp"
@@ -212,6 +213,8 @@ private:
 	HSlider autoplayBpmSlider;
 	BWidgets::Label autoplayBpbLabel;
 	HSlider autoplayBpbSlider;
+	BWidgets::Label autoplayPositionLabel;
+	BWidgets::HSlider autoplayPositionSlider;
 	ValueSelect sequenceSizeSelect;
 	BWidgets::PopupListBox sequenceBaseListBox;
 	BWidgets::PopupListBox stepsListBox;

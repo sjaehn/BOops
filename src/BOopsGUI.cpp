@@ -75,6 +75,8 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 	autoplayBpmSlider (540, 10, 80, 20, "slider", 120, 1, 300, 0, "%1.0f"),
 	autoplayBpbLabel (640, 0, 80, 8, "smlabel", "bpBar"),
 	autoplayBpbSlider (640, 10, 80, 20, "slider", 4, 1, 16, 1, "%1.0f"),
+	autoplayPositionLabel (740, 0, 150, 8, "smlabel", "Adjust position"),
+	autoplayPositionSlider (740, 14, 150, 12, "slider", 0.0, -0.5, 0.5, 0.0),
 	sequenceSizeSelect (910, 12, 80, 16, "select", 1, 1, 16, 0.01),
 	sequenceBaseListBox (1010, 10, 90, 20, 0, 20, 90, 80, "menu", BItems::ItemList ({{0, "Seconds"}, {1, "Beats"}, {2, "Bars"}}), 1),
 	stepsListBox (1120, 10, 90, 20, 0, 20, 90, 240, "menu",
@@ -158,6 +160,7 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 	controllerWidgets[ON_MIDI] = (BWidgets::ValueWidget*) &onMidiListBox;
 	controllerWidgets[AUTOPLAY_BPM] = (BWidgets::ValueWidget*) &autoplayBpmSlider;
 	controllerWidgets[AUTOPLAY_BPB] = (BWidgets::ValueWidget*) &autoplayBpbSlider;
+	controllerWidgets[AUTOPLAY_POSITION] = (BWidgets::ValueWidget*) &autoplayPositionSlider;
 	controllerWidgets[STEPS] = (BWidgets::ValueWidget*) &stepsListBox;
 	controllerWidgets[BASE] = (BWidgets::ValueWidget*) &sequenceBaseListBox;
 	controllerWidgets[BASE_VALUE] = (BWidgets::ValueWidget*) &sequenceSizeSelect;
@@ -251,6 +254,8 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 	settingsContainer.add (autoplayBpmSlider);
 	settingsContainer.add (autoplayBpbLabel);
 	settingsContainer.add (autoplayBpbSlider);
+	settingsContainer.add (autoplayPositionLabel);
+	settingsContainer.add (autoplayPositionSlider);
 	settingsContainer.add (sequenceSizeSelect);
 	settingsContainer.add (sequenceBaseListBox);
 	settingsContainer.add (stepsListBox);
@@ -665,6 +670,8 @@ void BOopsGUI::resize ()
 	RESIZE (autoplayBpmSlider, 540, 10, 80, 20, sz);
 	RESIZE (autoplayBpbLabel, 640, 0, 80, 8, sz);
 	RESIZE (autoplayBpbSlider, 640, 10, 80, 20, sz);
+	RESIZE (autoplayPositionLabel, 740, 0, 150, 8, sz);
+	RESIZE (autoplayPositionSlider, 740, 14, 150, 12, sz);
 	RESIZE (sequenceSizeSelect, 910, 12, 80, 16, sz);
 	RESIZE (sequenceBaseListBox, 1010, 10, 90, 20, sz);
 	sequenceBaseListBox.resizeListBox(BUtilities::Point (90 * sz, 80 * sz));
@@ -751,6 +758,8 @@ void BOopsGUI::applyTheme (BStyles::Theme& theme)
 	autoplayBpmSlider.applyTheme (theme);
 	autoplayBpbLabel.applyTheme (theme);
 	autoplayBpbSlider.applyTheme (theme);
+	autoplayPositionLabel.applyTheme (theme);
+	autoplayPositionSlider.applyTheme (theme);
 	sequenceSizeSelect.applyTheme (theme);
 	sequenceBaseListBox.applyTheme (theme);
 	stepsListBox.applyTheme (theme);
@@ -1366,6 +1375,8 @@ void BOopsGUI::valueChangedCallback(BEvents::Event* event)
 							ui->autoplayBpmSlider.show();
 							ui->autoplayBpbLabel.show();
 							ui->autoplayBpbSlider.show();
+							ui->autoplayPositionLabel.show();
+							ui->autoplayPositionSlider.show();
 						}
 						else
 						{
@@ -1373,6 +1384,8 @@ void BOopsGUI::valueChangedCallback(BEvents::Event* event)
 							ui->autoplayBpmSlider.hide();
 							ui->autoplayBpbLabel.hide();
 							ui->autoplayBpbSlider.hide();
+							ui->autoplayPositionLabel.hide();
+							ui->autoplayPositionSlider.hide();
 						}
 
 						if  (value == MIDI_CONTROLLED)

@@ -70,7 +70,9 @@ GUI_INCL = \
 	src/BWidgets/DownButton.cpp \
 	src/BWidgets/ToggleButton.cpp \
 	src/BWidgets/Button.cpp \
+	src/BWidgets/HSlider.cpp \
 	src/BWidgets/HScale.cpp \
+	src/BWidgets/Knob.cpp \
 	src/BWidgets/RangeWidget.cpp \
 	src/BWidgets/ValueWidget.cpp \
 	src/BWidgets/ImageIcon.cpp \

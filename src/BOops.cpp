@@ -194,6 +194,7 @@ void BOops::run (uint32_t n_samples)
 		if (globalControllers[i] != *new_controllers[i])
 		{
 			float newValue = controllerLimits[i].validate (*new_controllers[i]);
+			float oldValue = globalControllers[i];
 			globalControllers[i] = newValue;
 
 			if (i == PLAY_MODE)
@@ -240,6 +241,15 @@ void BOops::run (uint32_t n_samples)
 			{
 				if (globalControllers[PLAY_MODE] == AUTOPLAY) positions.back().transport.beatsPerBar = globalControllers[AUTOPLAY_BPB];
 				resizeSteps ();
+			}
+
+			else if (i == AUTOPLAY_POSITION)
+			{
+				Position np = positions.back();
+				np.position = floorfrac (np.position + 1.0 + newValue - oldValue);
+				np.refFrame = 0;
+				positions.push_back (np);
+				scheduleNotifyStatus = true;
 			}
 
 			else if
@@ -664,7 +674,16 @@ void BOops::run (uint32_t n_samples)
 		else ++p;
 	}
 
-	// TODO: At least one free positions
+	// Keep at least one free positions
+	if (positions.size >= MAXFADERS - 1)
+	{
+		Position** killPos = positions.begin();
+		for (Position** p = positions.begin(); p < positions.end(); ++p)
+		{
+			if ((**p).fader < (**killPos).fader) killPos = p;
+		}
+		positions.erase (killPos);
+	}
 
 	// Send collected data to GUI
 	if (waveformCounter != lastWaveformCounter) scheduleNotifyWaveformToGui = true;

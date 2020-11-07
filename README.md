@@ -336,6 +336,7 @@ Select at least two slots and set the Likelihood ratio for each slot.
 ## What's new
 
 * Parameter offset in effect Oops
+* Adjust autoplay position feature
 
 
 ## TODO
