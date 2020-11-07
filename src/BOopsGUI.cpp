@@ -1245,7 +1245,7 @@ void BOopsGUI::setOptionWidget (const int slot)
 		case FX_RINGMOD:	slotParams[slot].optionWidget = new OptionRingModulator (430, 20, 260, 130, "widget");
 					break;
 
-		case FX_OOPS:		slotParams[slot].optionWidget = new OptionOops (430, 20, 160, 130, "widget");
+		case FX_OOPS:		slotParams[slot].optionWidget = new OptionOops (430, 20, 240, 130, "widget");
 					break;
 
 		default:		slotParams[slot].optionWidget = new OptionWidget (0, 0, 0, 0, "widget");

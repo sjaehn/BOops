@@ -32,7 +32,8 @@ public:
 	OptionOops (const double x, const double y, const double width, const double height, const std::string& name) :
 		OptionWidget (x, y, width, height, name),
 		ampLabel (10, 90, 60, 20, "ctlabel", "Amp"),
-		pitchLabel (80, 90, 80, 20, "ctlabel", "Pitch")
+		pitchLabel (90, 90, 60, 20, "ctlabel", "Pitch"),
+		offsetLabel (170, 90, 60, 20, "ctlabel", "Offset")
 	{
 		try
 		{
@@ -40,39 +41,44 @@ public:
 			options[1] = new BWidgets::ValueWidget (0, 0, 0, 0, "widget", 0.0);
 			options[2] = new DialRange (90, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.2f", "semi", [] (double x) {return 24.0 * x - 12.0;});
 			options[3] = new BWidgets::ValueWidget (0, 0, 0, 0, "widget", 0.0);
+			options[4] = new DialRange (170, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.2f");
+			options[5] = new BWidgets::ValueWidget (0, 0, 0, 0, "widget", 0.0);
 		}
 		catch (std::bad_alloc& ba) {throw ba;}
 
-		options[0]->setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, valueChangedCallback);
-		((DialRange*)options[0])->range.setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, rangeChangedCallback);
-		options[1]->setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, valueChangedCallback);
-		options[2]->setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, valueChangedCallback);
-		((DialRange*)options[2])->range.setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, rangeChangedCallback);
-		options[3]->setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, valueChangedCallback);
+		for (int i = 0; i < 3; ++i)
+		{
+			options[i * 2]->setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, valueChangedCallback);
+			((DialRange*)options[i * 2])->range.setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, rangeChangedCallback);
+			options[i * 2 + 1]->setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, valueChangedCallback);
+		}
+
 
 		add (ampLabel);
 		add (pitchLabel);
-		add (*options[0]);
-		add (*options[1]);
-		add (*options[2]);
-		add (*options[3]);
+		add (offsetLabel);
+		for (int i = 0; i < 6; ++i) add (*options[i]);
 	}
 
-	OptionOops (const OptionOops& that) : OptionWidget (that), ampLabel (that.ampLabel), pitchLabel (that.pitchLabel)
+	OptionOops (const OptionOops& that) : OptionWidget (that), ampLabel (that.ampLabel), pitchLabel (that.pitchLabel), offsetLabel (that.offsetLabel)
 	{
 		add (ampLabel);
 		add (pitchLabel);
+		add (offsetLabel);
 	}
 
 	OptionOops& operator= (const OptionOops& that)
 	{
 		release (&ampLabel);
 		release (&pitchLabel);
+		release (&offsetLabel);
 		OptionWidget::operator= (that);
 		ampLabel = that.ampLabel;
 		pitchLabel = that.pitchLabel;
+		offsetLabel = that.offsetLabel;
 		add (ampLabel);
 		add (pitchLabel);
+		add (offsetLabel);
 
 		return *this;
 	}
@@ -98,9 +104,11 @@ public:
 		BOopsGUI* ui = (BOopsGUI*) widget->getMainWindow();
 		if (!ui) return;
 
-		// options[1 or 3] changed ? Send to range
-		if (widget == p->getWidget(1)) ((DialRange*)p->getWidget(0))->range.setValue (((BWidgets::ValueWidget*)widget)->getValue());
-		else if (widget == p->getWidget(3)) ((DialRange*)p->getWidget(2))->range.setValue (((BWidgets::ValueWidget*)widget)->getValue());
+		// options[1 or 3 or 5] changed ? Send to range
+		for (int i = 0; i < 3; ++i)
+		{
+			if (widget == p->getWidget(i * 2 + 1)) ((DialRange*)p->getWidget(i * 2))->range.setValue (((BWidgets::ValueWidget*)widget)->getValue());
+		}
 
 		// Forward all changed options to ui
 		ui->optionChangedCallback (event);
@@ -116,23 +124,21 @@ public:
 		OptionWidget* pp = (OptionWidget*) p->getParent();
 		if (!pp) return;
 
-		// Send changed range to options[1 or 3]
-		if ((p == (DialRange*)pp->getWidget(0)) && (widget == (BWidgets::Widget*)&p->range))
+		// Send changed range to options[1 or 3 or 5]
+		for (int i = 0; i < 3; ++i)
 		{
-			p->update();
-			((BWidgets::ValueWidget*)pp->getWidget(1))->setValue (p->range.getValue ());
-		}
-
-		else if ((p == (DialRange*)pp->getWidget(2)) && (widget == (BWidgets::Widget*)&p->range))
-		{
-			p->update();
-			((BWidgets::ValueWidget*)pp->getWidget(3))->setValue (p->range.getValue ());
+			if ((p == (DialRange*)pp->getWidget(i * 2)) && (widget == (BWidgets::Widget*)&p->range))
+			{
+				p->update();
+				((BWidgets::ValueWidget*)pp->getWidget(i * 2 + 1))->setValue (p->range.getValue ());
+			}
 		}
 	}
 
 protected:
 	BWidgets::Label ampLabel;
 	BWidgets::Label pitchLabel;
+	BWidgets::Label offsetLabel;
 
 
 };

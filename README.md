@@ -3,9 +3,11 @@ Description: Glitch effect sequencer LV2 plugin (** experimental **)
 
 Key features:
 * Multi-effect plugin controlled by a step sequencer pattern
+* Apply glitch effects in live
 * 23 effects
 * Up to 12 effect slots, freely select effects and effect order
 * Random effects: 3 different ways of randomization
+* Autoplay, host controlled, or MIDI controlled sequencer
 
 **Warning: B.Oops is in an early stage of development.
 Not for production use! No guarantees! Some features are not (fully) implemented yet.
@@ -329,6 +331,11 @@ This is the most important one. Don't run B.Oops without some oops!
 
 The surprise box isn't an effect by itself. The surprise box controls the effect of one of the other slots is applied or not.
 Select at least two slots and set the Likelihood ratio for each slot.
+
+
+## What's new
+
+* Parameter offset in effect Oops
 
 
 ## TODO

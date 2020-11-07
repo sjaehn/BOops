@@ -28,6 +28,8 @@
 #define FX_OOPSAMPRAND 1
 #define FX_OOPSPITCH 2
 #define FX_OOPSPITCHRAND 3
+#define FX_OOPSOFFSET 4
+#define FX_OOPSOFFSETRAND 5
 
 class FxOops : public Fx
 {
@@ -39,7 +41,7 @@ public:
 		samplerate (rate),
 		framesPerStepPtr (framesPerStep),
 		framesPerStep (24000),
-		amp (0.0f), pitch (0.0f)
+		amp (0.0f), pitch (0.0f), offset (0.0)
 	{
 		if (pluginpath)
 		{
@@ -58,6 +60,7 @@ public:
 		const double r2 = bidist (rnd);
 		pitch = pow (2.0, params ? LIMIT (2.0 * (params[SLOTS_OPTPARAMS + FX_OOPSPITCH] + r2 * params[SLOTS_OPTPARAMS + FX_OOPSPITCHRAND]) - 1.0, -1.0, 1.0) : 0.0);
 		framesPerStep = (framesPerStepPtr ? *framesPerStepPtr : 24000.0);
+		offset = (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_OOPSOFFSET] + r1 * params[SLOTS_OPTPARAMS + FX_OOPSOFFSETRAND], 0.0, 1.0) : 0.0);
 	}
 
 	virtual Stereo play (const double position, const double size, const double mixf) override
@@ -65,8 +68,12 @@ public:
 		const Stereo s0 = (buffer && (*buffer) ? (**buffer)[0] : Stereo {0, 0});
 		if ((!playing) || (!pads)) return s0;
 
-		sf_count_t frame = position * framesPerStep * pitch;
-		Stereo s1 = Stereo (oops.get (frame, 0, samplerate), oops.get (frame, 0, samplerate));
+		Stereo s1 = Stereo (0, 0);
+		if (position > offset)
+		{
+			sf_count_t frame = (position - offset) * framesPerStep * pitch;
+			s1 = Stereo (oops.get (frame, 0, samplerate), oops.get (frame, 0, samplerate));
+		}
 
 		return mix (s0, s0 + s1 * amp, position, size, mixf);
 	}
@@ -78,6 +85,7 @@ protected:
 	Sample oops;
 	float amp;
 	float pitch;
+	double offset;
 
 };
 
