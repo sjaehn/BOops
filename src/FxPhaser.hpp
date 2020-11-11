@@ -70,7 +70,7 @@ public:
 		modPhase = 2.0 * M_PI * (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_PHASER_MODPHASE] + r4 * params[SLOTS_OPTPARAMS + FX_PHASER_MODPHASERAND], 0.0, 1.0) : 0.0);
 		const double r5 = bidist (rnd);
 		feedback = 2.0 * (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_PHASER_FEEDBACK] + r5 * params[SLOTS_OPTPARAMS + FX_PHASER_FEEDBACKRAND], 0.0, 1.0) : 0.0) - 1.0;
-		steps = 1.0 + (params ? LIMIT (10.0 * params[SLOTS_OPTPARAMS + FX_PHASER_FEEDBACK], 0.0, 9.0) : 4.0);
+		steps = 1.0 + (params ? LIMIT (10.0 * params[SLOTS_OPTPARAMS + FX_PHASER_STEPS], 0.0, 9.0) : 4.0);
 
 		minDelta = 0.5 * loFreq / samplerate;
 		modDelta = (hiFreq > loFreq? 0.5 * hiFreq / samplerate - minDelta : 0.0);
