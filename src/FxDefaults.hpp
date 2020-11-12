@@ -55,7 +55,8 @@ const std::array<const std::array<const float, NR_PARAMS>, NR_FX> fxDefaultValue
 	{{1.0, 0.1, 0.1, 1.0, 0.1, 0.0, 0.5, 0.0, 0, 1.0, 0, 0.32183, 0, 0, 0, 0.5, 0, 0, 0}},	// FX_FLANGER
 	{{1.0, 0.1, 0.1, 1.0, 0.1, 0.0, 0.5, 0.0, 0, 1.0, 0, 0.32183, 0, 0, 0, 0.5, 0, 0.4, 0}},// FX_PHASER
 	{{STDPARAMS, 0.5, 0.0, 0.2, 0.0, 0, 0, 0, 0, 0, 0, 0, 0}},				// FX_RINGMOD
-	{{STDPARAMS, 0.5, 0.0, 0.5, 0.0, 0, 0, 0, 0, 0, 0, 0, 0}}				// FX_OOPS
+	{{STDPARAMS, 0.5, 0.0, 0.5, 0.0, 0, 0, 0, 0, 0, 0, 0, 0}},				// FX_OOPS
+	{{STDPARAMS, 0.3186, 0.0, 0.0, 0.0, 0.28855, 0.0, 0.667, 0, 0.333, 0, 0.125, 0}}	// FX_WAH
 
 }};
 
@@ -86,7 +87,8 @@ const std::array<const std::string, NR_FX> fxIconFileNames =
 		"Flanger",
 		"Phaser",
 		"Ringmod",
-		"Oops"
+		"Oops",
+		"Wah"
 }};
 
 

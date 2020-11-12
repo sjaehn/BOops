@@ -31,7 +31,7 @@
 	rdfs:comment "Glitch effect sequencer LV2 plugin." ;
   	doap:maintainer <http://www.jahnichen.de/sjaehn#me> ;
   	doap:license <http://usefulinc.com/doap/licenses/gpl> ;
-	lv2:microVersion 1 ;
+	lv2:microVersion 2 ;
 	lv2:minorVersion 0 ;
 	lv2:optionalFeature lv2:hardRTCapable ;
 	lv2:extensionData state:interface , work:interface ;
@@ -200,9 +200,10 @@
 		lv2:scalePoint [ rdfs:label "Phaser"; rdf:value 23 ] ;
 		lv2:scalePoint [ rdfs:label "Ring modulator"; rdf:value 24 ] ;
 		lv2:scalePoint [ rdfs:label "Oops"; rdf:value 25 ] ;
+		lv2:scalePoint [ rdfs:label "Wah"; rdf:value 26 ] ;
                 lv2:default 0 ;
                 lv2:minimum 0 ;
-                lv2:maximum 25 ;
+                lv2:maximum 26 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
                 lv2:index 16 ;
@@ -388,9 +389,10 @@
 		lv2:scalePoint [ rdfs:label "Phaser"; rdf:value 23 ] ;
 		lv2:scalePoint [ rdfs:label "Ring modulator"; rdf:value 24 ] ;
 		lv2:scalePoint [ rdfs:label "Oops"; rdf:value 25 ] ;
+		lv2:scalePoint [ rdfs:label "Wah"; rdf:value 26 ] ;
                 lv2:default 0 ;
                 lv2:minimum 0 ;
-                lv2:maximum 25 ;
+                lv2:maximum 26 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
 	        lv2:index 36 ;
@@ -576,9 +578,10 @@
 		lv2:scalePoint [ rdfs:label "Phaser"; rdf:value 23 ] ;
 		lv2:scalePoint [ rdfs:label "Ring modulator"; rdf:value 24 ] ;
 		lv2:scalePoint [ rdfs:label "Oops"; rdf:value 25 ] ;
+		lv2:scalePoint [ rdfs:label "Wah"; rdf:value 26 ] ;
                 lv2:default 0 ;
                 lv2:minimum 0 ;
-                lv2:maximum 25 ;
+                lv2:maximum 26 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
 	        lv2:index 56 ;
@@ -764,9 +767,10 @@
 		lv2:scalePoint [ rdfs:label "Phaser"; rdf:value 23 ] ;
 		lv2:scalePoint [ rdfs:label "Ring modulator"; rdf:value 24 ] ;
 		lv2:scalePoint [ rdfs:label "Oops"; rdf:value 25 ] ;
+		lv2:scalePoint [ rdfs:label "Wah"; rdf:value 26 ] ;
                 lv2:default 0 ;
                 lv2:minimum 0 ;
-                lv2:maximum 25 ;
+                lv2:maximum 26 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
 	        lv2:index 76 ;
@@ -952,9 +956,10 @@
 		lv2:scalePoint [ rdfs:label "Phaser"; rdf:value 23 ] ;
 		lv2:scalePoint [ rdfs:label "Ring modulator"; rdf:value 24 ] ;
 		lv2:scalePoint [ rdfs:label "Oops"; rdf:value 25 ] ;
+		lv2:scalePoint [ rdfs:label "Wah"; rdf:value 26 ] ;
                 lv2:default 0 ;
                 lv2:minimum 0 ;
-                lv2:maximum 25 ;
+                lv2:maximum 26 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
 	        lv2:index 96 ;
@@ -1140,9 +1145,10 @@
 		lv2:scalePoint [ rdfs:label "Phaser"; rdf:value 23 ] ;
 		lv2:scalePoint [ rdfs:label "Ring modulator"; rdf:value 24 ] ;
 		lv2:scalePoint [ rdfs:label "Oops"; rdf:value 25 ] ;
+		lv2:scalePoint [ rdfs:label "Wah"; rdf:value 26 ] ;
                 lv2:default 0 ;
                 lv2:minimum 0 ;
-                lv2:maximum 25 ;
+                lv2:maximum 26 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
 	        lv2:index 116 ;
@@ -1328,9 +1334,10 @@
 		lv2:scalePoint [ rdfs:label "Phaser"; rdf:value 23 ] ;
 		lv2:scalePoint [ rdfs:label "Ring modulator"; rdf:value 24 ] ;
 		lv2:scalePoint [ rdfs:label "Oops"; rdf:value 25 ] ;
+		lv2:scalePoint [ rdfs:label "Wah"; rdf:value 26 ] ;
                 lv2:default 0 ;
                 lv2:minimum 0 ;
-                lv2:maximum 25 ;
+                lv2:maximum 26 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
 	        lv2:index 136 ;
@@ -1516,9 +1523,10 @@
 		lv2:scalePoint [ rdfs:label "Phaser"; rdf:value 23 ] ;
 		lv2:scalePoint [ rdfs:label "Ring modulator"; rdf:value 24 ] ;
 		lv2:scalePoint [ rdfs:label "Oops"; rdf:value 25 ] ;
+		lv2:scalePoint [ rdfs:label "Wah"; rdf:value 26 ] ;
                 lv2:default 0 ;
                 lv2:minimum 0 ;
-                lv2:maximum 25 ;
+                lv2:maximum 26 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
 	        lv2:index 156 ;
@@ -1704,9 +1712,10 @@
 		lv2:scalePoint [ rdfs:label "Phaser"; rdf:value 23 ] ;
 		lv2:scalePoint [ rdfs:label "Ring modulator"; rdf:value 24 ] ;
 		lv2:scalePoint [ rdfs:label "Oops"; rdf:value 25 ] ;
+		lv2:scalePoint [ rdfs:label "Wah"; rdf:value 26 ] ;
                 lv2:default 0 ;
                 lv2:minimum 0 ;
-                lv2:maximum 25 ;
+                lv2:maximum 26 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
 	        lv2:index 176 ;
@@ -1892,9 +1901,10 @@
 		lv2:scalePoint [ rdfs:label "Phaser"; rdf:value 23 ] ;
 		lv2:scalePoint [ rdfs:label "Ring modulator"; rdf:value 24 ] ;
 		lv2:scalePoint [ rdfs:label "Oops"; rdf:value 25 ] ;
+		lv2:scalePoint [ rdfs:label "Wah"; rdf:value 26 ] ;
                 lv2:default 0 ;
                 lv2:minimum 0 ;
-                lv2:maximum 25 ;
+                lv2:maximum 26 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
 	        lv2:index 196 ;
@@ -2080,9 +2090,10 @@
 		lv2:scalePoint [ rdfs:label "Phaser"; rdf:value 23 ] ;
 		lv2:scalePoint [ rdfs:label "Ring modulator"; rdf:value 24 ] ;
 		lv2:scalePoint [ rdfs:label "Oops"; rdf:value 25 ] ;
+		lv2:scalePoint [ rdfs:label "Wah"; rdf:value 26 ] ;
                 lv2:default 0 ;
                 lv2:minimum 0 ;
-                lv2:maximum 25 ;
+                lv2:maximum 26 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
 	        lv2:index 216 ;
@@ -2268,9 +2279,10 @@
 		lv2:scalePoint [ rdfs:label "Phaser"; rdf:value 23 ] ;
 		lv2:scalePoint [ rdfs:label "Ring modulator"; rdf:value 24 ] ;
 		lv2:scalePoint [ rdfs:label "Oops"; rdf:value 25 ] ;
+		lv2:scalePoint [ rdfs:label "Wah"; rdf:value 26 ] ;
                 lv2:default 0 ;
                 lv2:minimum 0 ;
-                lv2:maximum 25 ;
+                lv2:maximum 26 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
 	        lv2:index 236 ;

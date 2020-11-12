@@ -109,7 +109,8 @@ enum BOopsEffectsIndex
 	FX_PHASER	= 23,
 	FX_RINGMOD	= 24,
 	FX_OOPS		= 25,
-	NR_FX		= 26,
+	FX_WAH		= 26,
+	NR_FX		= 27,
 	FX_INVALID	= 255
 };
 
@@ -140,7 +141,8 @@ enum BOopsWaveformIndex
 	{10, "Tape stop"}, /*{11, "Tape start (TODO)"}, */{12, "Tape speed"}, {14, "Wow & flutter"}, \
 	{13, "Scratch"}, {19, "Noise"}, {20, "Crackles"}, \
 	{15, "Crush"}, {16, "Decimate"}, {17, "Distortion"}, {18, "Filter"}, \
-	{22, "Flanger"}, {23, "Phaser"}, {24, "Ring modulator"}, {25, "Oops"} \
+	{22, "Flanger"}, {23, "Phaser"}, {24, "Ring modulator"}, {26, "Wah"}, \
+	{25, "Oops"} \
 }
 
 #define BOOPSFXBGNAMES \
@@ -170,7 +172,8 @@ enum BOopsWaveformIndex
 	"inc/Flanger_bg.png", \
 	"inc/Flanger_bg.png", \
 	"inc/Flanger_bg.png", \
-	"inc/Oops_bg.png" \
+	"inc/Oops_bg.png", \
+	"inc/Flanger_bg.png" \
 }
 
 #endif /* PORTS_HPP_ */

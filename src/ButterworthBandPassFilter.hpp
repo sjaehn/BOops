@@ -27,13 +27,17 @@
 class ButterworthBandPassFilter : public ButterworthFilter
 {
 public:
-	ButterworthBandPassFilter(const double rate, const double lowCutoff, const double highCutoff, const int order) :
+	ButterworthBandPassFilter (const double rate, const double lowCutoff, const double highCutoff, const int order) :
 		ButterworthFilter (order)
 	{
 		coeff3.fill (0);
 		coeff4.fill (0);
 		clear();
+		set (rate, lowCutoff, highCutoff, order);
+	}
 
+	void set (const double rate, const double lowCutoff, const double highCutoff, const int order)
+	{
 		const double a = cos (M_PI * (highCutoff + lowCutoff) / rate) / cos (M_PI * (highCutoff - lowCutoff) / rate);
 		const double a2 = a * a;
 		const double b = tan (M_PI * (highCutoff - lowCutoff) / rate);
@@ -50,6 +54,7 @@ public:
 			coeff4[i] = -(b2 - 2.0 * b * r + 1.0) / s;
 		}
 
+		this->order = order;
 		f1 = -2;
 	}
 

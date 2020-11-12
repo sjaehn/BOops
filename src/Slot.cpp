@@ -47,6 +47,7 @@
 #include "FxPhaser.hpp"
 #include "FxRingModulator.hpp"
 #include "FxOops.hpp"
+#include "FxWah.hpp"
 
 Slot::Slot () : Slot (nullptr, FX_INVALID, nullptr, nullptr, 0, 0.0f, 0.0) {}
 
@@ -199,6 +200,9 @@ Fx* Slot::newFx (const BOopsEffectsIndex effect)
 					break;
 
 		case FX_OOPS:		fx = new FxOops (&buffer, params, pads, &framesPerStep, plugin ? plugin->host.rate : 48000, plugin ? plugin->pluginPath : nullptr);
+					break;
+
+		case FX_WAH:		fx = new FxWah (&buffer, params, pads, &framesPerStep, plugin ? plugin->host.rate : 48000);
 					break;
 
 		case FX_INVALID:	fx = nullptr;

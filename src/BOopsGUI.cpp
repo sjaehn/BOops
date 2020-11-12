@@ -46,6 +46,7 @@
 #include "OptionPhaser.hpp"
 #include "OptionRingModulator.hpp"
 #include "OptionOops.hpp"
+#include "OptionWah.hpp"
 
 inline double floorfrac (const double value) {return value - floor (value);}
 inline double floormod (const double numer, const double denom) {return numer - floor(numer / denom) * denom;}
@@ -1255,6 +1256,9 @@ void BOopsGUI::setOptionWidget (const int slot)
 					break;
 
 		case FX_OOPS:		slotParams[slot].optionWidget = new OptionOops (430, 20, 240, 130, "widget");
+					break;
+
+		case FX_WAH:		slotParams[slot].optionWidget = new OptionWah (430, 20, 480, 130, "widget");
 					break;
 
 		default:		slotParams[slot].optionWidget = new OptionWidget (0, 0, 0, 0, "widget");

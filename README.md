@@ -1,10 +1,10 @@
 # B.Oops
-Description: Glitch effect sequencer LV2 plugin (** experimental **)
+Description: Glitch effect sequencer LV2 plugin
 
 Key features:
 * Multi-effect plugin controlled by a step sequencer pattern
 * Apply glitch effects in live
-* 23 effects
+* 24 effects
 * Up to 12 effect slots, freely select effects and effect order
 * Random effects: 3 different ways of randomization
 * Autoplay, host controlled, or MIDI controlled sequencer
@@ -322,6 +322,12 @@ Set the modulator frequency and select the waveform from the menu. The amount of
 (0 = full input signal, 1 = full modulator signal).
 
 
+### Wah
+
+Triangular wave LFO-controlled auto wah effect. Set the LFO parameters frequency, phase (= start position), and depth to modulate
+the filter set with center frequency, bandwidth, and roll off.
+
+
 #### Oops
 
 This is the most important one. Don't run B.Oops without some oops!
@@ -337,6 +343,8 @@ Select at least two slots and set the Likelihood ratio for each slot.
 
 * Parameter offset in effect Oops
 * Adjust autoplay position feature
+* Add effect Wah
+* Bugfixes
 
 
 ## TODO

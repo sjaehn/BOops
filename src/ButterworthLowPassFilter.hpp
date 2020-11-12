@@ -29,6 +29,11 @@ public:
 	ButterworthLowPassFilter (const double rate, const double cutoff, const int order) :
 		ButterworthFilter (order)
 	{
+		set (rate, cutoff, order);
+	}
+
+	void set (const double rate, const double cutoff, const int order)
+	{
 		const double a = tan (M_PI * cutoff / rate);
 		const double a2 = a * a;
 
@@ -41,8 +46,10 @@ public:
 			coeff2[i] = -(a2 - 2.0 * a * r + 1.0) / s;
 		}
 
+		this->order = order;
 		f1 = 2;
 	}
+
 };
 
 #endif /* BUTTERWORTHLOWPASSFILTER_HPP_ */
