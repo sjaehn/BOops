@@ -33,7 +33,7 @@ public:
 		OptionWidget (x, y, width, height, name),
 		lfoFreqLabel (10, 90, 60, 20, "ctlabel", "LFO Freq."),
 		lfoPhaseLabel (80, 90, 80, 20, "ctlabel", "LFO Phase"),
-		cFreqLabel (240, 90, 80, 20, "ctlabel", "Frequency"),
+		cFreqLabel (250, 90, 60, 20, "ctlabel", "Center"),
 		depthLabel (170, 90, 60, 20, "ctlabel", "Depth"),
 		widthLabel (330, 90, 60, 20, "ctlabel", "Width"),
 		orderLabel (410, 90, 60, 20, "ctlabel", "Roll off")
