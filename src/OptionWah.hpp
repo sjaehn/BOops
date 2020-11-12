@@ -31,12 +31,12 @@ public:
 	OptionWah () : OptionWah (0.0, 0.0, 0.0, 0.0, "widget") {}
 	OptionWah (const double x, const double y, const double width, const double height, const std::string& name) :
 		OptionWidget (x, y, width, height, name),
-		lfoFreqLabel (10, 100, 60, 20, "ctlabel", "LFO Freq."),
-		lfoPhaseLabel (80, 100, 80, 20, "ctlabel", "LFO Phase"),
-		cFreqLabel (240, 100, 80, 20, "ctlabel", "Frequency"),
-		depthLabel (170, 100, 60, 20, "ctlabel", "Depth"),
-		widthLabel (330, 100, 60, 20, "ctlabel", "Width"),
-		orderLabel (410, 100, 60, 20, "ctlabel", "Roll off")
+		lfoFreqLabel (10, 90, 60, 20, "ctlabel", "LFO Freq."),
+		lfoPhaseLabel (80, 90, 80, 20, "ctlabel", "LFO Phase"),
+		cFreqLabel (240, 90, 80, 20, "ctlabel", "Frequency"),
+		depthLabel (170, 90, 60, 20, "ctlabel", "Depth"),
+		widthLabel (330, 90, 60, 20, "ctlabel", "Width"),
+		orderLabel (410, 90, 60, 20, "ctlabel", "Roll off")
 	{
 		try
 		{
