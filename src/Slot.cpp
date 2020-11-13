@@ -202,7 +202,7 @@ Fx* Slot::newFx (const BOopsEffectsIndex effect)
 		case FX_OOPS:		fx = new FxOops (&buffer, params, pads, &framesPerStep, plugin ? plugin->host.rate : 48000, plugin ? plugin->pluginPath : nullptr);
 					break;
 
-		case FX_WAH:		fx = new FxWah (&buffer, params, pads, &framesPerStep, plugin ? plugin->host.rate : 48000);
+		case FX_WAH:		fx = new FxWah (&buffer, params, pads, plugin ? plugin->host.rate : 48000, &shape);
 					break;
 
 		case FX_INVALID:	fx = nullptr;

@@ -1258,7 +1258,7 @@ void BOopsGUI::setOptionWidget (const int slot)
 		case FX_OOPS:		slotParams[slot].optionWidget = new OptionOops (430, 20, 240, 130, "widget");
 					break;
 
-		case FX_WAH:		slotParams[slot].optionWidget = new OptionWah (430, 20, 480, 130, "widget");
+		case FX_WAH:		slotParams[slot].optionWidget = new OptionWah (430, 20, 640, 130, "widget", pluginPath);
 					break;
 
 		default:		slotParams[slot].optionWidget = new OptionWidget (0, 0, 0, 0, "widget");

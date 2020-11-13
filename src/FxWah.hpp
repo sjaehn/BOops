@@ -23,31 +23,25 @@
 
 #include "Fx.hpp"
 #include "ButterworthBandPassFilter.hpp"
+#include "Shape.hpp"
 
-#define FX_WAH_LFOFREQ 0
-#define FX_WAH_LFOFREQRAND 1
-#define FX_WAH_LFOPHASE 2
-#define FX_WAH_LFOPHASERAND 3
-#define FX_WAH_CFREQ 4
-#define FX_WAH_CFREQRAND 5
-#define FX_WAH_DEPTH 6
-#define FX_WAH_DEPTHRAND 7
-#define FX_WAH_WIDTH 8
-#define FX_WAH_WIDTHRAND 9
-#define FX_WAH_ORDER 10
+#define FX_WAH_CFREQ 0
+#define FX_WAH_CFREQRAND 1
+#define FX_WAH_DEPTH 2
+#define FX_WAH_DEPTHRAND 3
+#define FX_WAH_WIDTH 4
+#define FX_WAH_WIDTHRAND 5
+#define FX_WAH_ORDER 6
 
 class FxWah : public Fx
 {
 public:
-	FxWah () : FxWah (nullptr, nullptr, nullptr, nullptr, 24000) {}
+	FxWah () : FxWah (nullptr, nullptr, nullptr, 24000, nullptr) {}
 
-	FxWah (RingBuffer<Stereo>** buffer, float* params, Pad* pads, double* framesPerStep, double rate) :
+	FxWah (RingBuffer<Stereo>** buffer, float* params, Pad* pads, double rate, Shape<SHAPE_MAXNODES>* shape) :
 		Fx (buffer, params, pads),
 		rate (rate),
-		framesPerStepPtr (framesPerStep),
-		framesPerStep (24000),
-		lfoFreq (1.0f),
-		lfoPhase (0.0f),
+		shape (shape),
 		cFreq (500.0f),
 		depth (0.5f),
 		width (0.1f),
@@ -58,10 +52,6 @@ public:
 	virtual void init (const double position) override
 	{
 		Fx::init (position);
-		const double r1 = bidist (rnd);
-		lfoFreq = 0.01 + 9.99 * pow (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_WAH_LFOFREQ] + r1 * params[SLOTS_OPTPARAMS + FX_WAH_LFOFREQRAND], 0.0, 1.0) : 0.5, 3.0);
-		const double r2 = bidist (rnd);
-		lfoPhase = (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_WAH_LFOPHASE] + r2 * params[SLOTS_OPTPARAMS + FX_WAH_LFOPHASERAND], 0.0, 1.0) : 0.0);
 		const double r3 = bidist (rnd);
 		cFreq = 20.0 + 19980.0 * pow (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_WAH_CFREQ] + r3 * params[SLOTS_OPTPARAMS + FX_WAH_CFREQRAND], 0.0, 1.0) : 0.5, 3.0);
 		const double r4 = bidist (rnd);
@@ -70,8 +60,7 @@ public:
 		width = (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_WAH_WIDTH] + r5 * params[SLOTS_OPTPARAMS + FX_WAH_WIDTHRAND], 0.0, 1.0) : 0.1);
 		order = 1.0 + 8.0 * (params ? params[SLOTS_OPTPARAMS + FX_WAH_ORDER] : 0.125);
 
-		framesPerStep = (framesPerStepPtr ? *framesPerStepPtr : 24000.0);
-		const float m = (lfoPhase < 0.5 ? 4.0 * lfoPhase - 1.0 : 3.0 - 4.0 * lfoPhase);
+		const float m = (shape ? shape->getMapValue (0): 0.0);
 		const float f = cFreq * (1 + depth * m);
 		filter = ButterworthBandPassFilter (rate, f * (1.0 - 0.5 * width), f * (1.0 + 0.5 * width), order);
 	}
@@ -81,9 +70,7 @@ public:
 		const Stereo s0 = (buffer && (*buffer) ? (**buffer)[0] : Stereo {0, 0});
 		if ((!playing) || (!pads)) return s0;
 
-		const double t = position * framesPerStep / rate;
-		const double p = fmod (lfoPhase + t * lfoFreq, 1.0);
-		const float m = (p < 0.5 ? 4.0 * p - 1.0 : 3.0 - 4.0 * p);
+		const float m = (shape ? shape->getMapValue (fmod (position, 1.0)): 0.0);
 		const float f = cFreq * (1 + depth * m);
 		const float fmin = LIMIT (f * (1.0 - width), 0.0, 20000.0);
 		const float fmax = LIMIT (f * (1.0 + width), 0.0, 20000.0);
@@ -95,10 +82,7 @@ public:
 
 protected:
 	double rate;
-	double* framesPerStepPtr;
-	double framesPerStep;
-	float lfoFreq;
-	float lfoPhase;
+	Shape<SHAPE_MAXNODES>* shape;
 	float cFreq;
 	float depth;
 	float width;

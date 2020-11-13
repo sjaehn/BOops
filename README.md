@@ -322,10 +322,10 @@ Set the modulator frequency and select the waveform from the menu. The amount of
 (0 = full input signal, 1 = full modulator signal).
 
 
-### Wah
+#### Wah
 
-Triangular wave LFO-controlled auto wah effect. Set the LFO parameters frequency, phase (= start position), and depth to modulate
-the filter set with center frequency, bandwidth, and roll off.
+Draw a shape and set the depth to control a bandpass filter to produce a wah effect. Set the filter with center
+frequency, bandwidth, and roll off.
 
 
 #### Oops
@@ -341,10 +341,7 @@ Select at least two slots and set the Likelihood ratio for each slot.
 
 ## What's new
 
-* Parameter offset in effect Oops
-* Adjust autoplay position feature
-* Add effect Wah
-* Bugfixes
+* Shape-based wah effect
 
 
 ## TODO
