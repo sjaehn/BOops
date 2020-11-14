@@ -343,6 +343,8 @@ Select at least two slots and set the Likelihood ratio for each slot.
 
 * Shape-based wah effect
 * Help button
+* Floating point sample interpolation
+* Bugfixes
 
 
 ## TODO

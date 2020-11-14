@@ -543,16 +543,21 @@ void BOops::run (uint32_t n_samples)
 					if (globalControllers[PLAY_MODE] != AUTOPLAY)
 					{
 						Position np = positions.back();
-						np.fader = 0.0;
-						np.transport = host;
 						double pos = getPositionFromBeats (host, host.barBeat + host.beatsPerBar * host.bar);
 						double npos = floorfrac (pos - np.offset);
-						np.position = npos;
-						np.step = npos * npos * globalControllers[STEPS];
-						np.refFrame = ev->time.frames;
-						if (np.step != positions.back().step) scheduleNotifyStatus = true;
 
-						positions.push_back (np);
+						// Fade only if jump > 1 ms
+						if (fabs (npos - positions.back().position) > getPositionFromSeconds (host, 0.001))
+						{
+							np.fader = 0.0;
+							np.transport = host;
+							np.position = npos;
+							np.step = npos * npos * globalControllers[STEPS];
+							np.refFrame = ev->time.frames;
+							if (np.step != positions.back().step) scheduleNotifyStatus = true;
+
+							positions.push_back (np);
+						}
 					}
 				}
 
