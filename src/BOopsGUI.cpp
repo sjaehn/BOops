@@ -64,6 +64,8 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 
 	mContainer (0, 0, 1240, 608, "main"),
 	messageLabel (400, 45, 600, 20, "ctlabel", ""),
+	helpButton (1168, 18, 24, 24, "widget", "Help"),
+	ytButton (1198, 18, 24, 24, "widget", "Tutorial"),
 
 	settingsContainer (10, 90, 1220, 40, "widget"),
 	playButton (8, 8, 24, 24, "widget", "Play"),
@@ -183,6 +185,8 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 
 	// Set callback functions
 	for (int i = 0; i < NR_CONTROLLERS; ++i) controllerWidgets[i]->setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, valueChangedCallback);
+	helpButton.setCallbackFunction(BEvents::BUTTON_PRESS_EVENT, helpButtonClickedCallback);
+	ytButton.setCallbackFunction(BEvents::BUTTON_PRESS_EVENT, ytButtonClickedCallback);
 	bypassButton.setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, playStopBypassChangedCallback);
 	stopButton.setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, playStopBypassChangedCallback);
 	transportGateButton.setCallbackFunction (BEvents::BUTTON_CLICK_EVENT, transportGateButtonClickedCallback);
@@ -316,6 +320,8 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 	mContainer.add (monitor);
 	mContainer.add (transportGateContainer);
 	mContainer.add (settingsContainer);
+	mContainer.add (helpButton);
+	//mContainer.add (ytButton);
 	mContainer.add (messageLabel);
 
 	drawPad();
@@ -653,6 +659,8 @@ void BOopsGUI::resize ()
 	//Scale widgets
 	RESIZE (mContainer, 0, 0, 1240, 608, sz);
 	RESIZE (messageLabel, 400, 45, 600, 20, sz);
+	RESIZE (helpButton, 1168, 18, 24, 24, sz);
+	RESIZE (ytButton, 1198, 18, 24, 24, sz);
 
 	RESIZE (settingsContainer, 10, 90, 1220, 40, sz);
 	RESIZE (playButton, 8, 8, 24, 24, sz);
@@ -747,6 +755,8 @@ void BOopsGUI::applyTheme (BStyles::Theme& theme)
 {
 	mContainer.applyTheme (theme);
 	messageLabel.applyTheme (theme);
+	helpButton.applyTheme (theme);
+	ytButton.applyTheme (theme);
 
 	settingsContainer.applyTheme (theme);
 	playButton.applyTheme (theme);
@@ -2173,6 +2183,16 @@ void BOopsGUI::transportGateButtonClickedCallback (BEvents::Event* event)
 
 	if (ui->transportGateContainer.isVisible()) ui->transportGateContainer.hide();
 	else ui->transportGateContainer.show();
+}
+
+void BOopsGUI::helpButtonClickedCallback (BEvents::Event* event)
+{
+	if (system(OPEN_CMD " " HELP_URL)) std::cerr << "BOops.lv2#GUI: Can't open " << HELP_URL << ". You can try to call it maually.";
+}
+
+void BOopsGUI::ytButtonClickedCallback (BEvents::Event* event)
+{
+	//if (system(OPEN_CMD " " YT_URL))  std::cerr << "BOops.lv2#GUI: Can't open " << YT_URL << ". You can try to call it maually.";
 }
 
 int BOopsGUI::getPadOrigin (const int slot, const int step) const

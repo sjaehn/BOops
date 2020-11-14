@@ -121,6 +121,8 @@ private:
 	static void padsScrolledCallback (BEvents::Event* event);
 	static void padsFocusedCallback (BEvents::Event* event);
 	static void transportGateButtonClickedCallback (BEvents::Event* event);
+	static void helpButtonClickedCallback (BEvents::Event* event);
+	static void ytButtonClickedCallback (BEvents::Event* event);
 	virtual void resize () override;
 	int getSlotsSize () const;
 	void clearSlot (int slot);
@@ -201,6 +203,8 @@ private:
 	//Widgets
 	BWidgets::Widget mContainer;
 	BWidgets::Label messageLabel;
+	HaloButton helpButton;
+	HaloButton ytButton;
 
 	BWidgets::Widget settingsContainer;
 	HaloToggleButton playButton;

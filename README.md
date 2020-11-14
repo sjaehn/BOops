@@ -342,6 +342,7 @@ Select at least two slots and set the Likelihood ratio for each slot.
 ## What's new
 
 * Shape-based wah effect
+* Help button
 
 
 ## TODO
@@ -354,6 +355,8 @@ Select at least two slots and set the Likelihood ratio for each slot.
 * Latency ? (Pitch, Tape start)
 * Reduce CPU load
 * Make some presets
+* Tutorial video
+* Video button
 
 ## Acknowledgments
 

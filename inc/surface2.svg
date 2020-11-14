@@ -2603,5 +2603,32 @@
          sodipodi:arc-type="arc"
          d="m 112.15228,35.142773 a 0.66145831,0.66145831 0 0 1 -0.71345,0.528675 0.66145831,0.66145831 0 0 1 -0.59665,-0.657654 0.66145831,0.66145831 0 0 1 0.59541,-0.658775 0.66145831,0.66145831 0 0 1 0.71444,0.527332" />
     </g>
+    <path
+       inkscape:connector-curvature="0"
+       id="rect1147"
+       d="m 318.9552,29.964052 c -0.6596,0 -1.19061,0.53103 -1.19061,1.19063 v 1.19063 c 0,0.659601 0.53101,1.19063 1.19061,1.19063 h 2.38126 c 0.6596,0 1.19061,-0.531029 1.19061,-1.19063 v -1.19063 c 0,-0.6596 -0.53101,-1.19063 -1.19061,-1.19063 z m 0.59532,0.83344 1.42875,0.9525 -1.42875,0.952511 z"
+       style="opacity:1;fill:#333333;fill-opacity:1;stroke:none;stroke-width:0.238125;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;enable-background:new" />
+    <g
+       transform="matrix(0.90000002,0,0,0.90000002,81.227094,-111.125)"
+       id="g1165"
+       style="enable-background:new">
+      <circle
+         style="fill:none;fill-rule:evenodd;stroke:#808080;stroke-width:0.529167;stroke-miterlimit:4;stroke-dasharray:none"
+         id="path1156"
+         cx="256.64581"
+         cy="158.75"
+         r="2.1166666" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:6.61458px;font-family:'Good Times';-inkscape-font-specification:'Good Times';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#808080;fill-opacity:1;stroke:none;stroke-width:0.264583"
+         x="255.43156"
+         y="160.21622"
+         id="text1160"><tspan
+           sodipodi:role="line"
+           id="tspan1158"
+           x="255.43156"
+           y="160.21622"
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.23333px;font-family:'Liberation Sans';-inkscape-font-specification:'Liberation Sans Bold';fill:#808080;stroke-width:0.264583">?</tspan></text>
+    </g>
   </g>
 </svg>
