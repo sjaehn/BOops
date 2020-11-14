@@ -558,6 +558,9 @@ void BOops::run (uint32_t n_samples)
 
 							positions.push_back (np);
 						}
+
+						// Otherwise update at least the transport data
+						else positions.back().transport = host;
 					}
 				}
 
