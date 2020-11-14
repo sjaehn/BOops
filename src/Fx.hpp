@@ -102,6 +102,11 @@ protected:
 		return params[SLOTS_SUSTAIN];
 	}
 
+	Stereo getSample (const double frame)
+	{
+		return (buffer && (*buffer) ? BUtilities::mix<Stereo> ((**buffer)[frame], (**buffer)[frame + 1], fmod (frame, 1.0)) : Stereo {0, 0});
+	}
+
 	Stereo pan (const Stereo s0, const Stereo s1) const {return panf * s1 + unpanf * s0;}
 
 	Stereo mix (const Stereo s0, const Stereo s1, const double position, const double size, const float mixf) const

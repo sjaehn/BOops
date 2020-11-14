@@ -75,8 +75,8 @@ public:
 				1.0
 			)
 		);
-		const long frame = framesPerStep * fade * (wow + flutter);
-		Stereo s1 = (buffer && (*buffer) ? (**buffer)[frame] : Stereo {0, 0});
+		const double frame = framesPerStep * fade * (wow + flutter);
+		Stereo s1 = getSample (frame);
 		return mix (s0, s1, position, padsize, mixf);
 	}
 

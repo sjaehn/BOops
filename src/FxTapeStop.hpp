@@ -56,8 +56,8 @@ public:
 		const Stereo s0 = (buffer && (*buffer) ? (**buffer)[0] : Stereo {0, 0});
 		if ((!playing) || (!pads)) return s0;
 
-		const long frame = (log (exp (order * position) + exp (order * reach) - 1) / order - reach) * framesPerStep;
-		Stereo s1 = (buffer && (*buffer) ? (**buffer)[frame] : Stereo {0, 0});
+		const double frame = (log (exp (order * position) + exp (order * reach) - 1) / order - reach) * framesPerStep;
+		Stereo s1 = getSample (frame);
 		return mix (s0, s1, position, size, mixf);
 	}
 

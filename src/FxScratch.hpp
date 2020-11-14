@@ -54,8 +54,8 @@ public:
 		if ((!playing) || (!pads)) return s0;
 
 		const double f = (shape ? shape->getMapValue (fmod (position, 1.0)): 0.0);
-		const long frame = framesPerStep * range * (-LIMIT (f, -1.0, 0.0));
-		Stereo s1 = (buffer && (*buffer) ? (**buffer)[frame] : Stereo {0, 0});
+		const double frame = framesPerStep * range * (-LIMIT (f, -1.0, 0.0));
+		Stereo s1 = getSample (frame);
 		return mix (s0, s1, position, size, mixf);
 	}
 

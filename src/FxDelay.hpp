@@ -59,8 +59,8 @@ public:
 		const Stereo s0 = (buffer && (*buffer) ? (**buffer)[0] : Stereo {0, 0});
 		if ((!playing) || (!pads)) return s0;
 
-		const long frame = framesPerStep * range * delay;
-		Stereo s1 = (buffer && (*buffer) ? (**buffer)[frame] : Stereo {0, 0});
+		const double frame = framesPerStep * range * delay;
+		Stereo s1 = getSample (frame);
 		s1 = mix (s0, s1, position, padsize, mixf);
 		Stereo s2 = s1;
 		if (buffer && (*buffer)) (**buffer)[0] = s2.mix (s0, 1.0f - feedback);

@@ -53,20 +53,20 @@ public:
 
 		const long nr = position * double (stutters);
 		const double frac = fmod (position, 1.0 / double (stutters));
-		const long frame = nr * framesPerStutter;
-		Stereo s1 = (buffer && (*buffer) ? (**buffer)[frame] : Stereo {0, 0});
+		const double frame = nr * framesPerStutter;
+		Stereo s1 = getSample (frame);
 
 		if (frac < 0.5 * smoothing)
 		{
-			const long f2 = (nr > 0 ? (nr - 1) * framesPerStutter : nr * framesPerStutter);
-			Stereo s2 = (buffer && (*buffer) ? (**buffer)[f2] : Stereo {0, 0});
+			const double f2 = (nr > 0 ? (nr - 1) * framesPerStutter : nr * framesPerStutter);
+			Stereo s2 = getSample (f2);
 			s1.mix (s2, 0.5 - frac / smoothing);
 		}
 
 		else if (frac > 1.0 - 0.5 * smoothing)
 		{
-			const long f2 = (nr + 1) * framesPerStutter;
-			Stereo s2 = (buffer && (*buffer) ? (**buffer)[f2] : Stereo {0, 0});
+			const double f2 = (nr + 1) * framesPerStutter;
+			Stereo s2 = getSample (f2);
 			s1.mix (s2, 0.5 - (1.0 - frac) / smoothing);
 		}
 
