@@ -58,7 +58,7 @@ public:
 		depth = (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_WAH_DEPTH] + r4 * params[SLOTS_OPTPARAMS + FX_WAH_DEPTHRAND], 0.0, 1.0) : 0.5);
 		const double r5 = bidist (rnd);
 		width = (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_WAH_WIDTH] + r5 * params[SLOTS_OPTPARAMS + FX_WAH_WIDTHRAND], 0.0, 1.0) : 0.1);
-		order = 1.0 + 8.0 * (params ? params[SLOTS_OPTPARAMS + FX_WAH_ORDER] : 0.125);
+		order = 2 * int (params ? LIMIT (1.0 + 8.0 * params[SLOTS_OPTPARAMS + FX_WAH_ORDER], 0, 8) : 2);
 
 		const float m = (shape ? shape->getMapValue (0): 0.0);
 		const float f = cFreq * (1 + depth * m);
