@@ -335,14 +335,15 @@ This is the most important one. Don't run B.Oops without some oops!
 
 #### Surprise box
 
-The surprise box isn't an effect by itself. The surprise box controls the effect of one of the other slots is applied or not.
-Select at least two slots and set the Likelihood ratio for each slot.
+The surprise box isn't an effect by itself. The surprise box controls if the effect of one of the other slots is applied or not.
+Select at least two slots and set the likelihood ratio for each slot.
 
 
 ## What's new
 
 * Shape-based wah effect
 * Help button
+* Introduction video button
 * Floating point sample interpolation
 * Bugfixes
 
@@ -359,6 +360,12 @@ Select at least two slots and set the Likelihood ratio for each slot.
 * Make some presets
 * Tutorial video
 * Video button
+
+
+## Links
+
+* Introduction / Quick start tutorial video: https://www.youtube.com/watch?v=bGUmZHWqdkE
+
 
 ## Acknowledgments
 

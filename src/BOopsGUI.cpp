@@ -65,7 +65,7 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 	mContainer (0, 0, 1240, 608, "main"),
 	messageLabel (400, 45, 600, 20, "ctlabel", ""),
 	helpButton (1168, 18, 24, 24, "widget", "Help"),
-	ytButton (1198, 18, 24, 24, "widget", "Tutorial"),
+	ytButton (1198, 18, 24, 24, "widget", "Introduction"),
 
 	settingsContainer (10, 90, 1220, 40, "widget"),
 	playButton (8, 8, 24, 24, "widget", "Play"),
@@ -321,7 +321,7 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 	mContainer.add (transportGateContainer);
 	mContainer.add (settingsContainer);
 	mContainer.add (helpButton);
-	//mContainer.add (ytButton);
+	mContainer.add (ytButton);
 	mContainer.add (messageLabel);
 
 	drawPad();
@@ -2192,7 +2192,7 @@ void BOopsGUI::helpButtonClickedCallback (BEvents::Event* event)
 
 void BOopsGUI::ytButtonClickedCallback (BEvents::Event* event)
 {
-	//if (system(OPEN_CMD " " YT_URL))  std::cerr << "BOops.lv2#GUI: Can't open " << YT_URL << ". You can try to call it maually.";
+	if (system(OPEN_CMD " " YT_URL))  std::cerr << "BOops.lv2#GUI: Can't open " << YT_URL << ". You can try to call it maually.";
 }
 
 int BOopsGUI::getPadOrigin (const int slot, const int step) const
