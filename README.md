@@ -341,11 +341,9 @@ Select at least two slots and set the likelihood ratio for each slot.
 
 ## What's new
 
-* Shape-based wah effect
-* Help button
-* Introduction video button
-* Floating point sample interpolation
-* Bugfixes
+* Factory presets
+* Tutorial video
+* Video button
 
 
 ## TODO
@@ -357,9 +355,6 @@ Select at least two slots and set the likelihood ratio for each slot.
 * Optionally load a sample (?)
 * Latency ? (Pitch, Tape start)
 * Reduce CPU load
-* Make some presets
-* Tutorial video
-* Video button
 
 
 ## Links

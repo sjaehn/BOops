@@ -38,8 +38,7 @@ DSP_OBJ = $(DSP)$(OBJ_EXT)
 GUI_OBJ = $(GUI)$(OBJ_EXT)
 B_OBJECTS = $(addprefix $(BUNDLE)/, $(DSP_OBJ) $(GUI_OBJ))
 ROOTFILES = \
-	manifest.ttl \
-	BOops.ttl \
+	*.ttl \
 	LICENSE
 
 INCFILES = inc/*.png inc/*.wav

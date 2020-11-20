@@ -11,6 +11,7 @@
 @prefix work:  <http://lv2plug.in/ns/ext/worker#> .
 @prefix ui: <http://lv2plug.in/ns/extensions/ui#> .
 @prefix rsz: <http://lv2plug.in/ns/ext/resize-port#> .
+@prefix pset: <http://lv2plug.in/ns/ext/presets#> .
 
 
 <http://www.jahnichen.de/sjaehn#me>
@@ -31,7 +32,7 @@
 	rdfs:comment "Glitch effect sequencer LV2 plugin." ;
   	doap:maintainer <http://www.jahnichen.de/sjaehn#me> ;
   	doap:license <http://usefulinc.com/doap/licenses/gpl> ;
-	lv2:microVersion 3 ;
+	lv2:microVersion 4 ;
 	lv2:minorVersion 0 ;
 	lv2:optionalFeature lv2:hardRTCapable ;
 	lv2:extensionData state:interface , work:interface ;
@@ -2437,3 +2438,51 @@
 	        lv2:minimum 0.0 ;
 	        lv2:maximum 1.0 ;
 	] .
+
+<https://www.jahnichen.de/plugins/lv2/BOops#Antimatter>
+	a pset:Preset ;
+	lv2:appliesTo <https://www.jahnichen.de/plugins/lv2/BOops> ;
+	rdfs:label "Antimatter" ;
+	rdfs:seeAlso <BOops_Antimatter.ttl> .
+
+<https://www.jahnichen.de/plugins/lv2/BOops#Dizzy_tizzy>
+	a pset:Preset ;
+	lv2:appliesTo <https://www.jahnichen.de/plugins/lv2/BOops> ;
+	rdfs:label "Dizzy tizzy" ;
+	rdfs:seeAlso <BOops_Dizzy_tizzy.ttl> .
+
+<https://www.jahnichen.de/plugins/lv2/BOops#Fade_to_grey>
+	a pset:Preset ;
+	lv2:appliesTo <https://www.jahnichen.de/plugins/lv2/BOops> ;
+	rdfs:label "Fade to grey" ;
+	rdfs:seeAlso <BOops_Fade_to_grey.ttl> .
+
+<https://www.jahnichen.de/plugins/lv2/BOops#Game_over>
+	a pset:Preset ;
+	lv2:appliesTo <https://www.jahnichen.de/plugins/lv2/BOops> ;
+	rdfs:label "Game over" ;
+	rdfs:seeAlso <BOops_Game_over.ttl> .
+
+<https://www.jahnichen.de/plugins/lv2/BOops#Leap_in_time>
+	a pset:Preset ;
+	lv2:appliesTo <https://www.jahnichen.de/plugins/lv2/BOops> ;
+	rdfs:label "Leap in time" ;
+	rdfs:seeAlso <BOops_Leap_in_time.ttl> .
+
+<https://www.jahnichen.de/plugins/lv2/BOops#Loopodelic>
+	a pset:Preset ;
+	lv2:appliesTo <https://www.jahnichen.de/plugins/lv2/BOops> ;
+	rdfs:label "Loopodelic" ;
+	rdfs:seeAlso <BOops_Loopodelic.ttl> .
+
+<https://www.jahnichen.de/plugins/lv2/BOops#Sudden_1>
+	a pset:Preset ;
+	lv2:appliesTo <https://www.jahnichen.de/plugins/lv2/BOops> ;
+	rdfs:label "Sudden 1" ;
+	rdfs:seeAlso <BOops_Sudden_1.ttl> .
+
+<https://www.jahnichen.de/plugins/lv2/BOops#Sudden_2>
+	a pset:Preset ;
+	lv2:appliesTo <https://www.jahnichen.de/plugins/lv2/BOops> ;
+	rdfs:label "Sudden 2" ;
+	rdfs:seeAlso <BOops_Sudden_2.ttl> .
