@@ -1269,6 +1269,7 @@ void BOopsGUI::setOptionWidget (const int slot)
 					break;
 
 		case FX_WAH:		slotParams[slot].optionWidget = new OptionWah (430, 20, 720, 130, "widget", pluginPath);
+					if (slotParams[slot].optionWidget) ((OptionWah*)slotParams[slot].optionWidget)->setShape (slotParams[slot].shape);
 					break;
 
 		default:		slotParams[slot].optionWidget = new OptionWidget (0, 0, 0, 0, "widget");

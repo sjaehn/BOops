@@ -47,7 +47,7 @@ public:
 		depth (0.5f),
 		width (0.1f),
 		order (2),
-		reach (1),
+		reach (1.0),
 		filter (48000, 20, 20000, 8)
 	{}
 
