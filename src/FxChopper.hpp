@@ -27,6 +27,7 @@
 #define FX_CHOPPER_SMOOTH 1
 #define FX_CHOPPER_STEPS 2
 #define FX_CHOPPER_STEPRAND 10
+#define FX_CHOPPER_REACH 11
 
 class FxChopper : public Fx
 {
@@ -35,7 +36,7 @@ public:
 
 	FxChopper (RingBuffer<Stereo>** buffer, float* params, Pad* pads) :
 		Fx (buffer, params, pads),
-		nr (0), smoothing (0.1f)
+		nr (0), smoothing (0.1f), reach (1.0)
 	{}
 
 	virtual void init (const double position) override
@@ -55,6 +56,7 @@ public:
 					1.0
 				);
 			}
+			reach = 1.0 + LIMIT (32.0 * params [SLOTS_OPTPARAMS + FX_CHOPPER_REACH], 0, 31);
 		}
 	}
 
@@ -63,8 +65,8 @@ public:
 		const Stereo s0 = (buffer && (*buffer) ? (**buffer)[0] : Stereo {0, 0});
 		if ((!playing) || (!pads)) return s0;
 
-		const int p = nr * fmod (position, 1.0);
-		const double frac = double (nr) * fmod (position, 1.0) - double (p);
+		const int p = nr * fmod (position / reach, 1.0);
+		const double frac = double (nr) * fmod (position / reach, 1.0) - double (p);
 		const int step = p % nr;
 		Stereo s1 = s0 * chops[step];
 
@@ -89,6 +91,7 @@ protected:
 	int nr;
 	float smoothing;
 	float chops[8];
+	double reach;
 
 };
 

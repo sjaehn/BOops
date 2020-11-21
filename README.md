@@ -232,9 +232,9 @@ Reverse playback.
 
 #### Chop
 
-Chops each step into a number of segments (Nr chops). Each segment can be leveled up or down. Set the random factor to introduce
-some variation to the step levels. Soft transition between the segments can be achieved by increasing the smoothness
-parameter.
+Chops each step (or a block of steps defined by the reach parameter) into a number of segments (Nr chops). Each segment can
+be leveled up or down. Set the random factor to introduce some variation to the step levels. Soft transition between the
+segments can be achieved by increasing the smoothness parameter.
 
 
 #### Stutter
@@ -343,7 +343,7 @@ not. Select at least two slots and set the likelihood ratio for each slot.
 ## What's new
 
 * Factory presets
-* Additional reach parameter (in FxWah)
+* Additional reach parameter (in FxWah and FxChop)
 
 
 ## TODO

@@ -35,7 +35,8 @@ public:
 		stepsLabel (0, 90, 80, 20, "ctlabel", "Nr chops"),
 		smoothLabel (90, 90, 60, 20, "ctlabel", "Smooth"),
 		chopLabel (170, 90, 220, 20, "ctlabel", "Chops"),
-		randLabel (410, 90, 60, 20, "ctlabel", "Random")
+		randLabel (410, 90, 60, 20, "ctlabel", "Random"),
+		reachLabel (490, 90, 60, 20, "ctlabel", "Reach")
 
 	{
 		try
@@ -44,26 +45,29 @@ public:
 			options[1] = new Dial (90, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, "%1.2f", "", [] (double x) {return x;});
 			for (int i = 0; i < 8; ++i) options [i + 2] = new VSlider (170 + i * 30, 20, 20, 60, "pad0", 0.5, 0, 1, 0);
 			options[10] = new Dial (410, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, "%1.2f", "", [] (double x) {return x;});
+			options[11] = new Dial (490, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, "%1.0f", "steps", [] (double x) {return 1 + LIMIT (32.0 * x, 0.0, 31.0);});
 		}
 		catch (std::bad_alloc& ba) {throw ba;}
 
-		for (int i = 0; i < 11; ++i) options[i]->setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, valueChangedCallback);
+		for (int i = 0; i < 12; ++i) options[i]->setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, valueChangedCallback);
 
-		for (int i = 0; i < 11; ++i) add (*options[i]);
+		for (int i = 0; i < 12; ++i) add (*options[i]);
 		add (stepsLabel);
 		add (smoothLabel);
 		add (chopLabel);
 		add (randLabel);
+		add (reachLabel);
 	}
 
 	OptionChopper (const OptionChopper& that) :
 		OptionWidget (that), stepsLabel (that.stepsLabel), smoothLabel (that.smoothLabel), chopLabel (that.chopLabel),
-		randLabel (that.randLabel)
+		randLabel (that.randLabel), reachLabel (that.reachLabel)
 	{
 		add (stepsLabel);
 		add (smoothLabel);
 		add (chopLabel);
 		add (randLabel);
+		add (reachLabel);
 	}
 
 	OptionChopper& operator= (const OptionChopper& that)
@@ -72,15 +76,18 @@ public:
 		release (&smoothLabel);
 		release (&chopLabel);
 		release (&randLabel);
+		release (&reachLabel);
 		OptionWidget::operator= (that);
 		stepsLabel = that.stepsLabel;
 		smoothLabel = that.smoothLabel;
 		chopLabel = that.chopLabel;
 		randLabel = that.randLabel;
+		reachLabel = that.reachLabel;
 		add (stepsLabel);
 		add (smoothLabel);
 		add (chopLabel);
 		add (randLabel);
+		add (reachLabel);
 
 		return *this;
 	}
@@ -96,6 +103,7 @@ public:
 		smoothLabel.applyTheme (theme);
 		chopLabel.applyTheme (theme);
 		randLabel.applyTheme (theme);
+		reachLabel.applyTheme (theme);
 	}
 
 	static void valueChangedCallback(BEvents::Event* event)
@@ -134,6 +142,7 @@ protected:
 	BWidgets::Label smoothLabel;
 	BWidgets::Label chopLabel;
 	BWidgets::Label randLabel;
+	BWidgets::Label reachLabel;
 };
 
 #endif /* OPTIONCHOPPER_HPP_ */
