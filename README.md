@@ -269,7 +269,7 @@ You can set the frequency (rate) and the amplitude (depth) of the wobbling.
 
 Vinyl scratching. Draw a scratching shape by setting points up and down between 0.0 and -1.0. This will cause a movement
 of the playback forward and backward (= scratching). The reach parameter defines the size of the shape in number of steps.
-Set the depth parameter to change the amplitude of movement.
+Set the depth parameter to change the amplitude of movement (max. 1 step).
 
 
 #### Noise
