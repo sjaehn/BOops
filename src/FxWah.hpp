@@ -32,6 +32,7 @@
 #define FX_WAH_WIDTH 4
 #define FX_WAH_WIDTHRAND 5
 #define FX_WAH_ORDER 6
+#define FX_WAH_REACH 7
 
 class FxWah : public Fx
 {
@@ -46,6 +47,7 @@ public:
 		depth (0.5f),
 		width (0.1f),
 		order (2),
+		reach (1),
 		filter (48000, 20, 20000, 8)
 	{}
 
@@ -59,6 +61,7 @@ public:
 		const double r5 = bidist (rnd);
 		width = (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_WAH_WIDTH] + r5 * params[SLOTS_OPTPARAMS + FX_WAH_WIDTHRAND], 0.0, 1.0) : 0.1);
 		order = 2 * int (params ? LIMIT (1.0 + 8.0 * params[SLOTS_OPTPARAMS + FX_WAH_ORDER], 0, 8) : 2);
+		reach = 1.0 + (params ? LIMIT (32.0 * params [SLOTS_OPTPARAMS + FX_WAH_REACH], 0, 31) : 0);
 
 		const float m = (shape ? shape->getMapValue (0): 0.0);
 		const float f = cFreq * (1 + depth * m);
@@ -70,10 +73,10 @@ public:
 		const Stereo s0 = (buffer && (*buffer) ? (**buffer)[0] : Stereo {0, 0});
 		if ((!playing) || (!pads)) return s0;
 
-		const float m = (shape ? shape->getMapValue (fmod (position, 1.0)): 0.0);
-		const float f = cFreq * (1 + depth * m);
-		const float fmin = LIMIT (f * (1.0 - width), 0.0, 20000.0);
-		const float fmax = LIMIT (f * (1.0 + width), 0.0, 20000.0);
+		const float m = (shape ? shape->getMapValue (fmod (position / reach, 1.0)): 0.0);
+		const float f = cFreq * (1.0f + depth * m);
+		const float fmin = LIMIT (f * (1.0f - width), 0.0f, 20000.0f);
+		const float fmax = LIMIT (f * (1.0f + width), 0.0f, 20000.0f);
 		filter.set (rate, fmin, fmax, order);
 		const Stereo s1 = filter.push (s0);
 
@@ -87,6 +90,7 @@ protected:
 	float depth;
 	float width;
 	int order;
+	double reach;
 	ButterworthBandPassFilter filter;
 };
 

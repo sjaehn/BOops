@@ -32,10 +32,11 @@ public:
 	OptionWah () : OptionWah (0.0, 0.0, 0.0, 0.0, "widget", "") {}
 	OptionWah (const double x, const double y, const double width, const double height, const std::string& name, const std::string& pluginPath) :
 		OptionWidget (x, y, width, height, name),
-		cFreqLabel (410, 90, 60, 20, "ctlabel", "Center"),
-		depthLabel (330, 90, 60, 20, "ctlabel", "Depth"),
-		widthLabel (490, 90, 60, 20, "ctlabel", "Width"),
-		orderLabel (570, 90, 60, 20, "ctlabel", "Roll off"),
+		cFreqLabel (490, 90, 60, 20, "ctlabel", "Center"),
+		depthLabel (410, 90, 60, 20, "ctlabel", "Depth"),
+		widthLabel (570, 90, 60, 20, "ctlabel", "Width"),
+		orderLabel (650, 90, 60, 20, "ctlabel", "Roll off"),
+		reachLabel (330, 90, 60, 20, "ctlabel", "Reach"),
 		shapeWidget (5, 10, 310, 85, "pad0"),
 		toolboxIcon (6, 100, 308, 20, "widget", pluginPath + "inc/shape_tb.png"),
 		shapeToolButtons
@@ -64,13 +65,14 @@ public:
 	{
 		try
 		{
-			options[0] = new DialRange (410, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.0f", "Hz", [] (double x) {return 20.0 + 19980.0 * pow (x, 3.0);});
+			options[0] = new DialRange (490, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.0f", "Hz", [] (double x) {return 20.0 + 19980.0 * pow (x, 3.0);});
 			options[1] = new BWidgets::ValueWidget (0, 0, 0, 0, "widget", 0.0);
-			options[2] = new DialRange (330, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.2f");
+			options[2] = new DialRange (410, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.2f");
 			options[3] = new BWidgets::ValueWidget (0, 0, 0, 0, "widget", 0.0);
-			options[4] = new DialRange (490, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.2f");
+			options[4] = new DialRange (570, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.2f");
 			options[5] = new BWidgets::ValueWidget (0, 0, 0, 0, "widget", 0.0);
-			options[6] = new Dial (570, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, "%1.0f", "-db/o", [] (double x) {return 12 * int (LIMIT (1.0 + 8.0 * x, 1, 8));});
+			options[6] = new Dial (650, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, "%1.0f", "-db/o", [] (double x) {return 12 * int (LIMIT (1.0 + 8.0 * x, 1, 8));});
+			options[7] = new Dial (330, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, "%1.0f", "steps", [] (double x) {return 1 + LIMIT (32.0 * x, 0.0, 31.0);});
 		}
 		catch (std::bad_alloc& ba) {throw ba;}
 
@@ -81,6 +83,7 @@ public:
 			options[i + 1]->setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, valueChangedCallback);
 		}
 		options[6]->setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, valueChangedCallback);
+		options[7]->setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, valueChangedCallback);
 		shapeWidget.setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, shapeChangedCallback);
 		for (HaloToggleButton& s: shapeToolButtons) s.setCallbackFunction (BEvents::EventType::BUTTON_PRESS_EVENT, shapeToolClickedCallback);
 		for (HaloButton& e: editToolButtons) e.setCallbackFunction (BEvents::EventType::BUTTON_PRESS_EVENT, editToolClickedCallback);
@@ -102,6 +105,7 @@ public:
 		add (depthLabel);
 		add (orderLabel);
 		add (widthLabel);
+		add (reachLabel);
 		add (shapeWidget);
 		add (toolboxIcon);
 		add (gridShowButton);
@@ -109,13 +113,13 @@ public:
 		for (HaloToggleButton& s : shapeToolButtons) add (s);
 		for (HaloButton& e : editToolButtons) add (e);
 		for (HaloButton& h : historyToolButtons) add (h);
-		for (int i = 0; i < 7; ++i) add (*options[i]);
+		for (int i = 0; i < 8; ++i) add (*options[i]);
 	}
 
 	OptionWah (const OptionWah& that) :
 		OptionWidget (that),
 		cFreqLabel (that.cFreqLabel), depthLabel (that.depthLabel),
-		widthLabel (that.widthLabel), orderLabel (that.orderLabel),
+		widthLabel (that.widthLabel), orderLabel (that.orderLabel), reachLabel (that.reachLabel),
 		shapeWidget (that.shapeWidget), toolboxIcon (that.toolboxIcon),
 		shapeToolButtons (that.shapeToolButtons), editToolButtons (that.editToolButtons), historyToolButtons (that.historyToolButtons),
 		gridShowButton (that.gridShowButton), gridSnapButton (that.gridSnapButton)
@@ -124,6 +128,7 @@ public:
 		add (depthLabel);
 		add (orderLabel);
 		add (widthLabel);
+		add (reachLabel);
 		add (shapeWidget);
 		add (toolboxIcon);
 		for (HaloToggleButton& s : shapeToolButtons) add (s);
@@ -139,6 +144,7 @@ public:
 		release (&depthLabel);
 		release (&orderLabel);
 		release (&widthLabel);
+		release (&reachLabel);
 		release (&shapeWidget);
 		release (&toolboxIcon);
 		for (HaloToggleButton& s : shapeToolButtons) release (&s);
@@ -152,6 +158,7 @@ public:
 		depthLabel = that.depthLabel;
 		orderLabel = that.orderLabel;
 		widthLabel = that.widthLabel;
+		reachLabel = that.reachLabel;
 		shapeWidget = that.shapeWidget;
 		toolboxIcon = that.toolboxIcon;
 		shapeToolButtons = that.shapeToolButtons;
@@ -164,6 +171,7 @@ public:
 		add (depthLabel);
 		add (orderLabel);
 		add (widthLabel);
+		add (reachLabel);
 		add (shapeWidget);
 		add (toolboxIcon);
 		for (HaloToggleButton& s : shapeToolButtons) add (s);
@@ -198,6 +206,8 @@ public:
 		cFreqLabel.applyTheme (theme);
 		depthLabel.applyTheme (theme);
 		widthLabel.applyTheme (theme);
+		orderLabel.applyTheme (theme);
+		reachLabel.applyTheme (theme);
 		shapeWidget.applyTheme (theme);
 		toolboxIcon.applyTheme (theme);
 		for (HaloToggleButton& s : shapeToolButtons) s.applyTheme (theme);
@@ -410,6 +420,7 @@ protected:
 	BWidgets::Label depthLabel;
 	BWidgets::Label widthLabel;
 	BWidgets::Label orderLabel;
+	BWidgets::Label reachLabel;
 	ShapeWidget shapeWidget;
 	BWidgets::ImageIcon toolboxIcon;
         std::array<HaloToggleButton, 5> shapeToolButtons;
