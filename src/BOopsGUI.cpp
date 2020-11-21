@@ -1228,7 +1228,7 @@ void BOopsGUI::setOptionWidget (const int slot)
 		case FX_TAPE_SPEED:	slotParams[slot].optionWidget = new OptionTapeSpeed (430, 20, 80, 130, "widget");
 					break;
 
-		case FX_SCRATCH:	slotParams[slot].optionWidget = new OptionScratch (430, 20, 400, 130, "widget", pluginPath);
+		case FX_SCRATCH:	slotParams[slot].optionWidget = new OptionScratch (430, 20, 480, 130, "widget", pluginPath);
 					if (slotParams[slot].optionWidget) ((OptionScratch*)slotParams[slot].optionWidget)->setShape (slotParams[slot].shape);
 					break;
 

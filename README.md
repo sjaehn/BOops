@@ -268,7 +268,8 @@ You can set the frequency (rate) and the amplitude (depth) of the wobbling.
 #### Scratch
 
 Vinyl scratching. Draw a scratching shape by setting points up and down between 0.0 and -1.0. This will cause a movement
-of the playback forward and backward (= scratching). Set the range parameter to change the amplitude of movement.
+of the playback forward and backward (= scratching). The reach parameter defines the size of the shape in number of steps.
+Set the depth parameter to change the amplitude of movement.
 
 
 #### Noise
@@ -343,7 +344,7 @@ not. Select at least two slots and set the likelihood ratio for each slot.
 ## What's new
 
 * Factory presets
-* Additional reach parameter (in FxWah and FxChop)
+* Additional reach parameter (in FxWah, FxScratch, and FxChop)
 
 
 ## TODO

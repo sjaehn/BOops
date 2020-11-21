@@ -26,6 +26,7 @@
 
 #define FX_SCRATCH_RANGE 0
 #define FX_SCRATCH_RANGERAND 1
+#define FX_SCRATCH_REACH 2
 
 class FxScratch : public Fx
 {
@@ -37,7 +38,7 @@ public:
 		framesPerStepPtr (framesPerStep),
 		framesPerStep (24000),
 		shape (shape),
-		range (0.0f)
+		range (0.0), reach (1.0)
 	{}
 
 	virtual void init (const double position) override
@@ -46,6 +47,7 @@ public:
 		framesPerStep = (framesPerStepPtr ? *framesPerStepPtr : 24000.0);
 		const double r = bidist (rnd);
 		range = (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_SCRATCH_RANGE] + r * params[SLOTS_OPTPARAMS + FX_SCRATCH_RANGERAND], 0.0, 1.0) : 0.5);
+		reach = (params ? 1.0 + LIMIT (32.0 * params [SLOTS_OPTPARAMS + FX_SCRATCH_REACH], 0, 31) : 1.0);
 	}
 
 	virtual Stereo play (const double position, const double size, const double mixf) override
@@ -53,7 +55,7 @@ public:
 		const Stereo s0 = (buffer && (*buffer) ? (**buffer)[0] : Stereo {0, 0});
 		if ((!playing) || (!pads)) return s0;
 
-		const double f = (shape ? shape->getMapValue (fmod (position, 1.0)): 0.0);
+		const double f = (shape ? shape->getMapValue (fmod (position / reach, 1.0)): 0.0);
 		const double frame = framesPerStep * range * (-LIMIT (f, -1.0, 0.0));
 		Stereo s1 = getSample (frame);
 		return mix (s0, s1, position, size, mixf);
@@ -63,7 +65,8 @@ protected:
 	double* framesPerStepPtr;
 	double framesPerStep;
 	Shape<SHAPE_MAXNODES>* shape;
-	float range;
+	double range;
+	double reach;
 };
 
 #endif /* FXSCRATCH_HPP_ */

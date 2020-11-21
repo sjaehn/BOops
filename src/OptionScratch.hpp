@@ -32,7 +32,8 @@ public:
 	OptionScratch () : OptionScratch (0.0, 0.0, 0.0, 0.0, "widget", "") {}
 	OptionScratch (const double x, const double y, const double width, const double height, const std::string& name, const std::string& pluginPath) :
 		OptionWidget (x, y, width, height, name),
-		rangeLabel (10, 90, 60, 20, "ctlabel", "Range"),
+		rangeLabel (10, 90, 60, 20, "ctlabel", "Depth"),
+		reachLabel (410, 90, 60, 20, "ctlabel", "Reach"),
 		shapeWidget (85, 10, 310, 85, "pad0"),
 		toolboxIcon (86, 100, 308, 20, "widget", pluginPath + "inc/shape_tb.png"),
 		shapeToolButtons
@@ -63,12 +64,14 @@ public:
 		{
 			options[0] = new DialRange (10, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.2f");
 			options[1] = new BWidgets::ValueWidget (0, 0, 0, 0, "widget", 0.0);
+			options[2] = new Dial (410, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, "%1.0f", "steps", [] (double x) {return 1 + LIMIT (32.0 * x, 0.0, 31.0);});
 		}
 		catch (std::bad_alloc& ba) {throw ba;}
 
 		options[0]->setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, valueChangedCallback);
 		((DialRange*)options[0])->range.setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, rangeChangedCallback);
 		options[1]->setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, valueChangedCallback);
+		options[2]->setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, valueChangedCallback);
 		shapeWidget.setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, shapeChangedCallback);
 		for (HaloToggleButton& s: shapeToolButtons) s.setCallbackFunction (BEvents::EventType::BUTTON_PRESS_EVENT, shapeToolClickedCallback);
 		for (HaloButton& e: editToolButtons) e.setCallbackFunction (BEvents::EventType::BUTTON_PRESS_EVENT, editToolClickedCallback);
@@ -87,6 +90,7 @@ public:
 		shapeToolButtons[1].setValue (1.0);
 
 		add (rangeLabel);
+		add (reachLabel);
 		add (shapeWidget);
 		add (toolboxIcon);
 		add (gridShowButton);
@@ -96,14 +100,17 @@ public:
 		for (HaloButton& h : historyToolButtons) add (h);
 		add (*options[0]);
 		add (*options[1]);
+		add (*options[2]);
 	}
 
 	OptionScratch (const OptionScratch& that) :
-		OptionWidget (that), rangeLabel (that.rangeLabel), shapeWidget (that.shapeWidget), toolboxIcon (that.toolboxIcon),
+		OptionWidget (that), rangeLabel (that.rangeLabel), reachLabel (that.reachLabel),
+		shapeWidget (that.shapeWidget), toolboxIcon (that.toolboxIcon),
 		shapeToolButtons (that.shapeToolButtons), editToolButtons (that.editToolButtons), historyToolButtons (that.historyToolButtons),
 		gridShowButton (that.gridShowButton), gridSnapButton (that.gridSnapButton)
 	{
 		add (rangeLabel);
+		add (reachLabel);
 		add (shapeWidget);
 		add (toolboxIcon);
 		for (HaloToggleButton& s : shapeToolButtons) add (s);
@@ -116,6 +123,7 @@ public:
 	OptionScratch& operator= (const OptionScratch& that)
 	{
 		release (&rangeLabel);
+		release (&reachLabel);
 		release (&shapeWidget);
 		release (&toolboxIcon);
 		for (HaloToggleButton& s : shapeToolButtons) release (&s);
@@ -126,6 +134,7 @@ public:
 
 		OptionWidget::operator= (that);
 		rangeLabel = that.rangeLabel;
+		reachLabel = that.reachLabel;
 		shapeWidget = that.shapeWidget;
 		toolboxIcon = that.toolboxIcon;
 		shapeToolButtons = that.shapeToolButtons;
@@ -135,6 +144,7 @@ public:
 		gridSnapButton = that.gridSnapButton;
 
 		add (rangeLabel);
+		add (reachLabel);
 		add (shapeWidget);
 		add (toolboxIcon);
 		for (HaloToggleButton& s : shapeToolButtons) add (s);
@@ -167,6 +177,7 @@ public:
 	{
 		OptionWidget::applyTheme (theme, name);
 		rangeLabel.applyTheme (theme);
+		reachLabel.applyTheme (theme);
 		shapeWidget.applyTheme (theme);
 		toolboxIcon.applyTheme (theme);
 		for (HaloToggleButton& s : shapeToolButtons) s.applyTheme (theme);
@@ -366,6 +377,7 @@ public:
 
 protected:
 	BWidgets::Label rangeLabel;
+	BWidgets::Label reachLabel;
 	ShapeWidget shapeWidget;
 	BWidgets::ImageIcon toolboxIcon;
         std::array<HaloToggleButton, 5> shapeToolButtons;
