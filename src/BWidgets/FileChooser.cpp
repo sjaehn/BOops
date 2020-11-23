@@ -154,6 +154,22 @@ void FileChooser::setFilters (const std::vector<FileFilter>& filters)
 
 std::vector<FileFilter> FileChooser::getFilters () const {return filters;}
 
+void FileChooser::selectFilter (const std::string& name)
+{
+	int select = 1;
+	for (FileFilter const& f : filters)
+	{
+		if (f.name == name)
+		{
+			filterPopupListBox.setValue (select);
+			enterDir();
+			update();
+			break;
+		}
+		++select;
+	}
+}
+
 void FileChooser::setButtonText (const std::string& buttonText)
 {
 	if (buttonText != okButtonText)

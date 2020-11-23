@@ -97,6 +97,12 @@ public:
 	std::vector<FileFilter> getFilters () const;
 
 	/**
+	 * Selects and activates one filter out of the file filters.
+	 * @param name	Filter name
+	 */
+	void selectFilter (const std::string& name);
+
+	/**
 	 * Sets the text of the OK button.
 	 * @param text	Text
 	 */

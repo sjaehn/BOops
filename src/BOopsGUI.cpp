@@ -2293,7 +2293,8 @@ void BOopsGUI::loadButtonClickedCallback (BEvents::Event* event)
 		"Open");
 	if (ui->fileChooser)
 	{
-		RESIZE ((*ui->fileChooser), 200, 120, 300, 400, ui->sz);
+		RESIZE ((*ui->fileChooser), 200, 140, 300, 400, ui->sz);
+		ui->fileChooser->selectFilter ("Audio files");
 		ui->mContainer.add (*ui->fileChooser);
 	}
 }
