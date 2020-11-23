@@ -33,16 +33,17 @@ enum BOopsPortIndex
 	CONTROLLERS	= 6,
 
 	PLAY			= 0,
-	PLAY_MODE		= 1,
-	ON_MIDI			= 2,
-	AUTOPLAY_BPM		= 3,
-	AUTOPLAY_BPB		= 4,
-	AUTOPLAY_POSITION	= 5,
-	STEPS			= 6,
-	BASE			= 7,
-	BASE_VALUE		= 8,
+	SOURCE			= 1,
+	PLAY_MODE		= 2,
+	ON_MIDI			= 3,
+	AUTOPLAY_BPM		= 4,
+	AUTOPLAY_BPB		= 5,
+	AUTOPLAY_POSITION	= 6,
+	STEPS			= 7,
+	BASE			= 8,
+	BASE_VALUE		= 9,
 
-	SLOTS		= 9,
+	SLOTS		= 10,
 	SLOTS_EFFECT	= 0,
 	SLOTS_PARAMS	= 1,
 	SLOTS_PLAY	= 0,
@@ -112,6 +113,12 @@ enum BOopsEffectsIndex
 	FX_WAH		= 26,
 	NR_FX		= 27,
 	FX_INVALID	= 255
+};
+
+enum BOopsSourceIndex
+{
+	SOURCE_STREAM	= 0,
+	SOURCE_SAMPLE	= 1
 };
 
 enum BOopsDistortionIndex

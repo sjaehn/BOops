@@ -31,7 +31,7 @@
      inkscape:current-layer="layer2"
      inkscape:document-units="px"
      inkscape:cy="59.049432"
-     inkscape:cx="757.23184"
+     inkscape:cx="705.81465"
      inkscape:zoom="0.9016129"
      inkscape:pageshadow="2"
      inkscape:pageopacity="0.0"
@@ -2456,12 +2456,12 @@
     <text
        xml:space="preserve"
        style="font-size:2.11667px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:sans-serif;display:inline;stroke-width:0.264583"
-       x="108.27142"
+       x="121.5006"
        y="49.233101"
        id="text4027-7-4"><tspan
          sodipodi:role="line"
          id="tspan4025-0-0"
-         x="108.27142"
+         x="121.5006"
          y="49.233101"
          style="font-size:2.11667px;fill:#ffffff;stroke-width:0.264583">Mode</tspan></text>
     <text
@@ -2630,5 +2630,16 @@
            y="160.21622"
            style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.23333px;font-family:'Liberation Sans';-inkscape-font-specification:'Liberation Sans Bold';fill:#808080;stroke-width:0.264583">?</tspan></text>
     </g>
+    <text
+       xml:space="preserve"
+       style="font-size:2.11667px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:sans-serif;display:inline;stroke-width:0.264583"
+       x="41.400055"
+       y="49.195965"
+       id="text4027-7-4-3"><tspan
+         sodipodi:role="line"
+         id="tspan4025-0-0-6"
+         x="41.400055"
+         y="49.195965"
+         style="font-size:2.11667px;fill:#ffffff;stroke-width:0.264583">Source</tspan></text>
   </g>
 </svg>

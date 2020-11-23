@@ -42,10 +42,12 @@ BOops::BOops (double samplerate, const char* bundle_path, const LV2_Feature* con
 	audioInput1(NULL), audioInput2(NULL), audioOutput1(NULL), audioOutput2(NULL),
 	new_controllers {NULL}, globalControllers {0},
 	forge (), notify_frame (),
+	sample (NULL),
 	waveform {0}, waveformCounter (0), lastWaveformCounter (0),
 	message (), ui_on(false), scheduleNotifySlot {false},
 	scheduleNotifyStatus (false), scheduleResizeBuffers (false), scheduleSetFx {false},
-	scheduleNotifyWaveformToGui (false), scheduleNotifyTransportGateKeys (false)
+	scheduleNotifyWaveformToGui (false), scheduleNotifyTransportGateKeys (false),
+	scheduleNotifySamplePathToGui (false)
 
 {
 	if (bundle_path) strncpy (pluginPath, bundle_path, 1023);
@@ -82,7 +84,10 @@ BOops::BOops (double samplerate, const char* bundle_path, const LV2_Feature* con
 	positions.push_back ({0.0, 0, 0.0, 0, {samplerate, 120.0f, 1.0f, 0ul, 0.0f, 4.0f, 4}, 1.0, true});
 }
 
-BOops::~BOops () {}
+BOops::~BOops ()
+{
+	if (sample) delete sample;
+}
 
 void BOops::connect_port(uint32_t port, void *data)
 {
@@ -143,6 +148,19 @@ double BOops::getPositionFromFrames (const Transport& transport, const uint64_t 
 					0.0
 				);
 		default:	return 0.0;
+	}
+}
+
+uint64_t BOops::getFramesFromPosition (const Transport& transport, const double position) const
+{
+	if (transport.bpm < 1.0) return 0;
+
+	switch (int (globalControllers[BASE]))
+	{
+		case SECONDS :	return position * transport.rate * globalControllers[BASE_VALUE];
+		case BEATS:	return position * (60.0 / transport.bpm) * transport.rate * globalControllers[BASE_VALUE];
+		case BARS:	return position * transport.beatsPerBar * (60.0 / transport.bpm) * transport.rate * globalControllers[BASE_VALUE];
+		default:	return 0;
 	}
 }
 
@@ -300,6 +318,7 @@ void BOops::run (uint32_t n_samples)
 				std::fill (scheduleNotifySlot, scheduleNotifySlot + NR_SLOTS, true);
 				std::fill (scheduleNotifyShape, scheduleNotifyShape + NR_SLOTS, true);
 				scheduleNotifyTransportGateKeys = true;
+				scheduleNotifySamplePathToGui = true;
 			}
 
 			// Process GUI off status data
@@ -438,6 +457,18 @@ void BOops::run (uint32_t n_samples)
 						}
 						slots[slot].shape.validateShape();
 					}
+				}
+			}
+
+			// Sample path notification -> forward to worker
+			else if (obj->body.otype ==urids.bOops_samplePathEvent)
+			{
+				LV2_Atom* oPath = NULL;
+				lv2_atom_object_get (obj, urids.bOops_samplePath, &oPath, NULL);
+
+				if (oPath && (oPath->type == urids.atom_Path))
+				{
+					workerSchedule->schedule_work (workerSchedule->handle, lv2_atom_total_size(&ev->body), &ev->body);
 				}
 			}
 
@@ -703,6 +734,7 @@ void BOops::run (uint32_t n_samples)
 		for (int i = 0; i < NR_SLOTS; ++i) {if (scheduleNotifyShape[i]) notifyShapeToGui (i);}
 		if (scheduleNotifyTransportGateKeys) notifyTransportGateKeysToGui();
 		if (scheduleNotifyWaveformToGui) notifyWaveformToGui (lastWaveformCounter, waveformCounter);
+		if (scheduleNotifySamplePathToGui) notifySamplePathToGui();
 	}
 	lv2_atom_forge_pop (&forge, &notify_frame);
 }
@@ -860,6 +892,21 @@ void BOops::notifyTransportGateKeysToGui()
 	scheduleNotifyTransportGateKeys = false;
 }
 
+void BOops::notifySamplePathToGui ()
+{
+	if (sample && sample->path)
+	{
+		LV2_Atom_Forge_Frame frame;
+		lv2_atom_forge_frame_time(&forge, 0);
+		lv2_atom_forge_object(&forge, &frame, 0, urids.bOops_samplePathEvent);
+		lv2_atom_forge_key(&forge, urids.bOops_samplePath);
+		lv2_atom_forge_path (&forge, sample->path, strlen (sample->path) + 1);
+		lv2_atom_forge_pop(&forge, &frame);
+	}
+
+	scheduleNotifySamplePathToGui = false;
+}
+
 void BOops::play (uint32_t start, uint32_t end)
 {
 	if (end < start) return;
@@ -879,19 +926,35 @@ void BOops::play (uint32_t start, uint32_t end)
 	{
 		for (uint32_t i = start; i < end; ++i)
 		{
-			// Load samples to buffer
-			for (int j = 0; j < NR_SLOTS; ++j) slots[j].buffer->push_front (Stereo {audioInput1[i], audioInput2[i]});
-
-			// Waveform
 			Position& p = positions.back();
 			double relpos = getPositionFromFrames (p.transport, i - p.refFrame);	// Position relative to reference frame
 			double pos = floorfrac (p.position + relpos);				// 0..1 position sequence
+			uint64_t frame = getFramesFromPosition (p.transport, pos);
+
+			// Input signal
+			Stereo input =
+			(
+				globalControllers[SOURCE] == SOURCE_STREAM ?
+				Stereo (audioInput1[i], audioInput2[i]) :
+				(
+					sample ?
+					Stereo (sample->get (frame, 0, host.rate), sample->get (frame, 1, host.rate)):
+					Stereo()
+				)
+			);
+
+			// Load samples to buffer
+			for (int j = 0; j < NR_SLOTS; ++j) slots[j].buffer->push_front (input);
+
+			// Waveform
 			waveformCounter = int (pos * WAVEFORMSIZE) % WAVEFORMSIZE;
-			waveform[waveformCounter] = (audioInput1[i] + audioInput2[i]) / 2;
+			waveform[waveformCounter] = (input.left + input.right) / 2;
+
+			// Bypass to output
+			audioOutput1[i] = input.left;
+			audioOutput2[i] = input.right;
 		}
 
-		if (audioOutput1 != audioInput1) memmove(&audioOutput1[start], &audioInput1[start], (end - start) * sizeof(float));
-		if (audioOutput2 != audioInput2) memmove(&audioOutput2[start], &audioInput2[start], (end - start) * sizeof(float));
 		return;
 	}
 
@@ -908,21 +971,31 @@ void BOops::play (uint32_t start, uint32_t end)
 				p.fader - (j - p.refFrame) / (FADINGTIME * p.transport.rate) :
 				p.fader + (j - p.refFrame) / (FADINGTIME * p.transport.rate)
 			);
-
 			fader = LIMIT (fader, 0.0, 1.0);
-
-			Stereo input = Stereo {audioInput1[i], audioInput2[i]};
-			Stereo output = input;
 
 			// Interpolate position within the loop
 			double relpos = getPositionFromFrames (p.transport, i - p.refFrame);	// Position relative to reference frame
 			double pos = floorfrac (p.position + relpos);				// 0..1 position sequence
 
+			// Input
+			Stereo input = Stereo (audioInput1[i], audioInput2[i]);
+			if (globalControllers[SOURCE] == SOURCE_SAMPLE)
+			{
+				const uint64_t frame = getFramesFromPosition (p.transport, pos);
+				input =
+				(
+					sample ?
+					Stereo (sample->get (frame, 0, host.rate), sample->get (frame, 1, host.rate)):
+					Stereo()
+				);
+			}
+			Stereo output = input;
+
 			// Waveform
 			if (j == positions.size - 1)
 			{
 				waveformCounter = int (pos * WAVEFORMSIZE) % WAVEFORMSIZE;
-				waveform[waveformCounter] = (audioInput1[i] + audioInput2[i]) / 2;
+				waveform[waveformCounter] = (input.left + input.right) / 2;
 			}
 
 			if
@@ -976,6 +1049,28 @@ void BOops::play (uint32_t start, uint32_t end)
 LV2_State_Status BOops::state_save (LV2_State_Store_Function store, LV2_State_Handle handle, uint32_t flags,
 			const LV2_Feature* const* features)
 {
+	// Store sample path
+	if (sample && sample->path && (globalControllers[SOURCE] == SOURCE_SAMPLE))
+	{
+		LV2_State_Map_Path* map_path = NULL;
+	        for (int i = 0; features[i]; ++i)
+		{
+	                if (!strcmp(features[i]->URI, LV2_STATE__mapPath))
+			{
+	                        map_path = (LV2_State_Map_Path*)features[i]->data;
+				break;
+	                }
+	        }
+
+		if (map_path)
+		{
+			char* abstrPath = map_path->abstract_path(map_path->handle, sample->path);
+			store(handle, urids.bOops_samplePath, abstrPath, strlen (abstrPath) + 1, urids.atom_Path, LV2_STATE_IS_POD | LV2_STATE_IS_PORTABLE);
+			free (abstrPath);
+		}
+		else fprintf (stderr, "BOops.lv2: Feature map_path not available! Can't save sample!\n" );
+	}
+
 	// Store transportGateKeys
 	{
 		// Create atom:Vector
@@ -1066,6 +1161,27 @@ LV2_State_Status BOops::state_restore (LV2_State_Retrieve_Function retrieve, LV2
 	size_t   size;
 	uint32_t type;
 	uint32_t valflags;
+
+	// Retireve sample path
+	const void* pathData = retrieve (handle, urids.bOops_samplePath, &size, &type, &valflags);
+        if (pathData)
+	{
+		message.deleteMessage (CANT_OPEN_SAMPLE);
+		const char* path = (const char*)pathData;
+		if (sample) delete sample;
+		try {sample = new Sample (path);}
+		catch (std::bad_alloc &ba)
+		{
+			fprintf (stderr, "BOops.lv2: Can't allocate enoug memory to open sample file.\n");
+			message.setMessage (CANT_OPEN_SAMPLE);
+		}
+		catch (std::invalid_argument &ia)
+		{
+			fprintf (stderr, "%s\n", ia.what());
+			message.setMessage (CANT_OPEN_SAMPLE);
+		}
+		scheduleNotifySamplePathToGui = true;
+        }
 
 	// Retrieve transportGateKeys
 	const void* transportGateKeysData = retrieve(handle, urids.bOops_transportGateKeys, &size, &type, &valflags);
@@ -1302,6 +1418,48 @@ LV2_Worker_Status BOops::work (LV2_Worker_Respond_Function respond, LV2_Worker_R
 		if (fAtom->fx) delete (fAtom->fx);
         }
 
+	// Free old sample
+        if (atom->type == urids.bOops_sampleFreeEvent)
+	{
+		const AtomSample* sAtom = (AtomSample*) atom;
+		if (sAtom->sample) delete sAtom->sample;
+        }
+
+	// Load sample
+	else if ((atom->type == urids.atom_Object) && (((LV2_Atom_Object*)atom)->body.otype == urids.bOops_samplePathEvent))
+	{
+                const LV2_Atom_Object* obj = (const LV2_Atom_Object*)data;
+
+		const LV2_Atom* path = NULL;
+		lv2_atom_object_get(obj, urids.bOops_samplePath, &path, 0);
+
+		if (path && (path->type == urids.atom_Path))
+		{
+			message.deleteMessage (CANT_OPEN_SAMPLE);
+			Sample* s = nullptr;
+			try {s = new Sample ((const char*)LV2_ATOM_BODY_CONST(path));}
+			catch (std::bad_alloc &ba)
+			{
+				fprintf (stderr, "BOops.lv2: Can't allocate enough memory to open sample file.\n");
+				message.setMessage (CANT_OPEN_SAMPLE);
+				return LV2_WORKER_ERR_NO_SPACE;
+			}
+			catch (std::invalid_argument &ia)
+			{
+				fprintf (stderr, "%s\n", ia.what());
+				message.setMessage (CANT_OPEN_SAMPLE);
+				return LV2_WORKER_ERR_UNKNOWN;
+			}
+
+			AtomSample sAtom;
+			sAtom.atom = {sizeof (sample), urids.bOops_installSample};
+			sAtom.sample = s;
+			if (s) respond (handle, sizeof(sAtom), &sAtom);
+		}
+
+		else return LV2_WORKER_ERR_UNKNOWN;
+        }
+
 	// Allocate new buffers
 	else if (atom->type == urids.bOops_allocateBuffers)
 	{
@@ -1385,6 +1543,18 @@ LV2_Worker_Status BOops::work_response (uint32_t size, const void* data)
 		slots[nAtom->index].fx = nAtom->fx;
 		slots[nAtom->index].effect = BOopsEffectsIndex (nAtom->effect);
 		scheduleSetFx[nAtom->index] = false;
+	}
+
+	// Schedule worker to free old sample
+	else if (atom->type == urids.bOops_installSample)
+	{
+		const AtomSample* nAtom = (const AtomSample*)data;
+		// Schedule worker to free old sample
+		AtomSample sAtom = {{sizeof (Sample*), urids.bOops_sampleFreeEvent}, sample};
+		workerSchedule->schedule_work (workerSchedule->handle, sizeof (sAtom), &sAtom);
+
+		// Install new sample from data
+		sample = nAtom->sample;
 	}
 
 	return LV2_WORKER_SUCCESS;

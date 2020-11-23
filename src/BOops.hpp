@@ -37,6 +37,7 @@
 #include "Slot.hpp"
 #include "Message.hpp"
 #include "StaticArrayList.hpp"
+#include "Sample.hpp"
 
 struct Transport
 {
@@ -84,8 +85,10 @@ private:
 	void notifyStatusToGui ();
 	void notifyWaveformToGui (const int start, const int end);
 	void notifyTransportGateKeysToGui ();
+	void notifySamplePathToGui ();
 	double getPositionFromBeats (const Transport& transport, const double beats);
 	double getPositionFromFrames (const Transport& transport, const uint64_t frames);
+	uint64_t getFramesFromPosition (const Transport& transport, const double position) const;
 	double getPositionFromSeconds (const Transport& transport, const double seconds);
 	double getFramesPerStep (const Transport& transport);
 
@@ -118,6 +121,7 @@ private:
 	// Internals
 public:	Slot slots[NR_SLOTS];
 private:
+	Sample* sample;
 	float waveform[WAVEFORMSIZE];
 	int waveformCounter;
 	int lastWaveformCounter;
@@ -131,6 +135,7 @@ private:
 	bool scheduleSetFx[NR_SLOTS];
 	bool scheduleNotifyWaveformToGui;
 	bool scheduleNotifyTransportGateKeys;
+	bool scheduleNotifySamplePathToGui;
 
 	struct Atom_BufferList
 	{
@@ -152,6 +157,11 @@ private:
 		Fx* fx;
 	};
 
+	struct AtomSample
+	{
+		LV2_Atom atom;
+		Sample* sample;
+	};
 };
 
 #endif /* BOOPS_HPP_ */

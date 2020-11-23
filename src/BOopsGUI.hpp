@@ -37,6 +37,7 @@
 #include "BWidgets/HPianoRoll.hpp"
 #include "BWidgets/TextButton.hpp"
 #include "BWidgets/HSlider.hpp"
+#include "BWidgets/FileChooser.hpp"
 #include "screen.h"
 
 #include "HaloButton.hpp"
@@ -49,6 +50,7 @@
 #include "PadMessage.hpp"
 #include "Journal.hpp"
 #include "PadButton.hpp"
+#include "LoadButton.hpp"
 #include "IconPadButton.hpp"
 #include "PadToggleButton.hpp"
 #include "ValueSelect.hpp"
@@ -95,9 +97,11 @@ public:
 	void sendPad (const int slot, const int step);
 	void sendShape (const int slot);
 	void sendTransportGateKeys();
+	void sendSamplePath();
 	virtual void onConfigureRequest (BEvents::ExposeEvent* event) override;
 	virtual void onKeyPressed (BEvents::KeyEvent* event) override;
 	virtual void onKeyReleased (BEvents::KeyEvent* event) override;
+	virtual void onCloseRequest (BEvents::WidgetEvent* event) override;
 	void applyTheme (BStyles::Theme& theme) override;
 
 	static void optionChangedCallback(BEvents::Event* event);
@@ -121,6 +125,7 @@ private:
 	static void padsScrolledCallback (BEvents::Event* event);
 	static void padsFocusedCallback (BEvents::Event* event);
 	static void transportGateButtonClickedCallback (BEvents::Event* event);
+	static void loadButtonClickedCallback (BEvents::Event* event);
 	static void helpButtonClickedCallback (BEvents::Event* event);
 	static void ytButtonClickedCallback (BEvents::Event* event);
 	virtual void resize () override;
@@ -145,6 +150,7 @@ private:
 	std::string pluginPath;
 	double sz;
 	cairo_surface_t* bgImageSurface;
+	std::string samplePath;
 
 	BOopsURIDs urids;
 	LV2_Atom_Forge forge;
@@ -210,6 +216,10 @@ private:
 	HaloToggleButton playButton;
 	HaloToggleButton bypassButton;
 	HaloButton stopButton;
+	BWidgets::PopupListBox sourceListBox;
+	LoadButton loadButton;
+	BWidgets::Label sampleNameLabel;
+	BWidgets::FileChooser* fileChooser;
 	BWidgets::PopupListBox playModeListBox;
 	BWidgets::PopupListBox onMidiListBox;
 	BWidgets::HPianoRoll transportGateButton;

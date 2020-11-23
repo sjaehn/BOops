@@ -91,6 +91,17 @@
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
                 lv2:index 7 ;
+                lv2:symbol "source" ;
+                lv2:name "Source" ;
+                lv2:portProperty lv2:integer, lv2:enumeration ;
+		lv2:scalePoint [ rdfs:label "Audio stream"; rdf:value 0 ] ;
+		lv2:scalePoint [ rdfs:label "Sample"; rdf:value 1 ] ;
+                lv2:default 0 ;
+                lv2:minimum 0 ;
+                lv2:maximum 1 ;
+        ] , [
+                a lv2:InputPort , lv2:ControlPort ;
+                lv2:index 8 ;
                 lv2:symbol "play_mode" ;
                 lv2:name "Play mode" ;
                 lv2:portProperty lv2:integer, lv2:enumeration ;
@@ -102,7 +113,7 @@
                 lv2:maximum 2 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 8 ;
+                lv2:index 9 ;
                 lv2:symbol "on_midi" ;
                 lv2:name "On MIDI signal" ;
                 lv2:portProperty lv2:integer, lv2:enumeration ;
@@ -114,7 +125,7 @@
                 lv2:maximum 2 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 9 ;
+                lv2:index 10 ;
                 lv2:symbol "autoplay_bpm" ;
                 lv2:name "Autoplay: bpm" ;
                 lv2:default 120.0 ;
@@ -122,7 +133,7 @@
                 lv2:maximum 300.0 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 10 ;
+                lv2:index 11 ;
                 lv2:symbol "autoplay_beats_per_bar" ;
                 lv2:name "Autoplay: beats per bar" ;
                 lv2:portProperty lv2:integer ;
@@ -131,7 +142,7 @@
                 lv2:maximum 16 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 11 ;
+                lv2:index 12 ;
                 lv2:symbol "autoplay_position" ;
                 lv2:name "Autoplay: Adjust position" ;
                 lv2:default 0.0 ;
@@ -139,7 +150,7 @@
                 lv2:maximum 0.5 ;
         ] , [
 		a lv2:InputPort , lv2:ControlPort ;
-		lv2:index 12 ;
+		lv2:index 13 ;
 		lv2:symbol "steps" ;
 		lv2:name "Steps" ;
 		lv2:portProperty lv2:integer ;
@@ -149,7 +160,7 @@
 		rdfs:comment "Number of sequencer steps (1..32)" ;
 	] , [
 		a lv2:InputPort , lv2:ControlPort ;
-		lv2:index 13 ;
+		lv2:index 14 ;
 		lv2:symbol "base" ;
 		lv2:name "Base" ;
 		lv2:portProperty lv2:integer, lv2:enumeration ;
@@ -162,7 +173,7 @@
 		rdfs:comment "Unit used for sequence size. See parameter base value." ;
 	] , [
 		a lv2:InputPort , lv2:ControlPort ;
-		lv2:index 14 ;
+		lv2:index 15 ;
 		lv2:symbol "base_value" ;
 		lv2:name "Base value" ;
 		lv2:default 4.0 ;
@@ -171,7 +182,7 @@
 		rdfs:comment "Size of a full sequence. See parameter base." ;
 	] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 15 ;
+                lv2:index 16 ;
                 lv2:symbol "slot_1_effect" ;
                 lv2:name "Slot 1 effect" ;
 		lv2:portProperty lv2:integer, lv2:enumeration ;
@@ -207,7 +218,7 @@
                 lv2:maximum 26 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 16 ;
+                lv2:index 17 ;
                 lv2:symbol "slot_1_play" ;
                 lv2:name "Slot 1 play" ;
 		lv2:portProperty lv2:integer , lv2:toggled ;
@@ -216,7 +227,7 @@
                 lv2:maximum 1 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 17 ;
+                lv2:index 18 ;
                 lv2:symbol "slot_1_attack" ;
                 lv2:name "Slot 1 attack" ;
 		lv2:default 0.1 ;
@@ -224,7 +235,7 @@
                 lv2:maximum 1.0 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 18 ;
+                lv2:index 19 ;
                 lv2:symbol "slot_1_decay" ;
                 lv2:name "Slot 1 decay" ;
 		lv2:default 0.1 ;
@@ -232,7 +243,7 @@
                 lv2:maximum 1.0 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 19 ;
+                lv2:index 20 ;
                 lv2:symbol "slot_1_sustain" ;
                 lv2:name "Slot 1 sustain" ;
 		lv2:default 1.0 ;
@@ -240,7 +251,7 @@
                 lv2:maximum 1.0 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 20 ;
+                lv2:index 21 ;
                 lv2:symbol "slot_1_release" ;
                 lv2:name "Slot 1 release" ;
 		lv2:default 0.1 ;
@@ -248,7 +259,7 @@
                 lv2:maximum 1.0 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 21 ;
+                lv2:index 22 ;
                 lv2:symbol "slot_1_pan" ;
                 lv2:name "Slot 1 pan" ;
 		lv2:default 0.0 ;
@@ -256,7 +267,7 @@
                 lv2:maximum 1.0 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 22 ;
+                lv2:index 23 ;
                 lv2:symbol "slot_1_dry_wet" ;
                 lv2:name "Slot 1 dry / wet" ;
 		lv2:default 1.0 ;
@@ -264,7 +275,7 @@
                 lv2:maximum 1.0 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 23 ;
+                lv2:index 24 ;
                 lv2:symbol "slot_1_param_1" ;
                 lv2:name "Slot 1 parameter 1" ;
 		lv2:default 0.5 ;
@@ -272,7 +283,7 @@
                 lv2:maximum 1.0 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 24 ;
+                lv2:index 25 ;
                 lv2:symbol "slot_1_param_2" ;
                 lv2:name "Slot 1 parameter 2" ;
 		lv2:default 0.5 ;
@@ -280,7 +291,7 @@
                 lv2:maximum 1.0 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 25 ;
+                lv2:index 26 ;
                 lv2:symbol "slot_1_param_3" ;
                 lv2:name "Slot 1 parameter 3" ;
 		lv2:default 0.5 ;
@@ -288,7 +299,7 @@
                 lv2:maximum 1.0 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 26 ;
+                lv2:index 27 ;
                 lv2:symbol "slot_1_param_4" ;
                 lv2:name "Slot 1 parameter 4" ;
 		lv2:default 0.5 ;
@@ -296,7 +307,7 @@
                 lv2:maximum 1.0 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 27 ;
+                lv2:index 28 ;
                 lv2:symbol "slot_1_param_5" ;
                 lv2:name "Slot 1 parameter 5" ;
 		lv2:default 0.5 ;
@@ -304,7 +315,7 @@
                 lv2:maximum 1.0 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 28 ;
+                lv2:index 29 ;
                 lv2:symbol "slot_1_param_6" ;
                 lv2:name "Slot 1 parameter 6" ;
 		lv2:default 0.5 ;
@@ -312,7 +323,7 @@
                 lv2:maximum 1.0 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 29 ;
+                lv2:index 30 ;
                 lv2:symbol "slot_1_param_7" ;
                 lv2:name "Slot 1 parameter 7" ;
 		lv2:default 0.5 ;
@@ -320,7 +331,7 @@
                 lv2:maximum 1.0 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 30 ;
+                lv2:index 31 ;
                 lv2:symbol "slot_1_param_8" ;
                 lv2:name "Slot 1 parameter 8" ;
 		lv2:default 0.5 ;
@@ -328,7 +339,7 @@
                 lv2:maximum 1.0 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 31 ;
+                lv2:index 32 ;
                 lv2:symbol "slot_1_param_9" ;
                 lv2:name "Slot 1 parameter 9" ;
 		lv2:default 0.5 ;
@@ -336,7 +347,7 @@
                 lv2:maximum 1.0 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 32 ;
+                lv2:index 33 ;
                 lv2:symbol "slot_1_param_10" ;
                 lv2:name "Slot 1 parameter 10" ;
 		lv2:default 0.5 ;
@@ -344,7 +355,7 @@
                 lv2:maximum 1.0 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 33 ;
+                lv2:index 34 ;
                 lv2:symbol "slot_1_param_11" ;
                 lv2:name "Slot 1 parameter 11" ;
 		lv2:default 0.5 ;
@@ -352,7 +363,7 @@
                 lv2:maximum 1.0 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 34 ;
+                lv2:index 35 ;
                 lv2:symbol "slot_1_param_12" ;
                 lv2:name "Slot 1 parameter 12" ;
 		lv2:default 0.5 ;
@@ -360,7 +371,7 @@
                 lv2:maximum 1.0 ;
         ] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 35 ;
+	        lv2:index 36 ;
 	        lv2:symbol "slot_2_effect" ;
 	        lv2:name "Slot 2 effect" ;
 	        lv2:portProperty lv2:integer, lv2:enumeration ;
@@ -396,7 +407,7 @@
                 lv2:maximum 26 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 36 ;
+	        lv2:index 37 ;
 	        lv2:symbol "slot_2_play" ;
 	        lv2:name "Slot 2 play" ;
 	        lv2:portProperty lv2:integer , lv2:toggled ;
@@ -405,7 +416,7 @@
 	        lv2:maximum 1 ;
 	] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 37 ;
+                lv2:index 38 ;
                 lv2:symbol "slot_2_attack" ;
                 lv2:name "Slot 2 attack" ;
 		lv2:default 0.1 ;
@@ -413,7 +424,7 @@
                 lv2:maximum 1.0 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 38 ;
+                lv2:index 39 ;
                 lv2:symbol "slot_2_decay" ;
                 lv2:name "Slot 2 decay" ;
 		lv2:default 0.1 ;
@@ -421,7 +432,7 @@
                 lv2:maximum 1.0 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 39 ;
+                lv2:index 40 ;
                 lv2:symbol "slot_2_sustain" ;
                 lv2:name "Slot 2 sustain" ;
 		lv2:default 1.0 ;
@@ -429,7 +440,7 @@
                 lv2:maximum 1.0 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 40 ;
+                lv2:index 41 ;
                 lv2:symbol "slot_2_release" ;
                 lv2:name "Slot 2 release" ;
 		lv2:default 0.1 ;
@@ -437,7 +448,7 @@
                 lv2:maximum 1.0 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 41 ;
+                lv2:index 42 ;
                 lv2:symbol "slot_2_pan" ;
                 lv2:name "Slot 2 pan" ;
 		lv2:default 0.0 ;
@@ -445,7 +456,7 @@
                 lv2:maximum 1.0 ;
         ] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 42 ;
+	        lv2:index 43 ;
 	        lv2:symbol "slot_2_dry_wet" ;
 	        lv2:name "Slot 2 dry / wet" ;
 	        lv2:default 1.0 ;
@@ -453,7 +464,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 43 ;
+	        lv2:index 44 ;
 	        lv2:symbol "slot_2_param_1" ;
 	        lv2:name "Slot 2 parameter 1" ;
 	        lv2:default 0.5 ;
@@ -461,7 +472,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 44 ;
+	        lv2:index 45 ;
 	        lv2:symbol "slot_2_param_2" ;
 	        lv2:name "Slot 2 parameter 2" ;
 	        lv2:default 0.5 ;
@@ -469,7 +480,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 45 ;
+	        lv2:index 46 ;
 	        lv2:symbol "slot_2_param_3" ;
 	        lv2:name "Slot 2 parameter 3" ;
 	        lv2:default 0.5 ;
@@ -477,7 +488,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 46 ;
+	        lv2:index 47 ;
 	        lv2:symbol "slot_2_param_4" ;
 	        lv2:name "Slot 2 parameter 4" ;
 	        lv2:default 0.5 ;
@@ -485,7 +496,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 47 ;
+	        lv2:index 48 ;
 	        lv2:symbol "slot_2_param_5" ;
 	        lv2:name "Slot 2 parameter 5" ;
 	        lv2:default 0.5 ;
@@ -493,7 +504,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 48 ;
+	        lv2:index 49 ;
 	        lv2:symbol "slot_2_param_6" ;
 	        lv2:name "Slot 2 parameter 6" ;
 	        lv2:default 0.5 ;
@@ -501,7 +512,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 49 ;
+	        lv2:index 50 ;
 	        lv2:symbol "slot_2_param_7" ;
 	        lv2:name "Slot 2 parameter 7" ;
 	        lv2:default 0.5 ;
@@ -509,7 +520,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 50 ;
+	        lv2:index 51 ;
 	        lv2:symbol "slot_2_param_8" ;
 	        lv2:name "Slot 2 parameter 8" ;
 	        lv2:default 0.5 ;
@@ -517,7 +528,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 51 ;
+	        lv2:index 52 ;
 	        lv2:symbol "slot_2_param_9" ;
 	        lv2:name "Slot 2 parameter 9" ;
 	        lv2:default 0.5 ;
@@ -525,7 +536,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 52 ;
+	        lv2:index 53 ;
 	        lv2:symbol "slot_2_param_10" ;
 	        lv2:name "Slot 2 parameter 10" ;
 	        lv2:default 0.5 ;
@@ -533,7 +544,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 53 ;
+	        lv2:index 54 ;
 	        lv2:symbol "slot_2_param_11" ;
 	        lv2:name "Slot 2 parameter 11" ;
 	        lv2:default 0.5 ;
@@ -541,7 +552,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 54 ;
+	        lv2:index 55 ;
 	        lv2:symbol "slot_2_param_12" ;
 	        lv2:name "Slot 2 parameter 12" ;
 	        lv2:default 0.5 ;
@@ -549,7 +560,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 55 ;
+	        lv2:index 56 ;
 	        lv2:symbol "slot_3_effect" ;
 	        lv2:name "Slot 3 effect" ;
 	        lv2:portProperty lv2:integer, lv2:enumeration ;
@@ -585,7 +596,7 @@
                 lv2:maximum 26 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 56 ;
+	        lv2:index 57 ;
 	        lv2:symbol "slot_3_play" ;
 	        lv2:name "Slot 3 play" ;
 	        lv2:portProperty lv2:integer , lv2:toggled ;
@@ -594,7 +605,7 @@
 	        lv2:maximum 1 ;
 	] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 57 ;
+                lv2:index 58 ;
                 lv2:symbol "slot_3_attack" ;
                 lv2:name "Slot 3 attack" ;
 		lv2:default 0.1 ;
@@ -602,7 +613,7 @@
                 lv2:maximum 1.0 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 58 ;
+                lv2:index 59 ;
                 lv2:symbol "slot_3_decay" ;
                 lv2:name "Slot 3 decay" ;
 		lv2:default 0.1 ;
@@ -610,7 +621,7 @@
                 lv2:maximum 1.0 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 59 ;
+                lv2:index 60 ;
                 lv2:symbol "slot_3_sustain" ;
                 lv2:name "Slot 3 sustain" ;
 		lv2:default 1.0 ;
@@ -618,7 +629,7 @@
                 lv2:maximum 1.0 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 60 ;
+                lv2:index 61 ;
                 lv2:symbol "slot_3_release" ;
                 lv2:name "Slot 3 release" ;
 		lv2:default 0.1 ;
@@ -626,7 +637,7 @@
                 lv2:maximum 1.0 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 61 ;
+                lv2:index 62 ;
                 lv2:symbol "slot_3_pan" ;
                 lv2:name "Slot 3 pan" ;
 		lv2:default 0.0 ;
@@ -634,7 +645,7 @@
                 lv2:maximum 1.0 ;
         ] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 62 ;
+	        lv2:index 63 ;
 	        lv2:symbol "slot_3_dry_wet" ;
 	        lv2:name "Slot 3 dry / wet" ;
 	        lv2:default 1.0 ;
@@ -642,7 +653,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 63 ;
+	        lv2:index 64 ;
 	        lv2:symbol "slot_3_param_1" ;
 	        lv2:name "Slot 3 parameter 1" ;
 	        lv2:default 0.5 ;
@@ -650,7 +661,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 64 ;
+	        lv2:index 65 ;
 	        lv2:symbol "slot_3_param_2" ;
 	        lv2:name "Slot 3 parameter 2" ;
 	        lv2:default 0.5 ;
@@ -658,7 +669,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 65 ;
+	        lv2:index 66 ;
 	        lv2:symbol "slot_3_param_3" ;
 	        lv2:name "Slot 3 parameter 3" ;
 	        lv2:default 0.5 ;
@@ -666,7 +677,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 66 ;
+	        lv2:index 67 ;
 	        lv2:symbol "slot_3_param_4" ;
 	        lv2:name "Slot 3 parameter 4" ;
 	        lv2:default 0.5 ;
@@ -674,7 +685,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 67 ;
+	        lv2:index 68 ;
 	        lv2:symbol "slot_3_param_5" ;
 	        lv2:name "Slot 3 parameter 5" ;
 	        lv2:default 0.5 ;
@@ -682,7 +693,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 68 ;
+	        lv2:index 69 ;
 	        lv2:symbol "slot_3_param_6" ;
 	        lv2:name "Slot 3 parameter 6" ;
 	        lv2:default 0.5 ;
@@ -690,7 +701,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 69 ;
+	        lv2:index 70 ;
 	        lv2:symbol "slot_3_param_7" ;
 	        lv2:name "Slot 3 parameter 7" ;
 	        lv2:default 0.5 ;
@@ -698,7 +709,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 70 ;
+	        lv2:index 71 ;
 	        lv2:symbol "slot_3_param_8" ;
 	        lv2:name "Slot 3 parameter 8" ;
 	        lv2:default 0.5 ;
@@ -706,7 +717,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 71 ;
+	        lv2:index 72 ;
 	        lv2:symbol "slot_3_param_9" ;
 	        lv2:name "Slot 3 parameter 9" ;
 	        lv2:default 0.5 ;
@@ -714,7 +725,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 72 ;
+	        lv2:index 73 ;
 	        lv2:symbol "slot_3_param_10" ;
 	        lv2:name "Slot 3 parameter 10" ;
 	        lv2:default 0.5 ;
@@ -722,7 +733,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 73 ;
+	        lv2:index 74 ;
 	        lv2:symbol "slot_3_param_11" ;
 	        lv2:name "Slot 3 parameter 11" ;
 	        lv2:default 0.5 ;
@@ -730,7 +741,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 74 ;
+	        lv2:index 75 ;
 	        lv2:symbol "slot_3_param_12" ;
 	        lv2:name "Slot 3 parameter 12" ;
 	        lv2:default 0.5 ;
@@ -738,7 +749,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 75 ;
+	        lv2:index 76 ;
 	        lv2:symbol "slot_4_effect" ;
 	        lv2:name "Slot 4 effect" ;
 	        lv2:portProperty lv2:integer, lv2:enumeration ;
@@ -774,7 +785,7 @@
                 lv2:maximum 26 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 76 ;
+	        lv2:index 77 ;
 	        lv2:symbol "slot_4_play" ;
 	        lv2:name "Slot 4 play" ;
 	        lv2:portProperty lv2:integer , lv2:toggled ;
@@ -783,7 +794,7 @@
 	        lv2:maximum 1 ;
 	] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 77 ;
+                lv2:index 78 ;
                 lv2:symbol "slot_4_attack" ;
                 lv2:name "Slot 4 attack" ;
 		lv2:default 0.1 ;
@@ -791,7 +802,7 @@
                 lv2:maximum 1.0 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 78 ;
+                lv2:index 79 ;
                 lv2:symbol "slot_4_decay" ;
                 lv2:name "Slot 4 decay" ;
 		lv2:default 0.1 ;
@@ -799,7 +810,7 @@
                 lv2:maximum 1.0 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 79 ;
+                lv2:index 80 ;
                 lv2:symbol "slot_4_sustain" ;
                 lv2:name "Slot 4 sustain" ;
 		lv2:default 1.0 ;
@@ -807,7 +818,7 @@
                 lv2:maximum 1.0 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 80 ;
+                lv2:index 81 ;
                 lv2:symbol "slot_4_release" ;
                 lv2:name "Slot 4 release" ;
 		lv2:default 0.1 ;
@@ -815,7 +826,7 @@
                 lv2:maximum 1.0 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 81 ;
+                lv2:index 82 ;
                 lv2:symbol "slot_4_pan" ;
                 lv2:name "Slot 4 pan" ;
 		lv2:default 0.0 ;
@@ -823,7 +834,7 @@
                 lv2:maximum 1.0 ;
         ] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 82 ;
+	        lv2:index 83 ;
 	        lv2:symbol "slot_4_dry_wet" ;
 	        lv2:name "Slot 4 dry / wet" ;
 	        lv2:default 1.0 ;
@@ -831,7 +842,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 83 ;
+	        lv2:index 84 ;
 	        lv2:symbol "slot_4_param_1" ;
 	        lv2:name "Slot 4 parameter 1" ;
 	        lv2:default 0.5 ;
@@ -839,7 +850,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 84 ;
+	        lv2:index 85 ;
 	        lv2:symbol "slot_4_param_2" ;
 	        lv2:name "Slot 4 parameter 2" ;
 	        lv2:default 0.5 ;
@@ -847,7 +858,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 85 ;
+	        lv2:index 86 ;
 	        lv2:symbol "slot_4_param_3" ;
 	        lv2:name "Slot 4 parameter 3" ;
 	        lv2:default 0.5 ;
@@ -855,7 +866,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 86 ;
+	        lv2:index 87 ;
 	        lv2:symbol "slot_4_param_4" ;
 	        lv2:name "Slot 4 parameter 4" ;
 	        lv2:default 0.5 ;
@@ -863,7 +874,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 87 ;
+	        lv2:index 88 ;
 	        lv2:symbol "slot_4_param_5" ;
 	        lv2:name "Slot 4 parameter 5" ;
 	        lv2:default 0.5 ;
@@ -871,7 +882,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 88 ;
+	        lv2:index 89 ;
 	        lv2:symbol "slot_4_param_6" ;
 	        lv2:name "Slot 4 parameter 6" ;
 	        lv2:default 0.5 ;
@@ -879,7 +890,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 89 ;
+	        lv2:index 90 ;
 	        lv2:symbol "slot_4_param_7" ;
 	        lv2:name "Slot 4 parameter 7" ;
 	        lv2:default 0.5 ;
@@ -887,7 +898,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 90 ;
+	        lv2:index 91 ;
 	        lv2:symbol "slot_4_param_8" ;
 	        lv2:name "Slot 4 parameter 8" ;
 	        lv2:default 0.5 ;
@@ -895,7 +906,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 91 ;
+	        lv2:index 92 ;
 	        lv2:symbol "slot_4_param_9" ;
 	        lv2:name "Slot 4 parameter 9" ;
 	        lv2:default 0.5 ;
@@ -903,7 +914,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 92 ;
+	        lv2:index 93 ;
 	        lv2:symbol "slot_4_param_10" ;
 	        lv2:name "Slot 4 parameter 10" ;
 	        lv2:default 0.5 ;
@@ -911,7 +922,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 93 ;
+	        lv2:index 94 ;
 	        lv2:symbol "slot_4_param_11" ;
 	        lv2:name "Slot 4 parameter 11" ;
 	        lv2:default 0.5 ;
@@ -919,7 +930,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 94 ;
+	        lv2:index 95 ;
 	        lv2:symbol "slot_4_param_12" ;
 	        lv2:name "Slot 4 parameter 12" ;
 	        lv2:default 0.5 ;
@@ -927,7 +938,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 95 ;
+	        lv2:index 96 ;
 	        lv2:symbol "slot_5_effect" ;
 	        lv2:name "Slot 5 effect" ;
 	        lv2:portProperty lv2:integer, lv2:enumeration ;
@@ -963,7 +974,7 @@
                 lv2:maximum 26 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 96 ;
+	        lv2:index 97 ;
 	        lv2:symbol "slot_5_play" ;
 	        lv2:name "Slot 5 play" ;
 	        lv2:portProperty lv2:integer , lv2:toggled ;
@@ -972,7 +983,7 @@
 	        lv2:maximum 1 ;
 	] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 97 ;
+                lv2:index 98 ;
                 lv2:symbol "slot_5_attack" ;
                 lv2:name "Slot 5 attack" ;
 		lv2:default 0.1 ;
@@ -980,7 +991,7 @@
                 lv2:maximum 1.0 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 98 ;
+                lv2:index 99 ;
                 lv2:symbol "slot_5_decay" ;
                 lv2:name "Slot 5 decay" ;
 		lv2:default 0.1 ;
@@ -988,7 +999,7 @@
                 lv2:maximum 1.0 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 99 ;
+                lv2:index 100 ;
                 lv2:symbol "slot_5_sustain" ;
                 lv2:name "Slot 5 sustain" ;
 		lv2:default 1.0 ;
@@ -996,7 +1007,7 @@
                 lv2:maximum 1.0 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 100 ;
+                lv2:index 101 ;
                 lv2:symbol "slot_5_release" ;
                 lv2:name "Slot 5 release" ;
 		lv2:default 0.1 ;
@@ -1004,7 +1015,7 @@
                 lv2:maximum 1.0 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 101 ;
+                lv2:index 102 ;
                 lv2:symbol "slot_5_pan" ;
                 lv2:name "Slot 5 pan" ;
 		lv2:default 0.0 ;
@@ -1012,7 +1023,7 @@
                 lv2:maximum 1.0 ;
         ] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 102 ;
+	        lv2:index 103 ;
 	        lv2:symbol "slot_5_dry_wet" ;
 	        lv2:name "Slot 5 dry / wet" ;
 	        lv2:default 1.0 ;
@@ -1020,7 +1031,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 103 ;
+	        lv2:index 104 ;
 	        lv2:symbol "slot_5_param_1" ;
 	        lv2:name "Slot 5 parameter 1" ;
 	        lv2:default 0.5 ;
@@ -1028,7 +1039,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 104 ;
+	        lv2:index 105 ;
 	        lv2:symbol "slot_5_param_2" ;
 	        lv2:name "Slot 5 parameter 2" ;
 	        lv2:default 0.5 ;
@@ -1036,7 +1047,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 105 ;
+	        lv2:index 106 ;
 	        lv2:symbol "slot_5_param_3" ;
 	        lv2:name "Slot 5 parameter 3" ;
 	        lv2:default 0.5 ;
@@ -1044,7 +1055,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 106 ;
+	        lv2:index 107 ;
 	        lv2:symbol "slot_5_param_4" ;
 	        lv2:name "Slot 5 parameter 4" ;
 	        lv2:default 0.5 ;
@@ -1052,7 +1063,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 107 ;
+	        lv2:index 108 ;
 	        lv2:symbol "slot_5_param_5" ;
 	        lv2:name "Slot 5 parameter 5" ;
 	        lv2:default 0.5 ;
@@ -1060,7 +1071,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 108 ;
+	        lv2:index 109 ;
 	        lv2:symbol "slot_5_param_6" ;
 	        lv2:name "Slot 5 parameter 6" ;
 	        lv2:default 0.5 ;
@@ -1068,7 +1079,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 109 ;
+	        lv2:index 110 ;
 	        lv2:symbol "slot_5_param_7" ;
 	        lv2:name "Slot 5 parameter 7" ;
 	        lv2:default 0.5 ;
@@ -1076,7 +1087,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 110 ;
+	        lv2:index 111 ;
 	        lv2:symbol "slot_5_param_8" ;
 	        lv2:name "Slot 5 parameter 8" ;
 	        lv2:default 0.5 ;
@@ -1084,7 +1095,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 111 ;
+	        lv2:index 112 ;
 	        lv2:symbol "slot_5_param_9" ;
 	        lv2:name "Slot 5 parameter 9" ;
 	        lv2:default 0.5 ;
@@ -1092,7 +1103,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 112 ;
+	        lv2:index 113 ;
 	        lv2:symbol "slot_5_param_10" ;
 	        lv2:name "Slot 5 parameter 10" ;
 	        lv2:default 0.5 ;
@@ -1100,7 +1111,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 113 ;
+	        lv2:index 114 ;
 	        lv2:symbol "slot_5_param_11" ;
 	        lv2:name "Slot 5 parameter 11" ;
 	        lv2:default 0.5 ;
@@ -1108,7 +1119,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 114 ;
+	        lv2:index 115 ;
 	        lv2:symbol "slot_5_param_12" ;
 	        lv2:name "Slot 5 parameter 12" ;
 	        lv2:default 0.5 ;
@@ -1116,7 +1127,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 115 ;
+	        lv2:index 116 ;
 	        lv2:symbol "slot_6_effect" ;
 	        lv2:name "Slot 6 effect" ;
 	        lv2:portProperty lv2:integer, lv2:enumeration ;
@@ -1152,7 +1163,7 @@
                 lv2:maximum 26 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 116 ;
+	        lv2:index 117 ;
 	        lv2:symbol "slot_6_play" ;
 	        lv2:name "Slot 6 play" ;
 	        lv2:portProperty lv2:integer , lv2:toggled ;
@@ -1161,7 +1172,7 @@
 	        lv2:maximum 1 ;
 	] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 117 ;
+                lv2:index 118 ;
                 lv2:symbol "slot_6_attack" ;
                 lv2:name "Slot 6 attack" ;
 		lv2:default 0.1 ;
@@ -1169,7 +1180,7 @@
                 lv2:maximum 1.0 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 118 ;
+                lv2:index 119 ;
                 lv2:symbol "slot_6_decay" ;
                 lv2:name "Slot 6 decay" ;
 		lv2:default 0.1 ;
@@ -1177,7 +1188,7 @@
                 lv2:maximum 1.0 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 119 ;
+                lv2:index 120 ;
                 lv2:symbol "slot_6_sustain" ;
                 lv2:name "Slot 6 sustain" ;
 		lv2:default 1.0 ;
@@ -1185,7 +1196,7 @@
                 lv2:maximum 1.0 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 120 ;
+                lv2:index 121 ;
                 lv2:symbol "slot_6_release" ;
                 lv2:name "Slot 6 release" ;
 		lv2:default 0.1 ;
@@ -1193,7 +1204,7 @@
                 lv2:maximum 1.0 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 121 ;
+                lv2:index 122 ;
                 lv2:symbol "slot_6_pan" ;
                 lv2:name "Slot 6 pan" ;
 		lv2:default 0.0 ;
@@ -1201,7 +1212,7 @@
                 lv2:maximum 1.0 ;
         ] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 122 ;
+	        lv2:index 123 ;
 	        lv2:symbol "slot_6_dry_wet" ;
 	        lv2:name "Slot 6 dry / wet" ;
 	        lv2:default 1.0 ;
@@ -1209,7 +1220,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 123 ;
+	        lv2:index 124 ;
 	        lv2:symbol "slot_6_param_1" ;
 	        lv2:name "Slot 6 parameter 1" ;
 	        lv2:default 0.5 ;
@@ -1217,7 +1228,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 124 ;
+	        lv2:index 125 ;
 	        lv2:symbol "slot_6_param_2" ;
 	        lv2:name "Slot 6 parameter 2" ;
 	        lv2:default 0.5 ;
@@ -1225,7 +1236,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 125 ;
+	        lv2:index 126 ;
 	        lv2:symbol "slot_6_param_3" ;
 	        lv2:name "Slot 6 parameter 3" ;
 	        lv2:default 0.5 ;
@@ -1233,7 +1244,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 126 ;
+	        lv2:index 127 ;
 	        lv2:symbol "slot_6_param_4" ;
 	        lv2:name "Slot 6 parameter 4" ;
 	        lv2:default 0.5 ;
@@ -1241,7 +1252,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 127 ;
+	        lv2:index 128 ;
 	        lv2:symbol "slot_6_param_5" ;
 	        lv2:name "Slot 6 parameter 5" ;
 	        lv2:default 0.5 ;
@@ -1249,7 +1260,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 128 ;
+	        lv2:index 129 ;
 	        lv2:symbol "slot_6_param_6" ;
 	        lv2:name "Slot 6 parameter 6" ;
 	        lv2:default 0.5 ;
@@ -1257,7 +1268,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 129 ;
+	        lv2:index 130 ;
 	        lv2:symbol "slot_6_param_7" ;
 	        lv2:name "Slot 6 parameter 7" ;
 	        lv2:default 0.5 ;
@@ -1265,7 +1276,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 130 ;
+	        lv2:index 131 ;
 	        lv2:symbol "slot_6_param_8" ;
 	        lv2:name "Slot 6 parameter 8" ;
 	        lv2:default 0.5 ;
@@ -1273,7 +1284,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 131 ;
+	        lv2:index 132 ;
 	        lv2:symbol "slot_6_param_9" ;
 	        lv2:name "Slot 6 parameter 9" ;
 	        lv2:default 0.5 ;
@@ -1281,7 +1292,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 132 ;
+	        lv2:index 133 ;
 	        lv2:symbol "slot_6_param_10" ;
 	        lv2:name "Slot 6 parameter 10" ;
 	        lv2:default 0.5 ;
@@ -1289,7 +1300,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 133 ;
+	        lv2:index 134 ;
 	        lv2:symbol "slot_6_param_11" ;
 	        lv2:name "Slot 6 parameter 11" ;
 	        lv2:default 0.5 ;
@@ -1297,7 +1308,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 134 ;
+	        lv2:index 135 ;
 	        lv2:symbol "slot_6_param_12" ;
 	        lv2:name "Slot 6 parameter 12" ;
 	        lv2:default 0.5 ;
@@ -1305,7 +1316,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 135 ;
+	        lv2:index 136 ;
 	        lv2:symbol "slot_7_effect" ;
 	        lv2:name "Slot 7 effect" ;
 	        lv2:portProperty lv2:integer, lv2:enumeration ;
@@ -1341,7 +1352,7 @@
                 lv2:maximum 26 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 136 ;
+	        lv2:index 137 ;
 	        lv2:symbol "slot_7_play" ;
 	        lv2:name "Slot 7 play" ;
 	        lv2:portProperty lv2:integer , lv2:toggled ;
@@ -1350,7 +1361,7 @@
 	        lv2:maximum 1 ;
 	] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 137 ;
+                lv2:index 138 ;
                 lv2:symbol "slot_7_attack" ;
                 lv2:name "Slot 7 attack" ;
 		lv2:default 0.1 ;
@@ -1358,7 +1369,7 @@
                 lv2:maximum 1.0 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 138 ;
+                lv2:index 139 ;
                 lv2:symbol "slot_7_decay" ;
                 lv2:name "Slot 7 decay" ;
 		lv2:default 0.1 ;
@@ -1366,7 +1377,7 @@
                 lv2:maximum 1.0 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 139 ;
+                lv2:index 140 ;
                 lv2:symbol "slot_7_sustain" ;
                 lv2:name "Slot 7 sustain" ;
 		lv2:default 1.0 ;
@@ -1374,7 +1385,7 @@
                 lv2:maximum 1.0 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 140 ;
+                lv2:index 141 ;
                 lv2:symbol "slot_7_release" ;
                 lv2:name "Slot 7 release" ;
 		lv2:default 0.1 ;
@@ -1382,7 +1393,7 @@
                 lv2:maximum 1.0 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 141 ;
+                lv2:index 142 ;
                 lv2:symbol "slot_7_pan" ;
                 lv2:name "Slot 7 pan" ;
 		lv2:default 0.0 ;
@@ -1390,7 +1401,7 @@
                 lv2:maximum 1.0 ;
         ] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 142 ;
+	        lv2:index 143 ;
 	        lv2:symbol "slot_7_dry_wet" ;
 	        lv2:name "Slot 7 dry / wet" ;
 	        lv2:default 1.0 ;
@@ -1398,7 +1409,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 143 ;
+	        lv2:index 144 ;
 	        lv2:symbol "slot_7_param_1" ;
 	        lv2:name "Slot 7 parameter 1" ;
 	        lv2:default 0.5 ;
@@ -1406,7 +1417,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 144 ;
+	        lv2:index 145 ;
 	        lv2:symbol "slot_7_param_2" ;
 	        lv2:name "Slot 7 parameter 2" ;
 	        lv2:default 0.5 ;
@@ -1414,7 +1425,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 145 ;
+	        lv2:index 146 ;
 	        lv2:symbol "slot_7_param_3" ;
 	        lv2:name "Slot 7 parameter 3" ;
 	        lv2:default 0.5 ;
@@ -1422,7 +1433,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 146 ;
+	        lv2:index 147 ;
 	        lv2:symbol "slot_7_param_4" ;
 	        lv2:name "Slot 7 parameter 4" ;
 	        lv2:default 0.5 ;
@@ -1430,7 +1441,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 147 ;
+	        lv2:index 148 ;
 	        lv2:symbol "slot_7_param_5" ;
 	        lv2:name "Slot 7 parameter 5" ;
 	        lv2:default 0.5 ;
@@ -1438,7 +1449,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 148 ;
+	        lv2:index 149 ;
 	        lv2:symbol "slot_7_param_6" ;
 	        lv2:name "Slot 7 parameter 6" ;
 	        lv2:default 0.5 ;
@@ -1446,7 +1457,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 149 ;
+	        lv2:index 150 ;
 	        lv2:symbol "slot_7_param_7" ;
 	        lv2:name "Slot 7 parameter 7" ;
 	        lv2:default 0.5 ;
@@ -1454,7 +1465,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 150 ;
+	        lv2:index 151 ;
 	        lv2:symbol "slot_7_param_8" ;
 	        lv2:name "Slot 7 parameter 8" ;
 	        lv2:default 0.5 ;
@@ -1462,7 +1473,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 151 ;
+	        lv2:index 152 ;
 	        lv2:symbol "slot_7_param_9" ;
 	        lv2:name "Slot 7 parameter 9" ;
 	        lv2:default 0.5 ;
@@ -1470,7 +1481,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 152 ;
+	        lv2:index 153 ;
 	        lv2:symbol "slot_7_param_10" ;
 	        lv2:name "Slot 7 parameter 10" ;
 	        lv2:default 0.5 ;
@@ -1478,7 +1489,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 153 ;
+	        lv2:index 154 ;
 	        lv2:symbol "slot_7_param_11" ;
 	        lv2:name "Slot 7 parameter 11" ;
 	        lv2:default 0.5 ;
@@ -1486,7 +1497,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 154 ;
+	        lv2:index 155 ;
 	        lv2:symbol "slot_7_param_12" ;
 	        lv2:name "Slot 7 parameter 12" ;
 	        lv2:default 0.5 ;
@@ -1494,7 +1505,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 155 ;
+	        lv2:index 156 ;
 	        lv2:symbol "slot_8_effect" ;
 	        lv2:name "Slot 8 effect" ;
 	        lv2:portProperty lv2:integer, lv2:enumeration ;
@@ -1530,7 +1541,7 @@
                 lv2:maximum 26 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 156 ;
+	        lv2:index 157 ;
 	        lv2:symbol "slot_8_play" ;
 	        lv2:name "Slot 8 play" ;
 	        lv2:portProperty lv2:integer , lv2:toggled ;
@@ -1539,7 +1550,7 @@
 	        lv2:maximum 1 ;
 	] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 157 ;
+                lv2:index 158 ;
                 lv2:symbol "slot_8_attack" ;
                 lv2:name "Slot 8 attack" ;
 		lv2:default 0.1 ;
@@ -1547,7 +1558,7 @@
                 lv2:maximum 1.0 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 158 ;
+                lv2:index 159 ;
                 lv2:symbol "slot_8_decay" ;
                 lv2:name "Slot 8 decay" ;
 		lv2:default 0.1 ;
@@ -1555,7 +1566,7 @@
                 lv2:maximum 1.0 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 159 ;
+                lv2:index 160 ;
                 lv2:symbol "slot_8_sustain" ;
                 lv2:name "Slot 8 sustain" ;
 		lv2:default 1.0 ;
@@ -1563,7 +1574,7 @@
                 lv2:maximum 1.0 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 160 ;
+                lv2:index 161 ;
                 lv2:symbol "slot_8_release" ;
                 lv2:name "Slot 8 release" ;
 		lv2:default 0.1 ;
@@ -1571,7 +1582,7 @@
                 lv2:maximum 1.0 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 161 ;
+                lv2:index 162 ;
                 lv2:symbol "slot_8_pan" ;
                 lv2:name "Slot 8 pan" ;
 		lv2:default 0.0 ;
@@ -1579,7 +1590,7 @@
                 lv2:maximum 1.0 ;
         ] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 162 ;
+	        lv2:index 163 ;
 	        lv2:symbol "slot_8_dry_wet" ;
 	        lv2:name "Slot 8 dry / wet" ;
 	        lv2:default 1.0 ;
@@ -1587,7 +1598,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 163 ;
+	        lv2:index 164 ;
 	        lv2:symbol "slot_8_param_1" ;
 	        lv2:name "Slot 8 parameter 1" ;
 	        lv2:default 0.5 ;
@@ -1595,7 +1606,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 164 ;
+	        lv2:index 165 ;
 	        lv2:symbol "slot_8_param_2" ;
 	        lv2:name "Slot 8 parameter 2" ;
 	        lv2:default 0.5 ;
@@ -1603,7 +1614,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 165 ;
+	        lv2:index 166 ;
 	        lv2:symbol "slot_8_param_3" ;
 	        lv2:name "Slot 8 parameter 3" ;
 	        lv2:default 0.5 ;
@@ -1611,7 +1622,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 166 ;
+	        lv2:index 167 ;
 	        lv2:symbol "slot_8_param_4" ;
 	        lv2:name "Slot 8 parameter 4" ;
 	        lv2:default 0.5 ;
@@ -1619,7 +1630,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 167 ;
+	        lv2:index 168 ;
 	        lv2:symbol "slot_8_param_5" ;
 	        lv2:name "Slot 8 parameter 5" ;
 	        lv2:default 0.5 ;
@@ -1627,7 +1638,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 168 ;
+	        lv2:index 169 ;
 	        lv2:symbol "slot_8_param_6" ;
 	        lv2:name "Slot 8 parameter 6" ;
 	        lv2:default 0.5 ;
@@ -1635,7 +1646,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 169 ;
+	        lv2:index 170 ;
 	        lv2:symbol "slot_8_param_7" ;
 	        lv2:name "Slot 8 parameter 7" ;
 	        lv2:default 0.5 ;
@@ -1643,7 +1654,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 170 ;
+	        lv2:index 171 ;
 	        lv2:symbol "slot_8_param_8" ;
 	        lv2:name "Slot 8 parameter 8" ;
 	        lv2:default 0.5 ;
@@ -1651,7 +1662,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 171 ;
+	        lv2:index 172 ;
 	        lv2:symbol "slot_8_param_9" ;
 	        lv2:name "Slot 8 parameter 9" ;
 	        lv2:default 0.5 ;
@@ -1659,7 +1670,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 172 ;
+	        lv2:index 173 ;
 	        lv2:symbol "slot_8_param_10" ;
 	        lv2:name "Slot 8 parameter 10" ;
 	        lv2:default 0.5 ;
@@ -1667,7 +1678,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 173 ;
+	        lv2:index 174 ;
 	        lv2:symbol "slot_8_param_11" ;
 	        lv2:name "Slot 8 parameter 11" ;
 	        lv2:default 0.5 ;
@@ -1675,7 +1686,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 174 ;
+	        lv2:index 175 ;
 	        lv2:symbol "slot_8_param_12" ;
 	        lv2:name "Slot 8 parameter 12" ;
 	        lv2:default 0.5 ;
@@ -1683,7 +1694,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 175 ;
+	        lv2:index 176 ;
 	        lv2:symbol "slot_9_effect" ;
 	        lv2:name "Slot 9 effect" ;
 	        lv2:portProperty lv2:integer, lv2:enumeration ;
@@ -1719,7 +1730,7 @@
                 lv2:maximum 26 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 176 ;
+	        lv2:index 177 ;
 	        lv2:symbol "slot_9_play" ;
 	        lv2:name "Slot 9 play" ;
 	        lv2:portProperty lv2:integer , lv2:toggled ;
@@ -1728,7 +1739,7 @@
 	        lv2:maximum 1 ;
 	] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 177 ;
+                lv2:index 178 ;
                 lv2:symbol "slot_9_attack" ;
                 lv2:name "Slot 9 attack" ;
 		lv2:default 0.1 ;
@@ -1736,7 +1747,7 @@
                 lv2:maximum 1.0 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 178 ;
+                lv2:index 179 ;
                 lv2:symbol "slot_9_decay" ;
                 lv2:name "Slot 9 decay" ;
 		lv2:default 0.1 ;
@@ -1744,7 +1755,7 @@
                 lv2:maximum 1.0 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 179 ;
+                lv2:index 180 ;
                 lv2:symbol "slot_9_sustain" ;
                 lv2:name "Slot 9 sustain" ;
 		lv2:default 1.0 ;
@@ -1752,7 +1763,7 @@
                 lv2:maximum 1.0 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 180 ;
+                lv2:index 181 ;
                 lv2:symbol "slot_9_release" ;
                 lv2:name "Slot 9 release" ;
 		lv2:default 0.1 ;
@@ -1760,7 +1771,7 @@
                 lv2:maximum 1.0 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 181 ;
+                lv2:index 182 ;
                 lv2:symbol "slot_9_pan" ;
                 lv2:name "Slot 9 pan" ;
 		lv2:default 0.0 ;
@@ -1768,7 +1779,7 @@
                 lv2:maximum 1.0 ;
         ] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 182 ;
+	        lv2:index 183 ;
 	        lv2:symbol "slot_9_dry_wet" ;
 	        lv2:name "Slot 9 dry / wet" ;
 	        lv2:default 1.0 ;
@@ -1776,7 +1787,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 183 ;
+	        lv2:index 184 ;
 	        lv2:symbol "slot_9_param_1" ;
 	        lv2:name "Slot 9 parameter 1" ;
 	        lv2:default 0.5 ;
@@ -1784,7 +1795,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 184 ;
+	        lv2:index 185 ;
 	        lv2:symbol "slot_9_param_2" ;
 	        lv2:name "Slot 9 parameter 2" ;
 	        lv2:default 0.5 ;
@@ -1792,7 +1803,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 185 ;
+	        lv2:index 186 ;
 	        lv2:symbol "slot_9_param_3" ;
 	        lv2:name "Slot 9 parameter 3" ;
 	        lv2:default 0.5 ;
@@ -1800,7 +1811,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 186 ;
+	        lv2:index 187 ;
 	        lv2:symbol "slot_9_param_4" ;
 	        lv2:name "Slot 9 parameter 4" ;
 	        lv2:default 0.5 ;
@@ -1808,7 +1819,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 187 ;
+	        lv2:index 188 ;
 	        lv2:symbol "slot_9_param_5" ;
 	        lv2:name "Slot 9 parameter 5" ;
 	        lv2:default 0.5 ;
@@ -1816,7 +1827,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 188 ;
+	        lv2:index 189 ;
 	        lv2:symbol "slot_9_param_6" ;
 	        lv2:name "Slot 9 parameter 6" ;
 	        lv2:default 0.5 ;
@@ -1824,7 +1835,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 189 ;
+	        lv2:index 190 ;
 	        lv2:symbol "slot_9_param_7" ;
 	        lv2:name "Slot 9 parameter 7" ;
 	        lv2:default 0.5 ;
@@ -1832,7 +1843,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 190 ;
+	        lv2:index 191 ;
 	        lv2:symbol "slot_9_param_8" ;
 	        lv2:name "Slot 9 parameter 8" ;
 	        lv2:default 0.5 ;
@@ -1840,7 +1851,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 191 ;
+	        lv2:index 192 ;
 	        lv2:symbol "slot_9_param_9" ;
 	        lv2:name "Slot 9 parameter 9" ;
 	        lv2:default 0.5 ;
@@ -1848,7 +1859,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 192 ;
+	        lv2:index 193 ;
 	        lv2:symbol "slot_9_param_10" ;
 	        lv2:name "Slot 9 parameter 10" ;
 	        lv2:default 0.5 ;
@@ -1856,7 +1867,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 193 ;
+	        lv2:index 194 ;
 	        lv2:symbol "slot_9_param_11" ;
 	        lv2:name "Slot 9 parameter 11" ;
 	        lv2:default 0.5 ;
@@ -1864,7 +1875,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 194 ;
+	        lv2:index 195 ;
 	        lv2:symbol "slot_9_param_12" ;
 	        lv2:name "Slot 9 parameter 12" ;
 	        lv2:default 0.5 ;
@@ -1872,7 +1883,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 195 ;
+	        lv2:index 196 ;
 	        lv2:symbol "slot_10_effect" ;
 	        lv2:name "Slot 10 effect" ;
 	        lv2:portProperty lv2:integer, lv2:enumeration ;
@@ -1908,7 +1919,7 @@
                 lv2:maximum 26 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 196 ;
+	        lv2:index 197 ;
 	        lv2:symbol "slot_10_play" ;
 	        lv2:name "Slot 10 play" ;
 	        lv2:portProperty lv2:integer , lv2:toggled ;
@@ -1917,7 +1928,7 @@
 	        lv2:maximum 1 ;
 	] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 197 ;
+                lv2:index 198 ;
                 lv2:symbol "slot_10_attack" ;
                 lv2:name "Slot 10 attack" ;
 		lv2:default 0.1 ;
@@ -1925,7 +1936,7 @@
                 lv2:maximum 1.0 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 198 ;
+                lv2:index 199 ;
                 lv2:symbol "slot_10_decay" ;
                 lv2:name "Slot 10 decay" ;
 		lv2:default 0.1 ;
@@ -1933,7 +1944,7 @@
                 lv2:maximum 1.0 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 199 ;
+                lv2:index 200 ;
                 lv2:symbol "slot_10_sustain" ;
                 lv2:name "Slot 10 sustain" ;
 		lv2:default 1.0 ;
@@ -1941,7 +1952,7 @@
                 lv2:maximum 1.0 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 200 ;
+                lv2:index 201 ;
                 lv2:symbol "slot_10_release" ;
                 lv2:name "Slot 10 release" ;
 		lv2:default 0.1 ;
@@ -1949,7 +1960,7 @@
                 lv2:maximum 1.0 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 201 ;
+                lv2:index 202 ;
                 lv2:symbol "slot_10_pan" ;
                 lv2:name "Slot 10 pan" ;
 		lv2:default 0.0 ;
@@ -1957,7 +1968,7 @@
                 lv2:maximum 1.0 ;
         ] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 202 ;
+	        lv2:index 203 ;
 	        lv2:symbol "slot_10_dry_wet" ;
 	        lv2:name "Slot 10 dry / wet" ;
 	        lv2:default 1.0 ;
@@ -1965,7 +1976,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 203 ;
+	        lv2:index 204 ;
 	        lv2:symbol "slot_10_param_1" ;
 	        lv2:name "Slot 10 parameter 1" ;
 	        lv2:default 0.5 ;
@@ -1973,7 +1984,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 204 ;
+	        lv2:index 205 ;
 	        lv2:symbol "slot_10_param_2" ;
 	        lv2:name "Slot 10 parameter 2" ;
 	        lv2:default 0.5 ;
@@ -1981,7 +1992,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 205 ;
+	        lv2:index 206 ;
 	        lv2:symbol "slot_10_param_3" ;
 	        lv2:name "Slot 10 parameter 3" ;
 	        lv2:default 0.5 ;
@@ -1989,7 +2000,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 206 ;
+	        lv2:index 207 ;
 	        lv2:symbol "slot_10_param_4" ;
 	        lv2:name "Slot 10 parameter 4" ;
 	        lv2:default 0.5 ;
@@ -1997,7 +2008,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 207 ;
+	        lv2:index 208 ;
 	        lv2:symbol "slot_10_param_5" ;
 	        lv2:name "Slot 10 parameter 5" ;
 	        lv2:default 0.5 ;
@@ -2005,7 +2016,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 208 ;
+	        lv2:index 209 ;
 	        lv2:symbol "slot_10_param_6" ;
 	        lv2:name "Slot 10 parameter 6" ;
 	        lv2:default 0.5 ;
@@ -2013,7 +2024,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 209 ;
+	        lv2:index 210 ;
 	        lv2:symbol "slot_10_param_7" ;
 	        lv2:name "Slot 10 parameter 7" ;
 	        lv2:default 0.5 ;
@@ -2021,7 +2032,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 210 ;
+	        lv2:index 211 ;
 	        lv2:symbol "slot_10_param_8" ;
 	        lv2:name "Slot 10 parameter 8" ;
 	        lv2:default 0.5 ;
@@ -2029,7 +2040,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 211 ;
+	        lv2:index 212 ;
 	        lv2:symbol "slot_10_param_9" ;
 	        lv2:name "Slot 10 parameter 9" ;
 	        lv2:default 0.5 ;
@@ -2037,7 +2048,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 212 ;
+	        lv2:index 213 ;
 	        lv2:symbol "slot_10_param_10" ;
 	        lv2:name "Slot 10 parameter 10" ;
 	        lv2:default 0.5 ;
@@ -2045,7 +2056,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 213 ;
+	        lv2:index 214 ;
 	        lv2:symbol "slot_10_param_11" ;
 	        lv2:name "Slot 10 parameter 11" ;
 	        lv2:default 0.5 ;
@@ -2053,7 +2064,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 214 ;
+	        lv2:index 215 ;
 	        lv2:symbol "slot_10_param_12" ;
 	        lv2:name "Slot 10 parameter 12" ;
 	        lv2:default 0.5 ;
@@ -2061,7 +2072,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 215 ;
+	        lv2:index 216 ;
 	        lv2:symbol "slot_11_effect" ;
 	        lv2:name "Slot 11 effect" ;
 	        lv2:portProperty lv2:integer, lv2:enumeration ;
@@ -2097,7 +2108,7 @@
                 lv2:maximum 26 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 216 ;
+	        lv2:index 217 ;
 	        lv2:symbol "slot_11_play" ;
 	        lv2:name "Slot 11 play" ;
 	        lv2:portProperty lv2:integer , lv2:toggled ;
@@ -2106,7 +2117,7 @@
 	        lv2:maximum 1 ;
 	] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 217 ;
+                lv2:index 218 ;
                 lv2:symbol "slot_11_attack" ;
                 lv2:name "Slot 11 attack" ;
 		lv2:default 0.1 ;
@@ -2114,7 +2125,7 @@
                 lv2:maximum 1.0 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 218 ;
+                lv2:index 219 ;
                 lv2:symbol "slot_11_decay" ;
                 lv2:name "Slot 11 decay" ;
 		lv2:default 0.1 ;
@@ -2122,7 +2133,7 @@
                 lv2:maximum 1.0 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 219 ;
+                lv2:index 220 ;
                 lv2:symbol "slot_11_sustain" ;
                 lv2:name "Slot 11 sustain" ;
 		lv2:default 1.0 ;
@@ -2130,7 +2141,7 @@
                 lv2:maximum 1.0 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 220 ;
+                lv2:index 221 ;
                 lv2:symbol "slot_11_release" ;
                 lv2:name "Slot 11 release" ;
 		lv2:default 0.1 ;
@@ -2138,7 +2149,7 @@
                 lv2:maximum 1.0 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 221 ;
+                lv2:index 222 ;
                 lv2:symbol "slot_11_pan" ;
                 lv2:name "Slot 11 pan" ;
 		lv2:default 0.0 ;
@@ -2146,7 +2157,7 @@
                 lv2:maximum 1.0 ;
         ] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 222 ;
+	        lv2:index 223 ;
 	        lv2:symbol "slot_11_dry_wet" ;
 	        lv2:name "Slot 11 dry / wet" ;
 	        lv2:default 1.0 ;
@@ -2154,7 +2165,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 223 ;
+	        lv2:index 224 ;
 	        lv2:symbol "slot_11_param_1" ;
 	        lv2:name "Slot 11 parameter 1" ;
 	        lv2:default 0.5 ;
@@ -2162,7 +2173,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 224 ;
+	        lv2:index 225 ;
 	        lv2:symbol "slot_11_param_2" ;
 	        lv2:name "Slot 11 parameter 2" ;
 	        lv2:default 0.5 ;
@@ -2170,7 +2181,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 225 ;
+	        lv2:index 226 ;
 	        lv2:symbol "slot_11_param_3" ;
 	        lv2:name "Slot 11 parameter 3" ;
 	        lv2:default 0.5 ;
@@ -2178,7 +2189,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 226 ;
+	        lv2:index 227 ;
 	        lv2:symbol "slot_11_param_4" ;
 	        lv2:name "Slot 11 parameter 4" ;
 	        lv2:default 0.5 ;
@@ -2186,7 +2197,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 227 ;
+	        lv2:index 228 ;
 	        lv2:symbol "slot_11_param_5" ;
 	        lv2:name "Slot 11 parameter 5" ;
 	        lv2:default 0.5 ;
@@ -2194,7 +2205,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 228 ;
+	        lv2:index 229 ;
 	        lv2:symbol "slot_11_param_6" ;
 	        lv2:name "Slot 11 parameter 6" ;
 	        lv2:default 0.5 ;
@@ -2202,7 +2213,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 229 ;
+	        lv2:index 230 ;
 	        lv2:symbol "slot_11_param_7" ;
 	        lv2:name "Slot 11 parameter 7" ;
 	        lv2:default 0.5 ;
@@ -2210,7 +2221,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 230 ;
+	        lv2:index 231 ;
 	        lv2:symbol "slot_11_param_8" ;
 	        lv2:name "Slot 11 parameter 8" ;
 	        lv2:default 0.5 ;
@@ -2218,7 +2229,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 231 ;
+	        lv2:index 232 ;
 	        lv2:symbol "slot_11_param_9" ;
 	        lv2:name "Slot 11 parameter 9" ;
 	        lv2:default 0.5 ;
@@ -2226,7 +2237,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 232 ;
+	        lv2:index 233 ;
 	        lv2:symbol "slot_11_param_10" ;
 	        lv2:name "Slot 11 parameter 10" ;
 	        lv2:default 0.5 ;
@@ -2234,7 +2245,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 233 ;
+	        lv2:index 234 ;
 	        lv2:symbol "slot_11_param_11" ;
 	        lv2:name "Slot 11 parameter 11" ;
 	        lv2:default 0.5 ;
@@ -2242,7 +2253,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 234 ;
+	        lv2:index 235 ;
 	        lv2:symbol "slot_11_param_12" ;
 	        lv2:name "Slot 11 parameter 12" ;
 	        lv2:default 0.5 ;
@@ -2250,7 +2261,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 235 ;
+	        lv2:index 236 ;
 	        lv2:symbol "slot_12_effect" ;
 	        lv2:name "Slot 12 effect" ;
 	        lv2:portProperty lv2:integer, lv2:enumeration ;
@@ -2286,7 +2297,7 @@
                 lv2:maximum 26 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 236 ;
+	        lv2:index 237 ;
 	        lv2:symbol "slot_12_play" ;
 	        lv2:name "Slot 12 play" ;
 	        lv2:portProperty lv2:integer , lv2:toggled ;
@@ -2295,7 +2306,7 @@
 	        lv2:maximum 1 ;
 	] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 237 ;
+                lv2:index 238 ;
                 lv2:symbol "slot_12_attack" ;
                 lv2:name "Slot 12 attack" ;
 		lv2:default 0.1 ;
@@ -2303,7 +2314,7 @@
                 lv2:maximum 1.0 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 238 ;
+                lv2:index 239 ;
                 lv2:symbol "slot_12_decay" ;
                 lv2:name "Slot 12 decay" ;
 		lv2:default 0.1 ;
@@ -2311,7 +2322,7 @@
                 lv2:maximum 1.0 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 239 ;
+                lv2:index 240 ;
                 lv2:symbol "slot_12_sustain" ;
                 lv2:name "Slot 12 sustain" ;
 		lv2:default 1.0 ;
@@ -2319,7 +2330,7 @@
                 lv2:maximum 1.0 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 240 ;
+                lv2:index 241 ;
                 lv2:symbol "slot_12_release" ;
                 lv2:name "Slot 12 release" ;
 		lv2:default 0.1 ;
@@ -2327,7 +2338,7 @@
                 lv2:maximum 1.0 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
-                lv2:index 241 ;
+                lv2:index 242 ;
                 lv2:symbol "slot_12_pan" ;
                 lv2:name "Slot 12 pan" ;
 		lv2:default 0.0 ;
@@ -2335,7 +2346,7 @@
                 lv2:maximum 1.0 ;
         ] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 242 ;
+	        lv2:index 243 ;
 	        lv2:symbol "slot_12_dry_wet" ;
 	        lv2:name "Slot 12 dry / wet" ;
 	        lv2:default 1.0 ;
@@ -2343,7 +2354,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 243 ;
+	        lv2:index 244 ;
 	        lv2:symbol "slot_12_param_1" ;
 	        lv2:name "Slot 12 parameter 1" ;
 	        lv2:default 0.5 ;
@@ -2351,7 +2362,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 244 ;
+	        lv2:index 245 ;
 	        lv2:symbol "slot_12_param_2" ;
 	        lv2:name "Slot 12 parameter 2" ;
 	        lv2:default 0.5 ;
@@ -2359,7 +2370,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 245 ;
+	        lv2:index 246 ;
 	        lv2:symbol "slot_12_param_3" ;
 	        lv2:name "Slot 12 parameter 3" ;
 	        lv2:default 0.5 ;
@@ -2367,7 +2378,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 246 ;
+	        lv2:index 247 ;
 	        lv2:symbol "slot_12_param_4" ;
 	        lv2:name "Slot 12 parameter 4" ;
 	        lv2:default 0.5 ;
@@ -2375,7 +2386,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 247 ;
+	        lv2:index 248 ;
 	        lv2:symbol "slot_12_param_5" ;
 	        lv2:name "Slot 12 parameter 5" ;
 	        lv2:default 0.5 ;
@@ -2383,7 +2394,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 248 ;
+	        lv2:index 249 ;
 	        lv2:symbol "slot_12_param_6" ;
 	        lv2:name "Slot 12 parameter 6" ;
 	        lv2:default 0.5 ;
@@ -2391,7 +2402,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 249 ;
+	        lv2:index 250 ;
 	        lv2:symbol "slot_12_param_7" ;
 	        lv2:name "Slot 12 parameter 7" ;
 	        lv2:default 0.5 ;
@@ -2399,7 +2410,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 250 ;
+	        lv2:index 251 ;
 	        lv2:symbol "slot_12_param_8" ;
 	        lv2:name "Slot 12 parameter 8" ;
 	        lv2:default 0.5 ;
@@ -2407,7 +2418,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 251 ;
+	        lv2:index 252 ;
 	        lv2:symbol "slot_12_param_9" ;
 	        lv2:name "Slot 12 parameter 9" ;
 	        lv2:default 0.5 ;
@@ -2415,7 +2426,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 252 ;
+	        lv2:index 253 ;
 	        lv2:symbol "slot_12_param_10" ;
 	        lv2:name "Slot 12 parameter 10" ;
 	        lv2:default 0.5 ;
@@ -2423,7 +2434,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 253 ;
+	        lv2:index 254 ;
 	        lv2:symbol "slot_12_param_11" ;
 	        lv2:name "Slot 12 parameter 11" ;
 	        lv2:default 0.5 ;
@@ -2431,7 +2442,7 @@
 	        lv2:maximum 1.0 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
-	        lv2:index 254 ;
+	        lv2:index 255 ;
 	        lv2:symbol "slot_12_param_12" ;
 	        lv2:name "Slot 12 parameter 12" ;
 	        lv2:default 0.5 ;

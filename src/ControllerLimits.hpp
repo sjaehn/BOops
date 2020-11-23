@@ -27,6 +27,7 @@
 const Limit controllerLimits[NR_CONTROLLERS] =
 {
 	{0, 2, 1},		// PLAY
+	{0, 1, 1},		// SOURCE
 	{0, 2, 1},		// PLAY_MODE
 	{0, 2, 1},		// ON_MIDI
 	{1.0, 300.0, 0.0},	// AUTOPLAY_BPM

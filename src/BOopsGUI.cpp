@@ -55,7 +55,7 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 	Window (1240, 608, "B.Oops", parentWindow, true),
 	controller (NULL), write_function (NULL),
 	pluginPath (bundle_path ? std::string (bundle_path) : std::string ("")),
-	sz (1.0), bgImageSurface (nullptr),
+	sz (1.0), bgImageSurface (nullptr), samplePath ("."),
 	urids (), forge (),
 	pattern (),
 	clipBoard (),
@@ -71,7 +71,11 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 	playButton (8, 8, 24, 24, "widget", "Play"),
 	bypassButton (38, 8, 24, 24, "widget", "Bypass"),
 	stopButton (68, 8, 24, 24, "widget", "Stop"),
-	playModeListBox (300, 10, 220, 20, 220, 80, "menu", BItems::ItemList ({{0, "Autoplay"}, {2, "Host-controlled"} , {1, "MIDI-controlleds"}})),
+	sourceListBox (120, 10, 80, 20, 80, 60, "menu", BItems::ItemList ({{0, "Stream"}, {1, "Sample"}})),
+	loadButton (220, 10, 20, 20, "menu/button"),
+	sampleNameLabel (240, 10, 140, 20, "boxlabel", ""),
+	fileChooser (nullptr),
+	playModeListBox (400, 10, 120, 20, 120, 80, "menu", BItems::ItemList ({{0, "Autoplay"}, {2, "Host-controlled"} , {1, "MIDI-controlled"}})),
 	onMidiListBox (540, 10, 120, 20, 120, 80, "menu", BItems::ItemList ({{0, "Restart"}, {2, "Restart & sync"}, {1, "Continue"}})),
 	transportGateButton (680, 10, 60, 20, "widget", 48, 59),
 	autoplayBpmLabel (540, 0, 80, 8, "smlabel", "bpm"),
@@ -159,6 +163,7 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 
 	// Link controllerWidgets
 	controllerWidgets[PLAY] = (BWidgets::ValueWidget*) &playButton;
+	controllerWidgets[SOURCE] = (BWidgets::ValueWidget*) &sourceListBox;
 	controllerWidgets[PLAY_MODE] = (BWidgets::ValueWidget*) &playModeListBox;
 	controllerWidgets[ON_MIDI] = (BWidgets::ValueWidget*) &onMidiListBox;
 	controllerWidgets[AUTOPLAY_BPM] = (BWidgets::ValueWidget*) &autoplayBpmSlider;
@@ -192,6 +197,8 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 	transportGateButton.setCallbackFunction (BEvents::BUTTON_CLICK_EVENT, transportGateButtonClickedCallback);
 	transportGateOkButton.setCallbackFunction (BEvents::BUTTON_CLICK_EVENT, transportGateButtonClickedCallback);
 	transportGateCancelButton.setCallbackFunction (BEvents::BUTTON_CLICK_EVENT, transportGateButtonClickedCallback);
+	loadButton.setCallbackFunction(BEvents::BUTTON_PRESS_EVENT, loadButtonClickedCallback);
+	sampleNameLabel.setCallbackFunction(BEvents::BUTTON_PRESS_EVENT, loadButtonClickedCallback);
 
 	for (Slot& s : slots)
 	{
@@ -208,6 +215,8 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 	for (int i = 0; i < MAXEDIT - EDIT_RESET; ++i) edit2Buttons[i].setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, edit2ChangedCallback);
 
 	// Configure widgets
+	loadButton.hide();
+	sampleNameLabel.hide();
 	onMidiListBox.hide();
 	transportGateButton.hide ();
 	transportGatePiano.setKeysToggleable (true);
@@ -252,6 +261,9 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 	settingsContainer.add (playButton);
 	settingsContainer.add (bypassButton);
 	settingsContainer.add (stopButton);
+	settingsContainer.add (sourceListBox);
+	settingsContainer.add (loadButton);
+	settingsContainer.add (sampleNameLabel);
 	settingsContainer.add (playModeListBox);
 	settingsContainer.add (onMidiListBox);
 	settingsContainer.add (transportGateButton);
@@ -353,6 +365,8 @@ BOopsGUI::~BOopsGUI ()
 	{
 		if (s.optionWidget) delete (s.optionWidget);
 	}
+
+	if (fileChooser) delete fileChooser;
 
 	sendUiOff ();
 }
@@ -597,6 +611,18 @@ void BOopsGUI::port_event(uint32_t port, uint32_t buffer_size,
 				}
 			}
 
+			// Path notification
+			else if (obj->body.otype == urids.bOops_samplePathEvent)
+			{
+				const LV2_Atom* data = NULL;
+				lv2_atom_object_get(obj, urids.bOops_samplePath, &data, 0);
+				if (data && (data->type == urids.atom_Path))
+				{
+					sampleNameLabel.setText ((const char*)LV2_ATOM_BODY_CONST(data));
+					// TODO Split to path and file name
+				}
+			}
+
 			// Monitor notification
 			else if (obj->body.otype == urids.bOops_waveformEvent)
 			{
@@ -666,10 +692,16 @@ void BOopsGUI::resize ()
 	RESIZE (playButton, 8, 8, 24, 24, sz);
 	RESIZE (bypassButton, 38, 8, 24, 24, sz);
 	RESIZE (stopButton, 68, 8, 24, 24, sz);
-	RESIZE (playModeListBox, 300, 10, 220, 20, sz);
-	playModeListBox.resizeListBox(BUtilities::Point (220 * sz, 80 * sz));
+	RESIZE (sourceListBox, 120, 10, 80, 20, sz);
+	sourceListBox.resizeListBox (BUtilities::Point (80 * sz, 60 * sz));
+	sourceListBox.resizeListBoxItems (BUtilities::Point (80 * sz, 20 * sz));
+	RESIZE (loadButton, 220, 10, 20, 20, sz);
+	RESIZE (sampleNameLabel, 240, 10, 140, 20, sz);
+	if (fileChooser) RESIZE ((*fileChooser), 200, 140, 300, 400, sz);
+	RESIZE (playModeListBox, 400, 10, 120, 20, sz);
+	playModeListBox.resizeListBox(BUtilities::Point (120 * sz, 80 * sz));
 	playModeListBox.moveListBox(BUtilities::Point (0, 20 * sz));
-	playModeListBox.resizeListBoxItems(BUtilities::Point (220 * sz, 20 * sz));
+	playModeListBox.resizeListBoxItems(BUtilities::Point (120 * sz, 20 * sz));
 	RESIZE (onMidiListBox, 540, 10, 120, 20, sz);
 	onMidiListBox.resizeListBox(BUtilities::Point (120 * sz, 80 * sz));
 	onMidiListBox.moveListBox(BUtilities::Point (0, 20 * sz));
@@ -762,6 +794,10 @@ void BOopsGUI::applyTheme (BStyles::Theme& theme)
 	playButton.applyTheme (theme);
 	bypassButton.applyTheme (theme);
 	stopButton.applyTheme (theme);
+	sourceListBox.applyTheme (theme);
+	loadButton.applyTheme (theme);
+	sampleNameLabel.applyTheme (theme);
+	if (fileChooser) fileChooser->applyTheme (theme);
 	playModeListBox.applyTheme (theme);
 	onMidiListBox.applyTheme (theme);
 	transportGateButton.applyTheme (theme);
@@ -855,6 +891,31 @@ void BOopsGUI::onKeyReleased (BEvents::KeyEvent* event)
 	{
 		monitor.setScrollable (false);
 	}
+}
+
+void BOopsGUI::onCloseRequest (BEvents::WidgetEvent* event)
+{
+	if (!event) return;
+	Widget* requestWidget = event->getRequestWidget ();
+	if (!requestWidget) return;
+
+	if (requestWidget == fileChooser)
+	{
+		if (fileChooser->getValue() == 1.0)
+		{
+			sampleNameLabel.setText (fileChooser->getFileName());
+			samplePath = fileChooser->getPath();
+			sendSamplePath ();
+		}
+
+		// Close fileChooser
+		mContainer.release (fileChooser);	// TODO Check why this is required
+		delete fileChooser;
+		fileChooser = nullptr;
+		return;
+	}
+
+	Window::onCloseRequest (event);
 }
 
 void BOopsGUI::sendUiOn ()
@@ -965,6 +1026,20 @@ void BOopsGUI::sendTransportGateKeys()
 	lv2_atom_forge_vector(&forge, sizeof(int), urids.atom_Int, keys.size(), (void*) keys.data());
 	lv2_atom_forge_pop(&forge, &frame);
 	write_function (controller, CONTROL, lv2_atom_total_size(msg), urids.atom_eventTransfer, msg);
+}
+
+void BOopsGUI::sendSamplePath ()
+{
+	std::string path = samplePath + "/" + sampleNameLabel.getText();
+	uint8_t obj_buf[1024];
+	lv2_atom_forge_set_buffer(&forge, obj_buf, sizeof(obj_buf));
+
+	LV2_Atom_Forge_Frame frame;
+	LV2_Atom* msg = (LV2_Atom*)lv2_atom_forge_object(&forge, &frame, 0, urids.bOops_samplePathEvent);
+	lv2_atom_forge_key(&forge, urids.bOops_samplePath);
+	lv2_atom_forge_path (&forge, path.c_str(), path.size() + 1);
+	lv2_atom_forge_pop(&forge, &frame);
+	write_function(controller, CONTROL, lv2_atom_total_size(msg), urids.atom_eventTransfer, msg);
 }
 
 int BOopsGUI::getSlotsSize () const
@@ -1382,6 +1457,18 @@ void BOopsGUI::valueChangedCallback(BEvents::Event* event)
 		switch (controllerNr)
 		{
 			case PLAY:		ui->bypassButton.setValue (value == 2.0 ? 1 : 0);
+						break;
+
+			case SOURCE:		if (value == SOURCE_STREAM)
+						{
+							ui->loadButton.hide();
+							ui->sampleNameLabel.hide();
+						}
+						else
+						{
+							ui->loadButton.show();
+							ui->sampleNameLabel.show();
+						}
 						break;
 
 			case PLAY_MODE:		if  (value == AUTOPLAY)
@@ -2184,6 +2271,31 @@ void BOopsGUI::transportGateButtonClickedCallback (BEvents::Event* event)
 
 	if (ui->transportGateContainer.isVisible()) ui->transportGateContainer.hide();
 	else ui->transportGateContainer.show();
+}
+
+void BOopsGUI::loadButtonClickedCallback (BEvents::Event* event)
+{
+	if (!event) return;
+	BWidgets::Widget* widget = event->getWidget ();
+	if (!widget) return;
+	BOopsGUI* ui = (BOopsGUI*) widget->getMainWindow();
+	if (!ui) return;
+
+	if (ui->fileChooser) delete ui->fileChooser;
+	ui->fileChooser = new BWidgets::FileChooser
+	(
+		200, 140, 300, 400, "filechooser", ui->samplePath,
+		std::vector<BWidgets::FileFilter>
+		{
+			BWidgets::FileFilter {"All files", std::regex (".*")},
+			BWidgets::FileFilter {"Audio files", std::regex (".*\\.((wav)|(wave)|(aif)|(aiff)|(au)|(sd2)|(flac)|(caf)|(ogg))$", std::regex_constants::icase)}
+		},
+		"Open");
+	if (ui->fileChooser)
+	{
+		RESIZE ((*ui->fileChooser), 200, 120, 300, 400, ui->sz);
+		ui->mContainer.add (*ui->fileChooser);
+	}
 }
 
 void BOopsGUI::helpButtonClickedCallback (BEvents::Event* event)

@@ -85,7 +85,13 @@ There are three transport buttons on the top left of the user interface. Play, b
 
 #### Global settings
 
-The global settings on the top of the user interface contain options to control the transport and the size of the pattern.
+The global settings on the top of the user interface contain options to control the source, the transport and the size of
+the pattern.
+
+
+##### Source
+
+You can choose between a (stereo) audio input stream or a (stereo) sample as the source for B.Oops.
 
 
 ##### Mode
@@ -345,6 +351,7 @@ not. Select at least two slots and set the likelihood ratio for each slot.
 
 * Factory presets
 * Additional reach parameter (in FxWah, FxScratch, and FxChop)
+* Load sample option
 
 
 ## TODO
@@ -353,7 +360,8 @@ not. Select at least two slots and set the likelihood ratio for each slot.
 * Implement effects
   * Pitch (?)
   * Tape start (?)
-* Optionally load a sample (?)
+* MP3 support
+* Advanced sample options (begin, end, ...)
 * Latency ? (Pitch, Tape start)
 * Reduce CPU load
 

@@ -27,11 +27,15 @@
 #include <string>
 #include <stdexcept>
 
-#ifndef SF_FORMAT_MP3
+/*#ifndef SF_FORMAT_MP3
+#ifndef MINIMP3_IMPLEMENTATION
 #define MINIMP3_IMPLEMENTATION
+#endif
+#ifndef MINIMP3_FLOAT_OUTPUT
 #define MINIMP3_FLOAT_OUTPUT
+#endif
 #include "minimp3_ex.h"
-#endif /* SF_FORMAT_MP3 */
+#endif*/ /* SF_FORMAT_MP3 */
 
 
 struct Sample
@@ -62,7 +66,7 @@ struct Sample
 
 
                 // Check for known non-sndfiles
-#ifdef MINIMP3_IMPLEMENTATION
+/*#ifdef MINIMP3_IMPLEMENTATION
                 if (!strcmp (ext, ".mp3"))
                 {
                         mp3dec_t mp3dec;
@@ -80,7 +84,7 @@ struct Sample
                 }
 
                 else
-#endif /* MINIMP3_IMPLEMENTATION */
+#endif*/ /* MINIMP3_IMPLEMENTATION */
 
         	{
                         SNDFILE* sndfile = sf_open (samplepath, SFM_READ, &info);

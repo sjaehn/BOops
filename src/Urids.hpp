@@ -38,6 +38,7 @@ struct BOopsURIDs
 	LV2_URID atom_eventTransfer;
 	LV2_URID atom_Vector;
 	LV2_URID atom_String;
+	LV2_URID atom_Path;
 	LV2_URID midi_Event;
 	LV2_URID time_Position;
 	LV2_URID time_barBeat;
@@ -72,6 +73,10 @@ struct BOopsURIDs
 	LV2_URID bOops_waveformData;
 	LV2_URID bOops_transportGateKeyEvent;
 	LV2_URID bOops_transportGateKeys;
+	LV2_URID bOops_samplePathEvent;
+	LV2_URID bOops_samplePath;
+	LV2_URID bOops_installSample;
+	LV2_URID bOops_sampleFreeEvent;
 };
 
 #endif /* URIDS_HPP_ */

@@ -35,6 +35,7 @@ void getURIs (LV2_URID_Map* m, BOopsURIDs* uris)
 	uris->atom_eventTransfer = m->map(m->handle, LV2_ATOM__eventTransfer);
 	uris->atom_Vector = m->map(m->handle, LV2_ATOM__Vector);
 	uris->atom_String = m->map(m->handle, LV2_ATOM__String);
+	uris->atom_Path = m->map(m->handle, LV2_ATOM__Path);
 	uris->midi_Event = m->map(m->handle, LV2_MIDI__MidiEvent);
 	uris->time_Position = m->map(m->handle, LV2_TIME__Position);
 	uris->time_barBeat = m->map(m->handle, LV2_TIME__barBeat);
@@ -69,6 +70,10 @@ void getURIs (LV2_URID_Map* m, BOopsURIDs* uris)
 	uris->bOops_waveformData = m->map(m->handle, BOOPS_URI "#notify_waveformData");
 	uris->bOops_transportGateKeyEvent = m->map(m->handle, BOOPS_URI "#transportGateKeyEvent");
 	uris->bOops_transportGateKeys = m->map(m->handle, BOOPS_URI "#transportGateKeys");
+	uris->bOops_samplePathEvent = m->map(m->handle, BOOPS_URI "#samplePathEvent");
+	uris->bOops_samplePath = m->map(m->handle, BOOPS_URI "#samplePath");
+	uris->bOops_installSample = m->map(m->handle, BOOPS_URI "#installSample");
+	uris->bOops_sampleFreeEvent = m->map(m->handle, BOOPS_URI "#sampleFreeEvent");
 }
 
 #endif /* GETURIS_HPP_ */
