@@ -27,6 +27,15 @@
 #include "BUtilities/stof.hpp"
 #include "getURIs.hpp"
 
+
+
+#ifndef SF_FORMAT_MP3
+#ifndef MINIMP3_IMPLEMENTATION
+#define MINIMP3_IMPLEMENTATION
+#endif
+#endif
+#include "Sample.hpp"
+
 #ifndef LIMIT
 #define LIMIT(g , min, max) ((g) > (max) ? (max) : ((g) < (min) ? (min) : (g)))
 #endif /* LIMIT */

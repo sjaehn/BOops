@@ -2288,7 +2288,7 @@ void BOopsGUI::loadButtonClickedCallback (BEvents::Event* event)
 		std::vector<BWidgets::FileFilter>
 		{
 			BWidgets::FileFilter {"All files", std::regex (".*")},
-			BWidgets::FileFilter {"Audio files", std::regex (".*\\.((wav)|(wave)|(aif)|(aiff)|(au)|(sd2)|(flac)|(caf)|(ogg))$", std::regex_constants::icase)}
+			BWidgets::FileFilter {"Audio files", std::regex (".*\\.((wav)|(wave)|(aif)|(aiff)|(au)|(sd2)|(flac)|(caf)|(ogg)|(mp3))$", std::regex_constants::icase)}
 		},
 		"Open");
 	if (ui->fileChooser)

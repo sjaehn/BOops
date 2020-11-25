@@ -37,7 +37,8 @@
 #include "Slot.hpp"
 #include "Message.hpp"
 #include "StaticArrayList.hpp"
-#include "Sample.hpp"
+
+class Sample; 	// Forward declaration
 
 struct Transport
 {
