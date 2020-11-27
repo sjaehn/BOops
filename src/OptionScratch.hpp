@@ -91,7 +91,6 @@ public:
 
 		add (rangeLabel);
 		add (reachLabel);
-		add (shapeWidget);
 		add (toolboxIcon);
 		add (gridShowButton);
 		add (gridSnapButton);
@@ -101,6 +100,7 @@ public:
 		add (*options[0]);
 		add (*options[1]);
 		add (*options[2]);
+		add (shapeWidget);
 	}
 
 	OptionScratch (const OptionScratch& that) :
@@ -111,13 +111,13 @@ public:
 	{
 		add (rangeLabel);
 		add (reachLabel);
-		add (shapeWidget);
 		add (toolboxIcon);
 		for (HaloToggleButton& s : shapeToolButtons) add (s);
 		for (HaloButton& e : editToolButtons) add (e);
 		for (HaloButton& h : historyToolButtons) add (h);
 		add (gridShowButton);
 		add (gridSnapButton);
+		add (shapeWidget);
 	}
 
 	OptionScratch& operator= (const OptionScratch& that)
@@ -145,13 +145,13 @@ public:
 
 		add (rangeLabel);
 		add (reachLabel);
-		add (shapeWidget);
 		add (toolboxIcon);
 		for (HaloToggleButton& s : shapeToolButtons) add (s);
 		for (HaloButton& e : editToolButtons) add (e);
 		for (HaloButton& h : historyToolButtons) add (h);
 		add (gridShowButton);
 		add (gridSnapButton);
+		add (shapeWidget);
 
 		return *this;
 	}

@@ -106,7 +106,6 @@ public:
 		add (orderLabel);
 		add (widthLabel);
 		add (reachLabel);
-		add (shapeWidget);
 		add (toolboxIcon);
 		add (gridShowButton);
 		add (gridSnapButton);
@@ -114,6 +113,7 @@ public:
 		for (HaloButton& e : editToolButtons) add (e);
 		for (HaloButton& h : historyToolButtons) add (h);
 		for (int i = 0; i < 8; ++i) add (*options[i]);
+		add (shapeWidget);
 	}
 
 	OptionWah (const OptionWah& that) :
@@ -129,13 +129,13 @@ public:
 		add (orderLabel);
 		add (widthLabel);
 		add (reachLabel);
-		add (shapeWidget);
 		add (toolboxIcon);
 		for (HaloToggleButton& s : shapeToolButtons) add (s);
 		for (HaloButton& e : editToolButtons) add (e);
 		for (HaloButton& h : historyToolButtons) add (h);
 		add (gridShowButton);
 		add (gridSnapButton);
+		add (shapeWidget);
 	}
 
 	OptionWah& operator= (const OptionWah& that)
@@ -172,13 +172,13 @@ public:
 		add (orderLabel);
 		add (widthLabel);
 		add (reachLabel);
-		add (shapeWidget);
 		add (toolboxIcon);
 		for (HaloToggleButton& s : shapeToolButtons) add (s);
 		for (HaloButton& e : editToolButtons) add (e);
 		for (HaloButton& h : historyToolButtons) add (h);
 		add (gridShowButton);
 		add (gridSnapButton);
+		add (shapeWidget);
 
 		return *this;
 	}
