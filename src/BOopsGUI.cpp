@@ -55,7 +55,8 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 	Window (1240, 608, "B.Oops", parentWindow, true),
 	controller (NULL), write_function (NULL),
 	pluginPath (bundle_path ? std::string (bundle_path) : std::string ("")),
-	sz (1.0), bgImageSurface (nullptr), samplePath ("."),
+	sz (1.0), bgImageSurface (nullptr),
+	samplePath ("."), sampleStart (0), sampleEnd (0),
 	urids (), forge (),
 	pattern (),
 	clipBoard (),
@@ -614,13 +615,22 @@ void BOopsGUI::port_event(uint32_t port, uint32_t buffer_size,
 			// Path notification
 			else if (obj->body.otype == urids.bOops_samplePathEvent)
 			{
-				const LV2_Atom* data = NULL;
-				lv2_atom_object_get(obj, urids.bOops_samplePath, &data, 0);
-				if (data && (data->type == urids.atom_Path))
+				const LV2_Atom* oPath = NULL, *oStart = NULL, *oEnd = NULL;
+				lv2_atom_object_get
+				(
+					obj,
+					urids.bOops_samplePath, &oPath,
+					urids.bOops_sampleStart, &oStart,
+					urids.bOops_sampleEnd, &oEnd,
+					0
+				);
+				if (oPath && (oPath->type == urids.atom_Path))
 				{
-					sampleNameLabel.setText ((const char*)LV2_ATOM_BODY_CONST(data));
+					sampleNameLabel.setText ((const char*)LV2_ATOM_BODY_CONST(oPath));
 					// TODO Split to path and file name
 				}
+
+				// TODO oStart, oEnd
 			}
 
 			// Monitor notification
@@ -697,7 +707,7 @@ void BOopsGUI::resize ()
 	sourceListBox.resizeListBoxItems (BUtilities::Point (80 * sz, 20 * sz));
 	RESIZE (loadButton, 220, 10, 20, 20, sz);
 	RESIZE (sampleNameLabel, 240, 10, 140, 20, sz);
-	if (fileChooser) RESIZE ((*fileChooser), 200, 140, 300, 400, sz);
+	if (fileChooser) RESIZE ((*fileChooser), 200, 140, 640, 400, sz);
 	RESIZE (playModeListBox, 400, 10, 120, 20, sz);
 	playModeListBox.resizeListBox(BUtilities::Point (120 * sz, 80 * sz));
 	playModeListBox.moveListBox(BUtilities::Point (0, 20 * sz));
@@ -905,6 +915,8 @@ void BOopsGUI::onCloseRequest (BEvents::WidgetEvent* event)
 		{
 			sampleNameLabel.setText (fileChooser->getFileName());
 			samplePath = fileChooser->getPath();
+			sampleStart = fileChooser->getStart();
+			sampleEnd = fileChooser->getEnd();
 			sendSamplePath ();
 		}
 
@@ -1038,6 +1050,10 @@ void BOopsGUI::sendSamplePath ()
 	LV2_Atom* msg = (LV2_Atom*)lv2_atom_forge_object(&forge, &frame, 0, urids.bOops_samplePathEvent);
 	lv2_atom_forge_key(&forge, urids.bOops_samplePath);
 	lv2_atom_forge_path (&forge, path.c_str(), path.size() + 1);
+	lv2_atom_forge_key(&forge, urids.bOops_sampleStart);
+	lv2_atom_forge_long(&forge, sampleStart);
+	lv2_atom_forge_key(&forge, urids.bOops_sampleEnd);
+	lv2_atom_forge_long(&forge, sampleEnd);
 	lv2_atom_forge_pop(&forge, &frame);
 	write_function(controller, CONTROL, lv2_atom_total_size(msg), urids.atom_eventTransfer, msg);
 }
@@ -2282,9 +2298,9 @@ void BOopsGUI::loadButtonClickedCallback (BEvents::Event* event)
 	if (!ui) return;
 
 	if (ui->fileChooser) delete ui->fileChooser;
-	ui->fileChooser = new BWidgets::FileChooser
+	ui->fileChooser = new SampleChooser
 	(
-		200, 140, 300, 400, "filechooser", ui->samplePath,
+		200, 140, 640, 400, "filechooser", ui->samplePath,
 		std::vector<BWidgets::FileFilter>
 		{
 			BWidgets::FileFilter {"All files", std::regex (".*")},
@@ -2293,7 +2309,8 @@ void BOopsGUI::loadButtonClickedCallback (BEvents::Event* event)
 		"Open");
 	if (ui->fileChooser)
 	{
-		RESIZE ((*ui->fileChooser), 200, 140, 300, 400, ui->sz);
+		RESIZE ((*ui->fileChooser), 200, 140, 640, 400, ui->sz);
+		ui->fileChooser->applyTheme (ui->theme);
 		ui->fileChooser->selectFilter ("Audio files");
 		ui->mContainer.add (*ui->fileChooser);
 	}

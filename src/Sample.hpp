@@ -24,6 +24,7 @@
 #include "sndfile.h"
 #include <cstdlib>
 #include <cstring>
+#include <cmath>
 #include <string>
 #include <stdexcept>
 
@@ -37,13 +38,18 @@
 
 struct Sample
 {
-        SF_INFO  info;      // Info about sample from sndfile
-        float*   data;      // Sample data in float
-        char*    path;      // Path of file
+        SF_INFO         info;      // Info about sample from sndfile
+        float*          data;      // Sample data in float
+        char*           path;      // Path of file
+        bool            loop;      // Loop playing mode
+        sf_count_t      start;     // Start frame
+        sf_count_t      end;       // End frame
 
         Sample () : info {0, 0, 0, 0, 0, 0}, data (nullptr), path (nullptr) {}
 
-        Sample (const char* samplepath) : info {0, 0, 0, 0, 0, 0}, data (nullptr), path (nullptr)
+        Sample (const char* samplepath) :
+                info {0, 0, 0, 0, 0, 0}, data (nullptr), path (nullptr),
+                loop (false), start (0), end (0)
         {
                 if (!samplepath) return;
 
@@ -100,9 +106,13 @@ struct Sample
                         sf_read_float (sndfile, data, info.frames * info.channels);
                         sf_close (sndfile);
                 }
+
+                end = info.frames;
         }
 
-        Sample (const Sample& that) : info (that.info), data (nullptr), path (nullptr)
+        Sample (const Sample& that) :
+                info (that.info), data (nullptr), path (nullptr),
+                loop (that.loop), start (that.start), end (that.end)
         {
                 if (that.data)
                 {
@@ -134,6 +144,9 @@ struct Sample
                 info = that.info;
                 data = nullptr;
                 path = nullptr;
+                loop = that.loop;
+                start = that.start;
+                end = that.end;
 
                 if (that.data)
                 {
@@ -164,16 +177,18 @@ struct Sample
         		else return data[frame * info.channels + channel];
         	}
 
-        	// Linear rendering (TODO) if frame rates differ
-        	double f = (frame * info.samplerate) / rate;
+        	// Linear rendering if frame rates differ
+        	const double f = (frame * info.samplerate) / rate;
+                const double frac = fmod (f, 1.0);
         	sf_count_t f1 = f;
 
-        	if (f1 + 1 >= info.frames) return 0.0f;
-        	if (f1 == f) return data[f1 * info.channels + channel];
+        	if (f1 >= info.frames) return 0.0f;
+
+        	if (frac == 0.0) return data[f1 * info.channels + channel];
 
         	float data1 = data[f1 * info.channels + channel];
-        	float data2 = data[(f1 + 1) * info.channels + channel];
-        	return data1 + (f - double (f1)) * (data2 - data1);
+        	float data2 = (f1 + 1 < info.frames ? data[(f1 + 1) * info.channels + channel] : data1);
+        	return (1.0 - frac) * data1 + frac * data2;
         }
 };
 

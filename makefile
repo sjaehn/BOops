@@ -50,6 +50,7 @@ DSP_INCL = \
 	src/Slot.cpp
 
 GUI_INCL = \
+	src/SampleChooser.cpp \
 	src/ShapeWidget.cpp \
 	src/SelectWidget.cpp \
 	src/ValueSelect.cpp \

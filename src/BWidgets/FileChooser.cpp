@@ -27,11 +27,11 @@ FileChooser::FileChooser (const double x, const double y, const double width, co
 
 FileChooser::FileChooser (const double x, const double y, const double width, const double height, const std::string& name,
 			  const std::string& path) :
-		FileChooser (x, y, width, height, name, path, {}, "") {}
+		FileChooser (x, y, width, height, name, path, {}, "OK") {}
 
 FileChooser::FileChooser (const double x, const double y, const double width, const double height, const std::string& name,
 			  const std::string& path, const std::vector<FileFilter>& filters) :
-		FileChooser (x, y, width, height, name, path, filters, "") {}
+		FileChooser (x, y, width, height, name, path, filters, "OK") {}
 
 FileChooser::FileChooser (const double x, const double y, const double width, const double height, const std::string& name,
 			  const std::string& path, const std::vector<FileFilter>& filters, const std::string& buttonText) :
@@ -266,9 +266,12 @@ void FileChooser::applyTheme (BStyles::Theme& theme) {applyTheme (theme, name_);
 
 void FileChooser::applyTheme (BStyles::Theme& theme, const std::string& name)
 {
+	pathNameBox.applyTheme (theme, name + "/textbox");
+	fileNameLabel.applyTheme (theme, name + "/label");
+	fileNameBox.applyTheme (theme, name + "/textbox");
 	cancelButton.applyTheme (theme, name + "/button");
 	okButton.applyTheme (theme, name + "/button");
-	fileListBox.applyTheme (theme, name + "/listBox");
+	fileListBox.applyTheme (theme, name + "/listbox");
 	filterPopupListBox.applyTheme (theme, name + "/popup");
 	Widget::applyTheme (theme, name);
 
@@ -447,7 +450,7 @@ void FileChooser::enterDir ()
 			if (widget)
 			{
 				((Label*)widget)->setFont (dirFont);
-				widget->rename (getName() + "/listBox/item/dir");
+				widget->rename (getName() + "/listbox/item");
 				items.push_back (item);
 				++count;
 			}
@@ -461,7 +464,7 @@ void FileChooser::enterDir ()
 			if (widget)
 			{
 				((Label*)widget)->setFont (fileFont);
-				widget->rename (getName() + "/listBox/item/file");
+				widget->rename (getName() + "/listbox/item");
 				items.push_back (item);
 				++count;
 			}
@@ -471,8 +474,13 @@ void FileChooser::enterDir ()
 		fileListBox = ListBox (fileListBox.getPosition().x, fileListBox.getPosition().y,
 				       fileListBox.getWidth(), fileListBox.getHeight(),
 			       	       fileListBox.getName(), items);
-		fileListBox.setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, fileListBoxClickedCallback);
+		fileListBox.setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, getFileListBoxClickedCallback());
 	}
+}
+
+std::function<void (BEvents::Event*)> FileChooser::getFileListBoxClickedCallback()
+{
+	return fileListBoxClickedCallback;
 }
 
 }

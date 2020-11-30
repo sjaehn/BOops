@@ -75,6 +75,8 @@ struct BOopsURIDs
 	LV2_URID bOops_transportGateKeys;
 	LV2_URID bOops_samplePathEvent;
 	LV2_URID bOops_samplePath;
+	LV2_URID bOops_sampleStart;
+	LV2_URID bOops_sampleEnd;
 	LV2_URID bOops_installSample;
 	LV2_URID bOops_sampleFreeEvent;
 };

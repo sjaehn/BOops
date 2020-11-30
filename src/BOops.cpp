@@ -27,8 +27,6 @@
 #include "BUtilities/stof.hpp"
 #include "getURIs.hpp"
 
-
-
 #ifndef SF_FORMAT_MP3
 #ifndef MINIMP3_IMPLEMENTATION
 #define MINIMP3_IMPLEMENTATION
@@ -472,12 +470,27 @@ void BOops::run (uint32_t n_samples)
 			// Sample path notification -> forward to worker
 			else if (obj->body.otype ==urids.bOops_samplePathEvent)
 			{
-				LV2_Atom* oPath = NULL;
-				lv2_atom_object_get (obj, urids.bOops_samplePath, &oPath, NULL);
+				const LV2_Atom* oPath = NULL, *oStart = NULL, *oEnd = NULL;
+				lv2_atom_object_get
+				(
+					obj,
+					urids.bOops_samplePath, &oPath,
+					urids.bOops_sampleStart, &oStart,
+					urids.bOops_sampleEnd, &oEnd,
+					0
+				);
 
+				// New sample
 				if (oPath && (oPath->type == urids.atom_Path))
 				{
-					workerSchedule->schedule_work (workerSchedule->handle, lv2_atom_total_size(&ev->body), &ev->body);
+					workerSchedule->schedule_work (workerSchedule->handle, lv2_atom_total_size((LV2_Atom*)obj), obj);
+				}
+
+				// Only start / end changed
+				else if (sample)
+				{
+					if (oStart && (oStart->type == urids.atom_Long)) sample->start = LIMIT (((LV2_Atom_Long*)oStart)->body, 0, sample->info.frames - 1);
+					if (oEnd && (oEnd->type == urids.atom_Long)) sample->end = LIMIT (((LV2_Atom_Long*)oStart)->body, 0, sample->info.frames);
 				}
 			}
 
@@ -611,7 +624,7 @@ void BOops::run (uint32_t n_samples)
 			}
 		}
 
-		// TODO Read incoming MIDI events
+		// Read incoming MIDI events
 		if (ev->body.type == urids.midi_Event)
 		{
 			const uint8_t* const msg = (const uint8_t*)(ev + 1);
@@ -910,6 +923,10 @@ void BOops::notifySamplePathToGui ()
 		lv2_atom_forge_object(&forge, &frame, 0, urids.bOops_samplePathEvent);
 		lv2_atom_forge_key(&forge, urids.bOops_samplePath);
 		lv2_atom_forge_path (&forge, sample->path, strlen (sample->path) + 1);
+		lv2_atom_forge_key(&forge, urids.bOops_sampleStart);
+		lv2_atom_forge_long (&forge, sample->start);
+		lv2_atom_forge_key(&forge, urids.bOops_sampleEnd);
+		lv2_atom_forge_long (&forge, sample->end);
 		lv2_atom_forge_pop(&forge, &frame);
 	}
 
@@ -990,13 +1007,17 @@ void BOops::play (uint32_t start, uint32_t end)
 			Stereo input = Stereo (audioInput1[i], audioInput2[i]);
 			if (globalControllers[SOURCE] == SOURCE_SAMPLE)
 			{
-				const uint64_t frame = getFramesFromPosition (p.transport, pos);
-				input =
-				(
-					sample ?
-					Stereo (sample->get (frame, 0, host.rate), sample->get (frame, 1, host.rate)):
-					Stereo()
-				);
+				if (sample)
+				{
+					const uint64_t f0 = getFramesFromPosition (p.transport, pos);
+					const int64_t frame = f0 + sample->start;
+
+					if (frame < sample->end) input = Stereo (sample->get (frame, 0, host.rate), sample->get (frame, 1, host.rate));
+					else input = Stereo();
+
+					// TODO Loop mode
+				}
+				else input = Stereo();
 			}
 			Stereo output = input;
 
@@ -1075,6 +1096,8 @@ LV2_State_Status BOops::state_save (LV2_State_Store_Function store, LV2_State_Ha
 		{
 			char* abstrPath = map_path->abstract_path(map_path->handle, sample->path);
 			store(handle, urids.bOops_samplePath, abstrPath, strlen (abstrPath) + 1, urids.atom_Path, LV2_STATE_IS_POD | LV2_STATE_IS_PORTABLE);
+			store(handle, urids.bOops_sampleStart, &sample->start, sizeof (sample->start), urids.atom_Long, LV2_STATE_IS_POD | LV2_STATE_IS_PORTABLE);
+			store(handle, urids.bOops_sampleEnd, &sample->end, sizeof (sample->end), urids.atom_Long, LV2_STATE_IS_POD | LV2_STATE_IS_PORTABLE);
 			free (abstrPath);
 		}
 		else fprintf (stderr, "BOops.lv2: Feature map_path not available! Can't save sample!\n" );
@@ -1191,6 +1214,24 @@ LV2_State_Status BOops::state_restore (LV2_State_Retrieve_Function retrieve, LV2
 		}
 		scheduleNotifySamplePathToGui = true;
         }
+
+	// Retireve sample start and end
+	if (sample)
+	{
+		const void* startData = retrieve (handle, urids.bOops_sampleStart, &size, &type, &valflags);
+	        if (startData && (type == urids.atom_Long))
+		{
+			sample->start = *(sf_count_t*)startData;
+			scheduleNotifySamplePathToGui = true;
+	        }
+
+		const void* endData = retrieve (handle, urids.bOops_sampleEnd, &size, &type, &valflags);
+	        if (endData && (type == urids.atom_Long))
+		{
+			sample->end = *(sf_count_t*)endData;
+			scheduleNotifySamplePathToGui = true;
+	        }
+	}
 
 	// Retrieve transportGateKeys
 	const void* transportGateKeysData = retrieve(handle, urids.bOops_transportGateKeys, &size, &type, &valflags);
@@ -1439,14 +1480,22 @@ LV2_Worker_Status BOops::work (LV2_Worker_Respond_Function respond, LV2_Worker_R
 	{
                 const LV2_Atom_Object* obj = (const LV2_Atom_Object*)data;
 
-		const LV2_Atom* path = NULL;
-		lv2_atom_object_get(obj, urids.bOops_samplePath, &path, 0);
+		const LV2_Atom* oPath = NULL, *oStart = NULL, *oEnd = NULL;
+		lv2_atom_object_get
+		(
+			obj,
+			urids.bOops_samplePath, &oPath,
+			urids.bOops_sampleStart, &oStart,
+			urids.bOops_sampleEnd, &oEnd,
+			0
+		);
 
-		if (path && (path->type == urids.atom_Path))
+		// New sample
+		if (oPath && (oPath->type == urids.atom_Path))
 		{
 			message.deleteMessage (CANT_OPEN_SAMPLE);
 			Sample* s = nullptr;
-			try {s = new Sample ((const char*)LV2_ATOM_BODY_CONST(path));}
+			try {s = new Sample ((const char*)LV2_ATOM_BODY_CONST(oPath));}
 			catch (std::bad_alloc &ba)
 			{
 				fprintf (stderr, "BOops.lv2: Can't allocate enough memory to open sample file.\n");
@@ -1463,6 +1512,8 @@ LV2_Worker_Status BOops::work (LV2_Worker_Respond_Function respond, LV2_Worker_R
 			AtomSample sAtom;
 			sAtom.atom = {sizeof (sample), urids.bOops_installSample};
 			sAtom.sample = s;
+			sAtom.start = (s && oStart && (oStart->type == urids.atom_Long) ? ((LV2_Atom_Long*)oStart)->body : 0);
+			sAtom.end = (oEnd && (oEnd->type == urids.atom_Long) ? ((LV2_Atom_Long*)oEnd)->body : (s ? s->info.frames : 0));
 			if (s) respond (handle, sizeof(sAtom), &sAtom);
 		}
 
@@ -1525,6 +1576,7 @@ LV2_Worker_Status BOops::work_response (uint32_t size, const void* data)
 {
 	const LV2_Atom* atom = (const LV2_Atom*)data;
 
+	// Install slot audio buffers
 	if (atom->type == urids.bOops_installBuffers)
 	{
 		// Schedule worker to free old buffers
@@ -1539,6 +1591,7 @@ LV2_Worker_Status BOops::work_response (uint32_t size, const void* data)
 		scheduleResizeBuffers = false;
 	}
 
+	// Install Fx
 	else if (atom->type == urids.bOops_installFx)
 	{
 		const Atom_Fx* nAtom = (const Atom_Fx*) data;
@@ -1554,7 +1607,7 @@ LV2_Worker_Status BOops::work_response (uint32_t size, const void* data)
 		scheduleSetFx[nAtom->index] = false;
 	}
 
-	// Schedule worker to free old sample
+	// Install sample
 	else if (atom->type == urids.bOops_installSample)
 	{
 		const AtomSample* nAtom = (const AtomSample*)data;
@@ -1564,6 +1617,11 @@ LV2_Worker_Status BOops::work_response (uint32_t size, const void* data)
 
 		// Install new sample from data
 		sample = nAtom->sample;
+		if (sample)
+		{
+			sample->start = LIMIT (nAtom->start, 0, sample->info.frames - 1);
+			sample->end = LIMIT (nAtom->end, sample->start, sample->info.frames);
+		}
 	}
 
 	return LV2_WORKER_SUCCESS;

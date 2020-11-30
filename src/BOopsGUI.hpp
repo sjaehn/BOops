@@ -37,7 +37,6 @@
 #include "BWidgets/HPianoRoll.hpp"
 #include "BWidgets/TextButton.hpp"
 #include "BWidgets/HSlider.hpp"
-#include "BWidgets/FileChooser.hpp"
 #include "screen.h"
 
 #include "HaloButton.hpp"
@@ -60,6 +59,7 @@
 #include "Dial.hpp"
 #include "Shape.hpp"
 #include "MonitorWidget.hpp"
+#include "SampleChooser.hpp"
 
 #define BG_FILE "inc/surface.png"
 #define HELP_URL "https://github.com/sjaehn/BOops/blob/master/README.md"
@@ -151,6 +151,8 @@ private:
 	double sz;
 	cairo_surface_t* bgImageSurface;
 	std::string samplePath;
+	int64_t sampleStart;
+	int64_t sampleEnd;
 
 	BOopsURIDs urids;
 	LV2_Atom_Forge forge;
@@ -219,7 +221,7 @@ private:
 	BWidgets::PopupListBox sourceListBox;
 	LoadButton loadButton;
 	BWidgets::Label sampleNameLabel;
-	BWidgets::FileChooser* fileChooser;
+	SampleChooser* fileChooser;
 	BWidgets::PopupListBox playModeListBox;
 	BWidgets::PopupListBox onMidiListBox;
 	BWidgets::HPianoRoll transportGateButton;
@@ -455,6 +457,30 @@ private:
 					 {"textcolors", STYLEPTR (&BColors::whites)},
 					 {"font", STYLEPTR (&lfLabelFont)}}},
 		{"menu/listbox/button",	{{"border", STYLEPTR (&menuBorder)},
+					 {"background", STYLEPTR (&menuBg)},
+					 {"bgcolors", STYLEPTR (&buttonBgColors)}}},
+		{"filechooser",	 	{{"border", STYLEPTR (&menuBorder)},
+					 {"background", STYLEPTR (&menuBg)}}},
+		{"filechooser/label",	{{"background", STYLEPTR (&menuBg)},
+					 {"border", STYLEPTR (&labelborder)},
+					 {"textcolors", STYLEPTR (&BColors::whites)},
+					 {"font", STYLEPTR (&lfLabelFont)}}},
+		{"filechooser/textbox", {{"background", STYLEPTR (&menuBg)},
+					 {"border", STYLEPTR (&boxlabelborder)},
+					 {"textcolors", STYLEPTR (&BColors::whites)},
+					 {"font", STYLEPTR (&lfLabelFont)}}},
+		{"filechooser/scrollbar",{{"uses", STYLEPTR (&defaultStyles)},
+					 {"fgcolors", STYLEPTR (&blkColors)},
+				 	 {"bgcolors", STYLEPTR (&bgColors)}}},
+		{"filechooser/marker",	{{"uses", STYLEPTR (&defaultStyles)},
+				 	 {"bgcolors", STYLEPTR (&fgColors)}}},
+		{"filechooser/listbox",	{{"border", STYLEPTR (&menuBorder)},
+					 {"background", STYLEPTR (&menuBg)}}},
+		{"filechooser/listbox/item",	{{"uses", STYLEPTR (&defaultStyles)},
+					 {"border", STYLEPTR (&labelborder)},
+					 {"textcolors", STYLEPTR (&BColors::whites)},
+					 {"font", STYLEPTR (&lfLabelFont)}}},
+		{"filechooser/listbox/button",	{{"border", STYLEPTR (&menuBorder)},
 					 {"background", STYLEPTR (&menuBg)},
 					 {"bgcolors", STYLEPTR (&buttonBgColors)}}},
 		{"pad0",		{{"uses", STYLEPTR (&padStyles)},

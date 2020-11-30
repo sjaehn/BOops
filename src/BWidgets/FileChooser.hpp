@@ -170,6 +170,8 @@ protected:
 	BStyles::Font fileFont;
 	BStyles::Font dirFont;
 	BStyles::Font filterFont;
+
+	virtual std::function<void (BEvents::Event*)> getFileListBoxClickedCallback();
 };
 
 }
