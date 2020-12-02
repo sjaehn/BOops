@@ -32,17 +32,18 @@ Debian-based systems you may run:
 sudo apt-get install pkg-config libx11-dev libcairo2-dev libsndfile-dev lv2-dev
 ```
 
-Step 3: Building and installing into the default lv2 directory (/usr/lib/lv2/) is easy. Simply call:
+Step 3: Building and installing into the default lv2 directory (/usr/lib/lv2/) is easy using `make` and
+`make install`. Simply call:
 ```
 make
 sudo make install
 ```
-from the directory where you downloaded the repository files. For installation into an
-alternative directory (e.g., /usr/local/lib/lv2/), change the variable `PREFIX` while installing:
 
-```
-sudo make install PREFIX=/usr/local
-```
+Optional: Standard `make` and `make install` parameters are supported. Compiling using `make CPPFLAGS+=-O3`
+is recommended to improve the plugin performance. Alternatively, you may build a debugging version using
+`make CPPFLAGS+=-g`. For installation into an alternative directory (e.g., /usr/local/lib/lv2/), change the
+variable `PREFIX` while installing: `sudo make install PREFIX=/usr/local`. If you want to freely choose the
+install target directory, change the variable `LV2DIR`.
 
 
 ## Running
