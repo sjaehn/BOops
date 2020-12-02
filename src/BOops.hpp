@@ -123,6 +123,7 @@ private:
 public:	Slot slots[NR_SLOTS];
 private:
 	Sample* sample;
+	float sampleAmp;
 	float waveform[WAVEFORMSIZE];
 	int waveformCounter;
 	int lastWaveformCounter;
@@ -164,6 +165,7 @@ private:
 		Sample* sample;
 		int64_t start;
 		int64_t end;
+		float amp;
 	};
 };
 

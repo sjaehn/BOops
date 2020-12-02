@@ -74,6 +74,7 @@ void getURIs (LV2_URID_Map* m, BOopsURIDs* uris)
 	uris->bOops_samplePath = m->map(m->handle, BOOPS_URI "#samplePath");
 	uris->bOops_sampleStart = m->map(m->handle, BOOPS_URI "#sampleStart");
 	uris->bOops_sampleEnd = m->map(m->handle, BOOPS_URI "#sampleEnd");
+	uris->bOops_sampleAmp = m->map(m->handle, BOOPS_URI "#sampleAmp");
 	uris->bOops_installSample = m->map(m->handle, BOOPS_URI "#installSample");
 	uris->bOops_sampleFreeEvent = m->map(m->handle, BOOPS_URI "#sampleFreeEvent");
 }

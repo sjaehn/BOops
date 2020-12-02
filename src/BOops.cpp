@@ -49,7 +49,7 @@ BOops::BOops (double samplerate, const char* bundle_path, const LV2_Feature* con
 	audioInput1(NULL), audioInput2(NULL), audioOutput1(NULL), audioOutput2(NULL),
 	new_controllers {NULL}, globalControllers {0},
 	forge (), notify_frame (),
-	sample (NULL),
+	sample (NULL), sampleAmp (1.0f),
 	waveform {0}, waveformCounter (0), lastWaveformCounter (0),
 	message (), ui_on(false), scheduleNotifySlot {false},
 	scheduleNotifyStatus (false), scheduleResizeBuffers (false), scheduleSetFx {false},
@@ -470,13 +470,14 @@ void BOops::run (uint32_t n_samples)
 			// Sample path notification -> forward to worker
 			else if (obj->body.otype ==urids.bOops_samplePathEvent)
 			{
-				const LV2_Atom* oPath = NULL, *oStart = NULL, *oEnd = NULL;
+				const LV2_Atom* oPath = NULL, *oStart = NULL, *oEnd = NULL, *oAmp = NULL;
 				lv2_atom_object_get
 				(
 					obj,
 					urids.bOops_samplePath, &oPath,
 					urids.bOops_sampleStart, &oStart,
 					urids.bOops_sampleEnd, &oEnd,
+					urids.bOops_sampleAmp, &oAmp,
 					0
 				);
 
@@ -490,7 +491,8 @@ void BOops::run (uint32_t n_samples)
 				else if (sample)
 				{
 					if (oStart && (oStart->type == urids.atom_Long)) sample->start = LIMIT (((LV2_Atom_Long*)oStart)->body, 0, sample->info.frames - 1);
-					if (oEnd && (oEnd->type == urids.atom_Long)) sample->end = LIMIT (((LV2_Atom_Long*)oStart)->body, 0, sample->info.frames);
+					if (oEnd && (oEnd->type == urids.atom_Long)) sample->end = LIMIT (((LV2_Atom_Long*)oEnd)->body, 0, sample->info.frames);
+					if (oAmp && (oAmp->type == urids.atom_Float)) sampleAmp = LIMIT (((LV2_Atom_Float*)oAmp)->body, 0.0f, 1.0f);
 				}
 			}
 
@@ -927,6 +929,8 @@ void BOops::notifySamplePathToGui ()
 		lv2_atom_forge_long (&forge, sample->start);
 		lv2_atom_forge_key(&forge, urids.bOops_sampleEnd);
 		lv2_atom_forge_long (&forge, sample->end);
+		lv2_atom_forge_key(&forge, urids.bOops_sampleAmp);
+		lv2_atom_forge_float (&forge, sampleAmp);
 		lv2_atom_forge_pop(&forge, &frame);
 	}
 
@@ -1012,7 +1016,7 @@ void BOops::play (uint32_t start, uint32_t end)
 					const uint64_t f0 = getFramesFromPosition (p.transport, pos);
 					const int64_t frame = f0 + sample->start;
 
-					if (frame < sample->end) input = Stereo (sample->get (frame, 0, host.rate), sample->get (frame, 1, host.rate));
+					if (frame < sample->end) input = Stereo (sample->get (frame, 0, host.rate), sample->get (frame, 1, host.rate)) * sampleAmp;
 					else input = Stereo();
 
 					// TODO Loop mode
@@ -1098,6 +1102,7 @@ LV2_State_Status BOops::state_save (LV2_State_Store_Function store, LV2_State_Ha
 			store(handle, urids.bOops_samplePath, abstrPath, strlen (abstrPath) + 1, urids.atom_Path, LV2_STATE_IS_POD | LV2_STATE_IS_PORTABLE);
 			store(handle, urids.bOops_sampleStart, &sample->start, sizeof (sample->start), urids.atom_Long, LV2_STATE_IS_POD | LV2_STATE_IS_PORTABLE);
 			store(handle, urids.bOops_sampleEnd, &sample->end, sizeof (sample->end), urids.atom_Long, LV2_STATE_IS_POD | LV2_STATE_IS_PORTABLE);
+			store(handle, urids.bOops_sampleAmp, &sampleAmp, sizeof (sampleAmp), urids.atom_Float, LV2_STATE_IS_POD | LV2_STATE_IS_PORTABLE);
 			free (abstrPath);
 		}
 		else fprintf (stderr, "BOops.lv2: Feature map_path not available! Can't save sample!\n" );
@@ -1229,6 +1234,13 @@ LV2_State_Status BOops::state_restore (LV2_State_Retrieve_Function retrieve, LV2
 	        if (endData && (type == urids.atom_Long))
 		{
 			sample->end = *(sf_count_t*)endData;
+			scheduleNotifySamplePathToGui = true;
+	        }
+
+		const void* ampData = retrieve (handle, urids.bOops_sampleAmp, &size, &type, &valflags);
+	        if (ampData && (type == urids.atom_Float))
+		{
+			sampleAmp = *(float*)ampData;
 			scheduleNotifySamplePathToGui = true;
 	        }
 	}
@@ -1480,13 +1492,14 @@ LV2_Worker_Status BOops::work (LV2_Worker_Respond_Function respond, LV2_Worker_R
 	{
                 const LV2_Atom_Object* obj = (const LV2_Atom_Object*)data;
 
-		const LV2_Atom* oPath = NULL, *oStart = NULL, *oEnd = NULL;
+		const LV2_Atom* oPath = NULL, *oStart = NULL, *oEnd = NULL, *oAmp = NULL;
 		lv2_atom_object_get
 		(
 			obj,
 			urids.bOops_samplePath, &oPath,
 			urids.bOops_sampleStart, &oStart,
 			urids.bOops_sampleEnd, &oEnd,
+			urids.bOops_sampleAmp, &oAmp,
 			0
 		);
 
@@ -1514,6 +1527,7 @@ LV2_Worker_Status BOops::work (LV2_Worker_Respond_Function respond, LV2_Worker_R
 			sAtom.sample = s;
 			sAtom.start = (s && oStart && (oStart->type == urids.atom_Long) ? ((LV2_Atom_Long*)oStart)->body : 0);
 			sAtom.end = (oEnd && (oEnd->type == urids.atom_Long) ? ((LV2_Atom_Long*)oEnd)->body : (s ? s->info.frames : 0));
+			sAtom.amp = (oAmp && (oAmp->type == urids.atom_Float) ? ((LV2_Atom_Float*)oAmp)->body : 1.0f);
 			if (s) respond (handle, sizeof(sAtom), &sAtom);
 		}
 
@@ -1621,6 +1635,7 @@ LV2_Worker_Status BOops::work_response (uint32_t size, const void* data)
 		{
 			sample->start = LIMIT (nAtom->start, 0, sample->info.frames - 1);
 			sample->end = LIMIT (nAtom->end, sample->start, sample->info.frames);
+			sampleAmp = LIMIT (nAtom->amp, 0.0f, 1.0f);
 		}
 	}
 

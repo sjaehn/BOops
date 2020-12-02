@@ -77,6 +77,7 @@ struct BOopsURIDs
 	LV2_URID bOops_samplePath;
 	LV2_URID bOops_sampleStart;
 	LV2_URID bOops_sampleEnd;
+	LV2_URID bOops_sampleAmp;
 	LV2_URID bOops_installSample;
 	LV2_URID bOops_sampleFreeEvent;
 };

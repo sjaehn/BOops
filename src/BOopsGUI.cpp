@@ -74,17 +74,20 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 	stopButton (68, 8, 24, 24, "widget", "Stop"),
 	sourceListBox (120, 10, 80, 20, 80, 60, "menu", BItems::ItemList ({{0, "Stream"}, {1, "Sample"}})),
 	loadButton (220, 10, 20, 20, "menu/button"),
+	sampleLabel (240, 0, 140, 8, "smlabel", "Sample"),
 	sampleNameLabel (240, 10, 140, 20, "boxlabel", ""),
 	fileChooser (nullptr),
-	playModeListBox (400, 10, 120, 20, 120, 80, "menu", BItems::ItemList ({{0, "Autoplay"}, {2, "Host-controlled"} , {1, "MIDI-controlled"}})),
-	onMidiListBox (540, 10, 120, 20, 120, 80, "menu", BItems::ItemList ({{0, "Restart"}, {2, "Restart & sync"}, {1, "Continue"}})),
-	transportGateButton (680, 10, 60, 20, "widget", 48, 59),
-	autoplayBpmLabel (540, 0, 80, 8, "smlabel", "bpm"),
-	autoplayBpmSlider (540, 10, 80, 20, "slider", 120, 1, 300, 0, "%1.0f"),
-	autoplayBpbLabel (640, 0, 80, 8, "smlabel", "bpBar"),
-	autoplayBpbSlider (640, 10, 80, 20, "slider", 4, 1, 16, 1, "%1.0f"),
-	autoplayPositionLabel (740, 0, 150, 8, "smlabel", "Adjust position"),
-	autoplayPositionSlider (740, 14, 150, 12, "slider", 0.0, -0.5, 0.5, 0.0),
+	sampleAmpLabel (398, 0, 24, 8, "smlabel", "Amp"),
+	sampleAmpDial (398, 8, 24, 24, "dial", 1.0, 0.0, 1.0, 0.0),
+	playModeListBox (440, 10, 120, 20, 120, 80, "menu", BItems::ItemList ({{0, "Autoplay"}, {2, "Host-controlled"} , {1, "MIDI-controlled"}})),
+	onMidiListBox (580, 10, 120, 20, 120, 80, "menu", BItems::ItemList ({{0, "Restart"}, {2, "Restart & sync"}, {1, "Continue"}})),
+	transportGateButton (720, 10, 60, 20, "widget", 48, 59),
+	autoplayBpmLabel (580, 0, 80, 8, "smlabel", "bpm"),
+	autoplayBpmSlider (580, 10, 80, 20, "slider", 120, 1, 300, 0, "%1.0f"),
+	autoplayBpbLabel (680, 0, 80, 8, "smlabel", "bpBar"),
+	autoplayBpbSlider (680, 10, 80, 20, "slider", 4, 1, 16, 1, "%1.0f"),
+	autoplayPositionLabel (780, 0, 110, 8, "smlabel", "Adjust position"),
+	autoplayPositionSlider (780, 14, 110, 12, "slider", 0.0, -0.5, 0.5, 0.0),
 	sequenceSizeSelect (910, 12, 80, 16, "select", 1, 1, 16, 0.01),
 	sequenceBaseListBox (1010, 10, 90, 20, 0, 20, 90, 80, "menu", BItems::ItemList ({{0, "Seconds"}, {1, "Beats"}, {2, "Bars"}}), 1),
 	stepsListBox (1120, 10, 90, 20, 0, 20, 90, 240, "menu",
@@ -195,6 +198,7 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 	ytButton.setCallbackFunction(BEvents::BUTTON_PRESS_EVENT, ytButtonClickedCallback);
 	bypassButton.setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, playStopBypassChangedCallback);
 	stopButton.setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, playStopBypassChangedCallback);
+	sampleAmpDial.setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, valueChangedCallback);
 	transportGateButton.setCallbackFunction (BEvents::BUTTON_CLICK_EVENT, transportGateButtonClickedCallback);
 	transportGateOkButton.setCallbackFunction (BEvents::BUTTON_CLICK_EVENT, transportGateButtonClickedCallback);
 	transportGateCancelButton.setCallbackFunction (BEvents::BUTTON_CLICK_EVENT, transportGateButtonClickedCallback);
@@ -217,7 +221,10 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 
 	// Configure widgets
 	loadButton.hide();
+	sampleLabel.hide();
 	sampleNameLabel.hide();
+	sampleAmpLabel.hide();
+	sampleAmpDial.hide();
 	onMidiListBox.hide();
 	transportGateButton.hide ();
 	transportGatePiano.setKeysToggleable (true);
@@ -264,7 +271,10 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 	settingsContainer.add (stopButton);
 	settingsContainer.add (sourceListBox);
 	settingsContainer.add (loadButton);
+	settingsContainer.add (sampleLabel);
 	settingsContainer.add (sampleNameLabel);
+	settingsContainer.add (sampleAmpLabel);
+	settingsContainer.add (sampleAmpDial);
 	settingsContainer.add (playModeListBox);
 	settingsContainer.add (onMidiListBox);
 	settingsContainer.add (transportGateButton);
@@ -615,13 +625,14 @@ void BOopsGUI::port_event(uint32_t port, uint32_t buffer_size,
 			// Path notification
 			else if (obj->body.otype == urids.bOops_samplePathEvent)
 			{
-				const LV2_Atom* oPath = NULL, *oStart = NULL, *oEnd = NULL;
+				const LV2_Atom* oPath = NULL, *oStart = NULL, *oEnd = NULL, *oAmp = NULL;
 				lv2_atom_object_get
 				(
 					obj,
 					urids.bOops_samplePath, &oPath,
 					urids.bOops_sampleStart, &oStart,
 					urids.bOops_sampleEnd, &oEnd,
+					urids.bOops_sampleAmp, &oAmp,
 					0
 				);
 				if (oPath && (oPath->type == urids.atom_Path))
@@ -630,7 +641,9 @@ void BOopsGUI::port_event(uint32_t port, uint32_t buffer_size,
 					// TODO Split to path and file name
 				}
 
-				// TODO oStart, oEnd
+				if (oStart && (oStart->type == urids.atom_Long)) sampleStart = ((LV2_Atom_Long*)oStart)->body;
+				if (oEnd && (oEnd->type == urids.atom_Long)) sampleEnd = ((LV2_Atom_Long*)oEnd)->body;
+				if (oAmp && (oAmp->type == urids.atom_Float)) sampleAmpDial.setValue (((LV2_Atom_Float*)oAmp)->body);
 			}
 
 			// Monitor notification
@@ -707,23 +720,26 @@ void BOopsGUI::resize ()
 	sourceListBox.resizeListBox (BUtilities::Point (80 * sz, 60 * sz));
 	sourceListBox.resizeListBoxItems (BUtilities::Point (80 * sz, 20 * sz));
 	RESIZE (loadButton, 220, 10, 20, 20, sz);
+	RESIZE (sampleAmpLabel, 398, 0, 24, 8, sz);
+	RESIZE (sampleLabel, 240, 0, 140, 8, sz);
 	RESIZE (sampleNameLabel, 240, 10, 140, 20, sz);
 	if (fileChooser) RESIZE ((*fileChooser), 200, 140, 640, 400, sz);
-	RESIZE (playModeListBox, 400, 10, 120, 20, sz);
+	RESIZE (sampleAmpDial, 398, 8, 24, 24, sz);
+	RESIZE (playModeListBox, 440, 10, 120, 20, sz);
 	playModeListBox.resizeListBox(BUtilities::Point (120 * sz, 80 * sz));
 	playModeListBox.moveListBox(BUtilities::Point (0, 20 * sz));
 	playModeListBox.resizeListBoxItems(BUtilities::Point (120 * sz, 20 * sz));
-	RESIZE (onMidiListBox, 540, 10, 120, 20, sz);
+	RESIZE (onMidiListBox, 580, 10, 120, 20, sz);
 	onMidiListBox.resizeListBox(BUtilities::Point (120 * sz, 80 * sz));
 	onMidiListBox.moveListBox(BUtilities::Point (0, 20 * sz));
 	onMidiListBox.resizeListBoxItems(BUtilities::Point (120 * sz, 20 * sz));
-	RESIZE (transportGateButton, 680, 10, 60, 20, sz);
-	RESIZE (autoplayBpmLabel, 540, 0, 80, 8, sz);
-	RESIZE (autoplayBpmSlider, 540, 10, 80, 20, sz);
-	RESIZE (autoplayBpbLabel, 640, 0, 80, 8, sz);
-	RESIZE (autoplayBpbSlider, 640, 10, 80, 20, sz);
-	RESIZE (autoplayPositionLabel, 740, 0, 150, 8, sz);
-	RESIZE (autoplayPositionSlider, 740, 14, 150, 12, sz);
+	RESIZE (transportGateButton, 720, 10, 60, 20, sz);
+	RESIZE (autoplayBpmLabel, 580, 0, 80, 8, sz);
+	RESIZE (autoplayBpmSlider, 580, 10, 80, 20, sz);
+	RESIZE (autoplayBpbLabel, 680, 0, 80, 8, sz);
+	RESIZE (autoplayBpbSlider, 680, 10, 80, 20, sz);
+	RESIZE (autoplayPositionLabel, 780, 0, 110, 8, sz);
+	RESIZE (autoplayPositionSlider, 780, 14, 110, 12, sz);
 	RESIZE (sequenceSizeSelect, 910, 12, 80, 16, sz);
 	RESIZE (sequenceBaseListBox, 1010, 10, 90, 20, sz);
 	sequenceBaseListBox.resizeListBox(BUtilities::Point (90 * sz, 80 * sz));
@@ -807,8 +823,11 @@ void BOopsGUI::applyTheme (BStyles::Theme& theme)
 	stopButton.applyTheme (theme);
 	sourceListBox.applyTheme (theme);
 	loadButton.applyTheme (theme);
+	sampleLabel.applyTheme (theme);
 	sampleNameLabel.applyTheme (theme);
 	if (fileChooser) fileChooser->applyTheme (theme);
+	sampleAmpLabel.applyTheme (theme);
+	sampleAmpDial.applyTheme (theme);
 	playModeListBox.applyTheme (theme);
 	onMidiListBox.applyTheme (theme);
 	transportGateButton.applyTheme (theme);
@@ -1055,6 +1074,23 @@ void BOopsGUI::sendSamplePath ()
 	lv2_atom_forge_long(&forge, sampleStart);
 	lv2_atom_forge_key(&forge, urids.bOops_sampleEnd);
 	lv2_atom_forge_long(&forge, sampleEnd);
+	lv2_atom_forge_key(&forge, urids.bOops_sampleAmp);
+	lv2_atom_forge_float(&forge, sampleAmpDial.getValue());
+	lv2_atom_forge_pop(&forge, &frame);
+	write_function(controller, CONTROL, lv2_atom_total_size(msg), urids.atom_eventTransfer, msg);
+}
+
+
+
+void BOopsGUI::sendSampleAmp ()
+{
+	uint8_t obj_buf[1024];
+	lv2_atom_forge_set_buffer(&forge, obj_buf, sizeof(obj_buf));
+
+	LV2_Atom_Forge_Frame frame;
+	LV2_Atom* msg = (LV2_Atom*)lv2_atom_forge_object(&forge, &frame, 0, urids.bOops_samplePathEvent);
+	lv2_atom_forge_key(&forge, urids.bOops_sampleAmp);
+	lv2_atom_forge_float(&forge, sampleAmpDial.getValue());
 	lv2_atom_forge_pop(&forge, &frame);
 	write_function(controller, CONTROL, lv2_atom_total_size(msg), urids.atom_eventTransfer, msg);
 }
@@ -1479,12 +1515,18 @@ void BOopsGUI::valueChangedCallback(BEvents::Event* event)
 			case SOURCE:		if (value == SOURCE_STREAM)
 						{
 							ui->loadButton.hide();
+							ui->sampleLabel.hide();
 							ui->sampleNameLabel.hide();
+							ui->sampleAmpLabel.hide();
+							ui->sampleAmpDial.hide();
 						}
 						else
 						{
 							ui->loadButton.show();
+							ui->sampleLabel.show();
 							ui->sampleNameLabel.show();
+							ui->sampleAmpLabel.show();
+							ui->sampleAmpDial.show();
 						}
 						break;
 
@@ -1628,6 +1670,8 @@ void BOopsGUI::valueChangedCallback(BEvents::Event* event)
 
 		ui->write_function(ui->controller, CONTROLLERS + controllerNr, sizeof(float), 0, &value);
 	}
+
+	else if (widget == &ui->sampleAmpDial) ui->sendSampleAmp();
 }
 
 void BOopsGUI::playStopBypassChangedCallback(BEvents::Event* event)

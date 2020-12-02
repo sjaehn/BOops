@@ -98,6 +98,7 @@ public:
 	void sendShape (const int slot);
 	void sendTransportGateKeys();
 	void sendSamplePath();
+	void sendSampleAmp();
 	virtual void onConfigureRequest (BEvents::ExposeEvent* event) override;
 	virtual void onKeyPressed (BEvents::KeyEvent* event) override;
 	virtual void onKeyReleased (BEvents::KeyEvent* event) override;
@@ -220,8 +221,11 @@ private:
 	HaloButton stopButton;
 	BWidgets::PopupListBox sourceListBox;
 	LoadButton loadButton;
+	BWidgets::Label sampleLabel;
 	BWidgets::Label sampleNameLabel;
 	SampleChooser* fileChooser;
+	BWidgets::Label sampleAmpLabel;
+	Dial sampleAmpDial;
 	BWidgets::PopupListBox playModeListBox;
 	BWidgets::PopupListBox onMidiListBox;
 	BWidgets::HPianoRoll transportGateButton;
