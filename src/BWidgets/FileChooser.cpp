@@ -48,9 +48,12 @@ FileChooser::FileChooser (const double x, const double y, const double width, co
 		filterPopupListBox (),
 		cancelButton (0, 0, 0, 0, name + "/button", "Cancel"),
 		okButton (0, 0, 0, 0, name + "/button", buttonText),
-		fileFont ("Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL, 12.0, BStyles::TEXT_ALIGN_LEFT, BStyles::TEXT_VALIGN_MIDDLE),
-		dirFont ("Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD, 12.0, BStyles::TEXT_ALIGN_LEFT, BStyles::TEXT_VALIGN_MIDDLE),
-		filterFont ("Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL, 12.0, BStyles::TEXT_ALIGN_LEFT, BStyles::TEXT_VALIGN_MIDDLE)
+		fileListBoxFileLabel (0, 0, 0, 0, name + "/listbox/item/file", ""),
+		fileListBoxDirLabel (0, 0, 0, 0, name + "/listbox/item/dir", ""),
+		filterPopupListBoxFilterLabel (0, 0, 0, 0, name + "/popup/listbox/item", "")
+		//fileFont ("Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL, 12.0, BStyles::TEXT_ALIGN_LEFT, BStyles::TEXT_VALIGN_MIDDLE),
+		//dirFont ("Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD, 12.0, BStyles::TEXT_ALIGN_LEFT, BStyles::TEXT_VALIGN_MIDDLE),
+		//filterFont ("Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL, 12.0, BStyles::TEXT_ALIGN_LEFT, BStyles::TEXT_VALIGN_MIDDLE)
 {
 	background_ = BWIDGETS_DEFAULT_MENU_BACKGROUND;
 	border_ = BWIDGETS_DEFAULT_MENU_BORDER;
@@ -78,13 +81,44 @@ FileChooser::FileChooser (const double x, const double y, const double width, co
 	BItems::ItemList items;
 	for (FileFilter const& f : filters)
 	{
-		items.push_back (f.name);
-		Widget* widget = items.back().getWidget();
-		((Label*)widget)->setFont (filterFont);
+		items.push_back ("");
+		Label* label = (Label*)items.back().getWidget();
+		if (label)
+		{
+			*label = filterPopupListBoxFilterLabel;
+			label->setText (f.name);
+		}
 	}
 	filterPopupListBox = PopupListBox (0, 0, 0, 0, 0, 0, name + "/popup", items, (items.size() > 0 ? 1.0 : 0.0));
 	filterPopupListBox.setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, filterPopupListBoxClickedCallback);
 
+	add (pathNameBox);
+	add (fileListBox);
+	add (fileNameLabel);
+	add (fileNameBox);
+	add (cancelButton);
+	add (okButton);
+	add (filterPopupListBox);
+}
+
+FileChooser::FileChooser (const FileChooser& that) :
+	ValueWidget (that),
+	filters (that.filters),
+	dirs (that.dirs),
+	files (that.files),
+	okButtonText (that.okButtonText),
+	bgColors (that.bgColors),
+	pathNameBox (that.pathNameBox),
+	fileListBox (that.fileListBox),
+	fileNameLabel (that.fileNameLabel),
+	fileNameBox (that.fileNameBox),
+	filterPopupListBox (that.filterPopupListBox),
+	cancelButton (that.cancelButton),
+	okButton (that.okButton),
+	fileListBoxFileLabel (that.fileListBoxFileLabel),
+	fileListBoxDirLabel (that.fileListBoxDirLabel),
+	filterPopupListBoxFilterLabel (that.filterPopupListBoxFilterLabel)
+{
 	add (pathNameBox);
 	add (fileListBox);
 	add (fileNameLabel);
@@ -101,9 +135,9 @@ FileChooser& FileChooser::operator= (const FileChooser& that)
 	files = that.files;
 	okButtonText = that.okButtonText;
 	bgColors = that.bgColors;
-	fileFont = that.fileFont;
-	dirFont = that.dirFont;
-	filterFont = that.filterFont;
+	//fileFont = that.fileFont;
+	//dirFont = that.dirFont;
+	//filterFont = that.filterFont;
 	pathNameBox = that.pathNameBox;
 	fileListBox = that.fileListBox;
 	fileNameLabel = that.fileNameLabel;
@@ -111,6 +145,9 @@ FileChooser& FileChooser::operator= (const FileChooser& that)
 	filterPopupListBox = that.filterPopupListBox;
 	cancelButton = that.cancelButton;
 	okButton = that.okButton;
+	fileListBoxFileLabel = that.fileListBoxFileLabel;
+	fileListBoxDirLabel = that.fileListBoxDirLabel;
+	filterPopupListBoxFilterLabel = that.filterPopupListBoxFilterLabel;
 	ValueWidget::operator= (that);
 	return *this;
 }
@@ -141,9 +178,13 @@ void FileChooser::setFilters (const std::vector<FileFilter>& filters)
 	BItems::ItemList items;
 	for (FileFilter const& f : filters)
 	{
-		items.push_back (f.name);
-		Widget* widget = items.back().getWidget();
-		((Label*)widget)->setFont (filterFont);
+		items.push_back ("");
+		Label* label = (Label*)items.back().getWidget();
+		if (label)
+		{
+			*label = filterPopupListBoxFilterLabel;
+			label->setText (f.name);
+		}
 	}
 	filterPopupListBox = PopupListBox (0, 0, 0, 0, 0, 0, getName() + "/popup", items, (items.size() > 0 ? 1.0 : 0.0));
 	filterPopupListBox.setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, filterPopupListBoxClickedCallback);
@@ -266,6 +307,7 @@ void FileChooser::applyTheme (BStyles::Theme& theme) {applyTheme (theme, name_);
 
 void FileChooser::applyTheme (BStyles::Theme& theme, const std::string& name)
 {
+	Widget::applyTheme (theme, name);
 	pathNameBox.applyTheme (theme, name + "/textbox");
 	fileNameLabel.applyTheme (theme, name + "/label");
 	fileNameBox.applyTheme (theme, name + "/textbox");
@@ -273,7 +315,23 @@ void FileChooser::applyTheme (BStyles::Theme& theme, const std::string& name)
 	okButton.applyTheme (theme, name + "/button");
 	fileListBox.applyTheme (theme, name + "/listbox");
 	filterPopupListBox.applyTheme (theme, name + "/popup");
-	Widget::applyTheme (theme, name);
+	fileListBoxFileLabel.applyTheme (theme, name + "/listbox/item/file");
+	fileListBoxDirLabel.applyTheme (theme, name + "/listbox/item/dir");
+	filterPopupListBoxFilterLabel.applyTheme (theme, name + "/popup/listbox/item");
+
+	BItems::ItemList* il = fileListBox.getItemList();
+	if (il)
+	{
+		for (BItems::Item const& i : *il)
+		{
+			Label* l = (Label*)i.getWidget();
+			if (l)
+			{
+				if (l->getName() == name + "/listbox/item/file") l->applyTheme (theme, name + "/listbox/item/file");
+				else if (l->getName() == name + "/listbox/item/dir") l->applyTheme (theme, name + "/listbox/item/dir");
+			}
+		}
+	}
 
 	// Color
 	void* bgPtr = theme.getStyle(name, BWIDGETS_KEYWORD_BGCOLORS);
@@ -439,19 +497,20 @@ void FileChooser::enterDir ()
 		files = newFiles;
 		dirs = newDirs;
 
-		BItems::ItemList items;
+		fileListBox.removeItems();
+		fileListBox.setValue (UNSELECTED);
 		size_t count = 1;
 
 		// Directories
 		for (std::string const& d : dirs)
 		{
-			BItems::Item item = BItems::Item (count, d);
-			Widget* widget = item.getWidget();
-			if (widget)
+			BItems::Item item = BItems::Item (count, "");
+			Label* label = (Label*)item.getWidget();
+			if (label)
 			{
-				((Label*)widget)->setFont (dirFont);
-				widget->rename (getName() + "/listbox/item");
-				items.push_back (item);
+				*label = fileListBoxDirLabel;
+				label->setText (d);
+				fileListBox.addItem (item);
 				++count;
 			}
 		}
@@ -459,22 +518,18 @@ void FileChooser::enterDir ()
 		// Files
 		for (std::string const& f : files)
 		{
-			BItems::Item item = BItems::Item (count, f);
-			Widget* widget = item.getWidget();
-			if (widget)
+			BItems::Item item = BItems::Item (count, "");
+			Label* label = (Label*)item.getWidget();
+			if (label)
 			{
-				((Label*)widget)->setFont (fileFont);
-				widget->rename (getName() + "/listbox/item");
-				items.push_back (item);
+				*label = fileListBoxFileLabel;
+				label->setText (f);
+				fileListBox.addItem (item);
 				++count;
 			}
 		}
 
-		// Set new listbox
-		fileListBox = ListBox (fileListBox.getPosition().x, fileListBox.getPosition().y,
-				       fileListBox.getWidth(), fileListBox.getHeight(),
-			       	       fileListBox.getName(), items);
-		fileListBox.setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, getFileListBoxClickedCallback());
+		//fileListBox.setTop (1);
 	}
 }
 

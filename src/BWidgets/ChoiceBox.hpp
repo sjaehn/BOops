@@ -103,6 +103,8 @@ public:
 	 */
 	BItems::Item* getActiveItem ();
 
+	void removeItems ();
+
 	/**
 	 * Adds a new item or new items to the end of the internally stored list of
 	 * items.
@@ -179,7 +181,6 @@ public:
 	virtual void onWheelScrolled (BEvents::WheelEvent* event) override;
 
 protected:
-	void removeItems ();
 	virtual void updateItems ();
 	virtual int getLines ();
 	static void handleButtonClicked (BEvents::Event* event);

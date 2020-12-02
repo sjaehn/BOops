@@ -64,13 +64,14 @@ void ListBox::setTop (const int top)
 
 	else
 	{
-		size_t size = items.size ();
+		int size = items.size ();
+		int lines = getLines ();
 		if (top <= 0) listTop = 1;
-		else if (((unsigned int) top) <= size) listTop = top;
+		else if (size < lines) listTop = 1;
+		else if (top <= size) listTop = top;
 		else listTop = size;
 
-		int lines = getLines ();
-		if (((unsigned int) (getBottom ()) > size) && (size - lines >= 1)) listTop = size - lines + 1;
+		if ((getBottom () > size) && (size - lines >= 1)) listTop = size - lines + 1;
 	}
 
 	if (oldtop != listTop) update ();

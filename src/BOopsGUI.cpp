@@ -680,6 +680,7 @@ void BOopsGUI::resize ()
 	tLabelFont.setFontSize (12 * sz);
 	tgLabelFont.setFontSize (12 * sz);
 	lfLabelFont.setFontSize (12 * sz);
+	boldLfLabelFont.setFontSize (12 * sz);
 	smLabelFont.setFontSize (8 * sz);
 
 	//Background

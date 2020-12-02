@@ -363,7 +363,8 @@ not. Select at least two slots and set the likelihood ratio for each slot.
   * Pitch (?)
   * Tape start (?)
 * Latency ? (Pitch, Tape start)
-* Sample input gain
+* Sample gain
+* Sample loop option
 * Reduce CPU load
 
 
