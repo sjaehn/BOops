@@ -131,6 +131,8 @@ public:
 		maxButton (0, 0, height, height, name, maxValue, rangeMin, rangeMax, rangeStep),
 		fgColors (BWIDGETS_DEFAULT_FGCOLORS)
 	{
+		draggable_ = true;
+		scrollable_ = true;
 		add (minButton);
 		add (maxButton);
 	}
@@ -168,7 +170,7 @@ public:
 			maxButton.setValue (minButton.getValue());
 			return;
 		}
-		
+
 		Widget::update();
 		minButton.resize (getHeight(), getHeight());
 		maxButton.resize (getHeight(), getHeight());
@@ -198,6 +200,30 @@ public:
 			fgColors = *((BColors::ColorSet*) fgPtr);
 			update();
 		}
+	}
+
+	virtual void onPointerDragged (BEvents::PointerEvent* event) override
+	{
+		if ((!event) || (getEffectiveWidth() < 1.0)) return;
+
+		double df = event->getDelta().x / getEffectiveWidth();
+		if (minButton.getValue() + df < minButton.getMin()) df = minButton.getMin() - minButton.getValue();
+		else if (maxButton.getValue() + df > maxButton.getMax()) df = maxButton.getMax() - maxButton.getValue();
+
+		minButton.setValue (minButton.getValue() + df);
+		maxButton.setValue (maxButton.getValue() + df);
+	}
+
+	virtual void onWheelScrolled (BEvents::WheelEvent* event) override
+	{
+		if ((!event) || (getEffectiveWidth() < 1.0)) return;
+
+		const double c = 0.5 * (minButton.getValue() + maxButton.getValue());
+		const double r = maxButton.getValue() - c;
+		const double f = 1.0 + 0.1 * event->getDelta().y;
+
+		minButton.setValue (c - r * f);
+		maxButton.setValue (c + r * f);
 	}
 
 	EndButton minButton;
