@@ -340,7 +340,7 @@ void SampleChooser::drawWaveform()
 	cairo_t* cr = cairo_create (waveform.getDrawingSurface ());
 	if (cr && cairo_status (cr) == CAIRO_STATUS_SUCCESS)
 	{
-		if (sample)
+		if (sample && (w >= 1.0))
 		{
 			// Scan for min/max
 			const double start = scrollbar.minButton.getValue();
@@ -356,16 +356,28 @@ void SampleChooser::drawWaveform()
 
 			// Draw
 			cairo_set_line_width (cr, 1.0);
-			cairo_move_to (cr, x0, y0 + 0.5 * h - 0.5 * h * sample->get (start * double (sample->info.frames), 0, sample->info.samplerate));
-			for (double i = 0.1 / w; i < 1.0; i += 0.25 / w)
+			double lo = sample->get (start * double (sample->info.frames), 0, sample->info.samplerate);
+			double hi = lo;
+			const double step = 1.0 / w;
+			const double minstep = LIMIT (1.0 / (range * double (sample->info.frames)), 0.01 * step, step);
+			for (double x = 0; x < 1.0; x += step)
 			{
-				const double frame = (start + i * range) * double (sample->info.frames);
+				double s = 0;
+				for (double xm = 0; xm < step; xm += minstep)
+				{
+					const double f = (start + (x + xm) * range) * double (sample->info.frames);
+					s = sample->get (f, 0, sample->info.samplerate);
+					if (s > hi) hi = s;
+					if (s < lo) lo = s;
+				}
+				const double frame = (start + x * range) * double (sample->info.frames);
 				if ((frame >= sample->start) && (frame <= sample->end)) cairo_set_source_rgba (cr, 1.0, 1.0, 1.0, 0.25);
 				else cairo_set_source_rgba (cr, 0.25, 0.25, 0.25, 0.25);
-				const double yp = y0 + 0.5 * h - 0.5 * h * sample->get (frame, 0, sample->info.samplerate) / max;
-				cairo_line_to (cr, x0 + i * w, yp);
+				cairo_move_to (cr, x0 + x * w, y0 + 0.5 * h - 0.5 * h * lo / max);
+				cairo_line_to (cr, x0 + x * w, y0 + 0.5 * h - 0.5 * h * hi / max);
 				cairo_stroke (cr);
-				cairo_move_to (cr, x0 + i * w, yp);
+				lo = s;
+				hi = s;
 			}
 
 			// Set start and end line

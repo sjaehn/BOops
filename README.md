@@ -3,7 +3,7 @@ Description: Glitch effect sequencer LV2 plugin
 
 Key features:
 * Multi-effect plugin controlled by a step sequencer pattern
-* Apply glitch effects in live
+* Apply glitch effects in live or on a sample track
 * 24 effects
 * Up to 12 effect slots, freely select effects and effect order
 * Random effects: 3 different ways of randomization
