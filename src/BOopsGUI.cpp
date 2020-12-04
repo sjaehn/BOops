@@ -85,7 +85,7 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 	autoplayBpmLabel (580, 0, 80, 8, "smlabel", "bpm"),
 	autoplayBpmSlider (580, 10, 80, 20, "slider", 120, 1, 300, 0, "%1.0f"),
 	autoplayBpbLabel (680, 0, 80, 8, "smlabel", "bpBar"),
-	autoplayBpbSlider (680, 10, 80, 20, "slider", 4, 1, 16, 1, "%1.0f"),
+	autoplayBpbSlider (680, 10, 80, 20, "slider", 4, 1, 16, 0, "%1.0f", [] (double x) {return floor (x);}),
 	autoplayPositionLabel (780, 0, 110, 8, "smlabel", "Adjust position"),
 	autoplayPositionSlider (780, 14, 110, 12, "slider", 0.0, -0.5, 0.5, 0.0),
 	sequenceSizeSelect (910, 12, 80, 16, "select", 1, 1, 16, 0.01),
@@ -1564,6 +1564,9 @@ void BOopsGUI::valueChangedCallback(BEvents::Event* event)
 							ui->transportGateContainer.hide();
 						}
 
+						break;
+
+			case AUTOPLAY_BPB:	value = floor (value);
 						break;
 
 			case STEPS:		ui->drawPad();
