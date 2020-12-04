@@ -166,6 +166,7 @@ private:
 		int64_t start;
 		int64_t end;
 		float amp;
+		bool loop;
 	};
 };
 

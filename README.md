@@ -354,7 +354,7 @@ not. Select at least two slots and set the likelihood ratio for each slot.
 * Additional reach parameter (in FxWah, FxScratch, and FxChop)
 * Load sample option
 * MP3 support
-* Advanced sample options (begin, end, amp, ...)
+* Advanced sample options (begin, end, amp, loop)
 
 
 ## TODO
@@ -364,7 +364,6 @@ not. Select at least two slots and set the likelihood ratio for each slot.
   * Pitch (?)
   * Tape start (?)
 * Latency ? (Pitch, Tape start)
-* Sample loop option
 * Reduce CPU load
 
 

@@ -36,6 +36,7 @@ void getURIs (LV2_URID_Map* m, BOopsURIDs* uris)
 	uris->atom_Vector = m->map(m->handle, LV2_ATOM__Vector);
 	uris->atom_String = m->map(m->handle, LV2_ATOM__String);
 	uris->atom_Path = m->map(m->handle, LV2_ATOM__Path);
+	uris->atom_Bool = m->map(m->handle, LV2_ATOM__Bool);
 	uris->midi_Event = m->map(m->handle, LV2_MIDI__MidiEvent);
 	uris->time_Position = m->map(m->handle, LV2_TIME__Position);
 	uris->time_barBeat = m->map(m->handle, LV2_TIME__barBeat);
@@ -75,6 +76,7 @@ void getURIs (LV2_URID_Map* m, BOopsURIDs* uris)
 	uris->bOops_sampleStart = m->map(m->handle, BOOPS_URI "#sampleStart");
 	uris->bOops_sampleEnd = m->map(m->handle, BOOPS_URI "#sampleEnd");
 	uris->bOops_sampleAmp = m->map(m->handle, BOOPS_URI "#sampleAmp");
+	uris->bOops_sampleLoop = m->map(m->handle, BOOPS_URI "#sampleLoop");
 	uris->bOops_installSample = m->map(m->handle, BOOPS_URI "#installSample");
 	uris->bOops_sampleFreeEvent = m->map(m->handle, BOOPS_URI "#sampleFreeEvent");
 }

@@ -56,7 +56,7 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 	controller (NULL), write_function (NULL),
 	pluginPath (bundle_path ? std::string (bundle_path) : std::string ("")),
 	sz (1.0), bgImageSurface (nullptr),
-	samplePath ("."), sampleStart (0), sampleEnd (0),
+	samplePath ("."), sampleStart (0), sampleEnd (0), sampleLoop (false),
 	urids (), forge (),
 	pattern (),
 	clipBoard (),
@@ -625,7 +625,7 @@ void BOopsGUI::port_event(uint32_t port, uint32_t buffer_size,
 			// Path notification
 			else if (obj->body.otype == urids.bOops_samplePathEvent)
 			{
-				const LV2_Atom* oPath = NULL, *oStart = NULL, *oEnd = NULL, *oAmp = NULL;
+				const LV2_Atom* oPath = NULL, *oStart = NULL, *oEnd = NULL, *oAmp = NULL, *oLoop = NULL;
 				lv2_atom_object_get
 				(
 					obj,
@@ -633,6 +633,7 @@ void BOopsGUI::port_event(uint32_t port, uint32_t buffer_size,
 					urids.bOops_sampleStart, &oStart,
 					urids.bOops_sampleEnd, &oEnd,
 					urids.bOops_sampleAmp, &oAmp,
+					urids.bOops_sampleLoop, &oLoop,
 					0
 				);
 				if (oPath && (oPath->type == urids.atom_Path))
@@ -644,6 +645,7 @@ void BOopsGUI::port_event(uint32_t port, uint32_t buffer_size,
 				if (oStart && (oStart->type == urids.atom_Long)) sampleStart = ((LV2_Atom_Long*)oStart)->body;
 				if (oEnd && (oEnd->type == urids.atom_Long)) sampleEnd = ((LV2_Atom_Long*)oEnd)->body;
 				if (oAmp && (oAmp->type == urids.atom_Float)) sampleAmpDial.setValue (((LV2_Atom_Float*)oAmp)->body);
+				if (oLoop && (oLoop->type == urids.atom_Bool)) sampleLoop = ((LV2_Atom_Bool*)oLoop)->body;
 			}
 
 			// Monitor notification
@@ -937,6 +939,7 @@ void BOopsGUI::onCloseRequest (BEvents::WidgetEvent* event)
 			samplePath = fileChooser->getPath();
 			sampleStart = fileChooser->getStart();
 			sampleEnd = fileChooser->getEnd();
+			sampleLoop = fileChooser->getLoop();
 			sendSamplePath ();
 		}
 
@@ -1076,11 +1079,11 @@ void BOopsGUI::sendSamplePath ()
 	lv2_atom_forge_long(&forge, sampleEnd);
 	lv2_atom_forge_key(&forge, urids.bOops_sampleAmp);
 	lv2_atom_forge_float(&forge, sampleAmpDial.getValue());
+	lv2_atom_forge_key(&forge, urids.bOops_sampleLoop);
+	lv2_atom_forge_bool(&forge, sampleLoop);
 	lv2_atom_forge_pop(&forge, &frame);
 	write_function(controller, CONTROL, lv2_atom_total_size(msg), urids.atom_eventTransfer, msg);
 }
-
-
 
 void BOopsGUI::sendSampleAmp ()
 {

@@ -39,6 +39,7 @@ struct BOopsURIDs
 	LV2_URID atom_Vector;
 	LV2_URID atom_String;
 	LV2_URID atom_Path;
+	LV2_URID atom_Bool;
 	LV2_URID midi_Event;
 	LV2_URID time_Position;
 	LV2_URID time_barBeat;
@@ -78,6 +79,7 @@ struct BOopsURIDs
 	LV2_URID bOops_sampleStart;
 	LV2_URID bOops_sampleEnd;
 	LV2_URID bOops_sampleAmp;
+	LV2_URID bOops_sampleLoop;
 	LV2_URID bOops_installSample;
 	LV2_URID bOops_sampleFreeEvent;
 };

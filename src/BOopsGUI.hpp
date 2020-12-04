@@ -154,6 +154,7 @@ private:
 	std::string samplePath;
 	int64_t sampleStart;
 	int64_t sampleEnd;
+	bool sampleLoop;
 
 	BOopsURIDs urids;
 	LV2_Atom_Forge forge;
@@ -480,6 +481,9 @@ private:
 				 	 		 {"bgcolors", STYLEPTR (&bgColors)}}},
 		{"filechooser/marker",			{{"uses", STYLEPTR (&defaultStyles)},
 				 	 		 {"bgcolors", STYLEPTR (&fgColors)}}},
+		{"filechooser/checkbox",		{{"uses", STYLEPTR (&defaultStyles)},
+				 	 		 {"fgcolors", STYLEPTR (&fgColors)},
+					 		 {"bgcolors", STYLEPTR (&bgColors)}}},
 		{"filechooser/listbox",			{{"border", STYLEPTR (&menuBorder)},
 					 		 {"background", STYLEPTR (&menuBg)}}},
 		{"filechooser/listbox/item",		{{"uses", STYLEPTR (&defaultStyles)},

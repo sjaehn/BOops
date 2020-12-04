@@ -46,8 +46,13 @@ SampleChooser::SampleChooser (const double x, const double y, const double width
 	FileChooser (x, y, width, height, name, path, filters, buttonText),
 	waveform (0, 0, 0, 0, name + "/textbox"),
 	scrollbar (0, 0, 0, 0, name + "/scrollbar", 0.0, 1.0, 0.0, 1.0, 0.0),
-	startMarker (0, 0, 0, 0, name + "/maker"),
-	endMarker (0, 0, 0, 0, name + "/maker"),
+	startMarker (0, 0, 0, 0, name + "/marker"),
+	endMarker (0, 0, 0, 0, name + "/marker"),
+	sizeLabel (0, 0, 0, 0, name + "/label"),
+	startLabel (0, 0, 0, 0, name + "/label"),
+	endLabel (0, 0, 0, 0, name + "/label"),
+	loopCheckbox (0, 0, 0, 0, name + "/checkbox"),
+	loopLabel (0, 0, 0, 0, name + "/label", "Play selection as loop"),
 	sample (nullptr)
 {
 	fileListBox.setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, sfileListBoxClickedCallback);
@@ -63,11 +68,19 @@ SampleChooser::SampleChooser (const double x, const double y, const double width
 	waveform.add (startMarker);
 	waveform.add (endMarker);
 	add (scrollbar);
+	add (sizeLabel);
+	add (startLabel);
+	add (endLabel);
+	add (loopCheckbox);
+	add (loopLabel);
 }
 
 SampleChooser::SampleChooser (const SampleChooser& that) :
 	FileChooser (that), waveform (that.waveform), scrollbar (that.scrollbar),
-	startMarker (that.startMarker), endMarker (that.endMarker), sample (nullptr)
+	startMarker (that.startMarker), endMarker (that.endMarker),
+	sizeLabel (that.sizeLabel), startLabel (that.startLabel), endLabel (that.endLabel),
+	loopCheckbox (that.loopCheckbox), loopLabel (that.loopLabel),
+	sample (nullptr)
 {
 	try {sample = new Sample (*that.sample);}
 	catch (std::exception& exc) {throw exc;}
@@ -76,6 +89,11 @@ SampleChooser::SampleChooser (const SampleChooser& that) :
 	waveform.add (startMarker);
 	waveform.add (endMarker);
 	add (scrollbar);
+	add (sizeLabel);
+	add (startLabel);
+	add (endLabel);
+	add (loopCheckbox);
+	add (loopLabel);
 }
 
 SampleChooser::~SampleChooser()
@@ -89,12 +107,22 @@ SampleChooser& SampleChooser::operator= (const SampleChooser& that)
 	waveform.release (&startMarker);
 	release (&waveform);
 	release (&endMarker);
+	release (&sizeLabel);
+	release (&startLabel);
+	release (&endLabel);
+	release (&loopCheckbox);
+	release (&loopLabel);
 	if (sample) delete (sample);
 
 	waveform = that.waveform;
 	scrollbar = that.scrollbar;
 	startMarker = that. startMarker;
 	endMarker = that.endMarker;
+	sizeLabel = that.sizeLabel;
+	startLabel = that.startLabel;
+	endLabel = that.endLabel;
+	loopCheckbox = that.loopCheckbox;
+	loopLabel = that.loopLabel;
 	try {sample = new Sample (*that.sample);}
 	catch (std::exception& exc) {throw exc;}
 	FileChooser::operator= (that);
@@ -104,6 +132,12 @@ SampleChooser& SampleChooser::operator= (const SampleChooser& that)
 	waveform.add (endMarker);
 	add (scrollbar);
 
+	add (sizeLabel);
+	add (startLabel);
+	add (endLabel);
+	add (loopCheckbox);
+	add (loopLabel);
+
 	return *this;
 }
 
@@ -112,6 +146,8 @@ BWidgets::Widget* SampleChooser::clone () const {return new SampleChooser (*this
 int64_t SampleChooser::getStart() const {return (sample ? LIMIT (sample->start, 0, sample->info.frames - 1) : 0);}
 
 int64_t SampleChooser::getEnd() const {return (sample ? LIMIT (sample->end, 1, sample->info.frames) : 0);}
+
+bool SampleChooser::getLoop() const {return (loopCheckbox.getValue() != 0.0);}
 
 void SampleChooser::resize () {resize (BWIDGETS_DEFAULT_SAMPLECHOOSER_WIDTH, BWIDGETS_DEFAULT_SAMPLECHOOSER_HEIGHT);}
 
@@ -172,22 +208,73 @@ void SampleChooser::update ()
 
 		if (h > pathNameHeight + okHeight + fileNameHeight + 60)
 		{
+			const double fileListBoxHeight = h - pathNameHeight - okHeight - fileNameHeight - 50;
+
 			fileListBox.moveTo (x0 + 10, y0 + pathNameHeight + 20);
-			fileListBox.resize (0.4 * w - 15, h - pathNameHeight - okHeight - fileNameHeight - 50);
+			fileListBox.resize (0.4 * w - 15, fileListBoxHeight);
 			fileListBox.resizeItems (BUtilities::Point (fileListBox.getEffectiveWidth(), 20));
 			fileListBox.show();
 
-			startMarker.resize (6.0, h - pathNameHeight - okHeight - fileNameHeight - 50);
+			startMarker.resize (6.0, fileListBoxHeight);
 			startMarker.show();
-			endMarker.resize (6.0, h - pathNameHeight - okHeight - fileNameHeight - 50);
+			endMarker.resize (6.0, fileListBoxHeight);
 			endMarker.show();
 
+			double waveformHeight = fileListBoxHeight;
+
+			if (sample && (sample->info.frames > 0))
+			{
+				sizeLabel.resize();
+				const double sizeHeight = sizeLabel.getHeight();
+				startLabel.resize();
+				const double startHeight = startLabel.getHeight();
+				endLabel.resize();
+				const double endHeight = endLabel.getHeight();
+				loopLabel.resize();
+				const double loopHeight = loopLabel.getHeight();
+
+				if (fileListBoxHeight > sizeHeight + startHeight + endHeight + loopHeight + 50.0)
+				{
+					waveformHeight = fileListBoxHeight - sizeHeight - startHeight - endHeight - loopHeight - 10.0;
+					sizeLabel.moveTo (x0 + 0.4 * w + 5, y0 + pathNameHeight + 20.0 + waveformHeight + 10.0);
+					startLabel.moveTo (x0 + 0.4 * w + 5, y0 + pathNameHeight + 20.0 + waveformHeight + 10.0 + sizeHeight);
+					endLabel.moveTo (x0 + 0.4 * w + 5, y0 + pathNameHeight + 20.0 + waveformHeight + 10.0 + sizeHeight + startHeight);
+					loopCheckbox.resize (0.6 * loopHeight, 0.6 * loopHeight);
+					loopCheckbox.moveTo (x0 + 0.4 * w + 5, y0 + pathNameHeight + 20.0 + waveformHeight + 10.0 + sizeHeight + startHeight + endHeight + 0.2 * loopHeight);
+					loopLabel.moveTo (x0 + 0.4 * w + 5 + loopHeight, y0 + pathNameHeight + 20.0 + waveformHeight + 10.0 + sizeHeight + startHeight + endHeight);
+
+					sizeLabel.show();
+					startLabel.show();
+					endLabel.show();
+					loopCheckbox.show();
+					loopLabel.show();
+				}
+
+				else
+				{
+					sizeLabel.hide();
+					startLabel.hide();
+					endLabel.hide();
+					loopCheckbox.hide();
+					loopLabel.hide();
+				}
+			}
+
+			else
+			{
+				sizeLabel.hide();
+				startLabel.hide();
+				endLabel.hide();
+				loopCheckbox.hide();
+				loopLabel.hide();
+			}
+
 			waveform.moveTo (x0 + 0.4 * w + 5, y0 + pathNameHeight + 20);
-			waveform.resize (0.6 * w - 15, h - pathNameHeight - okHeight - fileNameHeight - 50);
+			waveform.resize (0.6 * w - 15, waveformHeight);
 			drawWaveform();
 			waveform.show();
 
-			scrollbar.moveTo (x0 + 0.4 * w + 5, y0 + h - okHeight - fileNameHeight - 42);
+			scrollbar.moveTo (x0 + 0.4 * w + 5, y0 + pathNameHeight + 20 + waveformHeight - 12);
 			scrollbar.resize (0.6 * w - 15, 10);
 			if (sample && (sample->info.frames > 0))
 			{
@@ -209,6 +296,11 @@ void SampleChooser::update ()
 			scrollbar.hide();
 			startMarker.hide();
 			endMarker.hide();
+			sizeLabel.hide();
+			startLabel.hide();
+			endLabel.hide();
+			loopCheckbox.hide();
+			loopLabel.hide();
 		}
 	}
 
@@ -221,6 +313,11 @@ void SampleChooser::update ()
 		scrollbar.hide();
 		startMarker.hide();
 		endMarker.hide();
+		sizeLabel.hide();
+		startLabel.hide();
+		endLabel.hide();
+		loopCheckbox.hide();
+		loopLabel.hide();
 		fileNameLabel.hide();
 		fileNameBox.hide();
 		filterPopupListBox.hide ();
@@ -238,6 +335,11 @@ void SampleChooser::applyTheme (BStyles::Theme& theme, const std::string& name)
 	scrollbar.applyTheme (theme, name + "/scrollbar");
 	startMarker.applyTheme (theme, name + "/marker");
 	endMarker.applyTheme (theme, name + "/marker");
+	sizeLabel.applyTheme (theme, name + "/label");
+	startLabel.applyTheme (theme, name + "/label");
+	endLabel.applyTheme (theme, name + "/label");
+	loopCheckbox.applyTheme (theme, name + "/checkbox");
+	loopLabel.applyTheme (theme, name + "/label");
 }
 
 void SampleChooser::sfileListBoxClickedCallback (BEvents::Event* event)
@@ -394,6 +496,44 @@ void SampleChooser::drawWaveform()
 				startMarker.moveTo (-startMarker.getWidth(), 0.0);
 				endMarker.moveTo (-startMarker.getWidth(), 0.0);
 			}
+
+			// Update labels
+			sizeLabel.setText
+			(
+				"File: " +
+				std::to_string (int (sample->info.frames / (sample->info.samplerate * 60))) +
+				":" +
+				std::to_string ((int (sample->info.frames / sample->info.samplerate) % 60) / 10) +
+				std::to_string ((int (sample->info.frames / sample->info.samplerate) % 60) % 10) +
+				" (" +
+				std::to_string (sample->info.frames) +
+				" frames)"
+			);
+			startLabel.setText
+			(
+				"Selection start: " +
+				std::to_string (int (sample->start / (sample->info.samplerate * 60))) +
+				":" +
+				std::to_string ((int (sample->start / sample->info.samplerate) % 60) / 10) +
+				std::to_string ((int (sample->start / sample->info.samplerate) % 60) % 10) +
+				" (" +
+				std::to_string (sample->start) +
+				" frames)"
+			);
+			endLabel.setText
+			(
+				"Selection end: " +
+				std::to_string (int (sample->end / (sample->info.samplerate * 60))) +
+				":" +
+				std::to_string ((int (sample->end / sample->info.samplerate) % 60) / 10) +
+				std::to_string ((int (sample->end / sample->info.samplerate) % 60) % 10) +
+				" (" +
+				std::to_string (sample->end) +
+				" frames)"
+			);
+			sizeLabel.resize();
+			startLabel.resize();
+			endLabel.resize();
 		}
 
 		else

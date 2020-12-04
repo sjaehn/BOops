@@ -25,6 +25,7 @@
 #include "BWidgets/DrawingSurface.hpp"
 #include "HRangeScrollbar.hpp"
 #include "VLine.hpp"
+#include "Checkbox.hpp"
 #define BWIDGETS_DEFAULT_SAMPLECHOOSER_WIDTH 800
 #define BWIDGETS_DEFAULT_SAMPLECHOOSER_HEIGHT 320
 #define BWIDGETS_DEFAULT_SAMPLECHOOSER_FILTERS std::regex (".*\\.((wav)|(wave)|(aif)|(aiff)|(au)|(sd2)|(flac)|(caf)|(ogg)|(mp3))$", std::regex_constants::icase)
@@ -50,6 +51,7 @@ public:
 
 	int64_t getStart() const;
 	int64_t getEnd() const;
+	bool getLoop() const;
 
 	virtual void resize () override;
 	virtual void resize (const double width, const double height) override;
@@ -66,6 +68,12 @@ protected:
 	HRangeScrollbar scrollbar;
 	VLine startMarker;
 	VLine endMarker;
+	BWidgets::Label sizeLabel;
+	BWidgets::Label startLabel;
+	BWidgets::Label endLabel;
+	Checkbox loopCheckbox;
+	BWidgets::Label loopLabel;
+
 	Sample* sample;
 
 	void drawWaveform();
