@@ -92,7 +92,13 @@ the pattern.
 
 ##### Source
 
-You can choose between a (stereo) audio input stream or a (stereo) sample as the source for B.Oops.
+Although B.Oops was primarily intended for applying glitch effects on an audio input stream, you can alternatively work
+with a sample loaded into the plugin. If you want to go this way, select sample as source and click on the load symbol.
+Now you can select an audio file (supported formats include wav, aiff, au, sd2, flac, caf, ogg, and mp3) and the range of
+the audio file to be used. The playback of the selected range now always starts with the first step in the sequencer.
+
+You can also choose if the sample is played as a loop or not. But this will only be relevant if the selected range is
+shorter than the sequencer loop.
 
 
 ##### Mode
