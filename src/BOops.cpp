@@ -1270,7 +1270,7 @@ LV2_State_Status BOops::state_restore (LV2_State_Retrieve_Function retrieve, LV2
 	        }
 
 		const void* loopData = retrieve (handle, urids.bOops_sampleLoop, &size, &type, &valflags);
-	        if (endData && (type == urids.atom_Bool))
+	        if (loopData && (type == urids.atom_Bool))
 		{
 			sample->loop = *(bool*)loopData;
 			scheduleNotifySamplePathToGui = true;
