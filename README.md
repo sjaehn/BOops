@@ -41,8 +41,8 @@ sudo make install
 
 Optional: Standard `make` and `make install` parameters are supported. Compiling using `make CPPFLAGS+=-O3`
 is recommended to improve the plugin performance. Alternatively, you may build a debugging version using
-`make CPPFLAGS+=-g`. For installation into an alternative directory (e.g., /usr/local/lib/lv2/), change the
-variable `PREFIX` while installing: `sudo make install PREFIX=/usr/local`. If you want to freely choose the
+`make CPPFLAGS+=-g`. For installation into an alternative directory (e.g., /usr/lib/lv2/), change the
+variable `PREFIX` while installing: `sudo make install PREFIX=/usr`. If you want to freely choose the
 install target directory, change the variable `LV2DIR`.
 
 
