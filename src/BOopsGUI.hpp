@@ -247,6 +247,7 @@ private:
 	BWidgets::TextButton transportGateCancelButton;
 	std::vector<bool> transportGateKeys;
 
+	BWidgets::Widget slotsContainer;
 	struct Slot
 	{
 		BWidgets::ValueWidget container;

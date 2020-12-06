@@ -101,6 +101,8 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 	transportGateCancelButton (240, 80, 60, 20, "menu/button", "Cancel"),
 	transportGateKeys (NR_PIANO_KEYS, false),
 
+	slotsContainer (20, 130, 260, 418, "widget"),
+
 	monitor (290, 130, 820, 288, "monitor"),
 	padSurface (290, 130, 820, 288, "padsurface"),
 	editContainer (578, 426, 284, 24, "widget"),
@@ -126,7 +128,7 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 	// Init slots
 	for (int i = 0; i < NR_SLOTS; ++i)
 	{
-		slots[i].container = BWidgets::ValueWidget (20, 130 + i * 24, 260, 24, "padSurface", FX_NONE);
+		slots[i].container = BWidgets::ValueWidget (0, i * 24, 260, 24, "padSurface", FX_NONE);
 		slots[i].addPad = PadButton (0, 0, 20, 24, "pad0", ADDSYMBOL);
 		slots[i].delPad = PadButton (20, 0, 20, 24, "pad0", CLOSESYMBOL);
 		slots[i].upPad = PadButton (40, 0, 20, 24, "pad0", UPSYMBOL);
@@ -338,7 +340,8 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 	for (SlotParam& s : slotParams) mContainer.add (s.container);
 	mContainer.add (gettingstartedContainer);
 	mContainer.add (editContainer);
-	for (Slot& s : slots) mContainer.add (s.container);
+	for (Slot& s : slots) slotsContainer.add (s.container);
+	mContainer.add (slotsContainer);
 	mContainer.add (padSurface);
 	mContainer.add (monitor);
 	mContainer.add (transportGateContainer);
@@ -771,9 +774,11 @@ void BOopsGUI::resize ()
 	RESIZE (padMixLabel, 20, 180, 60, 20, sz);
 	RESIZE (padMixDial, 20, 120, 60, 60, sz);
 
+	RESIZE (slotsContainer, 20, 130, 260, 418, sz);
+
 	for (int i = 0; i < NR_SLOTS; ++i)
 	{
-		RESIZE (slots[i].container, 20, 130 + i * 24, 260, 24, sz);
+		RESIZE (slots[i].container, 0, i * 24, 260, 24, sz);
 		RESIZE (slots[i].addPad, 0, 0, 20, 24, sz);
 		RESIZE (slots[i].delPad, 20, 0, 20, 24, sz);
 		RESIZE (slots[i].upPad, 40, 0, 20, 24, sz);
@@ -848,6 +853,8 @@ void BOopsGUI::applyTheme (BStyles::Theme& theme)
 	transportGatePiano.applyTheme (theme);
 	transportGateOkButton.applyTheme (theme);
 	transportGateCancelButton.applyTheme (theme);
+
+	slotsContainer.applyTheme (theme);
 
 	for (Slot& s : slots)
 	{
