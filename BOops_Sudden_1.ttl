@@ -11,6 +11,9 @@
 	lv2:appliesTo <https://www.jahnichen.de/plugins/lv2/BOops> ;
 	rdfs:label "Sudden 1" ;
 	lv2:port [
+		lv2:symbol "source" ;
+		pset:value 0.0
+	] , [
 		lv2:symbol "autoplay_beats_per_bar" ;
 		pset:value 4.0
 	] , [

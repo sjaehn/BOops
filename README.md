@@ -32,15 +32,15 @@ Debian-based systems you may run:
 sudo apt-get install pkg-config libx11-dev libcairo2-dev libsndfile-dev lv2-dev
 ```
 
-Step 3: Building and installing into the default lv2 directory (/usr/lib/lv2/) is easy using `make` and
+Step 3: Building and installing into the default lv2 directory (/usr/local/lib/lv2/) is easy using `make` and
 `make install`. Simply call:
 ```
 make
 sudo make install
 ```
 
-Optional: Standard `make` and `make install` parameters are supported. Compiling using `make CPPFLAGS+=-O3`
-is recommended to improve the plugin performance. Alternatively, you may build a debugging version using
+Optional: Standard `make` and `make install` parameters are supported. Alternatively, you may build a
+debugging version using
 `make CPPFLAGS+=-g`. For installation into an alternative directory (e.g., /usr/lib/lv2/), change the
 variable `PREFIX` while installing: `sudo make install PREFIX=/usr`. If you want to freely choose the
 install target directory, change the variable `LV2DIR`.
@@ -356,11 +356,9 @@ not. Select at least two slots and set the likelihood ratio for each slot.
 
 ## What's new
 
-* Factory presets
-* Additional reach parameter (in FxWah, FxScratch, and FxChop)
-* Load sample option
-* MP3 support
-* Advanced sample options (begin, end, amp, loop)
+* Update presets for control port source
+* Bugfixes
+* Optimization
 
 
 ## TODO

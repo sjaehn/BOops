@@ -11,6 +11,9 @@
 	lv2:appliesTo <https://www.jahnichen.de/plugins/lv2/BOops> ;
 	rdfs:label "Antimatter" ;
 	lv2:port [
+		lv2:symbol "source" ;
+		pset:value 0.0
+	] , [
 		lv2:symbol "autoplay_beats_per_bar" ;
 		pset:value 4.0
 	] , [
@@ -773,4 +776,3 @@ sl:1; st:4; gt:1,000; sz:4; mx:1,000;
 			rdf:value ()
 		]
 	] .
-
