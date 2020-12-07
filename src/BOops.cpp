@@ -1494,6 +1494,7 @@ LV2_State_Status BOops::state_restore (LV2_State_Retrieve_Function retrieve, LV2
 LV2_Worker_Status BOops::work (LV2_Worker_Respond_Function respond, LV2_Worker_Respond_Handle handle, uint32_t size, const void* data)
 {
 	const LV2_Atom* atom = (const LV2_Atom*)data;
+	if (!atom) return LV2_WORKER_ERR_UNKNOWN;
 
 	// Free old buffers
         if (atom->type == urids.bOops_freeBuffers)
@@ -1555,14 +1556,17 @@ LV2_Worker_Status BOops::work (LV2_Worker_Respond_Function respond, LV2_Worker_R
 				return LV2_WORKER_ERR_UNKNOWN;
 			}
 
-			AtomSample sAtom;
-			sAtom.atom = {sizeof (sample), urids.bOops_installSample};
-			sAtom.sample = s;
-			sAtom.start = (s && oStart && (oStart->type == urids.atom_Long) ? ((LV2_Atom_Long*)oStart)->body : 0);
-			sAtom.end = (oEnd && (oEnd->type == urids.atom_Long) ? ((LV2_Atom_Long*)oEnd)->body : (s ? s->info.frames : 0));
-			sAtom.amp = (oAmp && (oAmp->type == urids.atom_Float) ? ((LV2_Atom_Float*)oAmp)->body : 1.0f);
-			sAtom.loop = (oLoop && (oLoop->type == urids.atom_Bool) ? ((LV2_Atom_Bool*)oLoop)->body : false);
-			if (s) respond (handle, sizeof(sAtom), &sAtom);
+			if (s)
+			{
+				AtomSample sAtom;
+				sAtom.atom = {sizeof (s), urids.bOops_installSample};
+				sAtom.sample = s;
+				sAtom.start = (oStart && (oStart->type == urids.atom_Long) ? ((LV2_Atom_Long*)oStart)->body : 0);
+				sAtom.end = (oEnd && (oEnd->type == urids.atom_Long) ? ((LV2_Atom_Long*)oEnd)->body : s->info.frames);
+				sAtom.amp = (oAmp && (oAmp->type == urids.atom_Float) ? ((LV2_Atom_Float*)oAmp)->body : 1.0f);
+				sAtom.loop = (oLoop && (oLoop->type == urids.atom_Bool) ? ((LV2_Atom_Bool*)oLoop)->body : false);
+				respond (handle, sizeof(sAtom), &sAtom);
+			}
 		}
 
 		else return LV2_WORKER_ERR_UNKNOWN;
@@ -1623,6 +1627,7 @@ LV2_Worker_Status BOops::work (LV2_Worker_Respond_Function respond, LV2_Worker_R
 LV2_Worker_Status BOops::work_response (uint32_t size, const void* data)
 {
 	const LV2_Atom* atom = (const LV2_Atom*)data;
+	if (!atom) return LV2_WORKER_ERR_UNKNOWN;
 
 	// Install slot audio buffers
 	if (atom->type == urids.bOops_installBuffers)
