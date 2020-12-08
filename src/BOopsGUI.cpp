@@ -639,6 +639,7 @@ void BOopsGUI::port_event(uint32_t port, uint32_t buffer_size,
 					urids.bOops_sampleLoop, &oLoop,
 					0
 				);
+
 				if (oPath && (oPath->type == urids.atom_Path))
 				{
 					sampleNameLabel.setText ((const char*)LV2_ATOM_BODY_CONST(oPath));

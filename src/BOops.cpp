@@ -920,11 +920,12 @@ void BOops::notifyTransportGateKeysToGui()
 
 void BOops::notifySamplePathToGui ()
 {
+	LV2_Atom_Forge_Frame frame;
+	lv2_atom_forge_frame_time(&forge, 0);
+	lv2_atom_forge_object(&forge, &frame, 0, urids.bOops_samplePathEvent);
+
 	if (sample && sample->path)
 	{
-		LV2_Atom_Forge_Frame frame;
-		lv2_atom_forge_frame_time(&forge, 0);
-		lv2_atom_forge_object(&forge, &frame, 0, urids.bOops_samplePathEvent);
 		lv2_atom_forge_key(&forge, urids.bOops_samplePath);
 		lv2_atom_forge_path (&forge, sample->path, strlen (sample->path) + 1);
 		lv2_atom_forge_key(&forge, urids.bOops_sampleStart);
@@ -935,8 +936,25 @@ void BOops::notifySamplePathToGui ()
 		lv2_atom_forge_float (&forge, sampleAmp);
 		lv2_atom_forge_key(&forge, urids.bOops_sampleLoop);
 		lv2_atom_forge_bool (&forge, sample->loop);
-		lv2_atom_forge_pop(&forge, &frame);
 	}
+
+	else
+	{
+		const char* path = "";
+		lv2_atom_forge_key(&forge, urids.bOops_samplePath);
+		lv2_atom_forge_path (&forge, path, strlen (path) + 1);
+		lv2_atom_forge_key(&forge, urids.bOops_sampleStart);
+		lv2_atom_forge_long (&forge, 0);
+		lv2_atom_forge_key(&forge, urids.bOops_sampleEnd);
+		lv2_atom_forge_long (&forge, 0);
+		lv2_atom_forge_key(&forge, urids.bOops_sampleAmp);
+		lv2_atom_forge_float (&forge, sampleAmp);
+		lv2_atom_forge_key(&forge, urids.bOops_sampleLoop);
+		lv2_atom_forge_bool (&forge, false);
+	}
+
+	lv2_atom_forge_pop(&forge, &frame);
+
 
 	scheduleNotifySamplePathToGui = false;
 }
@@ -1224,13 +1242,20 @@ LV2_State_Status BOops::state_restore (LV2_State_Retrieve_Function retrieve, LV2
 	uint32_t type;
 	uint32_t valflags;
 
+	if (sample)
+	{
+		delete sample;
+		sample = nullptr;
+		sampleAmp = 1.0;
+		scheduleNotifySamplePathToGui = true;
+	}
+
 	// Retireve sample path
 	const void* pathData = retrieve (handle, urids.bOops_samplePath, &size, &type, &valflags);
         if (pathData)
 	{
 		message.deleteMessage (CANT_OPEN_SAMPLE);
 		const char* path = (const char*)pathData;
-		if (sample) delete sample;
 		try {sample = new Sample (path);}
 		catch (std::bad_alloc &ba)
 		{
