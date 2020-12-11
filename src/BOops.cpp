@@ -1511,7 +1511,7 @@ LV2_State_Status BOops::state_restore (LV2_State_Retrieve_Function retrieve, LV2
 			// Look for shape data
 			Node node = {NodeType::POINT_NODE, {0, 0}, {0, 0}, {0, 0}};
 			bool isTypeDef = false;
-			for (int i = 1; i < 9; ++i)
+			for (int i = 1; i < 8; ++i)
 			{
 				strPos = shapesDataString.find (keywords[i]);
 				if (strPos == std::string::npos) continue;	// Keyword not found => next keyword
