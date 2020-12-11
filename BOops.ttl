@@ -34,7 +34,7 @@
   	doap:license <http://usefulinc.com/doap/licenses/gpl> ;
 	lv2:microVersion 5 ;
 	lv2:minorVersion 0 ;
-	lv2:optionalFeature lv2:hardRTCapable ;
+	lv2:optionalFeature lv2:hardRTCapable , state:threadSafeRestore ;
 	lv2:extensionData state:interface , work:interface ;
   	lv2:requiredFeature urid:map , work:schedule ;
   	ui:ui <https://www.jahnichen.de/plugins/lv2/BOops#gui> ;

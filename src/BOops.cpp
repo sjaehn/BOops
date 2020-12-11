@@ -22,6 +22,7 @@
 #include <string>
 #include <stdexcept>
 #include <algorithm>
+#include "lv2/core/lv2_util.h"
 #include "BOops.hpp"
 #include "ControllerLimits.hpp"
 #include "BUtilities/stof.hpp"
@@ -43,7 +44,9 @@ inline double floorfrac (const double value) {return value - floor (value);}
 
 BOops::BOops (double samplerate, const char* bundle_path, const LV2_Feature* const* features) :
 	map(NULL), workerSchedule (NULL), pluginPath {0}, urids (),
-	host {samplerate, 120.0f, 1.0f, 0ul, 0.0f, 4.0f, 4}, positions (),
+	host {samplerate, 120.0f, 1.0f, 0ul, 0.0f, 4.0f, 4},
+	activated (false),
+	positions (),
 	transportGateKeys {false},
 	controlPort(NULL), notifyPort(NULL),
 	audioInput1(NULL), audioInput2(NULL), audioOutput1(NULL), audioOutput2(NULL),
@@ -200,6 +203,10 @@ double BOops::getFramesPerStep (const Transport& transport)
 	);
 	return transport.rate * s / globalControllers[STEPS];
 }
+
+void BOops::activate() {activated = true;}
+
+void BOops::deactivate() {activated = false;}
 
 void BOops::run (uint32_t n_samples)
 {
@@ -1238,25 +1245,93 @@ LV2_State_Status BOops::state_save (LV2_State_Store_Function store, LV2_State_Ha
 LV2_State_Status BOops::state_restore (LV2_State_Retrieve_Function retrieve, LV2_State_Handle handle, uint32_t flags,
 			const LV2_Feature* const* features)
 {
+
+	// Get host features
+	LV2_Worker_Schedule* schedule = nullptr;
+	LV2_State_Map_Path* mapPath = nullptr;
+	const char* missing  = lv2_features_query
+	(
+		features,
+		LV2_STATE__mapPath,   &mapPath,    true,
+		LV2_WORKER__schedule, &schedule, false,
+		nullptr
+	);
+
+	if (missing)
+	{
+		fprintf (stderr, "BOops.lv2: Host doesn't support required features.\n");
+		return LV2_STATE_ERR_NO_FEATURE;
+	}
+
 	size_t   size;
 	uint32_t type;
 	uint32_t valflags;
 
-	if (sample)
-	{
-		delete sample;
-		sample = nullptr;
-		sampleAmp = 1.0;
-		scheduleNotifySamplePathToGui = true;
-	}
+	// Retireve sample data
+	char samplePath[1024] = {0};
+	int64_t sampleStart = 0;
+	int64_t sampleEnd = 0;
+	float sampleAmp = 1.0;
+	bool sampleLoop = false;
 
-	// Retireve sample path
 	const void* pathData = retrieve (handle, urids.bOops_samplePath, &size, &type, &valflags);
         if (pathData)
 	{
+		if (strlen ((char*)pathData) < 1024) strcpy (samplePath, (char*)pathData);
+		else
+		{
+			fprintf (stderr, "BOops.lv2: Sample path too long.\n");
+			message.setMessage (CANT_OPEN_SAMPLE);
+		}
+
+        }
+
+	const void* startData = retrieve (handle, urids.bOops_sampleStart, &size, &type, &valflags);
+        if (startData && (type == urids.atom_Long)) sampleStart = *(int64_t*)startData;
+	const void* endData = retrieve (handle, urids.bOops_sampleEnd, &size, &type, &valflags);
+        if (endData && (type == urids.atom_Long)) sampleEnd = *(int64_t*)endData;
+	const void* ampData = retrieve (handle, urids.bOops_sampleAmp, &size, &type, &valflags);
+        if (ampData && (type == urids.atom_Float)) sampleAmp = *(float*)ampData;
+	const void* loopData = retrieve (handle, urids.bOops_sampleLoop, &size, &type, &valflags);
+        if (loopData && (type == urids.atom_Bool)) sampleLoop = *(bool*)loopData;
+
+	if (activated)
+	{
+		LV2_Atom_Forge forge;
+		lv2_atom_forge_init(&forge, map);
+		uint8_t buf[2024];
+		lv2_atom_forge_set_buffer(&forge, buf, sizeof(buf));
+		LV2_Atom_Forge_Frame frame;
+		//lv2_atom_forge_frame_time(&forge, 0);
+		LV2_Atom* msg = (LV2_Atom*)lv2_atom_forge_object (&forge, &frame, 0, urids.bOops_samplePathEvent);
+		lv2_atom_forge_key(&forge, urids.bOops_samplePath);
+		lv2_atom_forge_path (&forge, samplePath, strlen (samplePath) + 1);
+		lv2_atom_forge_key(&forge, urids.bOops_sampleStart);
+		lv2_atom_forge_long (&forge, sampleStart);
+		lv2_atom_forge_key(&forge, urids.bOops_sampleEnd);
+		lv2_atom_forge_long (&forge, sampleEnd);
+		lv2_atom_forge_key(&forge, urids.bOops_sampleAmp);
+		lv2_atom_forge_float (&forge, sampleAmp);
+		lv2_atom_forge_key(&forge, urids.bOops_sampleLoop);
+		lv2_atom_forge_bool (&forge, sampleLoop);
+		lv2_atom_forge_pop(&forge, &frame);
+
+		if (msg) schedule->schedule_work(schedule->handle, lv2_atom_total_size(msg), msg);
+	}
+
+	else
+	{
+		// Free old sample
+		if (sample)
+		{
+			delete sample;
+			sample = nullptr;
+			sampleAmp = 1.0;
+		}
+
+		// Load new sample
 		message.deleteMessage (CANT_OPEN_SAMPLE);
-		const char* path = (const char*)pathData;
-		try {sample = new Sample (path);}
+		try {sample = new Sample (samplePath);}
 		catch (std::bad_alloc &ba)
 		{
 			fprintf (stderr, "BOops.lv2: Can't allocate enoug memory to open sample file.\n");
@@ -1267,39 +1342,18 @@ LV2_State_Status BOops::state_restore (LV2_State_Retrieve_Function retrieve, LV2
 			fprintf (stderr, "%s\n", ia.what());
 			message.setMessage (CANT_OPEN_SAMPLE);
 		}
+
+		// Set new sample properties
+		if  (sample)
+		{
+			sample->start = sampleStart;
+			sample->end = sampleEnd;
+			sample->loop = sampleLoop;
+			this->sampleAmp = sampleAmp;
+		}
+
 		scheduleNotifySamplePathToGui = true;
-        }
 
-	// Retireve sample start and end
-	if (sample)
-	{
-		const void* startData = retrieve (handle, urids.bOops_sampleStart, &size, &type, &valflags);
-	        if (startData && (type == urids.atom_Long))
-		{
-			sample->start = *(sf_count_t*)startData;
-			scheduleNotifySamplePathToGui = true;
-	        }
-
-		const void* endData = retrieve (handle, urids.bOops_sampleEnd, &size, &type, &valflags);
-	        if (endData && (type == urids.atom_Long))
-		{
-			sample->end = *(sf_count_t*)endData;
-			scheduleNotifySamplePathToGui = true;
-	        }
-
-		const void* ampData = retrieve (handle, urids.bOops_sampleAmp, &size, &type, &valflags);
-	        if (ampData && (type == urids.atom_Float))
-		{
-			sampleAmp = *(float*)ampData;
-			scheduleNotifySamplePathToGui = true;
-	        }
-
-		const void* loopData = retrieve (handle, urids.bOops_sampleLoop, &size, &type, &valflags);
-	        if (loopData && (type == urids.atom_Bool))
-		{
-			sample->loop = *(bool*)loopData;
-			scheduleNotifySamplePathToGui = true;
-	        }
 	}
 
 	// Retrieve transportGateKeys
@@ -1567,31 +1621,33 @@ LV2_Worker_Status BOops::work (LV2_Worker_Respond_Function respond, LV2_Worker_R
 		{
 			message.deleteMessage (CANT_OPEN_SAMPLE);
 			Sample* s = nullptr;
-			try {s = new Sample ((const char*)LV2_ATOM_BODY_CONST(oPath));}
-			catch (std::bad_alloc &ba)
+
+			const char* pathName = (const char*)LV2_ATOM_BODY_CONST(oPath);
+			if (pathName && (pathName[0] != 0))
 			{
-				fprintf (stderr, "BOops.lv2: Can't allocate enough memory to open sample file.\n");
-				message.setMessage (CANT_OPEN_SAMPLE);
-				return LV2_WORKER_ERR_NO_SPACE;
-			}
-			catch (std::invalid_argument &ia)
-			{
-				fprintf (stderr, "%s\n", ia.what());
-				message.setMessage (CANT_OPEN_SAMPLE);
-				return LV2_WORKER_ERR_UNKNOWN;
+				try {s = new Sample (pathName);}
+				catch (std::bad_alloc &ba)
+				{
+					fprintf (stderr, "BOops.lv2: Can't allocate enough memory to open sample file.\n");
+					message.setMessage (CANT_OPEN_SAMPLE);
+					return LV2_WORKER_ERR_NO_SPACE;
+				}
+				catch (std::invalid_argument &ia)
+				{
+					fprintf (stderr, "%s\n", ia.what());
+					message.setMessage (CANT_OPEN_SAMPLE);
+					return LV2_WORKER_ERR_UNKNOWN;
+				}
 			}
 
-			if (s)
-			{
-				AtomSample sAtom;
-				sAtom.atom = {sizeof (s), urids.bOops_installSample};
-				sAtom.sample = s;
-				sAtom.start = (oStart && (oStart->type == urids.atom_Long) ? ((LV2_Atom_Long*)oStart)->body : 0);
-				sAtom.end = (oEnd && (oEnd->type == urids.atom_Long) ? ((LV2_Atom_Long*)oEnd)->body : s->info.frames);
-				sAtom.amp = (oAmp && (oAmp->type == urids.atom_Float) ? ((LV2_Atom_Float*)oAmp)->body : 1.0f);
-				sAtom.loop = (oLoop && (oLoop->type == urids.atom_Bool) ? ((LV2_Atom_Bool*)oLoop)->body : false);
-				respond (handle, sizeof(sAtom), &sAtom);
-			}
+			AtomSample sAtom;
+			sAtom.atom = {sizeof (s), urids.bOops_installSample};
+			sAtom.sample = s;
+			sAtom.start = (oStart && (oStart->type == urids.atom_Long) && s ? ((LV2_Atom_Long*)oStart)->body : 0);
+			sAtom.end = (s ? (oEnd && (oEnd->type == urids.atom_Long) ? ((LV2_Atom_Long*)oEnd)->body : s->info.frames) : 0);
+			sAtom.amp = (oAmp && (oAmp->type == urids.atom_Float) ? ((LV2_Atom_Float*)oAmp)->body : 1.0f);
+			sAtom.loop = (oLoop && (oLoop->type == urids.atom_Bool && s) ? ((LV2_Atom_Bool*)oLoop)->body : false);
+			respond (handle, sizeof(sAtom), &sAtom);
 		}
 
 		else return LV2_WORKER_ERR_UNKNOWN;
@@ -1702,6 +1758,7 @@ LV2_Worker_Status BOops::work_response (uint32_t size, const void* data)
 			sampleAmp = LIMIT (nAtom->amp, 0.0f, 1.0f);
 			sample->loop = nAtom->loop;
 		}
+		scheduleNotifySamplePathToGui = true;
 	}
 
 	return LV2_WORKER_SUCCESS;
@@ -1737,19 +1794,31 @@ LV2_Handle instantiate (const LV2_Descriptor* descriptor, double samplerate, con
 void connect_port (LV2_Handle instance, uint32_t port, void *data)
 {
 	BOops* inst = (BOops*) instance;
-	inst->connect_port (port, data);
+	if (inst) inst->connect_port (port, data);
+}
+
+void activate (LV2_Handle instance)
+{
+	BOops* inst = (BOops*) instance;
+	if (inst) inst->activate();
 }
 
 void run (LV2_Handle instance, uint32_t n_samples)
 {
 	BOops* inst = (BOops*) instance;
-	inst->run (n_samples);
+	if (inst) inst->run (n_samples);
+}
+
+void deactivate (LV2_Handle instance)
+{
+	BOops* inst = (BOops*) instance;
+	if (inst) inst->deactivate();
 }
 
 void cleanup (LV2_Handle instance)
 {
 	BOops* inst = (BOops*) instance;
-	delete inst;
+	if (inst) delete inst;
 }
 
 static LV2_State_Status state_save(LV2_Handle instance, LV2_State_Store_Function store, LV2_State_Handle handle, uint32_t flags,
@@ -1766,7 +1835,7 @@ static LV2_State_Status state_restore(LV2_Handle instance, LV2_State_Retrieve_Fu
            const LV2_Feature* const* features)
 {
 	BOops* inst = (BOops*)instance;
-	inst->state_restore (retrieve, handle, flags, features);
+	if (inst) inst->state_restore (retrieve, handle, flags, features);
 	return LV2_STATE_SUCCESS;
 }
 
@@ -1801,9 +1870,9 @@ const LV2_Descriptor descriptor =
 	BOOPS_URI,
 	instantiate,
 	connect_port,
-	NULL, //activate,
+	activate,
 	run,
-	NULL, //deactivate,
+	deactivate,
 	cleanup,
 	extension_data
 };
