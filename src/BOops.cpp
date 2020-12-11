@@ -1275,16 +1275,19 @@ LV2_State_Status BOops::state_restore (LV2_State_Retrieve_Function retrieve, LV2
 	bool sampleLoop = false;
 
 	const void* pathData = retrieve (handle, urids.bOops_samplePath, &size, &type, &valflags);
-        if (pathData)
+	if (pathData)
 	{
-		if (strlen ((char*)pathData) < 1024) strcpy (samplePath, (char*)pathData);
-		else
+		const char* absPath  = mapPath->absolute_path (mapPath->handle, (char*)pathData);
+	        if (absPath)
 		{
-			fprintf (stderr, "BOops.lv2: Sample path too long.\n");
-			message.setMessage (CANT_OPEN_SAMPLE);
-		}
-
-        }
+			if (strlen (absPath) < 1024) strcpy (samplePath, absPath);
+			else
+			{
+				fprintf (stderr, "BOops.lv2: Sample path too long.\n");
+				message.setMessage (CANT_OPEN_SAMPLE);
+			}
+	        }
+	}
 
 	const void* startData = retrieve (handle, urids.bOops_sampleStart, &size, &type, &valflags);
         if (startData && (type == urids.atom_Long)) sampleStart = *(int64_t*)startData;
@@ -1295,7 +1298,7 @@ LV2_State_Status BOops::state_restore (LV2_State_Retrieve_Function retrieve, LV2
 	const void* loopData = retrieve (handle, urids.bOops_sampleLoop, &size, &type, &valflags);
         if (loopData && (type == urids.atom_Bool)) sampleLoop = *(bool*)loopData;
 
-	if (activated)
+	if (activated && schedule)
 	{
 		LV2_Atom_Forge forge;
 		lv2_atom_forge_init(&forge, map);
@@ -1303,6 +1306,7 @@ LV2_State_Status BOops::state_restore (LV2_State_Retrieve_Function retrieve, LV2
 		lv2_atom_forge_set_buffer(&forge, buf, sizeof(buf));
 		LV2_Atom_Forge_Frame frame;
 		//lv2_atom_forge_frame_time(&forge, 0);
+
 		LV2_Atom* msg = (LV2_Atom*)lv2_atom_forge_object (&forge, &frame, 0, urids.bOops_samplePathEvent);
 		lv2_atom_forge_key(&forge, urids.bOops_samplePath);
 		lv2_atom_forge_path (&forge, samplePath, strlen (samplePath) + 1);
@@ -1353,7 +1357,7 @@ LV2_State_Status BOops::state_restore (LV2_State_Retrieve_Function retrieve, LV2
 		}
 
 		scheduleNotifySamplePathToGui = true;
-
+		fprintf(stderr, "done\n");
 	}
 
 	// Retrieve transportGateKeys
