@@ -432,47 +432,8 @@ void BOops::run (uint32_t n_samples)
 				}
 			}
 
-			// Process slot shape data
-			else if (obj->body.otype == urids.bOops_shapeEvent)
-			{
-				LV2_Atom *oSl = NULL, *oSh = NULL;
-				int slot = -1;
-				lv2_atom_object_get (obj,
-					 	     urids.bOops_slot, &oSl,
-						     urids.bOops_shapeData, &oSh,
-						     NULL);
-
-				// Slot nr notification
-				if (oSl && (oSl->type == urids.atom_Int) && (((LV2_Atom_Int*)oSl)->body >= 0) && (((LV2_Atom_Int*)oSl)->body < NR_SLOTS))
-				{
-					slot = ((LV2_Atom_Int*)oSl)->body;
-				}
-
-				// Shape notification
-				if (oSh && (oSh->type == urids.atom_Vector) && (slot >= 0))
-				{
-					const LV2_Atom_Vector* vec = (const LV2_Atom_Vector*) oSh;
-					if (vec->body.child_type == urids.atom_Float)
-					{
-						slots[slot].shape.clearShape ();
-						const uint32_t vecSize = (uint32_t) ((oSh->size - sizeof(LV2_Atom_Vector_Body)) / (7 * sizeof (float)));
-						float* data = (float*) (&vec->body + 1);
-						for (unsigned int i = 0; (i < vecSize) && (i < SHAPE_MAXNODES); ++i)
-						{
-							Node node;
-							node.nodeType = NodeType (int (data[i * 7]));
-							node.point.x = data[i * 7 + 1];
-							node.point.y = data[i * 7 + 2];
-							node.handle1.x = data[i * 7 + 3];
-							node.handle1.y = data[i * 7 + 4];
-							node.handle2.x = data[i * 7 + 5];
-							node.handle2.y = data[i * 7 + 6];
-							slots[slot].shape.appendNode (node);
-						}
-						slots[slot].shape.validateShape();
-					}
-				}
-			}
+			// Slot shape data -> forward to worker
+			else if (obj->body.otype == urids.bOops_shapeEvent) workerSchedule->schedule_work (workerSchedule->handle, lv2_atom_total_size((LV2_Atom*)obj), obj);
 
 			// Sample path notification -> forward to worker
 			else if (obj->body.otype ==urids.bOops_samplePathEvent)
@@ -804,26 +765,9 @@ void BOops::notifySlotToGui (const int slot)
 
 void BOops::notifyShapeToGui (const int slot)
 {
-	float nodes[SHAPE_MAXNODES][7];
-	for (unsigned int i = 0; i < slots[slot].shape.size(); ++i)
-	{
-		Node n = slots[slot].shape.getNode (i);
-		nodes[i][0] = n.nodeType;
-		nodes[i][1] = n.point.x;
-		nodes[i][2] = n.point.y;
-		nodes[i][3] = n.handle1.x;
-		nodes[i][4] = n.handle1.y;
-		nodes[i][5] = n.handle2.x;
-		nodes[i][6] = n.handle2.y;
-	}
-
 	LV2_Atom_Forge_Frame frame;
 	lv2_atom_forge_frame_time(&forge, 0);
-	lv2_atom_forge_object(&forge, &frame, 0, urids.bOops_shapeEvent);
-	lv2_atom_forge_key(&forge, urids.bOops_slot);
-	lv2_atom_forge_int(&forge, slot);
-	lv2_atom_forge_key(&forge, urids.bOops_shapeData);
-	lv2_atom_forge_vector(&forge, sizeof(float), urids.atom_Float, 7 * slots[slot].shape.size(), (void*) nodes);
+	forgeShape (&forge, &frame, slot, &slots[slot].shape);
 	lv2_atom_forge_pop(&forge, &frame);
 
 	scheduleNotifyShape[slot] = false;
@@ -956,6 +900,32 @@ LV2_Atom_Forge_Ref BOops::forgeSamplePath (LV2_Atom_Forge* forge, LV2_Atom_Forge
 		lv2_atom_forge_float (forge, amp);
 		lv2_atom_forge_key (forge, urids.bOops_sampleLoop);
 		lv2_atom_forge_bool (forge, loop);
+	}
+	return msg;
+}
+
+LV2_Atom_Forge_Ref  BOops::forgeShape (LV2_Atom_Forge* forge, LV2_Atom_Forge_Frame* frame, const int slot, const Shape<SHAPE_MAXNODES>* shape)
+{
+	float nodes[SHAPE_MAXNODES][7];
+	for (unsigned int i = 0; i < shape->size(); ++i)
+	{
+		Node n = shape->getNode (i);
+		nodes[i][0] = n.nodeType;
+		nodes[i][1] = n.point.x;
+		nodes[i][2] = n.point.y;
+		nodes[i][3] = n.handle1.x;
+		nodes[i][4] = n.handle1.y;
+		nodes[i][5] = n.handle2.x;
+		nodes[i][6] = n.handle2.y;
+	}
+
+	const LV2_Atom_Forge_Ref msg = lv2_atom_forge_object (forge, frame, 0, urids.bOops_shapeEvent);
+	if (msg)
+	{
+		lv2_atom_forge_key(forge, urids.bOops_slot);
+		lv2_atom_forge_int(forge, slot);
+		lv2_atom_forge_key(forge, urids.bOops_shapeData);
+		lv2_atom_forge_vector(forge, sizeof(float), urids.atom_Float, 7 * shape->size(), nodes);
 	}
 	return msg;
 }
@@ -1296,7 +1266,7 @@ LV2_State_Status BOops::state_restore (LV2_State_Retrieve_Function retrieve, LV2
 	{
 		LV2_Atom_Forge forge;
 		lv2_atom_forge_init(&forge, map);
-		uint8_t buf[2024];
+		uint8_t buf[1200];
 		lv2_atom_forge_set_buffer(&forge, buf, sizeof(buf));
 		LV2_Atom_Forge_Frame frame;
 		LV2_Atom* msg = (LV2_Atom*)forgeSamplePath (&forge, &frame, samplePath, sampleStart, sampleEnd, sampleAmp, sampleLoop);
@@ -1338,7 +1308,6 @@ LV2_State_Status BOops::state_restore (LV2_State_Retrieve_Function retrieve, LV2
 		}
 
 		scheduleNotifySamplePathToGui = true;
-		fprintf(stderr, "done\n");
 	}
 
 	// Retrieve transportGateKeys
@@ -1463,8 +1432,8 @@ LV2_State_Status BOops::state_restore (LV2_State_Retrieve_Function retrieve, LV2
 	const void* shapesData = retrieve(handle, urids.bOops_shapeData, &size, &type, &valflags);
 	if (shapesData && (type == urids.atom_String))
 	{
-		// Clear old shapes first
-		for (int sl = 0; sl < NR_SLOTS; ++sl) slots[sl].shape.clearShape();
+		Shape<SHAPE_MAXNODES> shapes[NR_SLOTS];
+		for (int sl = 0; sl < NR_SLOTS; ++sl) shapes[sl].clearShape();
 
 		// Parse retrieved data
 		std::string shapesDataString = (char*) shapesData;
@@ -1538,18 +1507,40 @@ LV2_State_Status BOops::state_restore (LV2_State_Retrieve_Function retrieve, LV2
 			}
 
 			// Set data
-			if (isTypeDef) slots[sl].shape.appendNode (node);
+			if (isTypeDef) shapes[sl].appendNode (node);
 		}
 
 		// Validate all shapes
 		for (int sl = 0; sl < NR_SLOTS; ++sl)
 		{
-			if (slots[sl].shape.size () < 2) slots[sl].shape.setDefaultShape ();
-			else if (!slots[sl].shape.validateShape ()) slots[sl].shape.setDefaultShape ();
+			if (shapes[sl].size () < 2) shapes[sl].setDefaultShape ();
+			else if (!shapes[sl].validateShape ()) slots[sl].shape.setDefaultShape ();
 		}
 
-		// Force GUI notification
-		std::fill (scheduleNotifyShape, scheduleNotifyShape + NR_SLOTS, true);
+		// Install or schedule new shape
+		if (activated && schedule)
+		{
+			for (int sl = 0; sl < NR_SLOTS; ++sl)
+			{
+				LV2_Atom_Forge forge;
+				lv2_atom_forge_init(&forge, map);
+				uint8_t buf[1024];
+				lv2_atom_forge_set_buffer(&forge, buf, sizeof(buf));
+				LV2_Atom_Forge_Frame frame;
+				LV2_Atom* msg = (LV2_Atom*)forgeShape (&forge, &frame, sl, &shapes[sl]);
+				lv2_atom_forge_pop(&forge, &frame);
+				if (msg) schedule->schedule_work(schedule->handle, lv2_atom_total_size(msg), msg);
+			}
+		}
+
+		else
+		{
+			for (int sl = 0; sl < NR_SLOTS; ++sl)
+			{
+				slots[sl].shape = shapes[sl];
+				scheduleNotifyShape[sl] = true;
+			}
+		}
 	}
 
 	return LV2_STATE_SUCCESS;
@@ -1583,6 +1574,12 @@ LV2_Worker_Status BOops::work (LV2_Worker_Respond_Function respond, LV2_Worker_R
 		const AtomSample* sAtom = (AtomSample*) atom;
 		if (sAtom->sample) delete sAtom->sample;
         }
+
+	// Forward shape to respond
+	else if ((atom->type == urids.atom_Object) && (((LV2_Atom_Object*)atom)->body.otype == urids.bOops_shapeEvent))
+	{
+		respond (handle, lv2_atom_total_size (atom), atom);
+	}
 
 	// Load sample
 	else if ((atom->type == urids.atom_Object) && (((LV2_Atom_Object*)atom)->body.otype == urids.bOops_samplePathEvent))
@@ -1661,7 +1658,7 @@ LV2_Worker_Status BOops::work (LV2_Worker_Respond_Function respond, LV2_Worker_R
 				}
 		                catch (std::bad_alloc& ba)
 				{
-					fprintf (stderr, "BGlitch.lv2: Can't allocate enough memory to resize audio buffers.\n");
+					fprintf (stderr, "BOops.lv2: Can't allocate enough memory to resize audio buffers.\n");
 					//message.setMessage (MEMORY_ERR);
 					return LV2_WORKER_ERR_NO_SPACE;
 				}
@@ -1744,6 +1741,49 @@ LV2_Worker_Status BOops::work_response (uint32_t size, const void* data)
 			sample->loop = nAtom->loop;
 		}
 		scheduleNotifySamplePathToGui = true;
+	}
+
+	// Install shape
+	else if ((atom->type == urids.atom_Object) && (((LV2_Atom_Object*)atom)->body.otype == urids.bOops_shapeEvent))
+	{
+		LV2_Atom *oSl = NULL, *oSh = NULL;
+		int slot = -1;
+		lv2_atom_object_get ((LV2_Atom_Object*)atom,
+				     urids.bOops_slot, &oSl,
+				     urids.bOops_shapeData, &oSh,
+				     NULL);
+
+		// Slot nr notification
+		if (oSl && (oSl->type == urids.atom_Int) && (((LV2_Atom_Int*)oSl)->body >= 0) && (((LV2_Atom_Int*)oSl)->body < NR_SLOTS))
+		{
+			slot = ((LV2_Atom_Int*)oSl)->body;
+		}
+
+		// Shape notification
+		if (oSh && (oSh->type == urids.atom_Vector) && (slot >= 0))
+		{
+			const LV2_Atom_Vector* vec = (const LV2_Atom_Vector*) oSh;
+			if (vec->body.child_type == urids.atom_Float)
+			{
+				slots[slot].shape.clearShape ();
+				const uint32_t vecSize = (uint32_t) ((oSh->size - sizeof(LV2_Atom_Vector_Body)) / (7 * sizeof (float)));
+				float* data = (float*) (&vec->body + 1);
+				for (unsigned int i = 0; (i < vecSize) && (i < SHAPE_MAXNODES); ++i)
+				{
+					Node node;
+					node.nodeType = NodeType (int (data[i * 7]));
+					node.point.x = data[i * 7 + 1];
+					node.point.y = data[i * 7 + 2];
+					node.handle1.x = data[i * 7 + 3];
+					node.handle1.y = data[i * 7 + 4];
+					node.handle2.x = data[i * 7 + 5];
+					node.handle2.y = data[i * 7 + 6];
+					slots[slot].shape.appendNode (node);
+				}
+				slots[slot].shape.validateShape();
+				scheduleNotifyShape[slot] = true;
+			}
+		}
 	}
 
 	return LV2_WORKER_SUCCESS;
