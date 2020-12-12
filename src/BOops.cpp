@@ -929,41 +929,35 @@ void BOops::notifySamplePathToGui ()
 {
 	LV2_Atom_Forge_Frame frame;
 	lv2_atom_forge_frame_time(&forge, 0);
-	lv2_atom_forge_object(&forge, &frame, 0, urids.bOops_samplePathEvent);
 
-	if (sample && sample->path)
-	{
-		lv2_atom_forge_key(&forge, urids.bOops_samplePath);
-		lv2_atom_forge_path (&forge, sample->path, strlen (sample->path) + 1);
-		lv2_atom_forge_key(&forge, urids.bOops_sampleStart);
-		lv2_atom_forge_long (&forge, sample->start);
-		lv2_atom_forge_key(&forge, urids.bOops_sampleEnd);
-		lv2_atom_forge_long (&forge, sample->end);
-		lv2_atom_forge_key(&forge, urids.bOops_sampleAmp);
-		lv2_atom_forge_float (&forge, sampleAmp);
-		lv2_atom_forge_key(&forge, urids.bOops_sampleLoop);
-		lv2_atom_forge_bool (&forge, sample->loop);
-	}
-
+	if (sample && sample->path) forgeSamplePath (&forge, &frame, sample->path, sample->start, sample->end, sampleAmp, sample->loop);
 	else
 	{
 		const char* path = "";
-		lv2_atom_forge_key(&forge, urids.bOops_samplePath);
-		lv2_atom_forge_path (&forge, path, strlen (path) + 1);
-		lv2_atom_forge_key(&forge, urids.bOops_sampleStart);
-		lv2_atom_forge_long (&forge, 0);
-		lv2_atom_forge_key(&forge, urids.bOops_sampleEnd);
-		lv2_atom_forge_long (&forge, 0);
-		lv2_atom_forge_key(&forge, urids.bOops_sampleAmp);
-		lv2_atom_forge_float (&forge, sampleAmp);
-		lv2_atom_forge_key(&forge, urids.bOops_sampleLoop);
-		lv2_atom_forge_bool (&forge, false);
+		forgeSamplePath (&forge, &frame, path, 0, 0, sampleAmp, false);
 	}
 
 	lv2_atom_forge_pop(&forge, &frame);
-
-
 	scheduleNotifySamplePathToGui = false;
+}
+
+LV2_Atom_Forge_Ref BOops::forgeSamplePath (LV2_Atom_Forge* forge, LV2_Atom_Forge_Frame* frame, const char* path, const int64_t start, const int64_t end, const float amp, const bool loop)
+{
+	const LV2_Atom_Forge_Ref msg = lv2_atom_forge_object (forge, frame, 0, urids.bOops_samplePathEvent);
+	if (msg)
+	{
+		lv2_atom_forge_key (forge, urids.bOops_samplePath);
+		lv2_atom_forge_path (forge, path, strlen (path) + 1);
+		lv2_atom_forge_key (forge, urids.bOops_sampleStart);
+		lv2_atom_forge_long (forge, start);
+		lv2_atom_forge_key (forge, urids.bOops_sampleEnd);
+		lv2_atom_forge_long (forge, end);
+		lv2_atom_forge_key (forge, urids.bOops_sampleAmp);
+		lv2_atom_forge_float (forge, amp);
+		lv2_atom_forge_key (forge, urids.bOops_sampleLoop);
+		lv2_atom_forge_bool (forge, loop);
+	}
+	return msg;
 }
 
 void BOops::play (uint32_t start, uint32_t end)
@@ -1252,7 +1246,7 @@ LV2_State_Status BOops::state_restore (LV2_State_Retrieve_Function retrieve, LV2
 	const char* missing  = lv2_features_query
 	(
 		features,
-		LV2_STATE__mapPath,   &mapPath,    true,
+		LV2_STATE__mapPath, &mapPath, true,
 		LV2_WORKER__schedule, &schedule, false,
 		nullptr
 	);
@@ -1305,21 +1299,8 @@ LV2_State_Status BOops::state_restore (LV2_State_Retrieve_Function retrieve, LV2
 		uint8_t buf[2024];
 		lv2_atom_forge_set_buffer(&forge, buf, sizeof(buf));
 		LV2_Atom_Forge_Frame frame;
-		//lv2_atom_forge_frame_time(&forge, 0);
-
-		LV2_Atom* msg = (LV2_Atom*)lv2_atom_forge_object (&forge, &frame, 0, urids.bOops_samplePathEvent);
-		lv2_atom_forge_key(&forge, urids.bOops_samplePath);
-		lv2_atom_forge_path (&forge, samplePath, strlen (samplePath) + 1);
-		lv2_atom_forge_key(&forge, urids.bOops_sampleStart);
-		lv2_atom_forge_long (&forge, sampleStart);
-		lv2_atom_forge_key(&forge, urids.bOops_sampleEnd);
-		lv2_atom_forge_long (&forge, sampleEnd);
-		lv2_atom_forge_key(&forge, urids.bOops_sampleAmp);
-		lv2_atom_forge_float (&forge, sampleAmp);
-		lv2_atom_forge_key(&forge, urids.bOops_sampleLoop);
-		lv2_atom_forge_bool (&forge, sampleLoop);
+		LV2_Atom* msg = (LV2_Atom*)forgeSamplePath (&forge, &frame, samplePath, sampleStart, sampleEnd, sampleAmp, sampleLoop);
 		lv2_atom_forge_pop(&forge, &frame);
-
 		if (msg) schedule->schedule_work(schedule->handle, lv2_atom_total_size(msg), msg);
 	}
 
@@ -1580,7 +1561,7 @@ LV2_Worker_Status BOops::work (LV2_Worker_Respond_Function respond, LV2_Worker_R
 	if (!atom) return LV2_WORKER_ERR_UNKNOWN;
 
 	// Free old buffers
-        if (atom->type == urids.bOops_freeBuffers)
+        else if (atom->type == urids.bOops_freeBuffers)
 	{
 		const Atom_BufferList* bAtom = (const Atom_BufferList*) data;
 		for (int i = 0; i < NR_SLOTS; ++i)
@@ -1590,14 +1571,14 @@ LV2_Worker_Status BOops::work (LV2_Worker_Respond_Function respond, LV2_Worker_R
         }
 
 	// Free old Fx
-        if (atom->type == urids.bOops_freeFx)
+        else if (atom->type == urids.bOops_freeFx)
 	{
 		const Atom_Fx* fAtom = (const Atom_Fx*) data;
 		if (fAtom->fx) delete (fAtom->fx);
         }
 
 	// Free old sample
-        if (atom->type == urids.bOops_sampleFreeEvent)
+        else if (atom->type == urids.bOops_sampleFreeEvent)
 	{
 		const AtomSample* sAtom = (AtomSample*) atom;
 		if (sAtom->sample) delete sAtom->sample;
