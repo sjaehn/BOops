@@ -338,30 +338,8 @@ void BOops::run (uint32_t n_samples)
 			// Process GUI off status data
 			else if (obj->body.otype == urids.bOops_uiOff) ui_on = false;
 
-			// Process transportGateKey data
-			else if (obj->body.otype == urids.bOops_transportGateKeyEvent)
-			{
-				LV2_Atom *oKeys = NULL;
-				lv2_atom_object_get (obj,
-					 	     urids.bOops_transportGateKeys, &oKeys,
-						     NULL);
-
-				if (oKeys && (oKeys->type == urids.atom_Vector))
-				{
-					const LV2_Atom_Vector* vec = (const LV2_Atom_Vector*) oKeys;
-					if (vec->body.child_type == urids.atom_Int)
-					{
-						const int keysize = LIMIT ((int) ((oKeys->size - sizeof(LV2_Atom_Vector_Body)) / sizeof (int)), 0, NR_PIANO_KEYS);
-						const int* keys = (int*) (&vec->body + 1);
-						std::fill (transportGateKeys, transportGateKeys + NR_PIANO_KEYS, false);
-						for (int i = 0; i < keysize; ++i)
-						{
-							int keyNr = keys[i];
-							if ((keyNr >=0) && (keyNr < NR_PIANO_KEYS)) transportGateKeys[keyNr] = true;
-						}
-					}
-				}
-			}
+			// Fortward transportGateKey data -> worker
+			else if (obj->body.otype == urids.bOops_transportGateKeyEvent) workerSchedule->schedule_work (workerSchedule->handle, lv2_atom_total_size((LV2_Atom*)obj), obj);
 
 			// Process slot pads data
 			else if (obj->body.otype == urids.bOops_slotEvent)
@@ -860,10 +838,8 @@ void BOops::notifyTransportGateKeysToGui()
 
 	// Send notifications
 	LV2_Atom_Forge_Frame frame;
-	lv2_atom_forge_frame_time(&forge, 0);
-	lv2_atom_forge_object(&forge, &frame, 0, urids.bOops_transportGateKeyEvent);
-	lv2_atom_forge_key(&forge, urids.bOops_transportGateKeys);
-	lv2_atom_forge_vector(&forge, sizeof(int), urids.atom_Int, keysize, (void*) keys);
+	lv2_atom_forge_frame_time (&forge, 0);
+	forgeTransportGateKeys (&forge, &frame, keys, keysize);
 	lv2_atom_forge_pop(&forge, &frame);
 
 	scheduleNotifyTransportGateKeys = false;
@@ -900,6 +876,17 @@ LV2_Atom_Forge_Ref BOops::forgeSamplePath (LV2_Atom_Forge* forge, LV2_Atom_Forge
 		lv2_atom_forge_float (forge, amp);
 		lv2_atom_forge_key (forge, urids.bOops_sampleLoop);
 		lv2_atom_forge_bool (forge, loop);
+	}
+	return msg;
+}
+
+LV2_Atom_Forge_Ref BOops::forgeTransportGateKeys (LV2_Atom_Forge* forge, LV2_Atom_Forge_Frame* frame, const int* keys, const size_t size)
+{
+	const LV2_Atom_Forge_Ref msg = lv2_atom_forge_object (forge, frame, 0, urids.bOops_transportGateKeyEvent);
+	if (msg)
+	{
+		lv2_atom_forge_key (forge, urids.bOops_transportGateKeys);
+		lv2_atom_forge_vector (forge, sizeof(int), urids.atom_Int, size, (void*) keys);
 	}
 	return msg;
 }
@@ -1316,13 +1303,29 @@ LV2_State_Status BOops::state_restore (LV2_State_Retrieve_Function retrieve, LV2
 	{
 		const AtomKeys* atom = (const AtomKeys*) transportGateKeysData;
 		const int nr = LIMIT ((size - sizeof (LV2_Atom_Vector_Body)) / sizeof(int), 0, NR_PIANO_KEYS);
-		std::fill (transportGateKeys, transportGateKeys + NR_PIANO_KEYS, false);
-		for (int i = 0; i < nr; ++i)
+
+		if (activated && schedule)
 		{
-			const int keyNr = atom->keys[i];
-			if ((keyNr >= 0) && (keyNr < NR_PIANO_KEYS)) transportGateKeys[keyNr] = true;
+			LV2_Atom_Forge forge;
+			lv2_atom_forge_init(&forge, map);
+			uint8_t buf[1200];
+			lv2_atom_forge_set_buffer(&forge, buf, sizeof(buf));
+			LV2_Atom_Forge_Frame frame;
+			LV2_Atom* msg = (LV2_Atom*)forgeTransportGateKeys (&forge, &frame, atom->keys, nr);
+			lv2_atom_forge_pop(&forge, &frame);
+			if (msg) schedule->schedule_work(schedule->handle, lv2_atom_total_size(msg), msg);
 		}
-		scheduleNotifyTransportGateKeys = true;
+
+		else
+		{
+			std::fill (transportGateKeys, transportGateKeys + NR_PIANO_KEYS, false);
+			for (int i = 0; i < nr; ++i)
+			{
+				const int keyNr = atom->keys[i];
+				if ((keyNr >= 0) && (keyNr < NR_PIANO_KEYS)) transportGateKeys[keyNr] = true;
+			}
+			scheduleNotifyTransportGateKeys = true;
+		}
         }
 
 
@@ -1575,6 +1578,12 @@ LV2_Worker_Status BOops::work (LV2_Worker_Respond_Function respond, LV2_Worker_R
 		if (sAtom->sample) delete sAtom->sample;
         }
 
+	// Forward transportGateKeys to respond
+	else if ((atom->type == urids.atom_Object) && (((LV2_Atom_Object*)atom)->body.otype == urids.bOops_transportGateKeyEvent))
+	{
+		respond (handle, lv2_atom_total_size (atom), atom);
+	}
+
 	// Forward shape to respond
 	else if ((atom->type == urids.atom_Object) && (((LV2_Atom_Object*)atom)->body.otype == urids.bOops_shapeEvent))
 	{
@@ -1782,6 +1791,32 @@ LV2_Worker_Status BOops::work_response (uint32_t size, const void* data)
 				}
 				slots[slot].shape.validateShape();
 				scheduleNotifyShape[slot] = true;
+			}
+		}
+	}
+
+	// Install transportGateKeys
+	else if ((atom->type == urids.atom_Object) && (((LV2_Atom_Object*)atom)->body.otype == urids.bOops_transportGateKeyEvent))
+	{
+		LV2_Atom *oKeys = NULL;
+		lv2_atom_object_get ((LV2_Atom_Object*)atom,
+				     urids.bOops_transportGateKeys, &oKeys,
+				     NULL);
+
+		if (oKeys && (oKeys->type == urids.atom_Vector))
+		{
+			const LV2_Atom_Vector* vec = (const LV2_Atom_Vector*) oKeys;
+			if (vec->body.child_type == urids.atom_Int)
+			{
+				const int keysize = LIMIT ((int) ((oKeys->size - sizeof(LV2_Atom_Vector_Body)) / sizeof (int)), 0, NR_PIANO_KEYS);
+				const int* keys = (int*) (&vec->body + 1);
+				std::fill (transportGateKeys, transportGateKeys + NR_PIANO_KEYS, false);
+				for (int i = 0; i < keysize; ++i)
+				{
+					int keyNr = keys[i];
+					if ((keyNr >=0) && (keyNr < NR_PIANO_KEYS)) transportGateKeys[keyNr] = true;
+				}
+				scheduleNotifyTransportGateKeys = true;
 			}
 		}
 	}

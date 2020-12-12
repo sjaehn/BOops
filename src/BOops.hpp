@@ -91,6 +91,7 @@ private:
 	void notifySamplePathToGui ();
 	LV2_Atom_Forge_Ref forgeSamplePath (LV2_Atom_Forge* forge, LV2_Atom_Forge_Frame* frame,  const char* path, const int64_t start, const int64_t end, const float amp, const bool loop);
 	LV2_Atom_Forge_Ref forgeShape (LV2_Atom_Forge* forge, LV2_Atom_Forge_Frame* frame, const int slot, const Shape<SHAPE_MAXNODES>* shape);
+	LV2_Atom_Forge_Ref forgeTransportGateKeys (LV2_Atom_Forge* forge, LV2_Atom_Forge_Frame* frame, const int* keys, const size_t size);
 	double getPositionFromBeats (const Transport& transport, const double beats);
 	double getPositionFromFrames (const Transport& transport, const uint64_t frames);
 	uint64_t getFramesFromPosition (const Transport& transport, const double position) const;

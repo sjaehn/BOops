@@ -357,6 +357,7 @@ not. Select at least two slots and set the likelihood ratio for each slot.
 ## What's new
 
 * Update presets for control port source
+* Thread safe state restore
 * Bugfixes
 * Optimization
 
