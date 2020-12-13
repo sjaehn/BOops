@@ -55,6 +55,8 @@ Slot::Slot (BOops* plugin, const BOopsEffectsIndex effect, float* params, Pad* p
 	plugin (plugin), effect (FX_INVALID), fx (nullptr),
 	size (size), mixf (mixf), framesPerStep (framesPerStep), buffer (nullptr), shape ()
 {
+	std::fill (startPos, startPos + NR_STEPS, -1);
+
 	buffer = new RingBuffer<Stereo> (1.5 * double (size) * framesPerStep);
 
 	if (params) std::copy (params, params + NR_PARAMS, this->params);
