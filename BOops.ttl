@@ -32,8 +32,8 @@
 	rdfs:comment "Glitch effect sequencer LV2 plugin." ;
   	doap:maintainer <http://www.jahnichen.de/sjaehn#me> ;
   	doap:license <http://usefulinc.com/doap/licenses/gpl> ;
-	lv2:microVersion 5 ;
-	lv2:minorVersion 0 ;
+	lv2:microVersion 0 ;
+	lv2:minorVersion 2 ;
 	lv2:optionalFeature lv2:hardRTCapable , state:threadSafeRestore ;
 	lv2:extensionData state:interface , work:interface ;
   	lv2:requiredFeature urid:map , work:schedule ;
@@ -149,6 +149,7 @@
                 lv2:default 0.0 ;
                 lv2:minimum -0.5 ;
                 lv2:maximum 0.5 ;
+		rdfs:comment "Manually adjust the playback progression line to the input audio signal (-0.5..0.5 sequences)" ;
         ] , [
 		a lv2:InputPort , lv2:ControlPort ;
 		lv2:index 13 ;
@@ -2456,6 +2457,12 @@
 	lv2:appliesTo <https://www.jahnichen.de/plugins/lv2/BOops> ;
 	rdfs:label "Antimatter" ;
 	rdfs:seeAlso <BOops_Antimatter.ttl> .
+
+<https://www.jahnichen.de/plugins/lv2/BOops#Chaos_theory>
+	a pset:Preset ;
+	lv2:appliesTo <https://www.jahnichen.de/plugins/lv2/BOops> ;
+	rdfs:label "Chaos theory" ;
+	rdfs:seeAlso <BOops_Chaos_theory.ttl> .
 
 <https://www.jahnichen.de/plugins/lv2/BOops#Dizzy_tizzy>
 	a pset:Preset ;

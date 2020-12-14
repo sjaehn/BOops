@@ -30,9 +30,9 @@
      showgrid="true"
      inkscape:current-layer="layer2"
      inkscape:document-units="px"
-     inkscape:cy="59.049432"
-     inkscape:cx="705.81465"
-     inkscape:zoom="0.9016129"
+     inkscape:cy="45.405462"
+     inkscape:cx="380.30852"
+     inkscape:zoom="0.6375366"
      inkscape:pageshadow="2"
      inkscape:pageopacity="0.0"
      borderopacity="1.0"
@@ -2641,5 +2641,16 @@
          x="41.400055"
          y="49.195965"
          style="font-size:2.11667px;fill:#ffffff;stroke-width:0.264583">Source</tspan></text>
+    <text
+       id="text957"
+       y="39.606354"
+       x="74.033943"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:6.61458px;font-family:'Good Times';-inkscape-font-specification:'Good Times';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583;enable-background:new"
+       xml:space="preserve"><tspan
+         style="font-size:3.52777px;fill:#ffffff;stroke-width:0.264583"
+         y="39.606354"
+         x="74.033943"
+         id="tspan955"
+         sodipodi:role="line">V 1.2.0</tspan></text>
   </g>
 </svg>

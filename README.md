@@ -9,11 +9,6 @@ Key features:
 * Random effects: 3 different ways of randomization
 * Autoplay, host controlled, or MIDI controlled sequencer
 
-**Warning: B.Oops is in an early stage of development.
-Not for production use! No guarantees! Some features are not (fully) implemented yet.
-Major changes in the plugin definition need to be expected. Therefore, future versions of this
-plugin may be completely incompatible to this version.**
-
 ![screenshot](https://raw.githubusercontent.com/sjaehn/BOops/master/doc/screenshot.png "Screenshot from B.Oops")
 
 
@@ -39,7 +34,7 @@ make
 sudo make install
 ```
 
-Optional: Standard `make` and `make install` parameters are supported. Compiling using `make CPPFLAGS+=-O3`
+**Optional:** Standard `make` and `make install` parameters are supported. Compiling using `make CPPFLAGS+=-O3`
 is recommended to improve the plugin performance. Alternatively, you may build a debugging version using
 `make CPPFLAGS+=-g`. For installation into an alternative directory (e.g., /usr/lib/lv2/), change the
 variable `PREFIX` while installing: `sudo make install PREFIX=/usr`. If you want to freely choose the
