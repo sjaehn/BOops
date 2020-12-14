@@ -376,7 +376,7 @@ void SampleChooser::sfileListBoxClickedCallback (BEvents::Event* event)
 				BWidgets::Label* ail = (BWidgets::Label*)ai->getWidget();
 				if (ail) fc->fileNameBox.setText (ail->getText());
 				std::string newPath = fc->getPath() + "/" + ail->getText();
-				char buf[1024];
+				char buf[PATH_MAX];
 				char *rp = realpath(newPath.c_str(), buf);
 				if (fc->sample)
 				{
