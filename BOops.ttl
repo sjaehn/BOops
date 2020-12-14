@@ -45,6 +45,7 @@
 		atom:supports time:Position ;
 		atom:supports midi:MidiEvent ;
 		lv2:designation lv2:control ;
+		rsz:minimumSize 65535;
 		lv2:index 0 ;
 		lv2:symbol "control" ;
 		lv2:name "Control" ;
@@ -55,7 +56,7 @@
 		lv2:index 1 ;
 		lv2:symbol "notify" ;
 		lv2:name "Notify" ;
-		rsz:minimumSize 73000;
+		rsz:minimumSize 65535;
 	] , [
 		a lv2:AudioPort , lv2:InputPort ;
 		lv2:index 2 ;

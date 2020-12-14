@@ -338,8 +338,31 @@ void BOops::run (uint32_t n_samples)
 			// Process GUI off status data
 			else if (obj->body.otype == urids.bOops_uiOff) ui_on = false;
 
-			// Fortward transportGateKey data -> worker
-			else if (obj->body.otype == urids.bOops_transportGateKeyEvent) workerSchedule->schedule_work (workerSchedule->handle, lv2_atom_total_size((LV2_Atom*)obj), obj);
+			// Process transportGateKey data
+			else if (obj->body.otype == urids.bOops_transportGateKeyEvent)
+			{
+				LV2_Atom *oKeys = NULL;
+				lv2_atom_object_get (obj,
+						     urids.bOops_transportGateKeys, &oKeys,
+						     NULL);
+
+				if (oKeys && (oKeys->type == urids.atom_Vector))
+				{
+					const LV2_Atom_Vector* vec = (const LV2_Atom_Vector*) oKeys;
+					if (vec->body.child_type == urids.atom_Int)
+					{
+						const int keysize = LIMIT ((int) ((oKeys->size - sizeof(LV2_Atom_Vector_Body)) / sizeof (int)), 0, NR_PIANO_KEYS);
+						const int* keys = (int*) (&vec->body + 1);
+						std::fill (transportGateKeys, transportGateKeys + NR_PIANO_KEYS, false);
+						for (int i = 0; i < keysize; ++i)
+						{
+							int keyNr = keys[i];
+							if ((keyNr >=0) && (keyNr < NR_PIANO_KEYS)) transportGateKeys[keyNr] = true;
+						}
+						scheduleNotifyTransportGateKeys = true;
+					}
+				}
+			}
 
 			// Process slot pads data
 			else if (obj->body.otype == urids.bOops_slotEvent)
@@ -410,8 +433,48 @@ void BOops::run (uint32_t n_samples)
 				}
 			}
 
-			// Slot shape data -> forward to worker
-			else if (obj->body.otype == urids.bOops_shapeEvent) workerSchedule->schedule_work (workerSchedule->handle, lv2_atom_total_size((LV2_Atom*)obj), obj);
+			// Process slot shape data
+			else if (obj->body.otype == urids.bOops_shapeEvent)
+			{
+				LV2_Atom *oSl = NULL, *oSh = NULL;
+				int slot = -1;
+				lv2_atom_object_get (obj,
+						     urids.bOops_slot, &oSl,
+						     urids.bOops_shapeData, &oSh,
+						     NULL);
+
+				// Slot nr notification
+				if (oSl && (oSl->type == urids.atom_Int) && (((LV2_Atom_Int*)oSl)->body >= 0) && (((LV2_Atom_Int*)oSl)->body < NR_SLOTS))
+				{
+					slot = ((LV2_Atom_Int*)oSl)->body;
+				}
+
+				// Shape notification
+				if (oSh && (oSh->type == urids.atom_Vector) && (slot >= 0))
+				{
+					const LV2_Atom_Vector* vec = (const LV2_Atom_Vector*) oSh;
+					if (vec->body.child_type == urids.atom_Float)
+					{
+						slots[slot].shape.clearShape ();
+						const uint32_t vecSize = (uint32_t) ((oSh->size - sizeof(LV2_Atom_Vector_Body)) / (7 * sizeof (float)));
+						float* data = (float*) (&vec->body + 1);
+						for (unsigned int i = 0; (i < vecSize) && (i < SHAPE_MAXNODES); ++i)
+						{
+							Node node;
+							node.nodeType = NodeType (int (data[i * 7]));
+							node.point.x = data[i * 7 + 1];
+							node.point.y = data[i * 7 + 2];
+							node.handle1.x = data[i * 7 + 3];
+							node.handle1.y = data[i * 7 + 4];
+							node.handle2.x = data[i * 7 + 5];
+							node.handle2.y = data[i * 7 + 6];
+							slots[slot].shape.appendNode (node);
+						}
+						slots[slot].shape.validateShape();
+						scheduleNotifyShape[slot] = true;
+					}
+				}
+			}
 
 			// Sample path notification -> forward to worker
 			else if (obj->body.otype ==urids.bOops_samplePathEvent)
@@ -731,11 +794,7 @@ void BOops::notifySlotToGui (const int slot)
 
 	LV2_Atom_Forge_Frame frame;
 	lv2_atom_forge_frame_time(&forge, 0);
-	lv2_atom_forge_object(&forge, &frame, 0, urids.bOops_slotEvent);
-	lv2_atom_forge_key(&forge, urids.bOops_slot);
-	lv2_atom_forge_int(&forge, slot);
-	lv2_atom_forge_key(&forge, urids.bOops_pads);
-	lv2_atom_forge_vector(&forge, sizeof(float), urids.atom_Float, sizeof(Pad) / sizeof(float) * NR_STEPS, (void*) pads);
+	forgePads (&forge, &frame, slot, pads, NR_STEPS);
 	lv2_atom_forge_pop(&forge, &frame);
 
 	scheduleNotifySlot[slot] = false;
@@ -913,6 +972,19 @@ LV2_Atom_Forge_Ref  BOops::forgeShape (LV2_Atom_Forge* forge, LV2_Atom_Forge_Fra
 		lv2_atom_forge_int(forge, slot);
 		lv2_atom_forge_key(forge, urids.bOops_shapeData);
 		lv2_atom_forge_vector(forge, sizeof(float), urids.atom_Float, 7 * shape->size(), nodes);
+	}
+	return msg;
+}
+
+LV2_Atom_Forge_Ref BOops::forgePads (LV2_Atom_Forge* forge, LV2_Atom_Forge_Frame* frame, const int slot, const Pad* pads, const size_t size)
+{
+	const LV2_Atom_Forge_Ref msg = lv2_atom_forge_object(forge, frame, 0, urids.bOops_slotEvent);
+	if (msg)
+	{
+		lv2_atom_forge_key(forge, urids.bOops_slot);
+		lv2_atom_forge_int(forge, slot);
+		lv2_atom_forge_key(forge, urids.bOops_pads);
+		lv2_atom_forge_vector(forge, sizeof(float), urids.atom_Float, sizeof(Pad) / sizeof(float) * NR_STEPS, (void*) pads);
 	}
 	return msg;
 }
@@ -1304,28 +1376,13 @@ LV2_State_Status BOops::state_restore (LV2_State_Retrieve_Function retrieve, LV2
 		const AtomKeys* atom = (const AtomKeys*) transportGateKeysData;
 		const int nr = LIMIT ((size - sizeof (LV2_Atom_Vector_Body)) / sizeof(int), 0, NR_PIANO_KEYS);
 
-		if (activated && schedule)
+		std::fill (transportGateKeys, transportGateKeys + NR_PIANO_KEYS, false);
+		for (int i = 0; i < nr; ++i)
 		{
-			LV2_Atom_Forge forge;
-			lv2_atom_forge_init(&forge, map);
-			uint8_t buf[1200];
-			lv2_atom_forge_set_buffer(&forge, buf, sizeof(buf));
-			LV2_Atom_Forge_Frame frame;
-			LV2_Atom* msg = (LV2_Atom*)forgeTransportGateKeys (&forge, &frame, atom->keys, nr);
-			lv2_atom_forge_pop(&forge, &frame);
-			if (msg) schedule->schedule_work(schedule->handle, lv2_atom_total_size(msg), msg);
+			const int keyNr = atom->keys[i];
+			if ((keyNr >= 0) && (keyNr < NR_PIANO_KEYS)) transportGateKeys[keyNr] = true;
 		}
-
-		else
-		{
-			std::fill (transportGateKeys, transportGateKeys + NR_PIANO_KEYS, false);
-			for (int i = 0; i < nr; ++i)
-			{
-				const int keyNr = atom->keys[i];
-				if ((keyNr >= 0) && (keyNr < NR_PIANO_KEYS)) transportGateKeys[keyNr] = true;
-			}
-			scheduleNotifyTransportGateKeys = true;
-		}
+		scheduleNotifyTransportGateKeys = true;
         }
 
 
@@ -1520,29 +1577,11 @@ LV2_State_Status BOops::state_restore (LV2_State_Retrieve_Function retrieve, LV2
 			else if (!shapes[sl].validateShape ()) slots[sl].shape.setDefaultShape ();
 		}
 
-		// Install or schedule new shape
-		if (activated && schedule)
+		// Install new shape
+		for (int sl = 0; sl < NR_SLOTS; ++sl)
 		{
-			for (int sl = 0; sl < NR_SLOTS; ++sl)
-			{
-				LV2_Atom_Forge forge;
-				lv2_atom_forge_init(&forge, map);
-				uint8_t buf[1024];
-				lv2_atom_forge_set_buffer(&forge, buf, sizeof(buf));
-				LV2_Atom_Forge_Frame frame;
-				LV2_Atom* msg = (LV2_Atom*)forgeShape (&forge, &frame, sl, &shapes[sl]);
-				lv2_atom_forge_pop(&forge, &frame);
-				if (msg) schedule->schedule_work(schedule->handle, lv2_atom_total_size(msg), msg);
-			}
-		}
-
-		else
-		{
-			for (int sl = 0; sl < NR_SLOTS; ++sl)
-			{
-				slots[sl].shape = shapes[sl];
-				scheduleNotifyShape[sl] = true;
-			}
+			slots[sl].shape = shapes[sl];
+			scheduleNotifyShape[sl] = true;
 		}
 	}
 
@@ -1577,18 +1616,6 @@ LV2_Worker_Status BOops::work (LV2_Worker_Respond_Function respond, LV2_Worker_R
 		const AtomSample* sAtom = (AtomSample*) atom;
 		if (sAtom->sample) delete sAtom->sample;
         }
-
-	// Forward transportGateKeys to respond
-	else if ((atom->type == urids.atom_Object) && (((LV2_Atom_Object*)atom)->body.otype == urids.bOops_transportGateKeyEvent))
-	{
-		respond (handle, lv2_atom_total_size (atom), atom);
-	}
-
-	// Forward shape to respond
-	else if ((atom->type == urids.atom_Object) && (((LV2_Atom_Object*)atom)->body.otype == urids.bOops_shapeEvent))
-	{
-		respond (handle, lv2_atom_total_size (atom), atom);
-	}
 
 	// Load sample
 	else if ((atom->type == urids.atom_Object) && (((LV2_Atom_Object*)atom)->body.otype == urids.bOops_samplePathEvent))
@@ -1750,75 +1777,6 @@ LV2_Worker_Status BOops::work_response (uint32_t size, const void* data)
 			sample->loop = nAtom->loop;
 		}
 		scheduleNotifySamplePathToGui = true;
-	}
-
-	// Install shape
-	else if ((atom->type == urids.atom_Object) && (((LV2_Atom_Object*)atom)->body.otype == urids.bOops_shapeEvent))
-	{
-		LV2_Atom *oSl = NULL, *oSh = NULL;
-		int slot = -1;
-		lv2_atom_object_get ((LV2_Atom_Object*)atom,
-				     urids.bOops_slot, &oSl,
-				     urids.bOops_shapeData, &oSh,
-				     NULL);
-
-		// Slot nr notification
-		if (oSl && (oSl->type == urids.atom_Int) && (((LV2_Atom_Int*)oSl)->body >= 0) && (((LV2_Atom_Int*)oSl)->body < NR_SLOTS))
-		{
-			slot = ((LV2_Atom_Int*)oSl)->body;
-		}
-
-		// Shape notification
-		if (oSh && (oSh->type == urids.atom_Vector) && (slot >= 0))
-		{
-			const LV2_Atom_Vector* vec = (const LV2_Atom_Vector*) oSh;
-			if (vec->body.child_type == urids.atom_Float)
-			{
-				slots[slot].shape.clearShape ();
-				const uint32_t vecSize = (uint32_t) ((oSh->size - sizeof(LV2_Atom_Vector_Body)) / (7 * sizeof (float)));
-				float* data = (float*) (&vec->body + 1);
-				for (unsigned int i = 0; (i < vecSize) && (i < SHAPE_MAXNODES); ++i)
-				{
-					Node node;
-					node.nodeType = NodeType (int (data[i * 7]));
-					node.point.x = data[i * 7 + 1];
-					node.point.y = data[i * 7 + 2];
-					node.handle1.x = data[i * 7 + 3];
-					node.handle1.y = data[i * 7 + 4];
-					node.handle2.x = data[i * 7 + 5];
-					node.handle2.y = data[i * 7 + 6];
-					slots[slot].shape.appendNode (node);
-				}
-				slots[slot].shape.validateShape();
-				scheduleNotifyShape[slot] = true;
-			}
-		}
-	}
-
-	// Install transportGateKeys
-	else if ((atom->type == urids.atom_Object) && (((LV2_Atom_Object*)atom)->body.otype == urids.bOops_transportGateKeyEvent))
-	{
-		LV2_Atom *oKeys = NULL;
-		lv2_atom_object_get ((LV2_Atom_Object*)atom,
-				     urids.bOops_transportGateKeys, &oKeys,
-				     NULL);
-
-		if (oKeys && (oKeys->type == urids.atom_Vector))
-		{
-			const LV2_Atom_Vector* vec = (const LV2_Atom_Vector*) oKeys;
-			if (vec->body.child_type == urids.atom_Int)
-			{
-				const int keysize = LIMIT ((int) ((oKeys->size - sizeof(LV2_Atom_Vector_Body)) / sizeof (int)), 0, NR_PIANO_KEYS);
-				const int* keys = (int*) (&vec->body + 1);
-				std::fill (transportGateKeys, transportGateKeys + NR_PIANO_KEYS, false);
-				for (int i = 0; i < keysize; ++i)
-				{
-					int keyNr = keys[i];
-					if ((keyNr >=0) && (keyNr < NR_PIANO_KEYS)) transportGateKeys[keyNr] = true;
-				}
-				scheduleNotifyTransportGateKeys = true;
-			}
-		}
 	}
 
 	return LV2_WORKER_SUCCESS;
