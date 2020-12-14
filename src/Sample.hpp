@@ -54,6 +54,8 @@ struct Sample
                 if (!samplepath) return;
 
         	int len = strlen (samplepath);
+                if (!len) return;
+
                 path = (char*) malloc (len + 1);
                 if (!path) throw std::bad_alloc();
                 memcpy (path, samplepath, len + 1);
