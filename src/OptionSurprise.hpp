@@ -41,10 +41,10 @@ public:
 		{
 			try
 			{
-				options[i * 2] = new Dial (170 + i * 80, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, "%1.2f");
+				options[i * 2] = new Dial (165 + i * 80, 20, 70, 60, "pad0", 0.5, 0.0, 1.0, 0.0, "%1.2f");
 				options[i * 2 + 1] = new BWidgets::PopupListBox
 				(
-					170 + i * 80, 90, 60, 20, 0, -80, 60, 80, "menu",
+					165 + i * 80, 90, 70, 20, 0, -80, 70, 80, "menu",
 					BItems::ItemList
 					(
 						{
