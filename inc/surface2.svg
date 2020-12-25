@@ -30,8 +30,8 @@
      showgrid="true"
      inkscape:current-layer="layer2"
      inkscape:document-units="px"
-     inkscape:cy="45.405462"
-     inkscape:cx="380.30852"
+     inkscape:cy="385.37356"
+     inkscape:cx="663.30899"
      inkscape:zoom="0.6375366"
      inkscape:pageshadow="2"
      inkscape:pageopacity="0.0"
@@ -2651,6 +2651,6 @@
          y="39.606354"
          x="74.033943"
          id="tspan955"
-         sodipodi:role="line">V 1.2.0</tspan></text>
+         sodipodi:role="line">V 1.2.1</tspan></text>
   </g>
 </svg>

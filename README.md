@@ -349,13 +349,6 @@ The surprise box isn't an effect by itself. The surprise box controls if the eff
 not. Select at least two slots and set the likelihood ratio for each slot.
 
 
-## What's new
-
-* Update presets for control port source
-* Bugfixes
-* Optimization
-
-
 ## TODO
 
 * MIDI triggering effects

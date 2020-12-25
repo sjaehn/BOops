@@ -529,7 +529,7 @@ void FileChooser::enterDir ()
 			}
 		}
 
-		//fileListBox.setTop (1);
+		fileListBox.setTop (1);
 	}
 }
 
