@@ -101,7 +101,7 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 	transportGateCancelButton (240, 80, 60, 20, "menu/button", "Cancel"),
 	transportGateKeys (NR_PIANO_KEYS, false),
 
-	slotsContainer (20, 130, 260, 418, "widget"),
+	slotsContainer (20, 130, 260, 288, "widget"),
 
 	monitor (290, 130, 820, 288, "monitor"),
 	padSurface (290, 130, 820, 288, "padsurface"),
@@ -775,7 +775,7 @@ void BOopsGUI::resize ()
 	RESIZE (padMixLabel, 20, 180, 60, 20, sz);
 	RESIZE (padMixDial, 20, 120, 60, 60, sz);
 
-	RESIZE (slotsContainer, 20, 130, 260, 418, sz);
+	RESIZE (slotsContainer, 20, 130, 260, 288, sz);
 
 	for (int i = 0; i < NR_SLOTS; ++i)
 	{

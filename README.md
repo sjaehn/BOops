@@ -349,6 +349,15 @@ The surprise box isn't an effect by itself. The surprise box controls if the eff
 not. Select at least two slots and set the likelihood ratio for each slot.
 
 
+## What's new
+
+* Bugfixes
+  * Fix oversized container widget that blocks adsr sliders
+  * Substitute bandpass filter algorithm
+  * Allow file path name size up to PATH_MAX
+  * Jump to top line in sample file chooser if directory entered
+
+
 ## TODO
 
 * MIDI triggering effects
