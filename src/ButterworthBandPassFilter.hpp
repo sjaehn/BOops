@@ -21,73 +21,39 @@
 #ifndef BUTTERWORTHBANDPASSFILTER_HPP_
 #define BUTTERWORTHBANDPASSFILTER_HPP_
 
-#include "ButterworthFilter.hpp"
+#include "ButterworthLowPassFilter.hpp"
+#include "ButterworthHighPassFilter.hpp"
 
-
-class ButterworthBandPassFilter : public ButterworthFilter
+class ButterworthBandPassFilter
 {
 public:
 	ButterworthBandPassFilter (const double rate, const double lowCutoff, const double highCutoff, const int order) :
-		ButterworthFilter (order)
+		lowpass (rate, highCutoff, order),
+		highpass (rate, lowCutoff, order)
 	{
-		coeff3.fill (0);
-		coeff4.fill (0);
-		clear();
-		set (rate, lowCutoff, highCutoff, order);
+
 	}
 
 	void set (const double rate, const double lowCutoff, const double highCutoff, const int order)
 	{
-		const double a = cos (M_PI * (highCutoff + lowCutoff) / rate) / cos (M_PI * (highCutoff - lowCutoff) / rate);
-		const double a2 = a * a;
-		const double b = tan (M_PI * (highCutoff - lowCutoff) / rate);
-		const double b2 = b * b;
-
-		for (int i = 0; i < int (order / 2); ++i)
-		{
-			const double r = sin (M_PI * (2.0 * double (i) + 1.0) / (2.0 * double (order)));
-			const double s = b2 + 2.0 * b * r + 1.0;
-			coeff0[i] = b2 / s;
-			coeff1[i] = 4.0 * a * (1.0 + b * r) / s;
-			coeff2[i] = 2.0 * (b2 - 2.0 * a2 - 1.0) / s;
-			coeff3[i] = 4.0 * a * (1.0 - b * r) / s;
-			coeff4[i] = -(b2 - 2.0 * b * r + 1.0) / s;
-		}
-
-		this->order = order;
-		f1 = -2;
+		lowpass.set (rate, highCutoff, order);
+		highpass.set (rate, lowCutoff, order);
 	}
 
-	Stereo push (const Stereo& input)
-	{
-		output = input;
+	Stereo push (const Stereo& input) {return highpass.push (lowpass.push (input));}
 
-		for (int i = 0; i < int (order / 2); ++i)
-		{
-			buffer0[i] = buffer1[i] * coeff1[i] + buffer2[i] * coeff2[i] + buffer3[i] * coeff3[i] + buffer4[i] * coeff4[i] + output;
-			output = (buffer0[i] + buffer2[i] * f1 + buffer4[i]) * coeff0[i];
-			buffer4[i] = buffer3[i];
-			buffer3[i] = buffer2[i];
-			buffer2[i] = buffer1[i];
-			buffer1[i] = buffer0[i];
-		}
-
-		return output;
-	}
+	Stereo get () const {return highpass.get();}
 
 	void clear()
 	{
-		ButterworthFilter::clear();
-		buffer3.fill (Stereo());
-		buffer4.fill (Stereo());
+		lowpass.clear();
+		highpass.clear();
 	}
 
 
 protected:
-	std::array <float, BUTTERWORTH_MAXORDER / 2> coeff3;
-	std::array <float, BUTTERWORTH_MAXORDER / 2> coeff4;
-	std::array <Stereo, BUTTERWORTH_MAXORDER / 2> buffer3;
-	std::array <Stereo, BUTTERWORTH_MAXORDER / 2> buffer4;
+	ButterworthLowPassFilter lowpass;
+	ButterworthHighPassFilter highpass;
 };
 
 #endif /* BUTTERWORTHBANDPASSFILTER_HPP_ */
