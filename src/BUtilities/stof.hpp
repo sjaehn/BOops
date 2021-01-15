@@ -23,57 +23,7 @@
 
 namespace BUtilities {
 
-float stof (const std::string& str, size_t* idx = 0)
-{
-        const std::string numbers = "0123456789";
-        bool isNumber = false;
-        float sign = 1.0f;
-        float predec = 0.0f;
-        float dec = 0.0f;
-        float decfac = 0.1f;
-        size_t i = 0;
-
-        // Ignore spaces before
-        while (str[i] == ' ') ++i;
-
-        // Check sign
-        if ((str[i] == '+') || (str[i] == '-'))
-        {
-                if (str[i] == '-') sign = -1.0f;
-                ++i;
-        }
-
-        // Interpret pre-decimal digits
-        while ((str[i] != 0) && (numbers.find_first_of (str[i]) != std::string::npos))
-        {
-                predec = predec * 10.0f + str[i] - '0';
-                ++i;
-                isNumber = true;
-        }
-
-        // Check decimal sign
-        if ((str[i] == '.') || (str[i] == ','))
-        {
-                ++i;
-
-                // Interpret decimal digits
-                while ((str[i] != 0) && (numbers.find_first_of (str[i]) != std::string::npos))
-                {
-                        dec += (str[i] - '0') * decfac;
-                        decfac *= 0.1f;
-                        ++i;
-                        isNumber = true;
-                }
-        }
-
-        // Communicate next position
-        if (idx != nullptr) *idx = i;
-
-        // Not a number: invalid argument exception
-        if (!isNumber) throw std::invalid_argument (str + "is not a number");
-
-        return sign * (predec + dec);
-}
+float stof (const std::string& str, size_t* idx = 0);
 
 }
 

@@ -47,6 +47,7 @@ B_FILES = $(addprefix $(BUNDLE)/, $(ROOTFILES) $(INCFILES))
 
 DSP_INCL = \
 	src/Message.cpp \
+	src/BUtilities/stof.cpp \
 	src/Slot.cpp
 
 GUI_INCL = \
@@ -88,6 +89,7 @@ GUI_INCL = \
 	src/BWidgets/cairoplus.c \
 	src/BWidgets/pugl/pugl_x11_cairo.c \
 	src/BWidgets/pugl/pugl_x11.c \
+	src/BUtilities/stof.cpp \
 	src/BUtilities/to_string.cpp
 
 ifeq ($(shell $(PKG_CONFIG) --exists sndfile || echo no), no)

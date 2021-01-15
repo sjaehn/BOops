@@ -21,7 +21,9 @@
 #define HSLIDER_HPP_
 
 #include "BWidgets/RangeWidget.hpp"
+#include "BWidgets/Label.hpp"
 #include "BUtilities/to_string.hpp"
+#include "BUtilities/stof.hpp"
 
 class HSlider : public BWidgets::RangeWidget
 {
@@ -33,6 +35,7 @@ public:
  	 	 std::function<double (double x)> func = [] (double x) {return x;},
  		 std::function<double (double x)> revfunc = [] (double x) {return x;}) :
 			RangeWidget (x, y, width, height, name, value, min, max, step),
+			valueLabel_ (0, 0, 0, 0, name, ""),
 			txColors_ (BWIDGETS_DEFAULT_FGCOLORS),
 			fgColors_ (BWIDGETS_DEFAULT_FGCOLORS),
 			bgColors_ (BWIDGETS_DEFAULT_FGCOLORS),
@@ -42,15 +45,68 @@ public:
 			reverse_ (revfunc)
 	{
 		setDraggable (true);
+		valueLabel_.setEditable (true);
+		valueLabel_.setScrollable (false);
+		valueLabel_.setCallbackFunction(BEvents::EventType::POINTER_DRAG_EVENT, displayDraggedCallback);
+		valueLabel_.setCallbackFunction(BEvents::EventType::MESSAGE_EVENT, displayMessageCallback);
+		add (valueLabel_);
 	}
 
+	HSlider (const HSlider& that) :
+		RangeWidget (that),
+		valueLabel_ (that.valueLabel_),
+		txColors_ (that.txColors_),
+		fgColors_ (that.fgColors_),
+		bgColors_ (that.bgColors_),
+		format_ (that.format_),
+		display_ (that.display_),
+		transform_ (that.transform_),
+		reverse_ (that.reverse_)
+	{
+		add (valueLabel_);
+	}
+
+	HSlider& operator= (const HSlider& that)
+	{
+		release (&valueLabel_);
+		valueLabel_ = that.valueLabel_;
+		txColors_ = that.txColors_;
+		fgColors_ = that.fgColors_;
+		bgColors_ = that.bgColors_;
+		format_ = that.format_;
+		display_ = that.display_;
+		transform_ = that.transform_;
+		reverse_ = that.reverse_;
+		RangeWidget::operator= (that);
+		add (valueLabel_);
+		return *this;
+	}
+
+
 	virtual Widget* clone () const override {return new HSlider (*this);}
+
+	virtual void update () override
+	{
+		RangeWidget::update();
+
+		const double x0 = getXOffset ();
+		const double y0 = getYOffset ();
+		const double h = getEffectiveHeight ();
+		const double w = getEffectiveWidth ();
+		const std::string valstr = BUtilities::to_string (display_ (getValue()), format_);
+		valueLabel_.setText (valstr);
+		valueLabel_.resize();
+		const double vw = valueLabel_.getWidth();
+		const double vh = valueLabel_.getHeight();
+		valueLabel_.moveTo (x0 + 0.5 * w - 0.5 * vw, y0 + 0.5 * h - 0.5 * vh);
+	}
 
 	virtual void applyTheme (BStyles::Theme& theme) override {applyTheme (theme, name_);}
 
 	virtual void applyTheme (BStyles::Theme& theme, const std::string& name) override
 	{
 		Widget::applyTheme (theme, name);
+		valueLabel_.applyTheme (theme);
 
 		// Text colors
 		void* txPtr = theme.getStyle(name, BWIDGETS_KEYWORD_TEXTCOLORS);
@@ -106,6 +162,7 @@ public:
 	}
 
 protected:
+	BWidgets::Label valueLabel_;
 	BColors::ColorSet txColors_;
 	BColors::ColorSet fgColors_;
 	BColors::ColorSet bgColors_;
@@ -141,7 +198,6 @@ protected:
 
 				BColors::Color bgColor = *bgColors_.getColor (BColors::OFF);
 				BColors::Color slColor = *fgColors_.getColor (getState ());
-				BColors::Color txColor = *txColors_.getColor (getState ());
 				BColors::Color frColor= *bgColors_.getColor (getState ());
 
 				// Slider bar
@@ -158,18 +214,40 @@ protected:
 				cairo_rectangle (cr, x0, y0, w, h);
 				cairo_set_source_rgba (cr, CAIRO_RGBA (frColor));
 				cairo_stroke (cr);
-
-				// Text
-				cairo_text_extents_t ext;
-				cairo_select_font_face (cr, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
-				cairo_set_font_size (cr, 0.5 * h);
-				const std::string valstr = BUtilities::to_string (display_ (getValue()), format_);
-				cairo_text_extents (cr, valstr.c_str(), &ext);
-				cairo_move_to (cr, w / 2 - ext.width / 2 - ext.x_bearing, h / 2 - ext.height / 2 - ext.y_bearing);
-				cairo_set_source_rgba (cr, CAIRO_RGBA (txColor));
-				cairo_show_text (cr, valstr.c_str ());
 			}
 			cairo_destroy (cr);
+		}
+	}
+
+	static void displayDraggedCallback (BEvents::Event* event)
+	{
+		if (event && event->getWidget())
+		{
+			BWidgets::Label* l = (BWidgets::Label*)event->getWidget();
+			HSlider* h = (HSlider*)l->getParent();
+			if (h && (!l->getEditMode())) h->onPointerDragged ((BEvents::PointerEvent*)event);
+		}
+	}
+
+	static void displayMessageCallback (BEvents::Event* event)
+	{
+		if (event && event->getWidget())
+		{
+			BWidgets::Label* l = (BWidgets::Label*)event->getWidget();
+			HSlider* h = (HSlider*)l->getParent();
+			if (h)
+			{
+				double val;
+				try {val = BUtilities::stof (l->getText());}
+				catch (std::invalid_argument &ia)
+				{
+					fprintf (stderr, "%s\n", ia.what());
+					h->update();
+					return;
+				}
+
+				h->setValue (val);
+			}
 		}
 	}
 };

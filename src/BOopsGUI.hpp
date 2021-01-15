@@ -372,6 +372,8 @@ private:
 						   BStyles::TEXT_ALIGN_LEFT, BStyles::TEXT_VALIGN_MIDDLE);
 	BStyles::Font boldLfLabelFont = BStyles::Font ("Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD, 12.0,
 						   BStyles::TEXT_ALIGN_LEFT, BStyles::TEXT_VALIGN_MIDDLE);
+	BStyles::Font mdLabelFont = BStyles::Font ("Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL, 10.0,
+						   BStyles::TEXT_ALIGN_CENTER, BStyles::TEXT_VALIGN_MIDDLE);
 	BStyles::Font smLabelFont = BStyles::Font ("Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL, 8.0,
 						   BStyles::TEXT_ALIGN_CENTER, BStyles::TEXT_VALIGN_MIDDLE);
 	BStyles::StyleSet defaultStyles = {"default", {{"background", STYLEPTR (&BStyles::noFill)},
@@ -441,7 +443,7 @@ private:
 					 		 {"fgcolors", STYLEPTR (&fgColors)},
 					 	 	 {"bgcolors", STYLEPTR (&bgColors)},
 					 	 	 {"textcolors", STYLEPTR (&bgColors)},
-					 	 	 {"font", STYLEPTR (&ctLabelFont)}}},
+					 	 	 {"font", STYLEPTR (&mdLabelFont)}}},
 		{"tlabel",	 			{{"uses", STYLEPTR (&smlabelStyles)},
 					 		 {"font", STYLEPTR (&tLabelFont)}}},
 		{"ylabel",	 			{{"uses", STYLEPTR (&smlabelStyles)},

@@ -351,11 +351,8 @@ not. Select at least two slots and set the likelihood ratio for each slot.
 
 ## What's new
 
-* Bugfixes
-  * Fix oversized container widget that blocks adsr sliders
-  * Substitute bandpass filter algorithm
-  * Allow file path name size up to PATH_MAX
-  * Jump to top line in sample file chooser if directory entered
+* Keep current sample settings in the sample browser
+* Enable enter slider values via keyboard
 
 
 ## TODO
