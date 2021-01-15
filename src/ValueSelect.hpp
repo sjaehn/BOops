@@ -41,6 +41,8 @@ public:
 
 protected:
 	static void buttonPressedCallback (BEvents::Event* event);
+	static void displayDraggedCallback (BEvents::Event* event);
+	static void displayMessageCallback (BEvents::Event* event);
 
 	UpClick upClick;
 	DownClick downClick;

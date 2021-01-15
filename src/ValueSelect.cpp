@@ -20,6 +20,7 @@
 
 #include "ValueSelect.hpp"
 #include "BUtilities/to_string.hpp"
+#include "BUtilities/stof.hpp"
 
 ValueSelect::ValueSelect () : ValueSelect (0, 0, 0, 0, "select", 0, 0, 1, 0) {}
 
@@ -32,10 +33,12 @@ ValueSelect::ValueSelect (const double  x, const double y, const double width, c
 {
 	setDraggable (true);
 	setScrollable (true);
-	display.setClickable (false);
+	display.setEditable (true);
 
 	upClick.setCallbackFunction(BEvents::EventType::BUTTON_PRESS_EVENT, ValueSelect::buttonPressedCallback);
 	downClick.setCallbackFunction(BEvents::EventType::BUTTON_PRESS_EVENT, ValueSelect::buttonPressedCallback);
+	display.setCallbackFunction(BEvents::EventType::POINTER_DRAG_EVENT, ValueSelect::displayDraggedCallback);
+	display.setCallbackFunction(BEvents::EventType::MESSAGE_EVENT, displayMessageCallback);
 
 	add (upClick);
 	add (display);
@@ -93,6 +96,38 @@ void ValueSelect::buttonPressedCallback (BEvents::Event* event)
 				if (w == (Widget*) &p->upClick) p->setValue (p->getValue () + p->getStep());
 				else if (w == (Widget*) &p->downClick) p->setValue (p->getValue () - p->getStep());
 			}
+		}
+	}
+}
+
+void ValueSelect::displayDraggedCallback (BEvents::Event* event)
+{
+	if (event && event->getWidget())
+	{
+		BWidgets::Label* l = (BWidgets::Label*)event->getWidget();
+		ValueSelect* v = (ValueSelect*)l->getParent();
+		if (v && (!l->getEditMode())) v->onPointerDragged ((BEvents::PointerEvent*)event);
+	}
+}
+
+void ValueSelect::displayMessageCallback (BEvents::Event* event)
+{
+	if (event && event->getWidget())
+	{
+		BWidgets::Label* l = (BWidgets::Label*)event->getWidget();
+		ValueSelect* v = (ValueSelect*)l->getParent();
+		if (v)
+		{
+			double val;
+			try {val = BUtilities::stof (l->getText());}
+			catch (std::invalid_argument &ia)
+			{
+				fprintf (stderr, "%s\n", ia.what());
+				v->update();
+				return;
+			}
+
+			v->setValue (val);
 		}
 	}
 }

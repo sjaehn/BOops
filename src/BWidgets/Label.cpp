@@ -310,7 +310,7 @@ void Label::onKeyPressed (BEvents::KeyEvent* event)
 
 void Label::onKeyReleased (BEvents::KeyEvent* event) {cbfunction_[BEvents::EventType::KEY_RELEASE_EVENT] (event);}
 
-void Label::onButtonPressed (BEvents::PointerEvent* event)
+void Label::onButtonClicked (BEvents::PointerEvent* event)
 {
 	if (editable && (event) && (event->getWidget () == this) && (main_))
 	{

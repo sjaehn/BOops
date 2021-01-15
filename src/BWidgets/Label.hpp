@@ -146,7 +146,7 @@ public:
 	void applyEdit ();
 	void discardEdit ();
 
-	virtual void onButtonPressed (BEvents::PointerEvent* event) override;
+	virtual void onButtonClicked (BEvents::PointerEvent* event) override;
 	virtual void onPointerDragged (BEvents::PointerEvent* event) override;
 	virtual void onKeyPressed (BEvents::KeyEvent* event) override;
 	virtual void onKeyReleased (BEvents::KeyEvent* event) override;
