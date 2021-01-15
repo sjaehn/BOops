@@ -30,6 +30,7 @@
 #include <iostream>
 #include <algorithm>
 
+#include "BUtilities/Path.hpp"
 #include "BWidgets/Widget.hpp"
 #include "BWidgets/Window.hpp"
 #include "BWidgets/Label.hpp"

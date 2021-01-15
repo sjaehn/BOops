@@ -143,9 +143,51 @@ SampleChooser& SampleChooser::operator= (const SampleChooser& that)
 
 BWidgets::Widget* SampleChooser::clone () const {return new SampleChooser (*this);}
 
+void SampleChooser::setFileName (const std::string& filename)
+{
+	fileNameBox.setText (filename);
+	std::string newPath = getPath() + "/" + filename;
+	char buf[PATH_MAX];
+	char *rp = realpath(newPath.c_str(), buf);
+	if (sample)
+	{
+		delete (sample);
+		sample = nullptr;
+	}
+	try {sample = new Sample (rp);}
+	catch (std::exception& exc) {fprintf(stderr, "Can't load %s\n", rp);}
+
+	if (sample)
+	{
+		sample->start = 0;
+		sample->end = sample->info.frames;
+
+		scrollbar.minButton.setValue (0.0);
+		scrollbar.maxButton.setValue (1.0);
+
+		update();
+	}
+}
+
+void SampleChooser::setStart (const int64_t start)
+{
+	if (!sample) return;
+	sample->start = LIMIT (start, 0, sample->info.frames - 1);
+	update();
+}
+
 int64_t SampleChooser::getStart() const {return (sample ? LIMIT (sample->start, 0, sample->info.frames - 1) : 0);}
 
+void SampleChooser::setEnd (const int64_t end)
+{
+	if (!sample) return;
+	sample->end = LIMIT (end, 0, sample->info.frames);
+	update();
+}
+
 int64_t SampleChooser::getEnd() const {return (sample ? LIMIT (sample->end, 1, sample->info.frames) : 0);}
+
+void SampleChooser::setLoop (const bool loop) {loopCheckbox.setValue (loop ? 1.0 : 0.0);}
 
 bool SampleChooser::getLoop() const {return (loopCheckbox.getValue() != 0.0);}
 
@@ -365,6 +407,7 @@ void SampleChooser::sfileListBoxClickedCallback (BEvents::Event* event)
 			}
 			BEvents::ValueChangedEvent dummyEvent = BEvents::ValueChangedEvent (&fc->okButton, 1.0);
 			fc->okButtonClickedCallback (&dummyEvent);
+			fc->update();
 		}
 
 		// File selected
@@ -374,24 +417,9 @@ void SampleChooser::sfileListBoxClickedCallback (BEvents::Event* event)
 			if (ai)
 			{
 				BWidgets::Label* ail = (BWidgets::Label*)ai->getWidget();
-				if (ail) fc->fileNameBox.setText (ail->getText());
-				std::string newPath = fc->getPath() + "/" + ail->getText();
-				char buf[PATH_MAX];
-				char *rp = realpath(newPath.c_str(), buf);
-				if (fc->sample)
-				{
-					delete (fc->sample);
-					fc->sample = nullptr;
-				}
-				try {fc->sample = new Sample (rp);}
-				catch (std::exception& exc) {fprintf(stderr, "Can't load %s\n", rp);}
-
-				fc->scrollbar.minButton.setValue (0.0);
-				fc->scrollbar.maxButton.setValue (1.0);
+				if (ail) fc->setFileName (ail->getText());
 			}
 		}
-
-		fc->update();
 	}
 }
 
@@ -442,7 +470,7 @@ void SampleChooser::drawWaveform()
 	cairo_t* cr = cairo_create (waveform.getDrawingSurface ());
 	if (cr && cairo_status (cr) == CAIRO_STATUS_SUCCESS)
 	{
-		if (sample && (w >= 1.0))
+		if (sample && (sample->info.frames) && (sample->info.samplerate) && (w >= 1.0))
 		{
 			// Scan for min/max
 			const double start = scrollbar.minButton.getValue();

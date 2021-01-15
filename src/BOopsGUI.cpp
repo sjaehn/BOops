@@ -642,8 +642,9 @@ void BOopsGUI::port_event(uint32_t port, uint32_t buffer_size,
 
 				if (oPath && (oPath->type == urids.atom_Path))
 				{
-					sampleNameLabel.setText ((const char*)LV2_ATOM_BODY_CONST(oPath));
-					// TODO Split to path and file name
+					const BUtilities::Path p = BUtilities::Path ((const char*)LV2_ATOM_BODY_CONST(oPath));
+					samplePath = p.dir();
+					sampleNameLabel.setText (p.filename());
 				}
 
 				if (oStart && (oStart->type == urids.atom_Long)) sampleStart = ((LV2_Atom_Long*)oStart)->body;
@@ -1073,7 +1074,7 @@ void BOopsGUI::sendTransportGateKeys()
 
 void BOopsGUI::sendSamplePath ()
 {
-	std::string path = samplePath + "/" + sampleNameLabel.getText();
+	std::string path = samplePath + BUTILITIES_PATH_SLASH + sampleNameLabel.getText();
 	uint8_t obj_buf[1024];
 	lv2_atom_forge_set_buffer(&forge, obj_buf, sizeof(obj_buf));
 
@@ -2368,6 +2369,15 @@ void BOopsGUI::loadButtonClickedCallback (BEvents::Event* event)
 		"Open");
 	if (ui->fileChooser)
 	{
+		const std::string filename = ui->sampleNameLabel.getText();
+		if (filename != "")
+		{
+			ui->fileChooser->setFileName (ui->sampleNameLabel.getText());
+			ui->fileChooser->setStart (ui->sampleStart);
+			ui->fileChooser->setEnd (ui->sampleEnd);
+			ui->fileChooser->setLoop (ui->sampleLoop);
+		}
+
 		RESIZE ((*ui->fileChooser), 200, 140, 640, 400, ui->sz);
 		ui->fileChooser->applyTheme (ui->theme);
 		ui->fileChooser->selectFilter ("Audio files");

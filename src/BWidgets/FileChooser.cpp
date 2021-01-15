@@ -447,6 +447,13 @@ void FileChooser::okButtonClickedCallback (BEvents::Event* event)
 				fc->postCloseRequest();
 			}
 		}
+
+		// File name set: OK on file
+		else if (fc->fileNameBox.getText() != "")
+		{
+			fc->setValue (1.0);
+			fc->postCloseRequest();
+		}
 	}
 }
 

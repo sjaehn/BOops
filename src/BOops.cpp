@@ -909,10 +909,10 @@ void BOops::notifySamplePathToGui ()
 	LV2_Atom_Forge_Frame frame;
 	lv2_atom_forge_frame_time(&forge, 0);
 
-	if (sample && sample->path) forgeSamplePath (&forge, &frame, sample->path, sample->start, sample->end, sampleAmp, sample->loop);
+	if (sample && sample->path && (sample->path[0] != 0)) forgeSamplePath (&forge, &frame, sample->path, sample->start, sample->end, sampleAmp, sample->loop);
 	else
 	{
-		const char* path = "";
+		const char* path = ".";
 		forgeSamplePath (&forge, &frame, path, 0, 0, sampleAmp, false);
 	}
 
@@ -1156,7 +1156,7 @@ LV2_State_Status BOops::state_save (LV2_State_Store_Function store, LV2_State_Ha
 			const LV2_Feature* const* features)
 {
 	// Store sample path
-	if (sample && sample->path && (globalControllers[SOURCE] == SOURCE_SAMPLE))
+	if (sample && sample->path && (sample->path[0] != 0) && (globalControllers[SOURCE] == SOURCE_SAMPLE))
 	{
 		LV2_State_Map_Path* map_path = NULL;
 	        for (int i = 0; features[i]; ++i)

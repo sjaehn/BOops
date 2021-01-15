@@ -93,7 +93,7 @@ struct Sample
         	{
                         SNDFILE* sndfile = sf_open (samplepath, SFM_READ, &info);
 
-                        if (!sndfile || !info.frames) throw std::invalid_argument ("Can't open " + std::string (path) + ".");
+                        if ((!sndfile) || (!info.frames)) throw std::invalid_argument ("Can't open " + std::string (path) + ".");
 
                         // Read & render data
                         data = (float*) malloc (sizeof(float) * info.frames * info.channels);

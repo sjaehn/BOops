@@ -32,7 +32,7 @@
 	rdfs:comment "Glitch effect sequencer LV2 plugin." ;
   	doap:maintainer <http://www.jahnichen.de/sjaehn#me> ;
   	doap:license <http://usefulinc.com/doap/licenses/gpl> ;
-	lv2:microVersion 2 ;
+	lv2:microVersion 3 ;
 	lv2:minorVersion 2 ;
 	lv2:optionalFeature lv2:hardRTCapable , state:threadSafeRestore ;
 	lv2:extensionData state:interface , work:interface ;
