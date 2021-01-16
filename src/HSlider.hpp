@@ -32,6 +32,7 @@ public:
 	HSlider (const double x, const double y, const double width, const double height, const std::string& name,
 		 const double value, const double min, const double max, const double step, std::string format = "",
 		 std::function<double (double x)> displayfunc = [] (double x) {return x;},
+		 std::function<double (double x)> revdisplayfunc = [] (double x) {return x;},
  	 	 std::function<double (double x)> func = [] (double x) {return x;},
  		 std::function<double (double x)> revfunc = [] (double x) {return x;}) :
 			RangeWidget (x, y, width, height, name, value, min, max, step),
@@ -41,6 +42,7 @@ public:
 			bgColors_ (BWIDGETS_DEFAULT_FGCOLORS),
 			format_ (format),
 			display_ (displayfunc),
+			revdisplay_ (revdisplayfunc),
 			transform_ (func),
 			reverse_ (revfunc)
 	{
@@ -60,6 +62,7 @@ public:
 		bgColors_ (that.bgColors_),
 		format_ (that.format_),
 		display_ (that.display_),
+		revdisplay_ (that.revdisplay_),
 		transform_ (that.transform_),
 		reverse_ (that.reverse_)
 	{
@@ -75,6 +78,7 @@ public:
 		bgColors_ = that.bgColors_;
 		format_ = that.format_;
 		display_ = that.display_;
+		revdisplay_ = that.revdisplay_;
 		transform_ = that.transform_;
 		reverse_ = that.reverse_;
 		RangeWidget::operator= (that);
@@ -168,6 +172,7 @@ protected:
 	BColors::ColorSet bgColors_;
 	std::string format_;
 	std::function<double(double)> display_;
+	std::function<double(double)> revdisplay_;
 	std::function<double(double)> transform_;
 	std::function<double(double)> reverse_;
 
@@ -225,7 +230,7 @@ protected:
 		{
 			BWidgets::Label* l = (BWidgets::Label*)event->getWidget();
 			HSlider* h = (HSlider*)l->getParent();
-			if (h && (!l->getEditMode())) h->onPointerDragged ((BEvents::PointerEvent*)event);
+			if (h && (!l->getEditMode())) h->HSlider::onPointerDragged ((BEvents::PointerEvent*)event);
 		}
 	}
 
@@ -246,7 +251,7 @@ protected:
 					return;
 				}
 
-				h->setValue (val);
+				h->setValue (h->revdisplay_ (val));
 			}
 		}
 	}
