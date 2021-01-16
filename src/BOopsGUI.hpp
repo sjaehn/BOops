@@ -395,7 +395,7 @@ private:
 					{"bgcolors", STYLEPTR (&bgColors)},
 					{"fgcolors", STYLEPTR (&fgColors)},
 					{"textcolors", STYLEPTR (&txColors)},
-					{"font", STYLEPTR (&ctLabelFont)}}};
+					{"font", STYLEPTR (&mdLabelFont)}}};
 
 	BStyles::Theme theme = BStyles::Theme
 	({
@@ -437,7 +437,7 @@ private:
 					 		 {"fgcolors", STYLEPTR (&fgColors)},
 					 	 	 {"bgcolors", STYLEPTR (&bgColors)},
 					 	 	 {"textcolors", STYLEPTR (&fgColors)},
-					 	 	 {"font", STYLEPTR (&ctLabelFont)}}},
+					 	 	 {"font", STYLEPTR (&mdLabelFont)}}},
 		{"dial/focus", 				{{"uses", STYLEPTR (&focusStyles)}}},
 		{"slider", 				{{"uses", STYLEPTR (&defaultStyles)},
 					 		 {"fgcolors", STYLEPTR (&fgColors)},
