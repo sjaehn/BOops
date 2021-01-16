@@ -38,7 +38,7 @@ public:
 	{
 		try
 		{
-			options[0] = new Dial (10, 20, 60, 60, "pad0", 1.0, 0.0, 1.0, 0.0, "%1.0f", "", [] (double x) {return LIMIT (int (2.0 + 7.0 * x), 2, 8);});
+			options[0] = new Dial (10, 20, 60, 60, "pad0", 1.0, 0.0, 1.0, 0.0, "%1.0f", "", [] (double x) {return LIMIT (int (2.0 + 7.0 * x), 2, 8);}, [] (double x) {return (x - 2.0) / 7.0;});
 			options[1] = new Dial (90, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, "%1.2f", "", [] (double x) {return x;});
 		}
 		catch (std::bad_alloc& ba) {throw ba;}

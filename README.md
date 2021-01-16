@@ -352,7 +352,7 @@ not. Select at least two slots and set the likelihood ratio for each slot.
 ## What's new
 
 * Keep current sample settings in the sample browser
-* Enable enter slider values via keyboard
+* Enable enter slider and dial values via keyboard **experimental**
 
 
 ## TODO

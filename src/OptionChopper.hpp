@@ -41,11 +41,11 @@ public:
 	{
 		try
 		{
-			options[0] = new Dial (10, 20, 60, 60, "pad0", 1.0, 0.0, 1.0, 0.0, "%1.0f", "", [] (double x) {return LIMIT (int (1.0 + 8.0 * x), 1, 8);});
+			options[0] = new Dial (10, 20, 60, 60, "pad0", 1.0, 0.0, 1.0, 0.0, "%1.0f", "", [] (double x) {return LIMIT (int (1.0 + 8.0 * x), 1, 8);}, [] (double x) {return (x - 1.0) / 8.0;});
 			options[1] = new Dial (90, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, "%1.2f", "", [] (double x) {return x;});
 			for (int i = 0; i < 8; ++i) options [i + 2] = new VSlider (170 + i * 30, 20, 20, 60, "pad0", 0.5, 0, 1, 0);
 			options[10] = new Dial (410, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, "%1.2f", "", [] (double x) {return x;});
-			options[11] = new Dial (490, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, "%1.0f", "steps", [] (double x) {return floor (1 + LIMIT (32.0 * x, 0.0, 31.0));});
+			options[11] = new Dial (490, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, "%1.0f", "steps", [] (double x) {return floor (1 + LIMIT (32.0 * x, 0.0, 31.0));}, [] (double x) {return (x - 1.0) / 32.0;});
 		}
 		catch (std::bad_alloc& ba) {throw ba;}
 

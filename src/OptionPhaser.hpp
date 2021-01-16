@@ -40,17 +40,17 @@ public:
 	{
 		try
 		{
-			options[0] = new DialRange (10, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.0f", "Hz", [] (double x) {return 20.0 + 19980.0 * pow (x, 3.0);});
+			options[0] = new DialRange (10, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.0f", "Hz", [] (double x) {return 20.0 + 19980.0 * pow (x, 3.0);}, [] (double x) {return pow ((LIMIT (x, 20, 20000) - 20.0) / 19980.0, 1.0 / 3.0);});
 			options[1] = new BWidgets::ValueWidget (0, 0, 0, 0, "widget", 0.0);
-			options[2] = new DialRange (90, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.0f", "Hz", [] (double x) {return 20.0 + 19980.0 * pow (x, 3.0);});
+			options[2] = new DialRange (90, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.0f", "Hz", [] (double x) {return 20.0 + 19980.0 * pow (x, 3.0);}, [] (double x) {return pow ((LIMIT (x, 20, 20000) - 20.0) / 19980.0, 1.0 / 3.0);});
 			options[3] = new BWidgets::ValueWidget (0, 0, 0, 0, "widget", 0.0);
-			options[4] = new DialRange (170, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.2f", "Hz", [] (double x) {return 10.0 * pow (x, 3.0);});
+			options[4] = new DialRange (170, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.2f", "Hz", [] (double x) {return 10.0 * pow (x, 3.0);}, [] (double x) {return pow (LIMIT (x, 0.0, 10.0) / 10.0, 1.0 / 3.0);});
 			options[5] = new BWidgets::ValueWidget (0, 0, 0, 0, "widget", 0.0);
-			options[6] = new DialRange (250, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.1f", "°", [] (double x) {return 360.0 * x;});
+			options[6] = new DialRange (250, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.1f", "°", [] (double x) {return 360.0 * x;}, [] (double x) {return x / 360.0;});
 			options[7] = new BWidgets::ValueWidget (0, 0, 0, 0, "widget", 0.0);
-			options[8] = new DialRange (410, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.2f", "", [] (double x) {return 2.0 * x - 1.0;});
+			options[8] = new DialRange (410, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.2f", "", [] (double x) {return 2.0 * x - 1.0;}, [] (double x) {return (x + 1.0) / 2.0;});
 			options[9] = new BWidgets::ValueWidget (0, 0, 0, 0, "widget", 0.0);
-			options[10] = new Dial (330, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, "%1.0f", "", [] (double x) {return floor (1.0 + LIMIT (x * 10.0, 0, 9));});
+			options[10] = new Dial (330, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, "%1.0f", "", [] (double x) {return floor (1.0 + LIMIT (x * 10.0, 0, 9));}, [] (double x) {return (x - 0.99999) / 10.0;});
 		}
 		catch (std::bad_alloc& ba) {throw ba;}
 

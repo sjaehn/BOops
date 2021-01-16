@@ -49,7 +49,7 @@ public:
 		size = (sizePtr ? *sizePtr : 1);
 		const double r1 = bidist (rnd);
 		const double r2 = bidist (rnd);
-		range = floor (params ? LIMIT (1.0 + params[SLOTS_OPTPARAMS + FX_DELAY_RANGE] * (NR_STEPS - 1), 1.0, size - 1) : 1.0f);
+		range = floor (params ? LIMIT (1.0 + params[SLOTS_OPTPARAMS + FX_DELAY_RANGE] * NR_STEPS, 1.0, size - 1) : 1.0f);
 		delay = (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_DELAY_DELAY] + r1 * params[SLOTS_OPTPARAMS + FX_DELAY_DELAYRAND], 0.0, 1.0) : 0.5);
 		feedback = (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_DELAY_FEEDBACK] + r2 * params[SLOTS_OPTPARAMS + FX_DELAY_FEEDBACKRAND], 0.0, 1.0) : 0.5);
 	}
