@@ -43,9 +43,9 @@ public:
 				BItems::ItemList ({{0.0, "Hardclip"}, {0.125, "Softclip"}, {0.25, "Foldback"}, {0.375, "Overdrive"}, {0.5, "Fuzz"}}),
 				0.3
 			);
-			options[1] = new DialRange (90, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.1f", "db", [] (double x) {return -30.0 + 100.0 * x;}, [] (double x) {return (x + 30.0) / 100.0;});
+			options[1] = new DialRange (90, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.1f", "db", [] (double x) {return -30.0 + 100.0 * x;}, [] (double x) {return (LIMIT (x, -30.0, 70.0) + 30.0) / 100.0;});
 			options[2] = new BWidgets::ValueWidget (0, 0, 0, 0, "widget", 0.0);
-			options[3] = new DialRange (170, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.1f", "db", [] (double x) {return -70.0 + 100.0 * x;}, [] (double x) {return (x + 70.0) / 100.0;});
+			options[3] = new DialRange (170, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.1f", "db", [] (double x) {return -70.0 + 100.0 * x;}, [] (double x) {return (LIMIT (x, -70.0, 30.0) + 70.0) / 100.0;});
 			options[4] = new BWidgets::ValueWidget (0, 0, 0, 0, "widget", 0.0);
 		}
 		catch (std::bad_alloc& ba) {throw ba;}

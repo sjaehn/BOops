@@ -38,13 +38,13 @@ public:
 	{
 		try
 		{
-			options[0] = new DialRange (10, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.1f", "db", [] (double x) {return -36.0 + 48.0 * x;}, [] (double x) {return (x + 36.0) / 48.0;});
+			options[0] = new DialRange (10, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.1f", "db", [] (double x) {return -36.0 + 48.0 * x;}, [] (double x) {return (LIMIT (x, -36.0, 12.0) + 36.0) / 48.0;});
 			options[1] = new BWidgets::ValueWidget (0, 0, 0, 0, "widget", 0.0);
-			options[2] = new DialRange (90, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.2f", "", [] (double x) {return 200.0 * x;}, [] (double x) {return x / 200.0;});
+			options[2] = new DialRange (90, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.2f", "", [] (double x) {return 200.0 * x;}, [] (double x) {return LIMIT (x, 0.0, 200.0) / 200.0;});
 			options[3] = new BWidgets::ValueWidget (0, 0, 0, 0, "widget", 0.0);
-			options[4] = new DialRange (170, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.2f", "", [] (double x) {return 0.2 * x;}, [] (double x) {return x / 0.2;});
+			options[4] = new DialRange (170, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.2f", "", [] (double x) {return 0.2 * x;}, [] (double x) {return LIMIT (x, 0.0, 0.2) / 0.2;});
 			options[5] = new BWidgets::ValueWidget (0, 0, 0, 0, "widget", 0.0);
-			options[6] = new DialRange (250, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.2f", "", [] (double x) {return 10.0 * x;}, [] (double x) {return x / 10.0;});
+			options[6] = new DialRange (250, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.2f", "", [] (double x) {return 10.0 * x;}, [] (double x) {return LIMIT (x, 0.0, 10.0) / 10.0;});
 			options[7] = new BWidgets::ValueWidget (0, 0, 0, 0, "widget", 0.0);
 		}
 		catch (std::bad_alloc& ba) {throw ba;}
