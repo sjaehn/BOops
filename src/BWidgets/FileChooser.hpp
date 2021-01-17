@@ -81,6 +81,12 @@ public:
 	std::string getPath () const;
 
 	/**
+	 * Sets the file name of the file chooser.
+	 * @param filename	File name 
+	 */
+	virtual void setFileName (const std::string& filename);
+
+	/**
 	 * Gets the selected file name
 	 * @return	Selected file name
 	 */

@@ -169,6 +169,28 @@ void FileChooser::setPath (const std::string& path)
 
 std::string FileChooser::getPath () const {return pathNameBox.getText();}
 
+void FileChooser::setFileName (const std::string& filename)
+{
+	if (filename != fileNameBox.getText())
+	{
+		fileNameBox.setText (filename);
+		BItems::ItemList* il = fileListBox.getItemList();
+		if (!il) return;
+		for (BItems::Item const& it : *il)
+		{
+			if (it.getWidget())
+			{
+				BWidgets::Label* l = (BWidgets::Label*)it.getWidget();
+				if (l->getText() == filename)
+				{
+					fileListBox.setValue (it.getValue());
+					break;
+				}
+			}
+		}
+	}
+}
+
 std::string FileChooser::getFileName () const {return fileNameBox.getText();}
 
 void FileChooser::setFilters (const std::vector<FileFilter>& filters)
@@ -369,7 +391,7 @@ void FileChooser::fileListBoxClickedCallback (BEvents::Event* event)
 			if (ai)
 			{
 				Label* ail = (Label*)ai->getWidget();
-				if (ail) fc->fileNameBox.setText (ail->getText());
+				if (ail) fc->setFileName (ail->getText());
 			}
 		}
 

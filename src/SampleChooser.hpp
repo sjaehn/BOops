@@ -49,7 +49,7 @@ public:
 	SampleChooser& operator= (const SampleChooser& that);
 	virtual Widget* clone () const override;
 
-	void setFileName (const std::string& filename);
+	virtual void setFileName (const std::string& filename);
 	void setStart (const int64_t start);
 	int64_t getStart() const;
 	void setEnd (const int64_t end);
@@ -66,6 +66,7 @@ public:
 	static void sfileListBoxClickedCallback (BEvents::Event* event);
 	static void scrollbarChangedCallback (BEvents::Event* event);
 	static void lineDraggedCallback (BEvents::Event* event);
+	static void filenameEnteredCallback (BEvents::Event* event);
 
 protected:
 	BWidgets::DrawingSurface waveform;

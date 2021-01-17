@@ -64,6 +64,7 @@ SampleChooser::SampleChooser (const double x, const double y, const double width
 	startMarker.setCallbackFunction (BEvents::POINTER_DRAG_EVENT, lineDraggedCallback);
 	endMarker.setDraggable (true);
 	endMarker.setCallbackFunction (BEvents::POINTER_DRAG_EVENT, lineDraggedCallback);
+	fileNameBox.setCallbackFunction (BEvents::MESSAGE_EVENT, filenameEnteredCallback);
 	add (waveform);
 	waveform.add (startMarker);
 	waveform.add (endMarker);
@@ -145,27 +146,30 @@ BWidgets::Widget* SampleChooser::clone () const {return new SampleChooser (*this
 
 void SampleChooser::setFileName (const std::string& filename)
 {
-	fileNameBox.setText (filename);
-	std::string newPath = getPath() + "/" + filename;
-	char buf[PATH_MAX];
-	char *rp = realpath(newPath.c_str(), buf);
-	if (sample)
+	if (filename != fileNameBox.getText())
 	{
-		delete (sample);
-		sample = nullptr;
-	}
-	try {sample = new Sample (rp);}
-	catch (std::exception& exc) {fprintf(stderr, "Can't load %s\n", rp);}
+		FileChooser::setFileName (filename);
+		std::string newPath = getPath() + "/" + filename;
+		char buf[PATH_MAX];
+		char *rp = realpath(newPath.c_str(), buf);
+		if (sample)
+		{
+			delete (sample);
+			sample = nullptr;
+		}
+		try {sample = new Sample (rp);}
+		catch (std::exception& exc) {fprintf(stderr, "Can't load %s\n", rp);}
 
-	if (sample)
-	{
-		sample->start = 0;
-		sample->end = sample->info.frames;
+		if (sample)
+		{
+			sample->start = 0;
+			sample->end = sample->info.frames;
 
-		scrollbar.minButton.setValue (0.0);
-		scrollbar.maxButton.setValue (1.0);
+			scrollbar.minButton.setValue (0.0);
+			scrollbar.maxButton.setValue (1.0);
 
-		update();
+			update();
+		}
 	}
 }
 
@@ -457,6 +461,19 @@ void SampleChooser::lineDraggedCallback (BEvents::Event* event)
 
 	if (fc->sample->start >= fc->sample->end) fc->sample->start = fc->sample->end - 1;
 	fc->drawWaveform();
+}
+
+void SampleChooser::filenameEnteredCallback (BEvents::Event* event)
+{
+	if (!event) return;
+	if (!event->getWidget()) return;
+	BWidgets::Label* l = (BWidgets::Label*)event->getWidget();
+	SampleChooser* p = (SampleChooser*)l->getParent();
+	if (!p) return;
+
+	const std::string s = l->getText();
+	l->setText ("");
+	p->setFileName (s);
 }
 
 void SampleChooser::drawWaveform()
