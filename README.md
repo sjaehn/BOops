@@ -14,7 +14,10 @@ Key features:
 
 ## Installation
 
-a) Install the boops package for your system (once established)
+a) Install the boops package for your system
+
+* [Arch user repository](https://aur.archlinux.org/packages/boops.lv2-git/) (thanks to SpotlightKid)
+* [Feodora](https://copr.fedorainfracloud.org/coprs/ycollet/linuxmao/package/lv2-BOops/) (thanks to ycollet)
 
 b) Build your own binaries in the following three steps.
 
