@@ -120,7 +120,7 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 	),
 
 	padParamContainer (1120, 130, 100, 288, "widget"),
-	padGateLabel (20, 90, 60, 20, "ctlabel", "Gate"),
+	padGateLabel (00, 90, 100, 20, "ctlabel", "Probability"),
 	padGateDial (20, 30, 60, 60, "dial", 1.0, 0.0, 1.0, 0.0, "%1.2f"),
 	padMixLabel (20, 180, 60, 20, "ctlabel", "Mix"),
 	padMixDial (20, 120, 60, 60, "dial", 1.0, 0.0, 1.0, 0.0, "%1.2f")
@@ -772,7 +772,7 @@ void BOopsGUI::resize ()
 	RESIZE (gettingstartedText, 20, 30, 960, 110, sz);
 
 	RESIZE (padParamContainer, 1120, 130, 100, 288, sz);
-	RESIZE (padGateLabel, 20, 90, 60, 20, sz);
+	RESIZE (padGateLabel, 0, 90, 100, 20, sz);
 	RESIZE (padGateDial, 20, 30, 60, 60, sz);
 	RESIZE (padMixLabel, 20, 180, 60, 20, sz);
 	RESIZE (padMixDial, 20, 120, 60, 60, sz);

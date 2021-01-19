@@ -172,9 +172,9 @@ scale the waveform.
 The pad properties (relevant for the pattern drawing mode) are shown on the left of the user interface.
 
 
-##### Gate
+##### Probability (Gate)
 
-Likelihood of an effect pad.
+Set the probability for pads to be played or not.
 
 
 ##### Mix
