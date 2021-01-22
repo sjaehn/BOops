@@ -67,7 +67,7 @@ float stof (const std::string& str, size_t* idx)
         if (idx != nullptr) *idx = i;
 
         // Not a number: invalid argument exception
-        if (!isNumber) throw std::invalid_argument (str + "is not a number");
+        if (!isNumber) throw std::invalid_argument (str + " is not a number");
 
         return sign * (predec + dec);
 }

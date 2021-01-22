@@ -113,6 +113,8 @@ public:
 
 protected:
 	virtual void updateCoords () override;
+	static void displayDraggedCallback (BEvents::Event* event);
+	static void displayMessageCallback (BEvents::Event* event);
 
 	Label valueDisplay;
 

@@ -17,6 +17,7 @@
 
 #include "DialValue.hpp"
 #include "../BUtilities/to_string.hpp"
+#include "../BUtilities/stof.hpp"
 
 namespace BWidgets
 {
@@ -38,6 +39,10 @@ DialValue::DialValue (const double x, const double y, const double width, const 
 	valFormat (valueFormat)
 {
 	valueDisplay.setText (BUtilities::to_string (value, valueFormat));
+	valueDisplay.setScrollable (false);
+	valueDisplay.setEditable (true);
+	valueDisplay.setCallbackFunction(BEvents::EventType::POINTER_DRAG_EVENT, displayDraggedCallback);
+	valueDisplay.setCallbackFunction(BEvents::EventType::MESSAGE_EVENT, displayMessageCallback);
 	add (valueDisplay);
 }
 
@@ -110,6 +115,39 @@ void DialValue::updateCoords ()
 	dialRadius = (w < h / 1.2 ? w / 2 : h / 2.4);
 	dialCenter.x = getWidth () / 2;
 	dialCenter.y = getHeight () / 2 - 0.2 * dialRadius;
+}
+
+void DialValue::displayDraggedCallback (BEvents::Event* event)
+{
+	if (event && event->getWidget())
+	{
+		BWidgets::Label* l = (BWidgets::Label*)event->getWidget();
+		DialValue* d = (DialValue*)l->getParent();
+		if (d && (!l->getEditMode())) d->DialValue::onPointerDragged ((BEvents::PointerEvent*)event);
+	}
+}
+
+void DialValue::displayMessageCallback (BEvents::Event* event)
+{
+	if (event && event->getWidget())
+	{
+		BWidgets::Label* l = (BWidgets::Label*)event->getWidget();
+		DialValue* d = (DialValue*)l->getParent();
+		if (d)
+		{
+			double val;
+			try {val = BUtilities::stof (l->getText());}
+			catch (std::invalid_argument &ia)
+			{
+				fprintf (stderr, "%s\n", ia.what());
+				d->update();
+				return;
+			}
+
+			d->setValue (val);
+			d->update();
+		}
+	}
 }
 
 }

@@ -155,7 +155,7 @@ void Label::applyTheme (BStyles::Theme& theme, const std::string& name)
 
 void Label::setEditable (const bool status)
 {
-	editable = true;
+	editable = status;
 	if (editMode) update ();
 }
 
@@ -320,6 +320,7 @@ void Label::onPointerDragged (BEvents::PointerEvent* event)
 	if
 	(
 		editable &&
+		editMode &&
 		(event) &&
 		(event->getWidget () == this) &&
 		(main_) &&
