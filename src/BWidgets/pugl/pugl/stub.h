@@ -1,5 +1,5 @@
 /*
-  Copyright 2012-2019 David Robillard <http://drobilla.net>
+  Copyright 2019-2020 David Robillard <d@drobilla.net>
 
   Permission to use, copy, modify, and/or distribute this software for any
   purpose with or without fee is hereby granted, provided that the above
@@ -14,19 +14,34 @@
   OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
+#ifndef PUGL_STUB_H
+#define PUGL_STUB_H
+
 #include "pugl.h"
-#include "pugl_internal_types.h"
 
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
+PUGL_BEGIN_DECLS
 
-struct PuglInternalsImpl {
-	Display*        display;
-	int             screen;
-	XVisualInfo*    vi;
-	Window          win;
-	XIM             xim;
-	XIC             xic;
-	PuglDrawContext ctx;
-	PuglSurface*    surface;
-};
+/**
+   @defgroup stub Stub
+   Native graphics support.
+   @ingroup pugl
+   @{
+*/
+
+/**
+   Stub graphics backend accessor.
+
+   This backend just creates a simple native window without setting up any
+   portable graphics API.
+*/
+PUGL_CONST_API
+const PuglBackend*
+puglStubBackend(void);
+
+/**
+   @}
+*/
+
+PUGL_END_DECLS
+
+#endif // PUGL_STUB_H

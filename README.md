@@ -358,6 +358,7 @@ not. Select at least two slots and set the likelihood ratio for each slot.
 * Keep current sample settings in the sample browser
 * Enable enter slider and dial values via keyboard
 * Glitched GUI background
+* Update pugl
 * Bugfixes
 
 

@@ -48,7 +48,8 @@ protected:
 public:
 	Window ();
 	Window (const double width, const double height, const std::string& title,
-		PuglNativeWindow nativeWindow, bool resizable = false);
+		PuglNativeWindow nativeWindow, bool resizable = false,
+		PuglWorldType worldType = PUGL_PROGRAM, int worldFlag = 0);
 
 	Window (const Window& that) = delete;			// Only one window in this version
 
@@ -132,7 +133,7 @@ protected:
 	 * Communication interface to the host via Pugl. Translates PuglEvents to
 	 * BEvents::Event derived objects.
 	 */
-	static void translatePuglEvent (PuglView* view, const PuglEvent* event);
+	static PuglStatus translatePuglEvent (PuglView* view, const PuglEvent* event);
 
 	void translateTimeEvent ();
 	void mergeEvents ();
@@ -140,6 +141,7 @@ protected:
 	void unfocus();
 
 	std::string title_;
+	PuglWorld* world_;
 	PuglView* view_;
 	PuglNativeWindow nativeWindow_;
 	bool quit_;

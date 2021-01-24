@@ -1,5 +1,5 @@
 /*
-  Copyright 2012-2015 David Robillard <http://drobilla.net>
+  Copyright 2012-2020 David Robillard <d@drobilla.net>
 
   Permission to use, copy, modify, and/or distribute this software for any
   purpose with or without fee is hereby granted, provided that the above
@@ -14,19 +14,33 @@
   OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
-/**
-   @file gl.h Portable header wrapper for glu.h.
+#ifndef PUGL_CAIRO_H
+#define PUGL_CAIRO_H
 
-   Unfortunately, GL includes vary across platforms so this header allows for
-   pure portable programs.
+#include "pugl.h"
+
+PUGL_BEGIN_DECLS
+
+/**
+   @defgroup cairo Cairo
+   Cairo graphics support.
+   @ingroup pugl
+   @{
 */
 
-#ifdef __APPLE__
-#    include "OpenGL/glu.h"
-#else
-#    ifdef _WIN32
-#        include <windows.h>  /* Broken Windows GL headers require this */
-#    endif
-#    include "GL/glu.h"
-#endif
+/**
+   Cairo graphics backend accessor.
 
+   Pass the returned value to puglSetBackend() to draw to a view with Cairo.
+*/
+PUGL_CONST_API
+const PuglBackend*
+puglCairoBackend(void);
+
+/**
+   @}
+*/
+
+PUGL_END_DECLS
+
+#endif // PUGL_CAIRO_H

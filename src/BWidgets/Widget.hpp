@@ -54,7 +54,8 @@
 
 #include <cairo/cairo.h>
 #include "cairoplus.h"
-#include "pugl/pugl.h"
+#include "pugl/pugl/pugl.h"
+#include "pugl/pugl/cairo.h"
 #include <stdint.h>
 #include <array>
 #include <vector>

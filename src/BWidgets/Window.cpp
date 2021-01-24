@@ -28,30 +28,33 @@ namespace BWidgets
 
 Window::Window () : Window (BWIDGETS_DEFAULT_WIDTH, BWIDGETS_DEFAULT_HEIGHT, "window", 0.0) {}
 
-Window::Window (const double width, const double height, const std::string& title, PuglNativeWindow nativeWindow, bool resizable) :
+Window::Window (const double width, const double height, const std::string& title, PuglNativeWindow nativeWindow, bool resizable,
+		PuglWorldType worldType, int worldFlag) :
 		Widget (0.0, 0.0, width, height, title),
 		keyGrabStack_ (), buttonGrabStack_ (),
-		title_ (title), view_ (NULL), nativeWindow_ (nativeWindow),
+		title_ (title), world_ (NULL), view_ (NULL), nativeWindow_ (nativeWindow),
 		quit_ (false), focused_ (false), pointer_ (),
 		eventQueue_ ()
 {
 	main_ = this;
-	view_ = puglInit(NULL, NULL);
 
-	if (nativeWindow_ != 0)
-	{
-		puglInitWindowParent(view_, nativeWindow_);
-	}
+	world_ = puglNewWorld (worldType, worldFlag);
+	puglSetClassName (world_, "BWidgets");
 
-	puglInitWindowSize (view_, getWidth (), getHeight ());
-	puglInitResizable (view_, resizable);
-	puglInitContextType (view_, PUGL_CAIRO);
-	puglIgnoreKeyRepeat (view_, true);
-	puglCreateWindow (view_, title.c_str ());
-	puglShowWindow (view_);
+	view_ = puglNewView (world_);
+	if (nativeWindow_ != 0) puglSetParentWindow(view_, nativeWindow_);
+	puglSetWindowTitle(view_, title.c_str());
+	puglSetDefaultSize (view_, getWidth (), getHeight ());
+	puglSetMinSize (view_, getWidth () / 4.0, getHeight () / 4.0);
+	if (getWidth() != 0) puglSetAspectRatio (view_, getWidth(), getHeight(), getWidth(), getHeight());
+	puglSetViewHint(view_, PUGL_RESIZABLE, PUGL_TRUE);
+	puglSetViewHint(view_, PUGL_IGNORE_KEY_REPEAT, PUGL_TRUE);
+	puglSetWorldHandle(world_, this);
 	puglSetHandle (view_, this);
-
+	puglSetBackend(view_, puglCairoBackend());
 	puglSetEventFunc (view_, Window::translatePuglEvent);
+	puglRealize (view_);
+	puglShow (view_);
 
 	setBackground (BWIDGETS_DEFAULT_WINDOW_BACKGROUND);
 }
@@ -67,7 +70,8 @@ Window::~Window ()
 	purgeEventQueue ();
 	keyGrabStack_.clear ();
 	buttonGrabStack_.clear ();
-	puglDestroy(view_);
+	puglFreeView (view_);
+	puglFreeWorld (world_);
 	main_ = nullptr;	// Important switch for the super destructor. It took
 				// days of debugging ...
 
@@ -88,10 +92,7 @@ cairo_t* Window::getPuglContext ()
 
 void Window::run ()
 {
-	while (!quit_)
-	{
-		handleEvents ();
-	}
+	while (!quit_) handleEvents();
 }
 
 void Window::onConfigureRequest (BEvents::ExposeEvent* event)
@@ -107,20 +108,10 @@ void Window::onCloseRequest (BEvents::WidgetEvent* event)
 
 void Window::onExposeRequest (BEvents::ExposeEvent* event)
 {
-	if (event && (event->getWidget () == this))
+	if (event)
 	{
-		// Create a temporal storage surface and store all children surfaces on this
-		cairo_surface_t* storageSurface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, getWidth (), getHeight ());
-		redisplay (storageSurface, event->getArea());
-
-		// Copy storage surface onto pugl provided surface
-		cairo_t* cr = main_->getPuglContext ();
-		cairo_save (cr);
-		cairo_set_source_surface (cr, storageSurface, 0, 0);
-		cairo_paint (cr);
-		cairo_restore (cr);
-
-		cairo_surface_destroy (storageSurface);
+		BEvents::ExposeEvent* ee = (BEvents::ExposeEvent*)event;
+		puglPostRedisplayRect (view_, {ee->getArea().getX(), ee->getArea().getY(), ee->getArea().getWidth(), ee->getArea().getHeight()});
 	}
 }
 
@@ -245,7 +236,7 @@ BDevices::DeviceGrabStack<BDevices::MouseDevice>* Window::getButtonGrabStack () 
 
 void Window::handleEvents ()
 {
-	puglProcessEvents (view_);
+	puglUpdate (world_, 0);
 	translateTimeEvent ();
 
 	while (!eventQueue_.empty ())
@@ -266,6 +257,7 @@ void Window::handleEvents ()
 					widget->onConfigureRequest ((BEvents::ExposeEvent*) event);
 					break;
 
+				// Expose events: Forward to pugl!
 				case BEvents::EXPOSE_REQUEST_EVENT:
 					widget->onExposeRequest ((BEvents::ExposeEvent*) event);
 					break;
@@ -275,13 +267,11 @@ void Window::handleEvents ()
 					break;
 
 				case BEvents::KEY_PRESS_EVENT:
-					unfocus();
 					buttonGrabStack_.remove (BDevices::MouseDevice (BDevices::NO_BUTTON));
 					widget->onKeyPressed ((BEvents::KeyEvent*) event);
 					break;
 
 				case BEvents::KEY_RELEASE_EVENT:
-					unfocus();
 					buttonGrabStack_.remove (BDevices::MouseDevice (BDevices::NO_BUTTON));
 					widget->onKeyReleased ((BEvents::KeyEvent*) event);
 					break;
@@ -397,52 +387,77 @@ void Window::handleEvents ()
 	}
 }
 
-void Window::translatePuglEvent (PuglView* view, const PuglEvent* puglEvent)
+PuglStatus Window::translatePuglEvent (PuglView* view, const PuglEvent* puglEvent)
 {
 	Window* w = (Window*) puglGetHandle (view);
-	if (!w) return;
+	if (!w) return PUGL_BAD_PARAMETER;
 
 	switch (puglEvent->type) {
 
 	case PUGL_KEY_PRESS:
 		{
-			uint32_t key = (puglEvent->key.character != 0 ? puglEvent->key.character : puglEvent->key.special);
-			BDevices::DeviceGrab<uint32_t>* grab = w->getKeyGrabStack()->getGrab(key);
-			Widget* widget = (grab ? grab->getWidget() : nullptr);
-			w->addEventToQueue
-			(
-				new BEvents::KeyEvent
+			if ((puglEvent->key.key >= PUGL_KEY_F1) && (puglEvent->key.key <= PUGL_KEY_PAUSE))
+			{
+				uint32_t key = puglEvent->key.key;
+				BDevices::DeviceGrab<uint32_t>* grab = w->getKeyGrabStack()->getGrab(key);
+				Widget* widget = (grab ? grab->getWidget() : nullptr);
+				w->addEventToQueue
 				(
-					widget,
-					BEvents::KEY_PRESS_EVENT,
-					puglEvent->key.x,
-					puglEvent->key.y,
-					key
-				)
-			);
+					new BEvents::KeyEvent
+					(
+						widget,
+						BEvents::KEY_PRESS_EVENT,
+						puglEvent->key.x,
+						puglEvent->key.y,
+						key
+					)
+				);
+			}
 		}
 		break;
 
 	case PUGL_KEY_RELEASE:
 		{
-			uint32_t key = (puglEvent->key.character != 0 ? puglEvent->key.character : puglEvent->key.special);
-			BDevices::DeviceGrab<uint32_t>* grab = w->getKeyGrabStack()->getGrab(key);
-			Widget* widget = (grab ? grab->getWidget() : nullptr);
-			w->addEventToQueue
-			(
-				new BEvents::KeyEvent
+			if ((puglEvent->key.key >= PUGL_KEY_F1) && (puglEvent->key.key <= PUGL_KEY_PAUSE))
+			{
+				uint32_t key = puglEvent->key.key;
+				BDevices::DeviceGrab<uint32_t>* grab = w->getKeyGrabStack()->getGrab(key);
+				Widget* widget = (grab ? grab->getWidget() : nullptr);
+				w->addEventToQueue
 				(
-					widget,
-					BEvents::KEY_RELEASE_EVENT,
-					puglEvent->key.x,
-					puglEvent->key.y,
-					key
-				)
-			);
+					new BEvents::KeyEvent
+					(
+						widget,
+						BEvents::KEY_RELEASE_EVENT,
+						puglEvent->key.x,
+						puglEvent->key.y,
+						key
+					)
+				);
+			}
 		}
 		break;
 
-	case PUGL_BUTTON_PRESS:
+		case PUGL_TEXT:
+			{
+				uint32_t key = puglEvent->text.character;
+				BDevices::DeviceGrab<uint32_t>* grab = w->getKeyGrabStack()->getGrab(key);
+				Widget* widget = (grab ? grab->getWidget() : nullptr);
+				w->addEventToQueue
+				(
+					new BEvents::KeyEvent
+					(
+						widget,
+						BEvents::KEY_PRESS_EVENT,
+						puglEvent->text.x,
+						puglEvent->text.y,
+						key
+					)
+				);
+			}
+			break;
+
+		case PUGL_BUTTON_PRESS:
 		{
 			BUtilities::Point position = BUtilities::Point (puglEvent->button.x, puglEvent->button.y);
 			Widget* widget = w->getWidgetAt (position, [] (Widget* w) {return w->isVisible () && w->isClickable ();});
@@ -517,7 +532,7 @@ void Window::translatePuglEvent (PuglView* view, const PuglEvent* puglEvent)
 		}
 		break;
 
-	case PUGL_MOTION_NOTIFY:
+	case PUGL_MOTION:
 		{
 			BUtilities::Point position = BUtilities::Point (puglEvent->motion.x, puglEvent->motion.y);
 			BDevices::ButtonCode button = BDevices::NO_BUTTON;
@@ -615,8 +630,29 @@ void Window::translatePuglEvent (PuglView* view, const PuglEvent* puglEvent)
 		);
 		break;
 
+	// Expose events handled HERE
 	case PUGL_EXPOSE:
-		w->postRedisplay ();
+		{
+			BUtilities::RectArea area = BUtilities::RectArea (puglEvent->expose.x, puglEvent->expose.y, puglEvent->expose.width, puglEvent->expose.height);
+
+			// Create a temporal storage surface and store all children surfaces on this
+			cairo_surface_t* storageSurface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, w->getWidth(), w->getHeight());
+			if (cairo_surface_status (storageSurface) == CAIRO_STATUS_SUCCESS)
+			{
+				w->redisplay (storageSurface, area);
+
+				// Copy storage surface onto pugl provided surface
+				cairo_t* cr = w->getPuglContext ();
+				if (cairo_status (cr) == CAIRO_STATUS_SUCCESS)
+				{
+					cairo_save (cr);
+					cairo_set_source_surface (cr, storageSurface, 0, 0);
+					cairo_paint (cr);
+					cairo_restore (cr);
+				}
+			}
+			cairo_surface_destroy (storageSurface);
+		}
 		break;
 
 	case PUGL_CLOSE:
@@ -626,6 +662,8 @@ void Window::translatePuglEvent (PuglView* view, const PuglEvent* puglEvent)
 	default:
 		break;
 	}
+
+	return PUGL_SUCCESS;
 }
 
 void Window::translateTimeEvent ()
