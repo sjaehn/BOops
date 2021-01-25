@@ -23,7 +23,8 @@
 <https://www.jahnichen.de/plugins/lv2/BOops#gui>
 	a ui:X11UI;
 	ui:binary <BOopsGUI.so> ;
-	lv2:extensionData ui:idleInterface ;
+	lv2:extensionData ui:idleInterface , ui:resize ;
+	lv2:optionalFeature ui:resize ;
 	lv2:requiredFeature ui:idleInterface .
 
 <https://www.jahnichen.de/plugins/lv2/BOops>

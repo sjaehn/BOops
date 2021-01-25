@@ -35,6 +35,7 @@ Widget::Widget(const double x, const double y, const double width, const double 
 		name_ (name), widgetSurface_ (), widgetState_ (BWIDGETS_DEFAULT_STATE)
 {
 	mergeable_.fill (false);
+	mergeable_[BEvents::CONFIGURE_REQUEST_EVENT] = true;
 	mergeable_[BEvents::EXPOSE_REQUEST_EVENT] = true;
 	mergeable_[BEvents::POINTER_MOTION_EVENT] = true;
 	mergeable_[BEvents::POINTER_DRAG_EVENT] = true;
