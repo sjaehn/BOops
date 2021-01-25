@@ -21,15 +21,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#if defined(_WIN32) && !defined(PUGL_STATIC) && defined(PUGL_INTERNAL)
-#  define PUGL_API __declspec(dllexport)
-#elif defined(_WIN32) && !defined(PUGL_STATIC)
-#  define PUGL_API __declspec(dllimport)
-#elif defined(__GNUC__)
-#  define PUGL_API __attribute__((visibility("default")))
-#else
-#  define PUGL_API
-#endif
+#define PUGL_API
 
 #ifndef PUGL_DISABLE_DEPRECATED
 #  if defined(__clang__)
