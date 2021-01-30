@@ -216,20 +216,23 @@ updateSizeHints(const PuglView* view)
     sizeHints.max_height  = (int)view->frame.height;
   } else {
     if (view->defaultWidth || view->defaultHeight) {
-      sizeHints.flags       = PBaseSize;
+      sizeHints.flags |= PBaseSize;
       sizeHints.base_width  = view->defaultWidth;
       sizeHints.base_height = view->defaultHeight;
     }
+
     if (view->minWidth || view->minHeight) {
-      sizeHints.flags      = PMinSize;
+      sizeHints.flags |= PMinSize;
       sizeHints.min_width  = view->minWidth;
       sizeHints.min_height = view->minHeight;
     }
+
     if (view->maxWidth || view->maxHeight) {
-      sizeHints.flags      = PMaxSize;
+      sizeHints.flags |= PMaxSize;
       sizeHints.max_width  = view->maxWidth;
       sizeHints.max_height = view->maxHeight;
     }
+
     if (view->minAspectX) {
       sizeHints.flags |= PAspect;
       sizeHints.min_aspect.x = view->minAspectX;
@@ -1119,8 +1122,12 @@ puglDispatchX11Events(PuglWorld* world)
       XWindowAttributes attrs;
       XGetWindowAttributes(view->impl->display, view->impl->win, &attrs);
 
-      const PuglEventConfigure configure = {
-        PUGL_CONFIGURE, 0, (double)attrs.x, (double)attrs.y, (double)attrs.width, (double)attrs.height};
+      const PuglEventConfigure configure = {PUGL_CONFIGURE,
+                                            0,
+                                            (double)attrs.x,
+                                            (double)attrs.y,
+                                            (double)attrs.width,
+                                            (double)attrs.height};
 
       puglDispatchEvent(view, (const PuglEvent*)&configure);
       puglDispatchEvent(view, &event);
@@ -1271,8 +1278,8 @@ puglSetMinSize(PuglView* const view, const int width, const int height)
 PuglStatus
 puglSetMaxSize(PuglView* const view, const int width, const int height)
 {
-  view->minWidth  = width;
-  view->minHeight = height;
+  view->maxWidth  = width;
+  view->maxHeight = height;
   return updateSizeHints(view);
 }
 

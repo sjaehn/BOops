@@ -26,7 +26,7 @@
 namespace BWidgets
 {
 
-Window::Window () : Window (BWIDGETS_DEFAULT_WIDTH, BWIDGETS_DEFAULT_HEIGHT, "window", 0.0) {}
+Window::Window () : Window (BWIDGETS_DEFAULT_WIDTH, BWIDGETS_DEFAULT_HEIGHT, "window", 0) {}
 
 Window::Window (const double width, const double height, const std::string& title, PuglNativeWindow nativeWindow, bool resizable,
 		PuglWorldType worldType, int worldFlag) :
@@ -45,9 +45,7 @@ Window::Window (const double width, const double height, const std::string& titl
 	if (nativeWindow_ != 0) puglSetParentWindow(view_, nativeWindow_);
 	puglSetWindowTitle(view_, title.c_str());
 	puglSetDefaultSize (view_, getWidth (), getHeight ());
-	puglSetMinSize (view_, getWidth () / 4.0, getHeight () / 4.0);
-	if (getWidth() != 0) puglSetAspectRatio (view_, getWidth(), getHeight(), getWidth(), getHeight());
-	puglSetViewHint(view_, PUGL_RESIZABLE, PUGL_TRUE);
+	puglSetViewHint(view_, PUGL_RESIZABLE, resizable ? PUGL_TRUE : PUGL_FALSE);
 	puglSetViewHint(view_, PUGL_IGNORE_KEY_REPEAT, PUGL_TRUE);
 	puglSetWorldHandle(world_, this);
 	puglSetHandle (view_, this);
@@ -56,7 +54,8 @@ Window::Window (const double width, const double height, const std::string& titl
 	puglRealize (view_);
 	puglShow (view_);
 
-	setBackground (BWIDGETS_DEFAULT_WINDOW_BACKGROUND);
+	background_ = (BWIDGETS_DEFAULT_WINDOW_BACKGROUND);
+	postRedisplay();
 }
 
 Window::~Window ()
@@ -97,7 +96,7 @@ void Window::run ()
 
 void Window::onConfigureRequest (BEvents::ExposeEvent* event)
 {
-	if (getExtends () != event->getArea().getExtends ()) resize (event->getArea().getExtends ());
+	if (getExtends () != event->getArea().getExtends ()) Widget::resize (event->getArea().getExtends ());
 }
 
 void Window::onCloseRequest (BEvents::WidgetEvent* event)

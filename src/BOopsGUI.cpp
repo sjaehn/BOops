@@ -2593,7 +2593,6 @@ LV2UI_Handle instantiate (const LV2UI_Descriptor *descriptor,
 	int screenHeight = getScreenHeight ();
 	if ((screenWidth < 860) || (screenHeight < 450)) sz = 0.5;
 	else if ((screenWidth < 1280) || (screenHeight < 650)) sz = 0.66;
-
 	if (resize) resize->ui_resize(resize->handle, 1240 * sz, 608 * sz);
 
 	*widget = (LV2UI_Widget) puglGetNativeWindow (ui->getPuglView ());
@@ -2626,7 +2625,6 @@ static int call_idle (LV2UI_Handle ui)
 static int call_resize (LV2UI_Handle ui, int width, int height)
 {
 	BOopsGUI* self = (BOopsGUI*) ui;
-	fprintf(stderr, "Resize %i %i\n", width, height);
 	BEvents::ExposeEvent* ev = new BEvents::ExposeEvent (self, self, BEvents::CONFIGURE_REQUEST_EVENT, self->getPosition().x, self->getPosition().y, width, height);
 	self->addEventToQueue (ev);
 	return 0;
@@ -2637,16 +2635,8 @@ static const LV2UI_Resize resize = {.ui_resize = call_resize} ;
 
 static const void* extension_data(const char* uri)
 {
-	if (!strcmp(uri, LV2_UI__idleInterface))
-	{
-		fprintf(stderr, LV2_UI__idleInterface);
-		return &idle;
-	}
-	else if(!strcmp(uri, LV2_UI__resize))
-	{
-		fprintf(stderr, LV2_UI__resize);
-		return &resize;
-	}
+	if (!strcmp(uri, LV2_UI__idleInterface)) return &idle;
+	else if(!strcmp(uri, LV2_UI__resize)) return &resize;
 	else return NULL;
 }
 
