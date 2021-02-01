@@ -650,7 +650,7 @@ void BOopsGUI::port_event(uint32_t port, uint32_t buffer_size,
 				if (oStart && (oStart->type == urids.atom_Long)) sampleStart = ((LV2_Atom_Long*)oStart)->body;
 				if (oEnd && (oEnd->type == urids.atom_Long)) sampleEnd = ((LV2_Atom_Long*)oEnd)->body;
 				if (oAmp && (oAmp->type == urids.atom_Float)) sampleAmpDial.setValue (((LV2_Atom_Float*)oAmp)->body);
-				if (oLoop && (oLoop->type == urids.atom_Bool)) sampleLoop = ((LV2_Atom_Bool*)oLoop)->body;
+				if (oLoop && (oLoop->type == urids.atom_Bool)) sampleLoop = bool (((LV2_Atom_Bool*)oLoop)->body);
 			}
 
 			// Monitor notification
@@ -1090,7 +1090,7 @@ void BOopsGUI::sendSamplePath ()
 	lv2_atom_forge_key(&forge, urids.bOops_sampleAmp);
 	lv2_atom_forge_float(&forge, sampleAmpDial.getValue());
 	lv2_atom_forge_key(&forge, urids.bOops_sampleLoop);
-	lv2_atom_forge_bool(&forge, sampleLoop);
+	lv2_atom_forge_bool(&forge, int32_t(sampleLoop));
 	lv2_atom_forge_pop(&forge, &frame);
 	write_function(controller, CONTROL, lv2_atom_total_size(msg), urids.atom_eventTransfer, msg);
 }

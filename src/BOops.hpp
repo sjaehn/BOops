@@ -89,7 +89,7 @@ private:
 	void notifyWaveformToGui (const int start, const int end);
 	void notifyTransportGateKeysToGui ();
 	void notifySamplePathToGui ();
-	LV2_Atom_Forge_Ref forgeSamplePath (LV2_Atom_Forge* forge, LV2_Atom_Forge_Frame* frame,  const char* path, const int64_t start, const int64_t end, const float amp, const bool loop);
+	LV2_Atom_Forge_Ref forgeSamplePath (LV2_Atom_Forge* forge, LV2_Atom_Forge_Frame* frame,  const char* path, const int64_t start, const int64_t end, const float amp, const int32_t loop);
 	LV2_Atom_Forge_Ref forgeShape (LV2_Atom_Forge* forge, LV2_Atom_Forge_Frame* frame, const int slot, const Shape<SHAPE_MAXNODES>* shape);
 	LV2_Atom_Forge_Ref forgeTransportGateKeys (LV2_Atom_Forge* forge, LV2_Atom_Forge_Frame* frame, const int* keys, const size_t size);
 	LV2_Atom_Forge_Ref forgePads (LV2_Atom_Forge* forge, LV2_Atom_Forge_Frame* frame, const int slot, const Pad* pads, const size_t size);
@@ -173,7 +173,7 @@ private:
 		int64_t start;
 		int64_t end;
 		float amp;
-		bool loop;
+		int32_t loop;
 	};
 };
 
