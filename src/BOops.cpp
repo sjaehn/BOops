@@ -503,7 +503,7 @@ void BOops::run (uint32_t n_samples)
 					if (oStart && (oStart->type == urids.atom_Long)) sample->start = LIMIT (((LV2_Atom_Long*)oStart)->body, 0, sample->info.frames - 1);
 					if (oEnd && (oEnd->type == urids.atom_Long)) sample->end = LIMIT (((LV2_Atom_Long*)oEnd)->body, 0, sample->info.frames);
 					if (oAmp && (oAmp->type == urids.atom_Float)) sampleAmp = LIMIT (((LV2_Atom_Float*)oAmp)->body, 0.0f, 1.0f);
-					if (oLoop && (oLoop->type == urids.atom_Bool)) sample->loop = ((LV2_Atom_Long*)oEnd)->body;
+					if (oLoop && (oLoop->type == urids.atom_Bool)) sample->loop = ((LV2_Atom_Bool*)oLoop)->body;
 				}
 			}
 
