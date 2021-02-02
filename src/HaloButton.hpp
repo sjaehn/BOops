@@ -108,7 +108,7 @@ public:
 protected:
 	BWidgets::Label focusLabel_;
 
-	void draw (const BUtilities::RectArea& area)
+	virtual void draw (const BUtilities::RectArea& area) override
 	{
 		if ((!widgetSurface_) || (cairo_surface_status (widgetSurface_) != CAIRO_STATUS_SUCCESS)) return;
 
