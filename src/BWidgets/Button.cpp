@@ -95,7 +95,7 @@ void Button::draw (const BUtilities::RectArea& area)
 
 			cairo_set_line_width (cr, 0.0);
 			cairo_set_source_rgba (cr, CAIRO_RGBA (butColor));
-			cairo_rectangle_rounded (cr, x0, y0, w, h, BWIDGETS_DEFAULT_BUTTON_RAD);
+			cairo_rectangle_rounded (cr, x0, y0, w, h, BWIDGETS_DEFAULT_BUTTON_RAD, 0b1111);
 			cairo_fill_preserve (cr);
 
 			cairo_set_line_width (cr, BWIDGETS_DEFAULT_BUTTON_BORDER);

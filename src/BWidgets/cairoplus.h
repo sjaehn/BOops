@@ -24,6 +24,10 @@
 #include <string.h>
 #include <cairo/cairo.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
+
 typedef struct {
 	double red;
 	double green;
@@ -49,7 +53,7 @@ typedef struct {
  * @param corners Optional, bits set for the corners with rounded edges in
  * 				  clockwise direction starting with upper right
  */
-void cairo_rectangle_rounded (cairo_t* cr, double x, double y, double width, double height, double radius, uint8_t corners = 0b1111);
+void cairo_rectangle_rounded (cairo_t* cr, double x, double y, double width, double height, double radius, uint8_t corners);
 
 /**
  * Creates a new Cairo image surface and copies the content from a source Cairo
@@ -82,5 +86,9 @@ char* cairo_create_text_fitted (cairo_t* cr, double width, cairo_text_decoration
  * @param text Cairo plus text.
  */
 void cairo_text_destroy (char* text);
+
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
 
 #endif /* CAIROPLUS_H_ */

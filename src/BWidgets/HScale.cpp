@@ -174,7 +174,7 @@ void HScale::draw (const BUtilities::RectArea& area)
 			BColors::Color bgSh = *bgColors.getColor (getState ()); bgSh.applyBrightness (BWIDGETS_DEFAULT_SHADOWED);
 
 			cairo_set_line_width (cr, 0.0);
-			cairo_rectangle_rounded (cr, x1, y1, x4 - x1, y4 - y1, (y4 - y1) / 2);
+			cairo_rectangle_rounded (cr, x1, y1, x4 - x1, y4 - y1, (y4 - y1) / 2, 0b1111);
 			cairo_clip (cr);
 
 			// Frame background
@@ -183,12 +183,12 @@ void HScale::draw (const BUtilities::RectArea& area)
 			{
 				cairo_pattern_add_color_stop_rgba (pat, 0, bgLo.getRed (), bgLo.getGreen (), bgLo.getBlue (), bgLo.getAlpha ());
 				cairo_pattern_add_color_stop_rgba (pat, 1, bgHi.getRed (), bgHi.getGreen (), bgHi.getBlue (), bgHi.getAlpha ());
-				cairo_rectangle_rounded (cr, x1, y1, x4 - x1, y4 - y1, (y4 - y1) / 2);
+				cairo_rectangle_rounded (cr, x1, y1, x4 - x1, y4 - y1, (y4 - y1) / 2, 0b1111);
 				cairo_set_source (cr, pat);
 				cairo_fill (cr);
 				cairo_pattern_destroy (pat);
 			}
-			cairo_rectangle_rounded (cr, x1 + BWIDGETS_DEFAULT_HSCALE_DEPTH, y1 + BWIDGETS_DEFAULT_HSCALE_DEPTH, x4 - x1, y4 - y1, (y4 - y1) / 2);
+			cairo_rectangle_rounded (cr, x1 + BWIDGETS_DEFAULT_HSCALE_DEPTH, y1 + BWIDGETS_DEFAULT_HSCALE_DEPTH, x4 - x1, y4 - y1, (y4 - y1) / 2, 0b1111);
 			cairo_set_source_rgba (cr, bgSh.getRed (), bgSh.getGreen (), bgSh.getBlue (), bgSh.getAlpha ());
 			cairo_fill (cr);
 
@@ -220,7 +220,7 @@ void HScale::draw (const BUtilities::RectArea& area)
 			{
 				cairo_pattern_add_color_stop_rgba (pat, 0, bgLo.getRed (), bgLo.getGreen (), bgLo.getBlue (), bgLo.getAlpha ());
 				cairo_pattern_add_color_stop_rgba (pat, 1, bgHi.getRed (), bgHi.getGreen (), bgHi.getBlue (), bgHi.getAlpha ());
-				cairo_rectangle_rounded (cr, x1, y1, x4 - x1, y4 - y1, (y4 - y1) / 2);
+				cairo_rectangle_rounded (cr, x1, y1, x4 - x1, y4 - y1, (y4 - y1) / 2, 0b1111);
 				cairo_set_source (cr, pat);
 				cairo_set_line_width (cr, 0.2 * BWIDGETS_DEFAULT_HSCALE_DEPTH);
 				cairo_stroke (cr);

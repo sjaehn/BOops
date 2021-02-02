@@ -18,7 +18,7 @@ void drawButton (cairo_t* cr, double x, double y, double width, double height, B
 	cairo_pattern_add_color_stop_rgba (pat, 1.0, CAIRO_RGBA (darkened));
 
 	double rad = ((width < 20) || (height < 20) ?  (width < height ? width : height) / 4 : 5);
-	cairo_rectangle_rounded (cr, x, y, width, height, rad);
+	cairo_rectangle_rounded (cr, x, y, width, height, rad, 0b1111);
 	cairo_set_source (cr, pat);
 	cairo_fill (cr);
 	cairo_pattern_destroy (pat);
