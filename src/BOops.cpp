@@ -57,7 +57,7 @@ BOops::BOops (double samplerate, const char* bundle_path, const LV2_Feature* con
 	message (), ui_on(false), scheduleNotifySlot {false},
 	scheduleNotifyStatus (false), scheduleResizeBuffers (false), scheduleSetFx {false},
 	scheduleNotifyWaveformToGui (false), scheduleNotifyTransportGateKeys (false),
-	scheduleNotifySamplePathToGui (false)
+	scheduleNotifySamplePathToGui (false), scheduleStateChanged (false)
 
 {
 	if (bundle_path) strncpy (pluginPath, bundle_path, 1023);
@@ -360,6 +360,7 @@ void BOops::run (uint32_t n_samples)
 							if ((keyNr >=0) && (keyNr < NR_PIANO_KEYS)) transportGateKeys[keyNr] = true;
 						}
 						scheduleNotifyTransportGateKeys = true;
+						scheduleStateChanged = true;
 					}
 				}
 			}
@@ -389,6 +390,7 @@ void BOops::run (uint32_t n_samples)
 						const uint32_t size = (uint32_t) ((oPd->size - sizeof(LV2_Atom_Vector_Body)) / sizeof (Pad));
 						Pad* pad = (Pad*) (&vec->body + 1);
 						for (unsigned int i = 0; (i < size) && (i < NR_STEPS); ++i) slots[slot].setPad (i, pad[i]);
+						scheduleStateChanged = true;
 					}
 				}
 			}
@@ -428,6 +430,7 @@ void BOops::run (uint32_t n_samples)
 						{
 							Pad* pad = (Pad*) (&vec->body + 1);
 							slots[slot].setPad (step, *pad);
+							scheduleStateChanged = true;
 						}
 					}
 				}
@@ -472,6 +475,7 @@ void BOops::run (uint32_t n_samples)
 						}
 						slots[slot].shape.validateShape();
 						scheduleNotifyShape[slot] = true;
+						scheduleStateChanged = true;
 					}
 				}
 			}
@@ -771,6 +775,7 @@ void BOops::run (uint32_t n_samples)
 		if (scheduleNotifyWaveformToGui) notifyWaveformToGui (lastWaveformCounter, waveformCounter);
 		if (scheduleNotifySamplePathToGui) notifySamplePathToGui();
 	}
+	if (scheduleStateChanged) notifyStateChanged();
 	lv2_atom_forge_pop (&forge, &notify_frame);
 }
 
@@ -918,6 +923,15 @@ void BOops::notifySamplePathToGui ()
 
 	lv2_atom_forge_pop(&forge, &frame);
 	scheduleNotifySamplePathToGui = false;
+}
+
+void BOops::notifyStateChanged()
+{
+	LV2_Atom_Forge_Frame frame;
+	lv2_atom_forge_frame_time(&forge, 0);
+	lv2_atom_forge_object(&forge, &frame, 0, urids.state_StateChanged);
+	lv2_atom_forge_pop(&forge, &frame);
+	scheduleStateChanged = false;
 }
 
 LV2_Atom_Forge_Ref BOops::forgeSamplePath (LV2_Atom_Forge* forge, LV2_Atom_Forge_Frame* frame, const char* path, const int64_t start, const int64_t end, const float amp, const int32_t loop)
@@ -1801,6 +1815,7 @@ LV2_Worker_Status BOops::work_response (uint32_t size, const void* data)
 			sample->loop = bool (nAtom->loop);
 		}
 		scheduleNotifySamplePathToGui = true;
+		scheduleStateChanged = true;
 	}
 
 	return LV2_WORKER_SUCCESS;

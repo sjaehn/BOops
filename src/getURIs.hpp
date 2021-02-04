@@ -45,6 +45,7 @@ void getURIs (LV2_URID_Map* m, BOopsURIDs* uris)
 	uris->time_beatUnit = m->map(m->handle, LV2_TIME__beatUnit);
 	uris->time_beatsPerBar = m->map(m->handle, LV2_TIME__beatsPerBar);
 	uris->time_speed = m->map(m->handle, LV2_TIME__speed);
+	uris->state_StateChanged = m->map(m->handle, LV2_STATE__StateChanged);
 	uris->bOops_uiOn = m->map(m->handle, BOOPS_URI "#UIon");
 	uris->bOops_uiOff = m->map(m->handle, BOOPS_URI "#UIoff");
 	uris->bOops_messageEvent = m->map(m->handle, BOOPS_URI "#messageEvent");

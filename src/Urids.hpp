@@ -26,6 +26,7 @@
 #include <lv2/lv2plug.in/ns/ext/urid/urid.h>
 #include <lv2/lv2plug.in/ns/ext/midi/midi.h>
 #include <lv2/lv2plug.in/ns/ext/time/time.h>
+#include <lv2/lv2plug.in/ns/ext/state/state.h>
 
 struct BOopsURIDs
 {
@@ -48,6 +49,7 @@ struct BOopsURIDs
 	LV2_URID time_beatsPerBar;
 	LV2_URID time_beatUnit;
 	LV2_URID time_speed;
+	LV2_URID state_StateChanged;
 	LV2_URID bOops_uiOn;
 	LV2_URID bOops_uiOff;
 	LV2_URID bOops_messageEvent;
