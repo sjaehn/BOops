@@ -296,8 +296,8 @@ void BOops::run (uint32_t n_samples)
 			if (slots[slotNr].effect != *new_controllers[SLOTS + slotNr * (SLOTS_PARAMS + NR_PARAMS)])
 			{
 				LV2_Atom_Int msg = {{sizeof (int), urids.bOops_allocateFx}, slotNr};
-				workerSchedule->schedule_work (workerSchedule->handle, sizeof (msg), &msg);
 				scheduleSetFx[slotNr] = true;
+				workerSchedule->schedule_work (workerSchedule->handle, sizeof (msg), &msg);
 				continue;
 			}
 
