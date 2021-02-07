@@ -355,11 +355,10 @@ not. Select at least two slots and set the likelihood ratio for each slot.
 
 ## What's new
 
-* Keep current sample settings in the sample browser
-* Enable enter slider and dial values via keyboard
-* Glitched GUI background
-* Notify host about changes in pattern / file path / shapes / keys
+* Notify host about state changes
 * Update pugl
+* Support ui:resize (qtractor)
+* Code / compile cleanup
 * Bugfixes
 
 
