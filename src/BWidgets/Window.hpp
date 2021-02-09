@@ -48,7 +48,7 @@ protected:
 public:
 	Window ();
 	Window (const double width, const double height, const std::string& title,
-		PuglNativeWindow nativeWindow, bool resizable = false,
+		PuglNativeView nativeWindow, bool resizable = false,
 		PuglWorldType worldType = PUGL_PROGRAM, int worldFlag = 0);
 
 	Window (const Window& that) = delete;			// Only one window in this version
@@ -143,7 +143,7 @@ protected:
 	std::string title_;
 	PuglWorld* world_;
 	PuglView* view_;
-	PuglNativeWindow nativeWindow_;
+	PuglNativeView nativeWindow_;
 	bool quit_;
 	bool focused_;
 	BUtilities::Point pointer_;

@@ -89,7 +89,7 @@ const std::string editLabels[MAXEDIT] = {"Select & cut", "Select & copy", "Selec
 class BOopsGUI : public BWidgets::Window
 {
 public:
-	BOopsGUI (const char *bundle_path, const LV2_Feature *const *features, PuglNativeWindow parentWindow);
+	BOopsGUI (const char *bundle_path, const LV2_Feature *const *features, PuglNativeView parentWindow);
 	~BOopsGUI ();
 	void port_event (uint32_t port_index, uint32_t buffer_size, uint32_t format, const void *buffer);
 	void sendUiOn ();

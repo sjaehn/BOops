@@ -355,10 +355,6 @@ not. Select at least two slots and set the likelihood ratio for each slot.
 
 ## What's new
 
-* Notify host about state changes
-* Update pugl
-* Support ui:resize (qtractor)
-* Code / compile cleanup
 * Bugfixes
 
 

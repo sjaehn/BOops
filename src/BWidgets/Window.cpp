@@ -28,7 +28,7 @@ namespace BWidgets
 
 Window::Window () : Window (BWIDGETS_DEFAULT_WIDTH, BWIDGETS_DEFAULT_HEIGHT, "window", 0) {}
 
-Window::Window (const double width, const double height, const std::string& title, PuglNativeWindow nativeWindow, bool resizable,
+Window::Window (const double width, const double height, const std::string& title, PuglNativeView nativeWindow, bool resizable,
 		PuglWorldType worldType, int worldFlag) :
 		Widget (0.0, 0.0, width, height, title),
 		keyGrabStack_ (), buttonGrabStack_ (),
