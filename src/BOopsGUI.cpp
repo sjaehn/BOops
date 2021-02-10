@@ -54,7 +54,7 @@ inline double floormod (const double numer, const double denom) {return numer - 
 BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features, PuglNativeView parentWindow) :
 	Window (1240, 608, "B.Oops", parentWindow, true, PUGL_MODULE, 0),
 	controller (NULL), write_function (NULL),
-	pluginPath (bundle_path ? std::string (bundle_path) : std::string ("")),
+	pluginPath (bundle_path ? std::string (bundle_path) + ((strlen (bundle_path) > 0) && (bundle_path[strlen (bundle_path) - 1] != BUTILITIES_PATH_SLASH[0]) ? BUTILITIES_PATH_SLASH : "") : std::string ("")),
 	sz (1.0), bgImageSurface (nullptr),
 	samplePath ("."), sampleStart (0), sampleEnd (0), sampleLoop (false),
 	urids (), forge (),

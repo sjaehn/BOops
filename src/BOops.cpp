@@ -26,6 +26,7 @@
 #include "BOops.hpp"
 #include "ControllerLimits.hpp"
 #include "BUtilities/stof.hpp"
+#include "BUtilities/Path.hpp"
 #include "getURIs.hpp"
 
 #ifndef SF_FORMAT_MP3
@@ -61,6 +62,7 @@ BOops::BOops (double samplerate, const char* bundle_path, const LV2_Feature* con
 
 {
 	if (bundle_path) strncpy (pluginPath, bundle_path, 1023);
+	if ((strlen (pluginPath) > 0) && (pluginPath[strlen (pluginPath) - 1] != BUTILITIES_PATH_SLASH[0])) strcat (pluginPath, BUTILITIES_PATH_SLASH);
 
 	//Scan host features for URID map
 	LV2_URID_Map* m = NULL;
