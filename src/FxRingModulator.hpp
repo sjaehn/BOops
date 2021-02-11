@@ -58,7 +58,7 @@ public:
 		const Stereo s0 = (buffer && (*buffer) ? (**buffer)[0] : Stereo {0, 0});
 		if ((!playing) || (!pads)) return s0;
 
-		float f;
+		float f = 0.0f;
 		double t = position * framesPerStep / rate;
 		switch (env)
 		{
