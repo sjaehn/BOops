@@ -24,6 +24,10 @@
 #include "Urids.hpp"
 #include "Definitions.hpp"
 
+#ifndef LV2_STATE__StateChanged
+#define LV2_STATE__StateChanged LV2_STATE_PREFIX "StateChanged"
+#endif
+
 void getURIs (LV2_URID_Map* m, BOopsURIDs* uris)
 {
 	uris->atom_Float = m->map(m->handle, LV2_ATOM__Float);
