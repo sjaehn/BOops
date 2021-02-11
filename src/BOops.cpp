@@ -1175,12 +1175,17 @@ LV2_State_Status BOops::state_save (LV2_State_Store_Function store, LV2_State_Ha
 	if (sample && sample->path && (sample->path[0] != 0) && (globalControllers[SOURCE] == SOURCE_SAMPLE))
 	{
 		LV2_State_Map_Path* mapPath = NULL;
+#ifdef LV2_STATE__freePath
 		LV2_State_Free_Path* freePath = NULL;
+#endif
+
 		const char* missing  = lv2_features_query
 		(
 			features,
 			LV2_STATE__mapPath, &mapPath, true,
+#ifdef LV2_STATE__freePath
 			LV2_STATE__freePath, &freePath, false,
+#endif
 			nullptr
 		);
 
@@ -1205,8 +1210,13 @@ LV2_State_Status BOops::state_save (LV2_State_Store_Function store, LV2_State_Ha
 				const int32_t sloop = int32_t (sample->loop);
 				store(handle, urids.bOops_sampleLoop, &sloop, sizeof (sloop), urids.atom_Bool, LV2_STATE_IS_POD | LV2_STATE_IS_PORTABLE);
 
+#ifdef LV2_STATE__freePath
 				if (freePath) freePath->free_path (freePath->handle, abstrPath);
-				else free (abstrPath);
+				else
+#endif
+				{
+					free (abstrPath);
+				}
 			}
 
 			else fprintf(stderr, "BOops.lv2: Can't generate abstr_path from %s\n", sample->path);
@@ -1305,12 +1315,16 @@ LV2_State_Status BOops::state_restore (LV2_State_Retrieve_Function retrieve, LV2
 	// Get host features
 	LV2_Worker_Schedule* schedule = nullptr;
 	LV2_State_Map_Path* mapPath = nullptr;
+#ifdef LV2_STATE__freePath
 	LV2_State_Free_Path* freePath = nullptr;
+#endif
 	const char* missing  = lv2_features_query
 	(
 		features,
 		LV2_STATE__mapPath, &mapPath, true,
+#ifdef LV2_STATE__freePath
 		LV2_STATE__freePath, &freePath, false,
+#endif
 		LV2_WORKER__schedule, &schedule, false,
 		nullptr
 	);
@@ -1347,8 +1361,13 @@ LV2_State_Status BOops::state_restore (LV2_State_Retrieve_Function retrieve, LV2
 
 			fprintf(stderr, "BOops.lv2: Restore abs_path:%s\n", absPath);
 
+#ifdef LV2_STATE__freePath
 			if (freePath) freePath->free_path (freePath->handle, absPath);
-			else free (absPath);
+			else
+#endif
+			{
+				free (absPath);
+			}
 	        }
 	}
 
