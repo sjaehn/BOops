@@ -1842,7 +1842,7 @@ LV2_Worker_Status BOops::work_response (uint32_t size, const void* data)
 	return LV2_WORKER_SUCCESS;
 }
 
-LV2_Handle instantiate (const LV2_Descriptor* descriptor, double samplerate, const char* bundle_path, const LV2_Feature* const* features)
+static LV2_Handle instantiate (const LV2_Descriptor* descriptor, double samplerate, const char* bundle_path, const LV2_Feature* const* features)
 {
 	// New instance
 	BOops* instance;
@@ -1869,31 +1869,31 @@ LV2_Handle instantiate (const LV2_Descriptor* descriptor, double samplerate, con
 	return (LV2_Handle)instance;
 }
 
-void connect_port (LV2_Handle instance, uint32_t port, void *data)
+static void connect_port (LV2_Handle instance, uint32_t port, void *data)
 {
 	BOops* inst = (BOops*) instance;
 	if (inst) inst->connect_port (port, data);
 }
 
-void activate (LV2_Handle instance)
+static void activate (LV2_Handle instance)
 {
 	BOops* inst = (BOops*) instance;
 	if (inst) inst->activate();
 }
 
-void run (LV2_Handle instance, uint32_t n_samples)
+static void run (LV2_Handle instance, uint32_t n_samples)
 {
 	BOops* inst = (BOops*) instance;
 	if (inst) inst->run (n_samples);
 }
 
-void deactivate (LV2_Handle instance)
+static void deactivate (LV2_Handle instance)
 {
 	BOops* inst = (BOops*) instance;
 	if (inst) inst->deactivate();
 }
 
-void cleanup (LV2_Handle instance)
+static void cleanup (LV2_Handle instance)
 {
 	BOops* inst = (BOops*) instance;
 	if (inst) delete inst;
@@ -1943,7 +1943,7 @@ static const void* extension_data(const char* uri)
 	return NULL;
 }
 
-const LV2_Descriptor descriptor =
+static const LV2_Descriptor descriptor =
 {
 	BOOPS_URI,
 	instantiate,
