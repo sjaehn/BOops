@@ -355,6 +355,8 @@ not. Select at least two slots and set the likelihood ratio for each slot.
 
 ## What's new
 
+* Compatibility with older compilers
+* Compatibility with older LV2 versions
 * Bugfixes
 
 
