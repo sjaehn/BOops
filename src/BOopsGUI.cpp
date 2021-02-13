@@ -102,6 +102,7 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 	transportGateKeys (NR_PIANO_KEYS, false),
 
 	slotsContainer (20, 130, 260, 288, "widget"),
+	insLine (nullptr),
 
 	monitor (290, 130, 820, 288, "monitor"),
 	padSurface (290, 130, 820, 288, "padsurface"),
@@ -214,7 +215,9 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 		s.upPad.setCallbackFunction (BEvents::BUTTON_CLICK_EVENT, upClickedCallback);
 		s.downPad.setCallbackFunction (BEvents::BUTTON_CLICK_EVENT, downClickedCallback);
 		s.effectPad.button.setCallbackFunction (BEvents::BUTTON_CLICK_EVENT, menuClickedCallback);
-		s.effectPad.setCallbackFunction (BEvents::BUTTON_CLICK_EVENT, effectClickedCallback);
+		s.effectPad.setDraggable (true);
+		s.effectPad.setCallbackFunction (BEvents::POINTER_DRAG_EVENT, effectDraggedCallback);
+		s.effectPad.setCallbackFunction (BEvents::BUTTON_RELEASE_EVENT, effectReleasedCallback);
 		s.effectsListbox.setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, effectChangedCallback);
 	}
 
@@ -381,6 +384,7 @@ BOopsGUI::~BOopsGUI ()
 	}
 
 	if (fileChooser) delete fileChooser;
+	if (insLine) delete insLine;
 
 	sendUiOff ();
 }
@@ -1242,6 +1246,76 @@ void BOopsGUI::swapSlots (int slot1, int slot2)
 	drawPad (slot2);
 }
 
+void BOopsGUI::moveSlot (int source, int target)
+{
+	if ((source < 0) || (source >= NR_SLOTS) || (target < 0) || (target > NR_SLOTS)) return;
+
+	int slotSize = getSlotsSize ();
+	source = LIMIT (source, 0, slotSize - 1);
+	target = LIMIT (target, 0, slotSize);
+
+	// No move?
+	if ((source == target) || (source + 1 == target)) updateSlot (source);
+
+	// Neighbours? Swap
+	else if (source - 1 == target) swapSlots (source, target);
+	else if (source + 2 == target) swapSlots (source, target - 1);
+
+	else
+	{
+		int inc = (source < target ? 1 : -1);
+		int offs = (source < target ? 1 : 0);
+
+		// Buffer source
+		// Pads
+		std::array<Pad, NR_STEPS> sourcePads;
+		for (int i = 0; i < NR_STEPS; ++i) sourcePads[i] = pattern.getPad (source, i);
+
+		// Params
+		std::array<double, SLOTS_PARAMS + NR_PARAMS> sourceParams;
+		for (int i = 0; i < SLOTS_PARAMS + NR_PARAMS; ++i) sourceParams[i] = controllerWidgets[SLOTS + source * (SLOTS_PARAMS + NR_PARAMS) + i]->getValue();
+
+		// Shape
+		Shape<SHAPE_MAXNODES> sourceShape = slotParams[source].shape;
+
+		// Move section
+		for (int i = source; i != target - offs; i += inc)
+		{
+			// Move pads
+			for (int j = 0; j < NR_STEPS; ++j) pattern.setPad (i, j, pattern.getPad (i + inc, j));
+
+			// Move params
+			for (int j = 0; j < SLOTS_PARAMS + NR_PARAMS; ++j)
+			{
+				const double param = controllerWidgets[SLOTS + (i + inc) * (SLOTS_PARAMS + NR_PARAMS) + j]->getValue();
+				controllerWidgets[SLOTS + i * (SLOTS_PARAMS + NR_PARAMS) + j]->setValue (param);
+			}
+
+			// Move shapes
+			slotParams[i].shape = slotParams[i + inc].shape;
+			sendShape (i);
+			if (slotParams[i].optionWidget) slotParams[i].optionWidget->setShape (slotParams[i].shape);
+		}
+
+		// Write target
+		for (int i = 0; i < NR_STEPS; ++i) pattern.setPad (target - offs, i, sourcePads[i]);
+		for (int j = 0; j < SLOTS_PARAMS + NR_PARAMS; ++j) controllerWidgets[SLOTS + (target - offs) * (SLOTS_PARAMS + NR_PARAMS) + j]->setValue (sourceParams[j]);
+		slotParams[target - offs].shape = sourceShape;
+		sendShape (target - offs);
+		if (slotParams[target - offs].optionWidget) slotParams[target - offs].optionWidget->setShape (slotParams[target - offs].shape);
+
+		// Apply changes
+		pattern.store();
+		for (int i = source; i != target + inc - offs; i += inc)
+		{
+			updateSlot (i);
+			sendSlot (i);
+			drawPad (i);
+		}
+		gotoSlot (target - offs);
+	}
+}
+
 void BOopsGUI::updateSlot (const int slot)
 {
 	const int slotSize = getSlotsSize();
@@ -1304,7 +1378,11 @@ void BOopsGUI::updateSlot (const int slot)
 		slots[slot].playPad.hide();
 	}
 
-	if (slot <= slotSize) slots[slot].container.show();
+	if (slot <= slotSize)
+	{
+		RESIZE (slots[slot].container, 0, slot * 24, 260, 24, sz);
+		slots[slot].container.show();
+	}
 	else slots[slot].container.hide();
 }
 
@@ -1883,19 +1961,73 @@ void BOopsGUI::menuClickedCallback(BEvents::Event* event)
 	}
 }
 
+void BOopsGUI::effectDraggedCallback(BEvents::Event* event)
+{
+	if (!event) return;
+	BEvents::PointerEvent* pev = (BEvents::PointerEvent*) event;
+	IconPadButton* widget = (IconPadButton*) event->getWidget ();
+	if (!widget) return;
+	BWidgets::ValueWidget* parent = (BWidgets::ValueWidget*) widget->getParent();
+	if (!parent) return;
+	BOopsGUI* ui = (BOopsGUI*) widget->getMainWindow();
+	if (!ui) return;
 
+	// Create insert line
+	if (!ui->insLine)
 
-void BOopsGUI::effectClickedCallback(BEvents::Event* event)
+	{
+		int slot = -1;
+
+		// Identify slot
+		for (int i = 0; i < NR_SLOTS; ++i)
+		{
+			if (widget == &ui->slots[i].effectPad)
+			{
+				slot = i;
+				break;
+			}
+		}
+
+		if (slot >= 0)
+		{
+			// New line
+			try {ui->insLine = new HLine (0, slot * 24.0 * ui->sz - 2.0, ui->slotsContainer.getWidth(), 4.0, "line");}
+			catch (std::exception& exc)
+			{
+				std::cerr << "BOops.lv2#GUI: Can't create widget." << exc.what () << std::endl;
+				return;
+			}
+
+			ui->slotsContainer.add (*ui->insLine);
+			ui->insLine->applyTheme (ui->theme);
+			ui->insLine->pushToBottom();
+
+			parent->raiseToTop();
+		}
+	}
+
+	// Move container
+	BEvents::PointerEvent parentEvent = BEvents::PointerEvent (parent, BEvents::POINTER_DRAG_EVENT, pev->getPosition(), pev->getOrigin(), pev->getDelta(), pev->getButton());
+	ui->dragAndDropCallback (&parentEvent);
+
+	// Move line
+	int index = (ui->sz > 0 ? (parent->getPosition().y + 24.0 * ui->sz) / (24.0 * ui->sz) : 0);
+	index = LIMIT (index, 0, ui->getSlotsSize());
+	ui->insLine->moveTo (0, index * 24.0 * ui->sz - 2.0);
+}
+
+void BOopsGUI::effectReleasedCallback(BEvents::Event* event)
 {
 	if (!event) return;
 	IconPadButton* widget = (IconPadButton*) event->getWidget ();
 	if (!widget) return;
+	BWidgets::ValueWidget* parent = (BWidgets::ValueWidget*) widget->getParent();
+	if (!parent) return;
 	BOopsGUI* ui = (BOopsGUI*) widget->getMainWindow();
 	if (!ui) return;
 
-	int slot = -1;
-
 	// Identify slot
+	int slot = -1;
 	for (int i = 0; i < NR_SLOTS; ++i)
 	{
 		if (widget == &ui->slots[i].effectPad)
@@ -1905,8 +2037,27 @@ void BOopsGUI::effectClickedCallback(BEvents::Event* event)
 		}
 	}
 
-	// Change slot
-	if (slot >= 0) ui->gotoSlot (slot);
+	// Release following effect pad dragged
+	if (ui->insLine)
+	{
+		// Delete line
+		delete ui->insLine;
+		ui->insLine = nullptr;
+
+		// Move slot
+		if (slot >= 0)
+		{
+			int dest = (ui->sz > 0 ? (parent->getPosition().y + 24.0 * ui->sz) / (24.0 * ui->sz) : 0);
+			dest = LIMIT (dest, 0, ui->getSlotsSize());
+			ui->moveSlot (slot, dest);
+		}
+	}
+
+	// Release following click
+	else
+	{
+		if (slot >= 0) ui->gotoSlot (slot);
+	}
 }
 
 

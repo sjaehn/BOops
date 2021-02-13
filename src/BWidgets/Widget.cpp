@@ -201,7 +201,7 @@ void Widget::release (Widget* child)
 			children_.erase (it);
 
 			// Restore visibility information
-			if (wasVisible) child->show();
+			if (wasVisible) postRedisplay (child->getArea());
 		}
 
 		else
@@ -272,6 +272,27 @@ void Widget::pushBackwards ()
 				return;
 			}
 		}
+	}
+}
+
+
+
+void Widget::pushToBottom ()
+{
+	if (parent_)
+	{
+		// Delete old connection from parent to this widget
+		for (std::vector<Widget*>::iterator it = parent_->children_.begin (); it !=parent_->children_.end (); ++it)
+		{
+			if ((Widget*) *it == this)
+			{
+				parent_->children_.erase (it);
+				break;
+			}
+		}
+		parent_->children_.insert (parent_->children_.begin(), this);
+
+		if (parent_->isVisible ()) parent_->postRedisplay ();
 	}
 }
 

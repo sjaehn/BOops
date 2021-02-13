@@ -187,6 +187,12 @@ public:
 	void raiseFrontwards ();
 
 	/**
+	 * Pushes this widget to the bottom if it is linked to a
+	 * parent widget. Emits a BEvents::ExposeEvent if the widget is visible.
+	 */
+	void pushToBottom ();
+
+	/**
 	 * Raises this widget to the front if it is linked to a
 	 * parent widget. Emits a BEvents::ExposeEvent if the widget is visible.
 	 */

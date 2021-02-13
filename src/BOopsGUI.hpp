@@ -61,6 +61,7 @@
 #include "Shape.hpp"
 #include "MonitorWidget.hpp"
 #include "SampleChooser.hpp"
+#include "HLine.hpp"
 
 #define BG_FILE "inc/surface.png"
 #define HELP_URL "https://github.com/sjaehn/BOops/blob/master/README.md"
@@ -120,7 +121,8 @@ private:
 	static void upClickedCallback(BEvents::Event* event);
 	static void downClickedCallback(BEvents::Event* event);
 	static void menuClickedCallback(BEvents::Event* event);
-	static void effectClickedCallback(BEvents::Event* event);
+	static void effectDraggedCallback(BEvents::Event* event);
+	static void effectReleasedCallback(BEvents::Event* event);
 	static void edit1ChangedCallback(BEvents::Event* event);
 	static void edit2ChangedCallback(BEvents::Event* event);
 	static void padsPressedCallback (BEvents::Event* event);
@@ -137,6 +139,7 @@ private:
 	void insertSlot (int slot, const BOopsEffectsIndex effect);
 	void deleteSlot (int slot);
 	void swapSlots (int slot1, int slot2);
+	void moveSlot (int source, int target);
 	void updateSlot (const int slot);
 	void updateSlots ();
 	void gotoSlot (const int slot);
@@ -262,6 +265,7 @@ private:
 	};
 
 	std::array<Slot, NR_SLOTS> slots;
+	HLine* insLine;
 
 	MonitorWidget monitor;
 	PadSurface padSurface;
@@ -406,6 +410,8 @@ private:
 					 		 {"border", STYLEPTR (&BStyles::noBorder)}}},
  		{"monitor", 				{{"uses", STYLEPTR (&defaultStyles)},
  					 		 {"fgcolors", STYLEPTR (&wvColors)}}},
+ 		{"line", 				{{"uses", STYLEPTR (&defaultStyles)},
+ 					 		 {"bgcolors", STYLEPTR (&fgColors)}}},
 		{"widget", 				{{"uses", STYLEPTR (&defaultStyles)}}},
 		{"widget/focus",			{{"uses", STYLEPTR (&focusStyles)}}},
 		{"screen", 				{{"background", STYLEPTR (&screenBg)},
