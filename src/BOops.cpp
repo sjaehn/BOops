@@ -93,7 +93,7 @@ BOops::BOops (double samplerate, const char* bundle_path, const LV2_Feature* con
 
 	// Initialize positions
 	positions.clear();
-	positions.push_back ({0.0, 0, 0.0, 0, {samplerate, 120.0f, 1.0f, 0ul, 0.0f, 4.0f, 4}, 1.0, true});
+	positions.push_back ({0.0, -1, 0.0, 0, {samplerate, 120.0f, 1.0f, 0ul, 0.0f, 4.0f, 4}, 1.0, true});
 }
 
 BOops::~BOops ()
@@ -624,9 +624,9 @@ void BOops::run (uint32_t n_samples)
 							np.fader = 0.0;
 							np.transport = host;
 							np.position = npos;
-							np.step = npos * npos * globalControllers[STEPS];
+							// keep np.step
 							np.refFrame = ev->time.frames;
-							if (np.step != positions.back().step) scheduleNotifyStatus = true;
+							scheduleNotifyStatus = true;
 
 							positions.push_back (np);
 						}
@@ -1142,13 +1142,16 @@ void BOops::play (uint32_t start, uint32_t end)
 					{
 						// Old pad ended?
 						const int iStart = iSlot.startPos[iStep];
-						if (iSlot.startPos[positions[j].step] != iStart)
+						if ((positions[j].step < 0) || (iSlot.startPos[positions[j].step] != iStart))
 						{
 							// Stop old pad
 							iSlot.end ();
 
 							// Start new pad (if set)
-							if (iStart >= 0) iSlot.init (iStart);
+							if (iStart >= 0)
+							{
+								iSlot.init (iStart);
+							}
 						}
 					}
 
@@ -1161,7 +1164,7 @@ void BOops::play (uint32_t start, uint32_t end)
 			}
 
 			audioOutput1[i] = (sumFaders * audioOutput1[i] + fader * output.left) / (sumFaders + fader);
-			audioOutput2[i] = (sumFaders * audioOutput2[i] + fader * output.right) / (sumFaders + fader);;
+			audioOutput2[i] = (sumFaders * audioOutput2[i] + fader * output.right) / (sumFaders + fader);
 
 			sumFaders += fader;
 		}
