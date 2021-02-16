@@ -122,9 +122,12 @@ void PopupListBox::setValue (const double val)
 
 		// Copy value and clone widget from listbox item
 		BItems::Item* listboxItem = listBox.getItem (listBox.getValue ());
-		item.setValue (listboxItem ->getValue ());
-		item.cloneWidgetFrom (listboxItem ->getWidget ());
-		initItem ();
+		if (listboxItem)
+		{
+			item.setValue (listboxItem ->getValue ());
+			if (listboxItem ->getWidget ()) item.cloneWidgetFrom (listboxItem ->getWidget ());
+			initItem ();
+		}
 
 		// Add new item.widget and set value
 		if (item.getWidget ()) add (*item.getWidget ());
