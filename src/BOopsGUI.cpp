@@ -18,6 +18,7 @@
  * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include <limits.h>		// PATH_MAX
 #include "BOopsGUI.hpp"
 #include "BUtilities/to_string.hpp"
 #include "getURIs.hpp"
@@ -1085,7 +1086,13 @@ void BOopsGUI::sendTransportGateKeys()
 void BOopsGUI::sendSamplePath ()
 {
 	std::string path = samplePath + BUTILITIES_PATH_SLASH + sampleNameLabel.getText();
-	uint8_t obj_buf[1024];
+	if (path.length() >= PATH_MAX)
+	{
+		fprintf(stderr, "BOops.lv2#GUI: Can't send sample path. File path lenght >= %i not supported.\n", PATH_MAX);
+		return;
+	}
+
+	uint8_t obj_buf[PATH_MAX + 128];
 	lv2_atom_forge_set_buffer(&forge, obj_buf, sizeof(obj_buf));
 
 	LV2_Atom_Forge_Frame frame;

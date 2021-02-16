@@ -916,7 +916,12 @@ void BOops::notifySamplePathToGui ()
 	LV2_Atom_Forge_Frame frame;
 	lv2_atom_forge_frame_time(&forge, 0);
 
-	if (sample && sample->path && (sample->path[0] != 0)) forgeSamplePath (&forge, &frame, sample->path, sample->start, sample->end, sampleAmp, int32_t (sample->loop));
+	if (sample && sample->path && (sample->path[0] != 0) && (strlen (sample->path) < PATH_MAX))
+	{
+		forgeSamplePath (&forge, &frame, sample->path, sample->start, sample->end, sampleAmp, int32_t (sample->loop));
+		if (strlen (sample->path) < PATH_MAX) fprintf(stderr, "BOops#GUI: Can't send sample path. File path lenght >= %i not supported.\n", PATH_MAX);
+	}
+
 	else
 	{
 		const char* path = ".";
