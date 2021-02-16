@@ -688,10 +688,15 @@ void BOopsGUI::port_event(uint32_t port, uint32_t buffer_size,
 	}
 
 	// Scan remaining ports
-	else if ((format == 0) && (port >= CONTROLLERS))
+	else if (format == 0)
 	{
-		float* pval = (float*) buffer;
-		controllerWidgets[port - CONTROLLERS]->setValue (*pval);
+		if ((port >= CONTROLLERS) && (port < CONTROLLERS + NR_CONTROLLERS))
+		{
+			float* pval = (float*) buffer;
+			controllerWidgets[port - CONTROLLERS]->setValue (*pval);
+		}
+
+		else fprintf(stderr, "BOops.lv2#GUI: Invalid control port %i in BOopsGUI::port_event()\n", port);
 	}
 
 }
