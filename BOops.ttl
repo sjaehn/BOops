@@ -2459,11 +2459,29 @@
 	rdfs:label "Antimatter" ;
 	rdfs:seeAlso <BOops_Antimatter.ttl> .
 
+<https://www.jahnichen.de/plugins/lv2/BOops#Beam_me_up>
+	a pset:Preset ;
+	lv2:appliesTo <https://www.jahnichen.de/plugins/lv2/BOops> ;
+	rdfs:label "Beam me up" ;
+	rdfs:seeAlso <BOops_Beam_me_up.ttl> .
+
+<https://www.jahnichen.de/plugins/lv2/BOops#Bobble_wobble>
+	a pset:Preset ;
+	lv2:appliesTo <https://www.jahnichen.de/plugins/lv2/BOops> ;
+	rdfs:label "Bobble wobble" ;
+	rdfs:seeAlso <BOops_Bobble_wobble.ttl> .
+
 <https://www.jahnichen.de/plugins/lv2/BOops#Chaos_theory>
 	a pset:Preset ;
 	lv2:appliesTo <https://www.jahnichen.de/plugins/lv2/BOops> ;
 	rdfs:label "Chaos theory" ;
 	rdfs:seeAlso <BOops_Chaos_theory.ttl> .
+
+<https://www.jahnichen.de/plugins/lv2/BOops#Cross_fire>
+	a pset:Preset ;
+	lv2:appliesTo <https://www.jahnichen.de/plugins/lv2/BOops> ;
+	rdfs:label "Cross fire" ;
+	rdfs:seeAlso <BOops_Cross_fire.ttl> .
 
 <https://www.jahnichen.de/plugins/lv2/BOops#Dizzy_tizzy>
 	a pset:Preset ;
@@ -2483,6 +2501,12 @@
 	rdfs:label "Game over" ;
 	rdfs:seeAlso <BOops_Game_over.ttl> .
 
+<https://www.jahnichen.de/plugins/lv2/BOops#Grumpy_Bernie>
+	a pset:Preset ;
+	lv2:appliesTo <https://www.jahnichen.de/plugins/lv2/BOops> ;
+	rdfs:label "Grumpy Bernie" ;
+	rdfs:seeAlso <BOops_Grumpy_Bernie.ttl> .
+
 <https://www.jahnichen.de/plugins/lv2/BOops#Leap_in_time>
 	a pset:Preset ;
 	lv2:appliesTo <https://www.jahnichen.de/plugins/lv2/BOops> ;
@@ -2495,6 +2519,18 @@
 	rdfs:label "Loopodelic" ;
 	rdfs:seeAlso <BOops_Loopodelic.ttl> .
 
+<https://www.jahnichen.de/plugins/lv2/BOops#Message_from_outerspace>
+	a pset:Preset ;
+	lv2:appliesTo <https://www.jahnichen.de/plugins/lv2/BOops> ;
+	rdfs:label "Message from outerspace" ;
+	rdfs:seeAlso <BOops_Message_from_outerspace.ttl> .
+
+<https://www.jahnichen.de/plugins/lv2/BOops#Steel_punk>
+	a pset:Preset ;
+	lv2:appliesTo <https://www.jahnichen.de/plugins/lv2/BOops> ;
+	rdfs:label "Steel punk" ;
+	rdfs:seeAlso <BOops_Steel_punk.ttl> .
+
 <https://www.jahnichen.de/plugins/lv2/BOops#Sudden_1>
 	a pset:Preset ;
 	lv2:appliesTo <https://www.jahnichen.de/plugins/lv2/BOops> ;
@@ -2506,3 +2542,9 @@
 	lv2:appliesTo <https://www.jahnichen.de/plugins/lv2/BOops> ;
 	rdfs:label "Sudden 2" ;
 	rdfs:seeAlso <BOops_Sudden_2.ttl> .
+
+<https://www.jahnichen.de/plugins/lv2/BOops#Through_the_intestine>
+	a pset:Preset ;
+	lv2:appliesTo <https://www.jahnichen.de/plugins/lv2/BOops> ;
+	rdfs:label "Through the intestine" ;
+	rdfs:seeAlso <BOops_Through_the_intestine.ttl> .
