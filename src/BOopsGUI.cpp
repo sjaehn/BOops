@@ -465,6 +465,8 @@ void BOopsGUI::Pattern::store ()
 void BOopsGUI::port_event(uint32_t port, uint32_t buffer_size,
 	uint32_t format, const void* buffer)
 {
+	if (!buffer) return;
+
 	// Notify port
 	if ((format == urids.atom_eventTransfer) && (port == NOTIFY))
 	{
