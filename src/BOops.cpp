@@ -45,7 +45,7 @@ inline double floorfrac (const double value) {return value - floor (value);}
 
 BOops::BOops (double samplerate, const char* bundle_path, const LV2_Feature* const* features) :
 	map(NULL), workerSchedule (NULL), pluginPath {0}, urids (),
-	host {samplerate, 120.0f, 1.0f, 0ul, 0.0f, 4.0f, 4},
+	host {samplerate, 120.0f, 1.0f, 0ul, 0.0f, 4.0f},
 	activated (false),
 	positions (),
 	transportGateKeys {false},
@@ -93,7 +93,7 @@ BOops::BOops (double samplerate, const char* bundle_path, const LV2_Feature* con
 
 	// Initialize positions
 	positions.clear();
-	positions.push_back ({0.0, -1, 0.0, 0, {samplerate, 120.0f, 1.0f, 0ul, 0.0f, 4.0f, 4}, 1.0, true});
+	positions.push_back ({0.0, -1, 0.0, 0, {samplerate, 120.0f, 1.0f, 0ul, 0.0f, 4.0f}, 1.0, true});
 }
 
 BOops::~BOops ()
@@ -280,7 +280,7 @@ void BOops::run (uint32_t n_samples)
 			else if (i == AUTOPLAY_POSITION)
 			{
 				Position np = positions.back();
-				np.position = floorfrac (np.position + 1.0 + newValue - oldValue);
+				np.sequence = floorfrac (np.sequence + 1.0 + newValue - oldValue);
 				np.refFrame = 0;
 				positions.push_back (np);
 				scheduleNotifyStatus = true;
@@ -556,13 +556,6 @@ void BOops::run (uint32_t n_samples)
 					scheduleResizeSteps = true;
 				}
 
-				// BeatUnit changed?
-				if (oBu && (oBu->type == urids.atom_Int) && (((LV2_Atom_Int*)oBu)->body > 0) && (((LV2_Atom_Int*)oBu)->body != host.beatUnit))
-				{
-					host.beatUnit = ((LV2_Atom_Int*)oBu)->body;
-					scheduleNotifyStatus = true;
-				}
-
 				// Speed changed?
 				if (oSpeed && (oSpeed->type == urids.atom_Float))
 				{
@@ -619,11 +612,11 @@ void BOops::run (uint32_t n_samples)
 						double npos = floorfrac (pos - np.offset);
 
 						// Fade only if jump > 1 ms
-						if (fabs (npos - positions.back().position) > getPositionFromSeconds (host, 0.001))
+						if (fabs (npos - positions.back().sequence) > getPositionFromSeconds (host, 0.001))
 						{
 							np.fader = 0.0;
 							np.transport = host;
-							np.position = npos;
+							np.sequence = npos;
 							// keep np.step
 							np.refFrame = ev->time.frames;
 							scheduleNotifyStatus = true;
@@ -668,16 +661,16 @@ void BOops::run (uint32_t n_samples)
 							switch (int (globalControllers[ON_MIDI]))
 							{
 								case 0:	// Restart
-									p.offset = floorfrac (p.position + p.offset);
-									p.position = 0;
+									p.offset = floorfrac (p.sequence + p.offset);
+									p.sequence = 0;
 									p.refFrame = ev->time.frames;
 									break;
 
 								case 2: // Restart & sync
 									{
-										double steppos = fmod (p.position, 1.0 / double (globalControllers[STEPS]));
-										p.offset = floorfrac (1.0 + p.position + p.offset - steppos);
-										p.position = steppos;
+										double steppos = fmod (p.sequence, 1.0 / double (globalControllers[STEPS]));
+										p.offset = floorfrac (1.0 + p.sequence + p.offset - steppos);
+										p.sequence = steppos;
 										p.refFrame = ev->time.frames;
 									}
 									break;
@@ -736,10 +729,10 @@ void BOops::run (uint32_t n_samples)
 	{
 		const uint64_t diff = n_samples - positions[i].refFrame;
 		const double relpos = getPositionFromFrames (positions[i].transport, diff);	// Position relative to reference frame
-		const double npos = floorfrac (positions[i].position + relpos);
+		const double npos = floorfrac (positions[i].sequence + relpos);
 		const int nstep = LIMIT (npos * globalControllers[STEPS], 0, globalControllers[STEPS] - 1);
-		if (nstep != int (positions[i].position * globalControllers[STEPS])) scheduleNotifyStatus = true;
-		positions[i].position = npos;
+		if (nstep != int (positions[i].sequence * globalControllers[STEPS])) scheduleNotifyStatus = true;
+		positions[i].sequence = npos;
 		positions[i].refFrame = 0;
 
 		if (i < positions.size - 1) positions[i].fader -= diff / (FADINGTIME * positions[i].transport.rate);
@@ -836,7 +829,7 @@ void BOops::notifyStatusToGui()
 	double pos =
 	(
 		(globalControllers[PLAY] != PLAY_OFF) && p.playing && ((p.transport.speed != 0.0f) || (globalControllers[BASE] == SECONDS)) && (p.transport.bpm >= 1.0f)?
-		floorfrac (p.position) * globalControllers[STEPS] :
+		floorfrac (p.sequence) * globalControllers[STEPS] :
 		-1
 	);
 	// Send notifications
@@ -845,8 +838,6 @@ void BOops::notifyStatusToGui()
 	lv2_atom_forge_object(&forge, &frame, 0, urids.bOops_statusEvent);
 	lv2_atom_forge_key(&forge, urids.time_beatsPerBar);
 	lv2_atom_forge_float(&forge, p.transport.beatsPerBar);
-	lv2_atom_forge_key(&forge, urids.time_beatUnit);
-	lv2_atom_forge_int(&forge, p.transport.beatUnit);
 	lv2_atom_forge_key(&forge, urids.time_beatsPerMinute);
 	lv2_atom_forge_float(&forge, p.transport.bpm);
 	lv2_atom_forge_key(&forge, urids.bOops_position);
@@ -919,7 +910,6 @@ void BOops::notifySamplePathToGui ()
 	if (sample && sample->path && (sample->path[0] != 0) && (strlen (sample->path) < PATH_MAX))
 	{
 		forgeSamplePath (&forge, &frame, sample->path, sample->start, sample->end, sampleAmp, int32_t (sample->loop));
-		if (strlen (sample->path) < PATH_MAX) fprintf(stderr, "BOops#GUI: Can't send sample path. File path lenght >= %i not supported.\n", PATH_MAX);
 	}
 
 	else
@@ -1031,7 +1021,7 @@ void BOops::play (uint32_t start, uint32_t end)
 		{
 			Position& p = positions.back();
 			double relpos = getPositionFromFrames (p.transport, i - p.refFrame);	// Position relative to reference frame
-			double pos = floorfrac (p.position + relpos);				// 0..1 position sequence
+			double pos = floorfrac (p.sequence + relpos);				// 0..1 position sequence
 
 			// Input signal
 			Stereo input = Stereo (audioInput1[i], audioInput2[i]);
@@ -1090,7 +1080,7 @@ void BOops::play (uint32_t start, uint32_t end)
 
 			// Interpolate position within the loop
 			double relpos = getPositionFromFrames (p.transport, i - p.refFrame);	// Position relative to reference frame
-			double pos = floorfrac (p.position + relpos);				// 0..1 position sequence
+			double pos = floorfrac (p.sequence + relpos);				// 0..1 position sequence
 
 			// Input
 			Stereo input = Stereo (audioInput1[i], audioInput2[i]);
@@ -1143,20 +1133,18 @@ void BOops::play (uint32_t start, uint32_t end)
 					if ((iSlot.effect == FX_INVALID) || (iSlot.effect == FX_NONE)) break;
 
 					// Next step ?
-					if (positions[j].step != iStep)
+					if (p.step != iStep)
 					{
 						// Old pad ended?
 						const int iStart = iSlot.startPos[iStep];
-						if ((positions[j].step < 0) || (iSlot.startPos[positions[j].step] != iStart))
+
+						if ((p.step < 0) || (iSlot.startPos[p.step] != iStart))
 						{
 							// Stop old pad
 							iSlot.end ();
 
 							// Start new pad (if set)
-							if (iStart >= 0)
-							{
-								iSlot.init (iStart);
-							}
+							if (iStart >= 0) iSlot.init (iStart);
 						}
 					}
 
@@ -1165,7 +1153,7 @@ void BOops::play (uint32_t start, uint32_t end)
 					iSlot.mixf = 1.0f;
 				}
 
-				positions[j].step = iStep;
+				p.step = iStep;
 			}
 
 			audioOutput1[i] = (sumFaders * audioOutput1[i] + fader * output.left) / (sumFaders + fader);

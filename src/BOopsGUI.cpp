@@ -613,11 +613,6 @@ void BOopsGUI::port_event(uint32_t port, uint32_t buffer_size,
 					// TODO bpb = ((LV2_Atom_Float*)oBpb)->body;
 				}
 
-				if (oBu && (oBu->type == urids.atom_Int))
-				{
-					// TODO bU = (((LV2_Atom_Int*)oSched)->body);
-				}
-
 				if (oBpm && (oBpm->type == urids.atom_Float))
 				{
 					// TODO bpm = ((LV2_Atom_Float*)oBpm)->body;

@@ -48,18 +48,17 @@ struct Transport
 	uint64_t bar;
 	float barBeat;
 	float beatsPerBar;
-	int beatUnit;
 };
 
 struct Position
 {
-	double position;
-	int step;
-	double offset;
-	uint64_t refFrame;
-	Transport transport;
-	double fader;
-	bool playing;
+	double sequence;	// Position within a sequencer loop.
+	int step;		// Current step number.
+	double offset;		// Offset if sequence didn't start at 0.0.
+	uint64_t refFrame;	// Internal reference. Frame at which sequence updated.
+	Transport transport;	// Transport data for calculation of position.
+	double fader;		// 0.0..1.0. Mix ratio. Last fader is count up to 1.0, all others to 0.0. 0.0 faders will be deleted.
+	bool playing;		// Status.
 };
 
 class BOops

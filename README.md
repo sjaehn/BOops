@@ -42,7 +42,7 @@ sudo make install
 is recommended to improve the plugin performance. Alternatively, you may build a debugging version using
 `make CPPFLAGS+=-g`. For installation into an alternative directory (e.g., /usr/lib/lv2/), change the
 variable `PREFIX` while installing: `sudo make install PREFIX=/usr`. If you want to freely choose the
-install target directory, change the variable `LV2DIR`.
+install target directory, change the variable `LV2DIR` (e.g., `make install LV2DIR=~/.lv2`).
 
 
 ## Running
@@ -364,8 +364,11 @@ not. Select at least two slots and set the likelihood ratio for each slot.
 
 ## TODO
 
-* MIDI triggering effects
+* Fader
+* Multiple patterns
+* MIDI triggering pattern
 * Implement effects
+  * Reverb
   * Pitch (?)
   * Tape start (?)
 * Latency ? (Pitch, Tape start)
@@ -375,6 +378,7 @@ not. Select at least two slots and set the likelihood ratio for each slot.
 ## Links
 
 * Introduction / Quick start tutorial video: https://www.youtube.com/watch?v=bGUmZHWqdkE
+* Presets demo: https://www.youtube.com/watch?v=W2UBQbYq7Mw
 
 
 ## Acknowledgments
