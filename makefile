@@ -99,23 +99,7 @@ GUI_C_INCL = \
 	src/BWidgets/pugl/x11_cairo.c \
 	src/BWidgets/pugl/x11.c
 
-ifeq ($(shell $(PKG_CONFIG) --exists sndfile || echo no), no)
-  $(error libsndfile not found. Please install libsndfile first.)
-endif
-
-ifeq ($(shell $(PKG_CONFIG) --exists lv2 || echo no), no)
-  $(error LV2 not found. Please install LV2 first.)
-endif
-
-ifeq ($(shell $(PKG_CONFIG) --exists x11 || echo no), no)
-  $(error X11 not found. Please install X11 first.)
-endif
-
-ifeq ($(shell $(PKG_CONFIG) --exists cairo || echo no), no)
-  $(error Cairo not found. Please install cairo first.)
-endif
-
-$(BUNDLE): clean $(DSP_OBJ) $(GUI_OBJ)
+$(BUNDLE): check clean $(DSP_OBJ) $(GUI_OBJ)
 	@cp $(ROOTFILES) $(BUNDLE)
 	@mkdir -p $(BUNDLE)/inc
 	@cp $(INCFILES) $(BUNDLE)/inc
@@ -166,6 +150,20 @@ uninstall:
 	@rm -f $(DESTDIR)$(LV2DIR)/$(BUNDLE)/$(DSP_CV_OBJ)
 	-@rmdir $(DESTDIR)$(LV2DIR)/$(BUNDLE)
 	@echo \ done.
+
+check:
+ifeq ($(shell $(PKG_CONFIG) --exists 'sndfile > 1.0.18' || echo no), no)
+  $(error sndfile >= 1.0.18 not found. Please install sndfile >= 1.0.18 first.)
+endif
+ifeq ($(shell $(PKG_CONFIG) --exists 'lv2 >= 1.14.0' || echo no), no)
+  $(error lv2 >= 1.14.0 not found. Please install lv2 >= 1.14.0 first.)
+endif
+ifeq ($(shell $(PKG_CONFIG) --exists 'x11 >= 1.6.9' || echo no), no)
+  $(error x11 >= 1.6.9 not found. Please install x11 >= 1.6.9 first.)
+endif
+ifeq ($(shell $(PKG_CONFIG) --exists 'cairo >= 1.12.0' || echo no), no)
+  $(error cairo >= 1.12.0 not found. Please install cairo >= 1.12.0 first.)
+endif
 
 clean:
 	@rm -rf $(BUNDLE)

@@ -22,7 +22,6 @@
 #include <string>
 #include <stdexcept>
 #include <algorithm>
-#include "lv2/core/lv2_util.h"
 #include "BOops.hpp"
 #include "ControllerLimits.hpp"
 #include "BUtilities/stof.hpp"
@@ -1175,21 +1174,25 @@ LV2_State_Status BOops::state_save (LV2_State_Store_Function store, LV2_State_Ha
 		LV2_State_Free_Path* freePath = NULL;
 #endif
 
-		const char* missing  = lv2_features_query
-		(
-			features,
-			LV2_STATE__mapPath, &mapPath, true,
-#ifdef LV2_STATE__freePath
-			LV2_STATE__freePath, &freePath, false,
-#endif
-			nullptr
-		);
-
-		if (missing)
+		for (int i = 0; features[i]; ++i)
 		{
-			fprintf (stderr, "BOops.lv2: Host doesn't support required features.\n");
-			return LV2_STATE_ERR_NO_FEATURE;
+			if (strcmp(features[i]->URI, LV2_URID__map) == 0)
+			{
+				mapPath = (LV2_State_Map_Path*) features[i]->data;
+				break;
+			}
 		}
+
+		#ifdef LV2_STATE__freePath
+		for (int i = 0; features[i]; ++i)
+		{
+			if (strcmp(features[i]->URI, LV2_STATE__freePath) == 0)
+			{
+				freePath = (LV2_State_Free_Path*) features[i]->data;
+				break;
+			}
+		}
+		#endif
 
 		if (mapPath)
 		{
@@ -1217,7 +1220,11 @@ LV2_State_Status BOops::state_save (LV2_State_Store_Function store, LV2_State_Ha
 
 			else fprintf(stderr, "BOops.lv2: Can't generate abstr_path from %s\n", sample->path);
 		}
-		else fprintf (stderr, "BOops.lv2: Feature map_path not available! Can't save sample!\n" );
+		else
+		{
+			fprintf (stderr, "BOops.lv2: Feature map_path not available! Can't save sample!\n" );
+			return LV2_STATE_ERR_NO_FEATURE;
+		}
 	}
 
 	// Store transportGateKeys
@@ -1314,20 +1321,39 @@ LV2_State_Status BOops::state_restore (LV2_State_Retrieve_Function retrieve, LV2
 #ifdef LV2_STATE__freePath
 	LV2_State_Free_Path* freePath = nullptr;
 #endif
-	const char* missing  = lv2_features_query
-	(
-		features,
-		LV2_STATE__mapPath, &mapPath, true,
-#ifdef LV2_STATE__freePath
-		LV2_STATE__freePath, &freePath, false,
-#endif
-		LV2_WORKER__schedule, &schedule, false,
-		nullptr
-	);
 
-	if (missing)
+	for (int i = 0; features[i]; ++i)
 	{
-		fprintf (stderr, "BOops.lv2: Host doesn't support required features.\n");
+		if (strcmp(features[i]->URI, LV2_URID__map) == 0)
+		{
+			mapPath = (LV2_State_Map_Path*) features[i]->data;
+			break;
+		}
+	}
+
+	for (int i = 0; features[i]; ++i)
+	{
+		if (strcmp(features[i]->URI, LV2_WORKER__schedule) == 0)
+		{
+			schedule = (LV2_Worker_Schedule*) features[i]->data;
+			break;
+		}
+	}
+
+#ifdef LV2_STATE__freePath
+	for (int i = 0; features[i]; ++i)
+	{
+		if (strcmp(features[i]->URI, LV2_STATE__freePath) == 0)
+		{
+			freePath = (LV2_State_Free_Path*) features[i]->data;
+			break;
+		}
+	}
+#endif
+
+	if (!mapPath)
+	{
+		fprintf (stderr, "BOops.lv2: Feature map_path not available! Can't restore sample!\n");
 		return LV2_STATE_ERR_NO_FEATURE;
 	}
 
