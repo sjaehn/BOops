@@ -1183,7 +1183,7 @@ LV2_State_Status BOops::state_save (LV2_State_Store_Function store, LV2_State_Ha
 			}
 		}
 
-		#ifdef LV2_STATE__freePath
+#ifdef LV2_STATE__freePath
 		for (int i = 0; features[i]; ++i)
 		{
 			if (strcmp(features[i]->URI, LV2_STATE__freePath) == 0)
@@ -1192,7 +1192,7 @@ LV2_State_Status BOops::state_save (LV2_State_Store_Function store, LV2_State_Ha
 				break;
 			}
 		}
-		#endif
+#endif
 
 		if (mapPath)
 		{
@@ -1324,7 +1324,7 @@ LV2_State_Status BOops::state_restore (LV2_State_Retrieve_Function retrieve, LV2
 
 	for (int i = 0; features[i]; ++i)
 	{
-		if (strcmp(features[i]->URI, LV2_URID__map) == 0)
+		if (strcmp(features[i]->URI, LV2_STATE__mapPath) == 0)
 		{
 			mapPath = (LV2_State_Map_Path*) features[i]->data;
 			break;
