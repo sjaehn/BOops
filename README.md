@@ -356,6 +356,7 @@ not. Select at least two slots and set the likelihood ratio for each slot.
 ## What's new
 
 * Drag and drop slots
+* Check dependencies / versions before building
 * Compatibility with older compilers
 * Compatibility with older LV2 versions
 * New factory presets
