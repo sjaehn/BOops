@@ -25,10 +25,19 @@ b) Build your own binaries in the following three steps.
 Step 1: [Download the latest published version](https://github.com/sjaehn/BOops/releases) of B.Oops. Or clone or
 [download the master](https://github.com/sjaehn/BOops/archive/master.zip) of this repository.
 
-Step 2: Install pkg-config and the development packages for x11, cairo, soundfile, and lv2 if not done yet. On
-Debian-based systems you may run:
+Step 2: Install pkg-config and the development packages for x11, cairo, soundfile, and lv2 if not done yet. If you
+don't have already got the build tools (compilers, make, libraries) then install them too.
+
+On Debian-based systems you may run:
 ```
+sudo apt-get install build-essential
 sudo apt-get install pkg-config libx11-dev libcairo2-dev libsndfile-dev lv2-dev
+```
+
+On Arch-based systems you may run:
+```
+sudo pacman -S base-devel
+sudo pacman -S pkg-config libx11 cairo libsndfile lv2
 ```
 
 Step 3: Building and installing into the default lv2 directory (/usr/local/lib/lv2/) is easy using `make` and
