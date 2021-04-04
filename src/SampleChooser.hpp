@@ -29,6 +29,11 @@
 #define BWIDGETS_DEFAULT_SAMPLECHOOSER_WIDTH 800
 #define BWIDGETS_DEFAULT_SAMPLECHOOSER_HEIGHT 320
 #define BWIDGETS_DEFAULT_SAMPLECHOOSER_FILTERS std::regex (".*\\.((wav)|(wave)|(aif)|(aiff)|(au)|(sd2)|(flac)|(caf)|(ogg)|(mp3))$", std::regex_constants::icase)
+#define BWIDGETS_DEFAULT_SAMPLECHOOSER_PLAY_AS_LOOP_INDEX 3
+#define BWIDGETS_DEFAULT_SAMPLECHOOSER_FILE_INDEX 4
+#define BWIDGETS_DEFAULT_SAMPLECHOOSER_SELECTION_START_INDEX 5
+#define BWIDGETS_DEFAULT_SAMPLECHOOSER_SELECTION_END_INDEX 6
+#define BWIDGETS_DEFAULT_SAMPLECHOOSER_FRAMES_INDEX 7
 
 class Sample;	// Forward declaration
 
@@ -43,13 +48,15 @@ public:
 		       const std::string& path, const std::vector<BWidgets::FileFilter>& filters);
 	SampleChooser (const double x, const double y, const double width, const double height, const std::string& name,
 		       const std::string& path, const std::vector<BWidgets::FileFilter>& filters, const std::string& buttonText);
+	SampleChooser (const double x, const double y, const double width, const double height, const std::string& name,
+		       const std::string& path, const std::vector<BWidgets::FileFilter>& filters, const std::vector<std::string>& texts);
 	SampleChooser (const SampleChooser& that);
 	~SampleChooser();
 
 	SampleChooser& operator= (const SampleChooser& that);
 	virtual Widget* clone () const override;
 
-	virtual void setFileName (const std::string& filename) override;
+	virtual void setFileName (const std::string& filename);
 	void setStart (const int64_t start);
 	int64_t getStart() const;
 	void setEnd (const int64_t end);

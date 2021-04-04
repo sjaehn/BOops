@@ -43,7 +43,11 @@ SampleChooser::SampleChooser (const double x, const double y, const double width
 
 SampleChooser::SampleChooser (const double x, const double y, const double width, const double height, const std::string& name,
 			      const std::string& path, const std::vector<BWidgets::FileFilter>& filters, const std::string& buttonText) :
-	FileChooser (x, y, width, height, name, path, filters, buttonText),
+	SampleChooser (x, y, width, height, name, path, filters, std::vector<std::string>{"OK"}) {}
+
+SampleChooser::SampleChooser (const double x, const double y, const double width, const double height, const std::string& name,
+			      const std::string& path, const std::vector<BWidgets::FileFilter>& filters, const std::vector<std::string>& texts) :
+	FileChooser (x, y, width, height, name, path, filters, texts),
 	waveform (0, 0, 0, 0, name + "/textbox"),
 	scrollbar (0, 0, 0, 0, name + "/scrollbar", 0.0, 1.0, 0.0, 1.0, 0.0),
 	startMarker (0, 0, 0, 0, name + "/marker"),
@@ -52,9 +56,14 @@ SampleChooser::SampleChooser (const double x, const double y, const double width
 	startLabel (0, 0, 0, 0, name + "/label"),
 	endLabel (0, 0, 0, 0, name + "/label"),
 	loopCheckbox (0, 0, 0, 0, name + "/checkbox"),
-	loopLabel (0, 0, 0, 0, name + "/label", "Play selection as loop"),
+	loopLabel (0, 0, 0, 0, name + "/label"),
 	sample (nullptr)
 {
+	std::vector<std::string> sampleLabels = {"Play selection as loop", "File", "Selection start", "Selection end", "frames"};
+	labels.insert (labels.end(), sampleLabels.begin(), sampleLabels.end());
+	for (int i = BWIDGETS_DEFAULT_SAMPLECHOOSER_PLAY_AS_LOOP_INDEX; (i < int(texts.size())) && (i < int(labels.size())); ++i) labels[i] = texts[i];
+	loopLabel.setText (labels[BWIDGETS_DEFAULT_SAMPLECHOOSER_PLAY_AS_LOOP_INDEX]);
+
 	fileListBox.setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, sfileListBoxClickedCallback);
 	waveform.setBackground (BWIDGETS_DEFAULT_MENU_BACKGROUND);
 	waveform.setBorder ({{BColors::grey, 1.0}, 0.0, 3.0, 0.0});
@@ -211,8 +220,10 @@ void SampleChooser::update ()
 	if ((w >= 20) && (h >= 20))
 	{
 		double val = fileListBox.getValue();
-		if ((val == UNSELECTED) || (val > dirs.size())) okButton.getLabel()->setText (okButtonText);
-		else okButton.getLabel()->setText ("Open");
+		if ((val == UNSELECTED) || (val > dirs.size())) okButton.getLabel()->setText (labels[BWIDGETS_DEFAULT_FILECHOOSER_OK_INDEX]);
+		else okButton.getLabel()->setText (labels[BWIDGETS_DEFAULT_FILECHOOSER_OPEN_INDEX]);
+		cancelButton.getLabel()->setText(labels[BWIDGETS_DEFAULT_FILECHOOSER_CANCEL_INDEX]);
+		loopLabel.setText(labels[BWIDGETS_DEFAULT_SAMPLECHOOSER_PLAY_AS_LOOP_INDEX]);
 
 		// Get extends first
 		okButton.resize();
@@ -545,36 +556,39 @@ void SampleChooser::drawWaveform()
 			// Update labels
 			sizeLabel.setText
 			(
-				"File: " +
+				labels[BWIDGETS_DEFAULT_SAMPLECHOOSER_FILE_INDEX] + ": " +
 				std::to_string (int (sample->info.frames / (sample->info.samplerate * 60))) +
 				":" +
 				std::to_string ((int (sample->info.frames / sample->info.samplerate) % 60) / 10) +
 				std::to_string ((int (sample->info.frames / sample->info.samplerate) % 60) % 10) +
 				" (" +
 				std::to_string (sample->info.frames) +
-				" frames)"
+				") " +
+				labels[BWIDGETS_DEFAULT_SAMPLECHOOSER_FRAMES_INDEX]
 			);
 			startLabel.setText
 			(
-				"Selection start: " +
+				labels[BWIDGETS_DEFAULT_SAMPLECHOOSER_SELECTION_START_INDEX] + ": " +
 				std::to_string (int (sample->start / (sample->info.samplerate * 60))) +
 				":" +
 				std::to_string ((int (sample->start / sample->info.samplerate) % 60) / 10) +
 				std::to_string ((int (sample->start / sample->info.samplerate) % 60) % 10) +
 				" (" +
 				std::to_string (sample->start) +
-				" frames)"
+				") " +
+				labels[BWIDGETS_DEFAULT_SAMPLECHOOSER_FRAMES_INDEX]
 			);
 			endLabel.setText
 			(
-				"Selection end: " +
+				labels[BWIDGETS_DEFAULT_SAMPLECHOOSER_SELECTION_END_INDEX] + ": " +
 				std::to_string (int (sample->end / (sample->info.samplerate * 60))) +
 				":" +
 				std::to_string ((int (sample->end / sample->info.samplerate) % 60) / 10) +
 				std::to_string ((int (sample->end / sample->info.samplerate) % 60) % 10) +
 				" (" +
 				std::to_string (sample->end) +
-				" frames)"
+				") " +
+				labels[BWIDGETS_DEFAULT_SAMPLECHOOSER_FRAMES_INDEX]
 			);
 			sizeLabel.resize();
 			startLabel.resize();

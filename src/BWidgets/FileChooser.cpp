@@ -35,11 +35,15 @@ FileChooser::FileChooser (const double x, const double y, const double width, co
 
 FileChooser::FileChooser (const double x, const double y, const double width, const double height, const std::string& name,
 			  const std::string& path, const std::vector<FileFilter>& filters, const std::string& buttonText) :
+		FileChooser (x, y, width, height, name, path, filters, std::vector<std::string>{"OK"}) {}
+
+FileChooser::FileChooser (const double x, const double y, const double width, const double height, const std::string& name,
+     			  const std::string& path, const std::vector<FileFilter>& filters, const std::vector<std::string>& texts) :
 		ValueWidget (x, y, width, height, name, 0.0),
 		filters (filters),
 		dirs (),
 		files (),
-		okButtonText (buttonText),
+		labels ({"OK", "Open", "Cancel"}),
 		bgColors (BWIDGETS_DEFAULT_BGCOLORS),
 		pathNameBox (0, 0, 0, 0, name + "/textbox", ""),
 		fileListBox (0, 0, 0, 0, name + "/listbox"),
@@ -47,7 +51,7 @@ FileChooser::FileChooser (const double x, const double y, const double width, co
 		fileNameBox (0, 0, 0, 0, name + "/textbox", ""),
 		filterPopupListBox (),
 		cancelButton (0, 0, 0, 0, name + "/button", "Cancel"),
-		okButton (0, 0, 0, 0, name + "/button", buttonText),
+		okButton (0, 0, 0, 0, name + "/button", labels[BWIDGETS_DEFAULT_FILECHOOSER_OK_INDEX]),
 		fileListBoxFileLabel (0, 0, 0, 0, name + "/listbox/item/file", ""),
 		fileListBoxDirLabel (0, 0, 0, 0, name + "/listbox/item/dir", ""),
 		filterPopupListBoxFilterLabel (0, 0, 0, 0, name + "/popup/listbox/item", "")
@@ -55,6 +59,8 @@ FileChooser::FileChooser (const double x, const double y, const double width, co
 		//dirFont ("Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD, 12.0, BStyles::TEXT_ALIGN_LEFT, BStyles::TEXT_VALIGN_MIDDLE),
 		//filterFont ("Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL, 12.0, BStyles::TEXT_ALIGN_LEFT, BStyles::TEXT_VALIGN_MIDDLE)
 {
+	for (int i = 0; (i < int(texts.size())) && (i < int(labels.size())); ++i) labels[i] = texts[i];
+	okButton.getLabel()->setText (labels[BWIDGETS_DEFAULT_FILECHOOSER_OK_INDEX]);
 	background_ = BWIDGETS_DEFAULT_MENU_BACKGROUND;
 	border_ = BWIDGETS_DEFAULT_MENU_BORDER;
 	setDraggable (true);
@@ -106,7 +112,7 @@ FileChooser::FileChooser (const FileChooser& that) :
 	filters (that.filters),
 	dirs (that.dirs),
 	files (that.files),
-	okButtonText (that.okButtonText),
+	labels (that.labels),
 	bgColors (that.bgColors),
 	pathNameBox (that.pathNameBox),
 	fileListBox (that.fileListBox),
@@ -133,7 +139,7 @@ FileChooser& FileChooser::operator= (const FileChooser& that)
 	filters = that.filters;
 	dirs = that.dirs;
 	files = that.files;
-	okButtonText = that.okButtonText;
+	labels = that.labels;
 	bgColors = that.bgColors;
 	//fileFont = that.fileFont;
 	//dirFont = that.dirFont;
@@ -235,14 +241,22 @@ void FileChooser::selectFilter (const std::string& name)
 
 void FileChooser::setButtonText (const std::string& buttonText)
 {
-	if (buttonText != okButtonText)
+	if (buttonText != labels[BWIDGETS_DEFAULT_FILECHOOSER_OK_INDEX])
 	{
-		okButtonText = buttonText;
+		labels[BWIDGETS_DEFAULT_FILECHOOSER_OK_INDEX] = buttonText;
 		update();
 	}
 }
 
-std::string FileChooser::getButtonText () {return okButtonText;}
+std::string FileChooser::getButtonText () {return labels[BWIDGETS_DEFAULT_FILECHOOSER_OK_INDEX];}
+
+void FileChooser::setLabels (const std::vector<std::string>& texts)
+{
+	for (int i = 0; (i < int(texts.size())) && (i < int(labels.size())); ++i) labels[i] = texts[i];
+	update();
+}
+
+std::vector<std::string> FileChooser::getLabels () const {return labels;}
 
 // TODO calculate minimal size
 void FileChooser::resize () {resize (BWIDGETS_DEFAULT_FILECHOOSER_WIDTH, BWIDGETS_DEFAULT_FILECHOOSER_HEIGHT);}
@@ -261,8 +275,9 @@ void FileChooser::update ()
 	if ((w >= 20) && (h >= 20))
 	{
 		double val = fileListBox.getValue();
-		if ((val == UNSELECTED) || (val > dirs.size())) okButton.getLabel()->setText (okButtonText);
-		else okButton.getLabel()->setText ("Open");
+		if ((val == UNSELECTED) || (val > dirs.size())) okButton.getLabel()->setText (labels[BWIDGETS_DEFAULT_FILECHOOSER_OK_INDEX]);
+		else okButton.getLabel()->setText (labels[BWIDGETS_DEFAULT_FILECHOOSER_OPEN_INDEX]);
+		cancelButton.getLabel()->setText(labels[BWIDGETS_DEFAULT_FILECHOOSER_CANCEL_INDEX]);
 
 		// Get extends first
 		okButton.resize();

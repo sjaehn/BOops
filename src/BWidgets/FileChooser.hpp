@@ -20,6 +20,9 @@
 
 #define BWIDGETS_DEFAULT_FILECHOOSER_WIDTH 400
 #define BWIDGETS_DEFAULT_FILECHOOSER_HEIGHT 320
+#define BWIDGETS_DEFAULT_FILECHOOSER_OK_INDEX 0
+#define BWIDGETS_DEFAULT_FILECHOOSER_OPEN_INDEX 1
+#define BWIDGETS_DEFAULT_FILECHOOSER_CANCEL_INDEX 2
 
 #include "PopupListBox.hpp"
 #include "TextButton.hpp"
@@ -50,6 +53,8 @@ public:
 		     const std::string& path, const std::vector<FileFilter>& filters);
 	FileChooser (const double x, const double y, const double width, const double height, const std::string& name,
 		     const std::string& path, const std::vector<FileFilter>& filters, const std::string& buttonText);
+	FileChooser (const double x, const double y, const double width, const double height, const std::string& name,
+		     const std::string& path, const std::vector<FileFilter>& filters, const std::vector<std::string>& texts);
 
 
 	FileChooser (const FileChooser& that);
@@ -82,7 +87,7 @@ public:
 
 	/**
 	 * Sets the file name of the file chooser.
-	 * @param filename	File name 
+	 * @param filename	File name
 	 */
 	virtual void setFileName (const std::string& filename);
 
@@ -121,6 +126,18 @@ public:
 	 * @return	Text
 	 */
 	std::string getButtonText ();
+
+	/**
+	 * Sets the text of the labels.
+	 * @param texts	Vectors containing the texts as strings
+	 */
+	void setLabels (const std::vector<std::string>& texts);
+
+	/**
+	 * Gets the text of the labels.
+	 * @return	Vectors containing the texts as strings
+	 */
+	std::vector<std::string> getLabels () const;
 
 	/**
 	 * Resizes the widget, redraw and emits a BEvents::ExposeEvent if the
@@ -166,7 +183,7 @@ protected:
 	std::vector<FileFilter> filters;
 	std::vector<std::string> dirs;
 	std::vector<std::string> files;
-	std::string okButtonText;
+	std::vector<std::string> labels;
 	BColors::ColorSet bgColors;
 	Label pathNameBox;
 	ListBox fileListBox;
