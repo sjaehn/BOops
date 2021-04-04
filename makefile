@@ -169,3 +169,5 @@ clean:
 	@rm -rf $(BUNDLE)
 
 .PHONY: all install install-strip uninstall clean
+
+.NOTPARALLEL:
