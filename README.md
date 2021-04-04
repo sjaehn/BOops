@@ -17,7 +17,7 @@ Key features:
 a) Install the boops package for your system
 
 * [Arch user repository](https://aur.archlinux.org/packages/boops.lv2-git/) (thanks to SpotlightKid)
-* [Feodora](https://copr.fedorainfracloud.org/coprs/ycollet/linuxmao/package/lv2-BOops/) (thanks to ycollet)
+* [Fedora](https://copr.fedorainfracloud.org/coprs/ycollet/linuxmao/package/lv2-BOops/) (thanks to ycollet)
 * [OpenSUSE](https://build.opensuse.org/package/show/home:geekositalia:daw/BOops)
 
 b) Build your own binaries in the following three steps.
@@ -364,13 +364,7 @@ not. Select at least two slots and set the likelihood ratio for each slot.
 
 ## What's new
 
-* Drag and drop slots
-* Check dependencies / versions before building
-* Compatibility with older compilers
-* Compatibility with older LV2 versions
-* New factory presets
-* Bugfixes
-
+* Bugfix install
 
 ## TODO
 
