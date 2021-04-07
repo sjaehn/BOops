@@ -74,9 +74,9 @@ Slot:: Slot (const Slot& that) :
 	plugin (that.plugin), effect (that.effect), fx (nullptr),
 	size (that.size), framesPerStep (that.framesPerStep), buffer (nullptr)
 {
-	if (that.params) std::copy (that.params, that.params + NR_PARAMS, params);
-	if (that.pads) std::copy (that.pads, that.pads + NR_STEPS, pads);
-	if (that.startPos) std::copy (that.startPos, that.startPos + NR_STEPS, startPos);
+	std::copy (that.params, that.params + NR_PARAMS, params);
+	std::copy (that.pads, that.pads + NR_STEPS, pads);
+	std::copy (that.startPos, that.startPos + NR_STEPS, startPos);
 	if (that.buffer) buffer = new RingBuffer<Stereo> (*that.buffer);
 	if (that.fx) fx = newFx (effect);
 }
@@ -94,9 +94,9 @@ Slot& Slot::operator= (const Slot& that)
 	size = that.size;
 	framesPerStep = that.framesPerStep;
 
-	if (that.params) std::copy (that.params, that.params + NR_PARAMS, params);
-	if (that.pads) std::copy (that.pads, that.pads + NR_STEPS, pads);
-	if (that.startPos) std::copy (that.startPos, that.startPos + NR_STEPS, startPos);
+	std::copy (that.params, that.params + NR_PARAMS, params);
+	std::copy (that.pads, that.pads + NR_STEPS, pads);
+	std::copy (that.startPos, that.startPos + NR_STEPS, startPos);
 
 	if (fx) {delete fx; fx = nullptr;}
 	if (buffer) {delete buffer; buffer = nullptr;}
@@ -218,7 +218,7 @@ Fx* Slot::newFx (const BOopsEffectsIndex effect)
 
 Stereo Slot::play (const double position)
 {
-	if ((!fx) || (!buffer) || (!params)) return Stereo();
+	if ((!fx) || (!buffer)) return Stereo();
 	if (!isPadSet(position)) return (*buffer)[0];
 
 	const int index = startPos[int(position)];
