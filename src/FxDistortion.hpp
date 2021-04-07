@@ -101,7 +101,7 @@ public:
 					fabs (r) < (1.0/3.0) ?
 					2.0 * level * r :
 					(
-						fabsf (r) < (2.0/3.0) ?
+						fabs (r) < (2.0/3.0) ?
 						SGN (r) * level * (3.0 - SQR (2.0 - 3.0 * fabs (r))) / 3.0 :
 						level * SGN (r)
 					)
