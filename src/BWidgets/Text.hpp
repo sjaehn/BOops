@@ -116,7 +116,7 @@ public:
 	 * widget is visible.
 	 * @param width New widgets width
 	 */
-	virtual void setWidth (const double width);
+	virtual void setWidth (const double width) override;
 
 	/**
 	 * Resizes the widget, redraw and emits a BEvents::ExposeEvent if the
