@@ -19,6 +19,7 @@ a) Install the boops package for your system
 * [Arch user repository](https://aur.archlinux.org/packages/boops.lv2-git/) (thanks to SpotlightKid)
 * [Fedora](https://copr.fedorainfracloud.org/coprs/ycollet/linuxmao/package/lv2-BOops/) (thanks to ycollet)
 * [OpenSUSE](https://build.opensuse.org/package/show/home:geekositalia:daw/BOops)
+* [FreeBSD] (https://www.freshports.org/audio/boops-lv2) (thanks to Yuri): `sudo pkg install boops-lv2`
 
 b) Build your own binaries in the following three steps.
 
