@@ -17,6 +17,7 @@
 
 #include "FileChooser.hpp"
 #include <dirent.h>
+#include <sys/stat.h>
 
 namespace BWidgets
 {
@@ -466,7 +467,7 @@ void FileChooser::okButtonClickedCallback (BEvents::Event* event)
 					Label* ail = (Label*)ai->getWidget();
 					if (ail)
 					{
-						std::string newPath = fc->getPath() + "/" + ail->getText();
+						std::string newPath = fc->getPath() + PATH_SEPARATOR + ail->getText();
 						char buf[PATH_MAX];
 				    		char *rp = realpath(newPath.c_str(), buf);
 				    		if (rp) fc->setPath (rp);
@@ -494,6 +495,15 @@ void FileChooser::okButtonClickedCallback (BEvents::Event* event)
 	}
 }
 
+bool FileChooser::isDir (const std::string& path, const std::string& name) const
+{
+	std::string full = (path == PATH_SEPARATOR ? path : path + PATH_SEPARATOR) + name;
+	struct stat sb;
+        if (stat (full.c_str(), &sb)) return false;
+	if (S_ISDIR(sb.st_mode)) return true;
+	return false;
+}
+
 void FileChooser::enterDir ()
 {
 	std::vector<std::string> newFiles;
@@ -506,7 +516,7 @@ void FileChooser::enterDir ()
 	{
 		for (struct dirent* entry = readdir(dir); entry ; entry = readdir(dir))
 		{
-			if (entry->d_type == DT_DIR)
+			if (isDir (getPath(), entry->d_name))
 			{
 				std::string s = entry->d_name;
 				if ((std::regex_match (s, std::regex ("(\\.{1,2})|([^\\.].*)"))))	// Exclude hidden

@@ -24,6 +24,10 @@
 #define BWIDGETS_DEFAULT_FILECHOOSER_OPEN_INDEX 1
 #define BWIDGETS_DEFAULT_FILECHOOSER_CANCEL_INDEX 2
 
+#ifndef PATH_SEPARATOR
+#define PATH_SEPARATOR "/"
+#endif
+
 #include "PopupListBox.hpp"
 #include "TextButton.hpp"
 #include <regex>
@@ -200,6 +204,8 @@ protected:
 	//BStyles::Font filterFont;
 
 	virtual std::function<void (BEvents::Event*)> getFileListBoxClickedCallback();
+
+	bool isDir (const std::string& path, const std::string& name) const;
 };
 
 }
