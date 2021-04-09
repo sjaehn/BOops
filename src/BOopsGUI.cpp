@@ -2548,12 +2548,12 @@ void BOopsGUI::loadButtonClickedCallback (BEvents::Event* event)
 
 void BOopsGUI::helpButtonClickedCallback (BEvents::Event* event)
 {
-	if (system(OPEN_CMD " " HELP_URL)) std::cerr << "BOops.lv2#GUI: Can't open " << HELP_URL << ". You can try to call it maually.";
+	if (system(OPEN_CMD " " HELP_URL)) std::cerr << "BOops.lv2#GUI: Can't open " << HELP_URL << ". You can try to call it manually.\n";
 }
 
 void BOopsGUI::ytButtonClickedCallback (BEvents::Event* event)
 {
-	if (system(OPEN_CMD " " YT_URL))  std::cerr << "BOops.lv2#GUI: Can't open " << YT_URL << ". You can try to call it maually.";
+	if (system(OPEN_CMD " " YT_URL))  std::cerr << "BOops.lv2#GUI: Can't open " << YT_URL << ". You can try to call it manually.\n";
 }
 
 int BOopsGUI::getPadOrigin (const int slot, const int step) const
