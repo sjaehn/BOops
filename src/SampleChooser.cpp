@@ -57,12 +57,15 @@ SampleChooser::SampleChooser (const double x, const double y, const double width
 	endLabel (0, 0, 0, 0, name + "/label"),
 	loopCheckbox (0, 0, 0, 0, name + "/checkbox"),
 	loopLabel (0, 0, 0, 0, name + "/label"),
+	noFileLabel (0, 0, 0, 0, name + "/label"),
 	sample (nullptr)
 {
-	std::vector<std::string> sampleLabels = {"Play selection as loop", "File", "Selection start", "Selection end", "frames"};
+	std::vector<std::string> sampleLabels = {"Play selection as loop", "File", "Selection start", "Selection end", "frames", "No audio file selected"};
 	labels.insert (labels.end(), sampleLabels.begin(), sampleLabels.end());
 	for (int i = BWIDGETS_DEFAULT_SAMPLECHOOSER_PLAY_AS_LOOP_INDEX; (i < int(texts.size())) && (i < int(labels.size())); ++i) labels[i] = texts[i];
 	loopLabel.setText (labels[BWIDGETS_DEFAULT_SAMPLECHOOSER_PLAY_AS_LOOP_INDEX]);
+	noFileLabel.setText (labels[BWIDGETS_DEFAULT_SAMPLECHOOSER_NO_FILE_INDEX]);
+	noFileLabel.hide();
 
 	fileListBox.setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, sfileListBoxClickedCallback);
 	waveform.setBackground (BWIDGETS_DEFAULT_MENU_BACKGROUND);
@@ -83,13 +86,14 @@ SampleChooser::SampleChooser (const double x, const double y, const double width
 	add (endLabel);
 	add (loopCheckbox);
 	add (loopLabel);
+	add (noFileLabel);
 }
 
 SampleChooser::SampleChooser (const SampleChooser& that) :
 	FileChooser (that), waveform (that.waveform), scrollbar (that.scrollbar),
 	startMarker (that.startMarker), endMarker (that.endMarker),
 	sizeLabel (that.sizeLabel), startLabel (that.startLabel), endLabel (that.endLabel),
-	loopCheckbox (that.loopCheckbox), loopLabel (that.loopLabel),
+	loopCheckbox (that.loopCheckbox), loopLabel (that.loopLabel), noFileLabel (that.noFileLabel),
 	sample (nullptr)
 {
 	try {sample = new Sample (*that.sample);}
@@ -104,6 +108,7 @@ SampleChooser::SampleChooser (const SampleChooser& that) :
 	add (endLabel);
 	add (loopCheckbox);
 	add (loopLabel);
+	add (noFileLabel);
 }
 
 SampleChooser::~SampleChooser()
@@ -122,6 +127,7 @@ SampleChooser& SampleChooser::operator= (const SampleChooser& that)
 	release (&endLabel);
 	release (&loopCheckbox);
 	release (&loopLabel);
+	release (&noFileLabel);
 	if (sample) delete (sample);
 
 	waveform = that.waveform;
@@ -133,6 +139,7 @@ SampleChooser& SampleChooser::operator= (const SampleChooser& that)
 	endLabel = that.endLabel;
 	loopCheckbox = that.loopCheckbox;
 	loopLabel = that.loopLabel;
+	noFileLabel = that.noFileLabel;
 	try {sample = new Sample (*that.sample);}
 	catch (std::exception& exc) {throw exc;}
 	FileChooser::operator= (that);
@@ -147,6 +154,7 @@ SampleChooser& SampleChooser::operator= (const SampleChooser& that)
 	add (endLabel);
 	add (loopCheckbox);
 	add (loopLabel);
+	add (noFileLabel);
 
 	return *this;
 }
@@ -167,18 +175,24 @@ void SampleChooser::setFileName (const std::string& filename)
 			sample = nullptr;
 		}
 		try {sample = new Sample (rp);}
-		catch (std::exception& exc) {fprintf(stderr, "Can't load %s\n", rp);}
+		catch (std::exception& exc)
+		{
+			std::cerr << exc.what() << "\n";
+			noFileLabel.setText (exc.what());
+		}
 
 		if (sample)
 		{
+			noFileLabel.setText (labels[BWIDGETS_DEFAULT_SAMPLECHOOSER_NO_FILE_INDEX]);
+
 			sample->start = 0;
 			sample->end = sample->info.frames;
 
 			scrollbar.minButton.setValue (0.0);
 			scrollbar.maxButton.setValue (1.0);
-
-			update();
 		}
+
+		update();
 	}
 }
 
@@ -314,6 +328,7 @@ void SampleChooser::update ()
 					endLabel.hide();
 					loopCheckbox.hide();
 					loopLabel.hide();
+					noFileLabel.hide();
 				}
 			}
 
@@ -338,12 +353,20 @@ void SampleChooser::update ()
 				startMarker.show();
 				endMarker.show();
 				scrollbar.show();
+				noFileLabel.hide();
 			}
 			else
 			{
 				startMarker.hide();
 				endMarker.hide();
 				scrollbar.hide();
+				noFileLabel.resize ();
+				noFileLabel.moveTo
+				(
+					x0 + 0.4 * w + 5 + 0.3 * w - 7.5 - 0.5 * noFileLabel.getWidth(),
+					y0 + pathNameHeight + 20 + 0.5 * waveformHeight - 0.5 * noFileLabel.getHeight()
+				);
+				noFileLabel.show();
 			}
 		}
 		else
@@ -358,6 +381,7 @@ void SampleChooser::update ()
 			endLabel.hide();
 			loopCheckbox.hide();
 			loopLabel.hide();
+			noFileLabel.hide();
 		}
 	}
 
@@ -375,6 +399,7 @@ void SampleChooser::update ()
 		endLabel.hide();
 		loopCheckbox.hide();
 		loopLabel.hide();
+		noFileLabel.hide();
 		fileNameLabel.hide();
 		fileNameBox.hide();
 		filterPopupListBox.hide ();
@@ -397,6 +422,7 @@ void SampleChooser::applyTheme (BStyles::Theme& theme, const std::string& name)
 	endLabel.applyTheme (theme, name + "/label");
 	loopCheckbox.applyTheme (theme, name + "/checkbox");
 	loopLabel.applyTheme (theme, name + "/label");
+	noFileLabel.applyTheme (theme, name + "/label");
 }
 
 void SampleChooser::sfileListBoxClickedCallback (BEvents::Event* event)
@@ -421,6 +447,7 @@ void SampleChooser::sfileListBoxClickedCallback (BEvents::Event* event)
 				fc->sample = nullptr;
 			}
 			BEvents::ValueChangedEvent dummyEvent = BEvents::ValueChangedEvent (&fc->okButton, 1.0);
+			fc->noFileLabel.setText (fc->labels[BWIDGETS_DEFAULT_SAMPLECHOOSER_NO_FILE_INDEX]);
 			fc->okButtonClickedCallback (&dummyEvent);
 			fc->update();
 		}

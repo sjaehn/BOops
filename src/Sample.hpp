@@ -59,13 +59,16 @@ struct Sample
                 memcpy (path, samplepath, len + 1);
                 if (!len) return;
 
+                // Extract file name
+                char* name = strrchr (path, '/') + 1;
+                if (!name) name = path;
+
                 // Extract file extension
-                char* extptr = strrchr (path, '.');
-                const int extsz = (extptr ? strlen (extptr) + 1 : 1);
-                char* ext = (char*) malloc (extsz);
-                if (!ext) throw std::bad_alloc();
-                ext[0] = 0;
-                if (extsz > 1) memcpy (ext, extptr, extsz);
+                char ext[16] = {0};
+                char* extptr = strrchr (name, '.');
+                if (!extptr) extptr = path + strlen (path);
+                const int extsz = strlen (extptr) + 1;
+                if ((extsz > 1) && (extsz < 16)) memcpy (ext, extptr, extsz);
                 for (char* s = ext; *s; ++s) *s = tolower ((unsigned char)*s);
 
 
@@ -75,7 +78,7 @@ struct Sample
                 {
                         mp3dec_t mp3dec;
                         mp3dec_file_info_t mp3info;
-                        if (mp3dec_load (&mp3dec, path, &mp3info, NULL, NULL)) throw std::invalid_argument ("Can't open " + std::string (path) + ".");
+                        if (mp3dec_load (&mp3dec, path, &mp3info, NULL, NULL)) throw std::invalid_argument ("Can't open " + std::string (name) + ".");
 
                         info.samplerate = mp3info.hz;
                         info.channels = mp3info.channels;
@@ -93,7 +96,9 @@ struct Sample
         	{
                         SNDFILE* sndfile = sf_open (samplepath, SFM_READ, &info);
 
-                        if ((!sndfile) || (!info.frames)) throw std::invalid_argument ("Can't open " + std::string (path) + ".");
+                        //if (!sndfile) throw std::invalid_argument ("Can't open " + std::string (name) + ".");
+                        if (sf_error (sndfile) != SF_ERR_NO_ERROR) throw std::invalid_argument (std::string (sf_strerror (sndfile)));
+                        if (!info.frames) throw std::invalid_argument ("Empty sample file " + std::string (name) + ".");
 
                         // Read & render data
                         data = (float*) malloc (sizeof(float) * info.frames * info.channels);

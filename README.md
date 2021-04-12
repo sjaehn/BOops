@@ -366,6 +366,7 @@ not. Select at least two slots and set the likelihood ratio for each slot.
 ## What's new
 
 * FileChooser now supports XFS
+* Show error messages in SampleChooser
 * Bugfixes
   * Install
   * Clang warnings

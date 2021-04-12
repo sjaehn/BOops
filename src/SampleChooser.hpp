@@ -34,6 +34,7 @@
 #define BWIDGETS_DEFAULT_SAMPLECHOOSER_SELECTION_START_INDEX 5
 #define BWIDGETS_DEFAULT_SAMPLECHOOSER_SELECTION_END_INDEX 6
 #define BWIDGETS_DEFAULT_SAMPLECHOOSER_FRAMES_INDEX 7
+#define BWIDGETS_DEFAULT_SAMPLECHOOSER_NO_FILE_INDEX 8
 
 class Sample;	// Forward declaration
 
@@ -85,6 +86,7 @@ protected:
 	BWidgets::Label endLabel;
 	Checkbox loopCheckbox;
 	BWidgets::Label loopLabel;
+	BWidgets::Label noFileLabel;
 
 	Sample* sample;
 
