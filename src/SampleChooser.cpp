@@ -539,11 +539,10 @@ void SampleChooser::drawWaveform()
 				}
 			}
 
-			// Draw
-			cairo_set_line_width (cr, 1.0);
+			cairo_set_line_width (cr, 0.1);
 			double lo = sample->get (start * double (sample->info.frames), 0, sample->info.samplerate);
 			double hi = lo;
-			const double step = 1.0 / w;
+			const double step = 0.1 / w;
 			const double minstep = LIMIT (1.0 / (range * double (sample->info.frames)), 0.01 * step, step);
 			for (double x = 0; x < 1.0; x += step)
 			{
@@ -556,13 +555,13 @@ void SampleChooser::drawWaveform()
 					if (s < lo) lo = s;
 				}
 				const double frame = (start + x * range) * double (sample->info.frames);
-				if ((frame >= sample->start) && (frame <= sample->end)) cairo_set_source_rgba (cr, 1.0, 1.0, 1.0, 0.25);
-				else cairo_set_source_rgba (cr, 0.25, 0.25, 0.25, 0.25);
+				if ((frame >= sample->start) && (frame <= sample->end)) cairo_set_source_rgba (cr, 1.0, 1.0, 1.0, 1.0);
+				else cairo_set_source_rgba (cr, 0.25, 0.25, 0.25, 1.0);
 				cairo_move_to (cr, x0 + x * w, y0 + 0.5 * h - 0.5 * h * lo / max);
 				cairo_line_to (cr, x0 + x * w, y0 + 0.5 * h - 0.5 * h * hi / max);
 				cairo_stroke (cr);
 				lo = s;
-				hi = s;
+				hi = s + 2.0 * max / h;
 			}
 
 			// Set start and end line
