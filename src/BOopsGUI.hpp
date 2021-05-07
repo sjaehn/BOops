@@ -66,7 +66,7 @@
 #define BG_FILE "inc/surface.png"
 #define HELP_URL "https://github.com/sjaehn/BOops/blob/master/README.md"
 #define YT_URL "https://www.youtube.com/watch?v=bGUmZHWqdkE"
-#define OPEN_CMD "xdg-open"
+#define WWW_BROWSER_CMD "x-www-browser"
 
 class OptionWidget;	// Forward declaration
 

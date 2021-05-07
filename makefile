@@ -31,6 +31,10 @@ GUICFLAGS += `$(PKG_CONFIG) --cflags $(GUI_LIBS)`
 DSPLFLAGS += `$(PKG_CONFIG) --libs $(LV2_LIBS)`
 GUILFLAGS += `$(PKG_CONFIG) --libs $(GUI_LIBS)`
 
+ifdef WWW_BROWSER_CMD
+  GUIPPFLAGS += -DWWW_BROWSER_CMD=\"$(WWW_BROWSER_CMD)\"
+endif
+
 BUNDLE = BOops.lv2
 DSP = BOops
 DSP_SRC = ./src/BOops.cpp
@@ -89,7 +93,8 @@ GUI_CXX_INCL = \
 	src/BWidgets/BColors.cpp \
 	src/BWidgets/BItems.cpp \
 	src/BUtilities/to_string.cpp \
-	src/BUtilities/stof.cpp
+	src/BUtilities/stof.cpp \
+	src/BUtilities/vsystem.cpp
 
 GUI_C_INCL = \
 	src/screen.c \

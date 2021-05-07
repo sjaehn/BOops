@@ -21,6 +21,7 @@
 #include <limits.h>		// PATH_MAX
 #include "BOopsGUI.hpp"
 #include "BUtilities/to_string.hpp"
+#include "BUtilities/vsystem.hpp"
 #include "getURIs.hpp"
 #include "MessageDefinitions.hpp"
 #include "FxDefaults.hpp"
@@ -2548,12 +2549,20 @@ void BOopsGUI::loadButtonClickedCallback (BEvents::Event* event)
 
 void BOopsGUI::helpButtonClickedCallback (BEvents::Event* event)
 {
-	if (system(OPEN_CMD " " HELP_URL)) std::cerr << "BOops.lv2#GUI: Can't open " << HELP_URL << ". You can try to call it manually.\n";
+	char cmd[] = WWW_BROWSER_CMD;
+	char param[] = HELP_URL;
+	char* argv[] = {cmd, param, NULL};
+	std::cerr << "BOops.lv2#GUI: Call " << HELP_URL << " for help.\n";
+	if (BUtilities::vsystem (argv) == -1) std::cerr << "BOops.lv2#GUI: Couldn't fork.\n";
 }
 
 void BOopsGUI::ytButtonClickedCallback (BEvents::Event* event)
 {
-	if (system(OPEN_CMD " " YT_URL))  std::cerr << "BOops.lv2#GUI: Can't open " << YT_URL << ". You can try to call it manually.\n";
+	char cmd[] = WWW_BROWSER_CMD;
+	char param[] = YT_URL;
+	char* argv[] = {cmd, param, NULL};
+	std::cerr << "BOops.lv2#GUI: Call " << YT_URL << " for tutorial video.\n";
+	if (BUtilities::vsystem (argv) == -1) std::cerr << "BOops.lv2#GUI: Couldn't fork.\n";
 }
 
 int BOopsGUI::getPadOrigin (const int slot, const int step) const
