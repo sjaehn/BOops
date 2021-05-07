@@ -734,9 +734,9 @@ void BOops::run (uint32_t n_samples)
 		positions[i].sequence = npos;
 		positions[i].refFrame = 0;
 
-		if (i < positions.size - 1) positions[i].fader -= diff / (FADINGTIME * positions[i].transport.rate);
-		else if (positions[i].fader + diff / (FADINGTIME * positions.back().transport.rate) < 1.0) positions[i].fader += diff / (0.01 * positions.back().transport.rate);
-		else positions[i].fader = 1.0;
+		//if (i < positions.size - 1) positions[i].fader -= diff / (FADINGTIME * positions[i].transport.rate);
+		//else if (positions[i].fader + diff / (FADINGTIME * positions.back().transport.rate) < 1.0) positions[i].fader += diff / (0.01 * positions.back().transport.rate);
+		//else positions[i].fader = 1.0;
 	}
 
 	// Cleanup position data
@@ -1012,6 +1012,8 @@ void BOops::play (uint32_t start, uint32_t end)
 		memset(&audioOutput1[start], 0, (end - start) * sizeof(float));
 		memset(&audioOutput2[start], 0, (end - start) * sizeof(float));
 		return;
+
+		// TODO fader
 	}
 
 	if (globalControllers[PLAY] == PLAY_BYPASS)
@@ -1059,107 +1061,102 @@ void BOops::play (uint32_t start, uint32_t end)
 			audioOutput2[i] = input.right;
 		}
 
+		// TODO fader
+
 		return;
 	}
 
 	for (uint32_t i = start; i < end; ++i)
 	{
-		double sumFaders = 0;
 
-		for (unsigned int j = 0; j < positions.size; ++j)
+		Position& p = positions.front();
+		p.fader =
+		(
+			positions.size > 1 ?
+			p.fader - 1.0 / (FADINGTIME * p.transport.rate) :
+			p.fader + 1.0 / (FADINGTIME * p.transport.rate)
+		);
+		p.fader = LIMIT (p.fader, 0.0, 1.0);
+
+		// Interpolate position within the loop
+		double relpos = getPositionFromFrames (p.transport, i - p.refFrame);	// Position relative to reference frame
+		double pos = floorfrac (p.sequence + relpos);				// 0..1 position sequence
+
+		// Input
+		Stereo input = Stereo (audioInput1[i], audioInput2[i]);
+		if (globalControllers[SOURCE] == SOURCE_SAMPLE)
 		{
-			Position& p = positions[j];
-			double fader =
-			(
-				j < positions.size - 1 ?
-				p.fader - (j - p.refFrame) / (FADINGTIME * p.transport.rate) :
-				p.fader + (j - p.refFrame) / (FADINGTIME * p.transport.rate)
-			);
-			fader = LIMIT (fader, 0.0, 1.0);
-
-			// Interpolate position within the loop
-			double relpos = getPositionFromFrames (p.transport, i - p.refFrame);	// Position relative to reference frame
-			double pos = floorfrac (p.sequence + relpos);				// 0..1 position sequence
-
-			// Input
-			Stereo input = Stereo (audioInput1[i], audioInput2[i]);
-			if (globalControllers[SOURCE] == SOURCE_SAMPLE)
+			if (sample)
 			{
-				if (sample)
+				if (sample->end <= sample->start) input = Stereo();
+
+				else
 				{
-					if (sample->end <= sample->start) input = Stereo();
+					const uint64_t f0 = getFramesFromPosition (p.transport, pos);
+					const int64_t frame =
+					(
+						sample->loop ?
+						(f0  % (sample->end - sample->start)) + sample->start :
+						f0 + sample->start
+					);
 
-					else
-					{
-						const uint64_t f0 = getFramesFromPosition (p.transport, pos);
-						const int64_t frame =
-						(
-							sample->loop ?
-							(f0  % (sample->end - sample->start)) + sample->start :
-							f0 + sample->start
-						);
-
-						if (frame < sample->end) input = Stereo (sample->get (frame, 0, host.rate), sample->get (frame, 1, host.rate)) * sampleAmp;
-						else input = Stereo();
-					}
+					if (frame < sample->end) input = Stereo (sample->get (frame, 0, host.rate), sample->get (frame, 1, host.rate)) * sampleAmp;
+					else input = Stereo();
 				}
-				else input = Stereo();
 			}
-			Stereo output = input;
-
-			// Waveform
-			if (j == positions.size - 1)
-			{
-				waveformCounter = int (pos * WAVEFORMSIZE) % WAVEFORMSIZE;
-				waveform[waveformCounter] = (input.left + input.right) / 2;
-			}
-
-			if
-			(
-				(p.playing) &&
-				((p.transport.speed != 0.0f) || (globalControllers[BASE] == SECONDS)) &&
-				(p.transport.bpm >= 1.0f)
-			)
-			{
-				double step = pos * globalControllers[STEPS];
-				int iStep = LIMIT (step, 0, globalControllers[STEPS] - 1);
-
-				for (int k = 0; k < NR_SLOTS; ++k)
-				{
-					input = output;
-					Slot& iSlot = slots[k];
-					iSlot.buffer->push_front (input);
-					if ((iSlot.effect == FX_INVALID) || (iSlot.effect == FX_NONE)) break;
-
-					// Next step ?
-					if (p.step != iStep)
-					{
-						// Old pad ended?
-						const int iStart = iSlot.startPos[iStep];
-
-						if ((p.step < 0) || (iSlot.startPos[p.step] != iStart))
-						{
-							// Stop old pad
-							iSlot.end ();
-
-							// Start new pad (if set)
-							if (iStart >= 0) iSlot.init (iStart);
-						}
-					}
-
-					// Play music :-)
-					output = (iSlot.params[SLOTS_PLAY] ? iSlot.play (step) : input);
-					iSlot.mixf = 1.0f;
-				}
-
-				p.step = iStep;
-			}
-
-			audioOutput1[i] = (sumFaders * audioOutput1[i] + fader * output.left) / (sumFaders + fader);
-			audioOutput2[i] = (sumFaders * audioOutput2[i] + fader * output.right) / (sumFaders + fader);
-
-			sumFaders += fader;
+			else input = Stereo();
 		}
+		Stereo output = input;
+
+		// Waveform
+		waveformCounter = int (pos * WAVEFORMSIZE) % WAVEFORMSIZE;
+		waveform[waveformCounter] = (input.left + input.right) / 2;
+
+		if
+		(
+			(p.playing) &&
+			((p.transport.speed != 0.0f) || (globalControllers[BASE] == SECONDS)) &&
+			(p.transport.bpm >= 1.0f)
+		)
+		{
+			double step = pos * globalControllers[STEPS];
+			int iStep = LIMIT (step, 0, globalControllers[STEPS] - 1);
+
+			for (int k = 0; k < NR_SLOTS; ++k)
+			{
+				input = output;
+				Slot& iSlot = slots[k];
+				iSlot.buffer->push_front (input);
+				if ((iSlot.effect == FX_INVALID) || (iSlot.effect == FX_NONE)) break;
+
+				// Next step ?
+				if (p.step != iStep)
+				{
+					// Old pad ended?
+					const int iStart = iSlot.startPos[iStep];
+
+					if ((p.step < 0) || (iSlot.startPos[p.step] != iStart))
+					{
+						// Stop old pad
+						iSlot.end ();
+
+						// Start new pad (if set)
+						if (iStart >= 0) iSlot.init (iStart);
+					}
+				}
+
+				// Play music :-)
+				output = (iSlot.params[SLOTS_PLAY] ? iSlot.play (step) : input);
+				iSlot.mixf = 1.0f;
+			}
+
+			p.step = iStep;
+		}
+
+		audioOutput1[i] = (1.0 - p.fader) * audioOutput1[i] + p.fader * output.left;
+		audioOutput2[i] = (1.0 - p.fader) * audioOutput2[i] + p.fader * output.right;
+
+		if ((p.fader == 0) && (positions.size > 1)) positions.pop_front();
 	}
 }
 

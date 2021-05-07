@@ -370,6 +370,7 @@ not. Select at least two slots and set the likelihood ratio for each slot.
 * Bugfixes
   * Install
   * Clang warnings
+  * Substitute fork for calling help / tutorial
 
 
 
