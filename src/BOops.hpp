@@ -98,6 +98,11 @@ private:
 	uint64_t getFramesFromPosition (const Transport& transport, const double position) const;
 	double getPositionFromSeconds (const Transport& transport, const double seconds);
 	double getFramesPerStep (const Transport& transport);
+	Position& backPosition();
+	size_t sizePosition();
+	void pushBackPosition (Position& p);
+	void popBackPosition();
+	void popFrontPosition();
 
 public:	char pluginPath[1024];
 private:
@@ -106,7 +111,7 @@ private:
 public:	Transport host;
 private:
 	bool activated;
-	StaticArrayList<Position, MAXFADERS> positions;
+	Position positions[2];
 	bool transportGateKeys[NR_PIANO_KEYS];
 
 	// Atom ports

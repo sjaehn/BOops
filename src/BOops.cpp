@@ -46,7 +46,7 @@ BOops::BOops (double samplerate, const char* bundle_path, const LV2_Feature* con
 	map(NULL), workerSchedule (NULL), pluginPath {0}, urids (),
 	host {samplerate, 120.0f, 1.0f, 0ul, 0.0f, 4.0f},
 	activated (false),
-	positions (),
+	positions {{0.0, -1, 0.0, 0, {samplerate, 120.0f, 1.0f, 0ul, 0.0f, 4.0f}, 1.0, true}, {0.0, -1, 0.0, 0, {0.0, 120.0f, 1.0f, 0ul, 0.0f, 4.0f}, 0.0, true}},
 	transportGateKeys {false},
 	controlPort(NULL), notifyPort(NULL),
 	audioInput1(NULL), audioInput2(NULL), audioOutput1(NULL), audioOutput2(NULL),
@@ -89,10 +89,6 @@ BOops::BOops (double samplerate, const char* bundle_path, const LV2_Feature* con
 
 	// Initialize slots
 	std::fill (slots, slots + NR_SLOTS, Slot (this, FX_NONE, nullptr, nullptr, 16, 1.0f, 0.25 * samplerate));
-
-	// Initialize positions
-	positions.clear();
-	positions.push_back ({0.0, -1, 0.0, 0, {samplerate, 120.0f, 1.0f, 0ul, 0.0f, 4.0f}, 1.0, true});
 }
 
 BOops::~BOops ()
@@ -205,6 +201,16 @@ double BOops::getFramesPerStep (const Transport& transport)
 	return transport.rate * s / globalControllers[STEPS];
 }
 
+Position& BOops::backPosition() {return (sizePosition() > 1 ? positions[1] : positions[0]);}
+
+size_t BOops::sizePosition() {return 1 + (positions[1].transport.rate != 0.0);}
+
+void BOops::pushBackPosition (Position& p) {positions[1] = p;}
+
+void BOops::popBackPosition() {positions[1].transport.rate = 0.0;}
+
+void BOops::popFrontPosition() {positions[0] = positions[1]; popBackPosition();}
+
 void BOops::activate() {activated = true;}
 
 void BOops::deactivate() {activated = false;}
@@ -232,7 +238,7 @@ void BOops::run (uint32_t n_samples)
 
 			if (i == PLAY_MODE)
 			{
-				Position np = positions.back();
+				Position np = backPosition();
 
 				switch (int (newValue))
 				{
@@ -253,7 +259,7 @@ void BOops::run (uint32_t n_samples)
 						np.transport = host;
 				}
 
-				positions.push_back (np);
+				pushBackPosition (np);
 
 				resizeSteps ();
 			}
@@ -266,22 +272,22 @@ void BOops::run (uint32_t n_samples)
 
 			else if (i == AUTOPLAY_BPM)
 			{
-				if (globalControllers[PLAY_MODE] == AUTOPLAY) positions.back().transport.bpm = globalControllers[AUTOPLAY_BPM];
+				if (globalControllers[PLAY_MODE] == AUTOPLAY) backPosition().transport.bpm = globalControllers[AUTOPLAY_BPM];
 				resizeSteps ();
 			}
 
 			else if (i == AUTOPLAY_BPB)
 			{
-				if (globalControllers[PLAY_MODE] == AUTOPLAY) positions.back().transport.beatsPerBar = globalControllers[AUTOPLAY_BPB];
+				if (globalControllers[PLAY_MODE] == AUTOPLAY) backPosition().transport.beatsPerBar = globalControllers[AUTOPLAY_BPB];
 				resizeSteps ();
 			}
 
 			else if (i == AUTOPLAY_POSITION)
 			{
-				Position np = positions.back();
+				Position np = backPosition();
 				np.sequence = floorfrac (np.sequence + 1.0 + newValue - oldValue);
 				np.refFrame = 0;
-				positions.push_back (np);
+				pushBackPosition (np);
 				scheduleNotifyStatus = true;
 			}
 
@@ -606,12 +612,12 @@ void BOops::run (uint32_t n_samples)
 				{
 					if (globalControllers[PLAY_MODE] != AUTOPLAY)
 					{
-						Position np = positions.back();
+						Position np = backPosition();
 						double pos = getPositionFromBeats (host, host.barBeat + host.beatsPerBar * host.bar);
 						double npos = floorfrac (pos - np.offset);
 
 						// Fade only if jump > 1 ms
-						if (fabs (npos - positions.back().sequence) > getPositionFromSeconds (host, 0.001))
+						if (fabs (npos - np.sequence) > getPositionFromSeconds (host, 0.001))
 						{
 							np.fader = 0.0;
 							np.transport = host;
@@ -620,16 +626,16 @@ void BOops::run (uint32_t n_samples)
 							np.refFrame = ev->time.frames;
 							scheduleNotifyStatus = true;
 
-							positions.push_back (np);
+							pushBackPosition (np);
 						}
 
 						// Otherwise update at least the transport data
-						else positions.back().transport = host;
+						else backPosition().transport = host;
 					}
 				}
 
 				// Other data changed in host or midi controlled mode: copy
-				else if (globalControllers[PLAY_MODE] != AUTOPLAY) positions.back().transport = host;
+				else if (globalControllers[PLAY_MODE] != AUTOPLAY) backPosition().transport = host;
 
 				if (scheduleResizeSteps && (globalControllers[PLAY_MODE] != AUTOPLAY)) resizeSteps();
 			}
@@ -655,7 +661,7 @@ void BOops::run (uint32_t n_samples)
 					{
 						if (isTransportGateKey)
 						{
-							Position p = positions.back();
+							Position p = backPosition();
 
 							switch (int (globalControllers[ON_MIDI]))
 							{
@@ -679,7 +685,7 @@ void BOops::run (uint32_t n_samples)
 							}
 
 							p.playing = true;
-							positions.push_back (p);
+							pushBackPosition (p);
 							scheduleNotifyStatus = true;
 						}
 					}
@@ -689,9 +695,9 @@ void BOops::run (uint32_t n_samples)
 					{
 						if (isTransportGateKey)
 						{
-							Position p = positions.back();
+							Position p = backPosition();
 							p.playing = false;
-							positions.push_back (p);
+							pushBackPosition (p);
 							scheduleNotifyStatus = true;
 						}
 					}
@@ -702,9 +708,9 @@ void BOops::run (uint32_t n_samples)
 						if ((note == LV2_MIDI_CTL_ALL_NOTES_OFF) ||
 						    (note == LV2_MIDI_CTL_ALL_SOUNDS_OFF))
 						{
-							Position p = positions.back();
+							Position p = backPosition();
 							p.playing = false;
-							positions.push_back (p);
+							pushBackPosition (p);
 							scheduleNotifyStatus = true;
 						}
 					}
@@ -724,7 +730,7 @@ void BOops::run (uint32_t n_samples)
 	if (last_t < n_samples) play (last_t, n_samples);
 
 	// Update position in case of no new barBeat submitted on next call
-	for (unsigned int i = 0; i < positions.size; ++i)
+	for (unsigned int i = 0; i < sizePosition(); ++i)
 	{
 		const uint64_t diff = n_samples - positions[i].refFrame;
 		const double relpos = getPositionFromFrames (positions[i].transport, diff);	// Position relative to reference frame
@@ -733,28 +739,6 @@ void BOops::run (uint32_t n_samples)
 		if (nstep != int (positions[i].sequence * globalControllers[STEPS])) scheduleNotifyStatus = true;
 		positions[i].sequence = npos;
 		positions[i].refFrame = 0;
-
-		//if (i < positions.size - 1) positions[i].fader -= diff / (FADINGTIME * positions[i].transport.rate);
-		//else if (positions[i].fader + diff / (FADINGTIME * positions.back().transport.rate) < 1.0) positions[i].fader += diff / (0.01 * positions.back().transport.rate);
-		//else positions[i].fader = 1.0;
-	}
-
-	// Cleanup position data
-	for (Position** p = positions.begin(); (p < positions.end()) && (positions.size > 1); )
-	{
-		if ((**p).fader <= 0) p = positions.erase (p);
-		else ++p;
-	}
-
-	// Keep at least one free positions
-	if (positions.size >= MAXFADERS - 1)
-	{
-		Position** killPos = positions.begin();
-		for (Position** p = positions.begin(); p < positions.end(); ++p)
-		{
-			if ((**p).fader < (**killPos).fader) killPos = p;
-		}
-		positions.erase (killPos);
 	}
 
 	// Send collected data to GUI
@@ -775,7 +759,7 @@ void BOops::run (uint32_t n_samples)
 
 void BOops::resizeSteps ()
 {
-	double fpst = getFramesPerStep (positions.back().transport);
+	double fpst = getFramesPerStep (backPosition().transport);
 	for (int i = 0; i < NR_SLOTS; ++i) slots[i].framesPerStep = fpst;
 
 	if (!scheduleResizeBuffers)
@@ -824,7 +808,7 @@ void BOops::notifyMessageToGui()
 
 void BOops::notifyStatusToGui()
 {
-	Position& p = positions.back();
+	Position& p = backPosition();
 	double pos =
 	(
 		(globalControllers[PLAY] != PLAY_OFF) && p.playing && ((p.transport.speed != 0.0f) || (globalControllers[BASE] == SECONDS)) && (p.transport.bpm >= 1.0f)?
@@ -1020,7 +1004,7 @@ void BOops::play (uint32_t start, uint32_t end)
 	{
 		for (uint32_t i = start; i < end; ++i)
 		{
-			Position& p = positions.back();
+			Position& p = backPosition();
 			double relpos = getPositionFromFrames (p.transport, i - p.refFrame);	// Position relative to reference frame
 			double pos = floorfrac (p.sequence + relpos);				// 0..1 position sequence
 
@@ -1069,10 +1053,10 @@ void BOops::play (uint32_t start, uint32_t end)
 	for (uint32_t i = start; i < end; ++i)
 	{
 
-		Position& p = positions.front();
+		Position& p = positions[0];
 		p.fader =
 		(
-			positions.size > 1 ?
+			sizePosition() > 1 ?
 			p.fader - 1.0 / (FADINGTIME * p.transport.rate) :
 			p.fader + 1.0 / (FADINGTIME * p.transport.rate)
 		);
@@ -1156,7 +1140,7 @@ void BOops::play (uint32_t start, uint32_t end)
 		audioOutput1[i] = (1.0 - p.fader) * audioOutput1[i] + p.fader * output.left;
 		audioOutput2[i] = (1.0 - p.fader) * audioOutput2[i] + p.fader * output.right;
 
-		if ((p.fader == 0) && (positions.size > 1)) positions.pop_front();
+		if ((p.fader == 0) && (sizePosition() > 1)) popFrontPosition();
 	}
 }
 
@@ -1753,7 +1737,7 @@ LV2_Worker_Status BOops::work (LV2_Worker_Respond_Function respond, LV2_Worker_R
 	else if (atom->type == urids.bOops_allocateBuffers)
 	{
 		//Required buffer size
-		double fpst = getFramesPerStep (positions.back().transport);
+		double fpst = getFramesPerStep (backPosition().transport);
 		size_t bSize = slots[0].buffer->size();
 
 		if ((bSize < globalControllers[STEPS] * fpst) || (bSize > 2.0 * globalControllers[STEPS] * fpst))
