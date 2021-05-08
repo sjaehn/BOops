@@ -35,7 +35,7 @@ class BOops; // Forward declaration
 class FxFilter : public Fx
 {
 public:
-	FxFilter () : FxFilter (nullptr, nullptr, nullptr, 0) {}
+	FxFilter () = delete;
 
 	FxFilter (RingBuffer<Stereo>** buffer, float* params, Pad* pads, double rate) :
 		Fx (buffer, params, pads),
@@ -45,17 +45,17 @@ public:
 	{
 		Fx::init (position);
 		const double r1 = bidist (rnd);
-		double low = 20.0f + 19980.0f * pow (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_FILTER_LOW] + r1 * params[SLOTS_OPTPARAMS + FX_FILTER_LOWRAND], 0.0, 1.0) : 0.0, 4.0);
+		double low = 20.0f + 19980.0f * pow (LIMIT (params[SLOTS_OPTPARAMS + FX_FILTER_LOW] + r1 * params[SLOTS_OPTPARAMS + FX_FILTER_LOWRAND], 0.0, 1.0), 4.0);
 		const double r2 = bidist (rnd);
-		double high = 20.0f + 19980.0f * pow (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_FILTER_HIGH] + r2 * params[SLOTS_OPTPARAMS + FX_FILTER_HIGHRAND], 0.0, 1.0) : 1.0, 4.0);
-		int order = 2 * int (params ? LIMIT (1.0 + 8.0 * params[SLOTS_OPTPARAMS + FX_FILTER_ORDER], 1.0, 8.0) : 4.0);
+		double high = 20.0f + 19980.0f * pow (LIMIT (params[SLOTS_OPTPARAMS + FX_FILTER_HIGH] + r2 * params[SLOTS_OPTPARAMS + FX_FILTER_HIGHRAND], 0.0, 1.0), 4.0);
+		int order = 2 * int (LIMIT (1.0 + 8.0 * params[SLOTS_OPTPARAMS + FX_FILTER_ORDER], 1.0, 8.0));
 		filter = ButterworthBandPassFilter (rate, low, high, order);
 	}
 
 	virtual Stereo play (const double position, const double size, const double mixf) override
 	{
-		const Stereo s0 = (buffer && (*buffer) ? (**buffer)[0] : Stereo {0, 0});
-		if ((!playing) || (!pads)) return s0;
+		const Stereo s0 = (**buffer)[0];
+		if (!playing) return s0;
 
 		Stereo s1 = s0;
 		s1 = filter.push (s1);

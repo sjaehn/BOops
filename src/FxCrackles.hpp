@@ -44,7 +44,7 @@
 class FxCrackles : public Fx
 {
 public:
-	FxCrackles () : FxCrackles (nullptr, nullptr, nullptr, nullptr, 48000) {}
+	FxCrackles () = delete;
 
 	FxCrackles (RingBuffer<Stereo>** buffer, float* params, Pad* pads, double* framesPerStep, const double samplerate) :
 		Fx (buffer, params, pads),
@@ -53,21 +53,23 @@ public:
 		framesPerStep (24000),
 		rate (0.0f),
 		c (0)
-	{}
+	{
+		if (!framesPerStep) throw std::invalid_argument ("Fx initialized with framesPerStep nullptr");
+	}
 
 	virtual void init (const double position) override
 	{
 		Fx::init (position);
-		framesPerStep = (framesPerStepPtr ? *framesPerStepPtr : 24000.0);
+		framesPerStep = *framesPerStepPtr;
 		const double r1 = bidist (rnd);
-		const float db = -36.0 + 48.0 * (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_CRACKLES_AMP] + r1 * params[SLOTS_OPTPARAMS + FX_CRACKLES_AMPRAND], 0.0, 1.0) : 0.5);
+		const float db = -36.0 + 48.0 * LIMIT (params[SLOTS_OPTPARAMS + FX_CRACKLES_AMP] + r1 * params[SLOTS_OPTPARAMS + FX_CRACKLES_AMPRAND], 0.0, 1.0);
 		const float amp = DB2CO (db);
 		const double r2 = bidist (rnd);
-		rate = 200.0 * (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_CRACKLES_RATE] + r2 * params[SLOTS_OPTPARAMS + FX_CRACKLES_RATERAND], 0.0, 1.0) : 0.5);
+		rate = 200.0 * LIMIT (params[SLOTS_OPTPARAMS + FX_CRACKLES_RATE] + r2 * params[SLOTS_OPTPARAMS + FX_CRACKLES_RATERAND], 0.0, 1.0);
 		const double r3 = bidist (rnd);
-		maxsize = amp * (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_CRACKLES_MAXSIZE] + r3 * params[SLOTS_OPTPARAMS + FX_CRACKLES_MAXSIZERAND], 0.0, 1.0) : 0.5);
+		maxsize = amp * LIMIT (params[SLOTS_OPTPARAMS + FX_CRACKLES_MAXSIZE] + r3 * params[SLOTS_OPTPARAMS + FX_CRACKLES_MAXSIZERAND], 0.0, 1.0);
 		const double r4 = bidist (rnd);
-		distrib = 10.0 * (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_CRACKLES_DISTRIBUTION] + r4 * params[SLOTS_OPTPARAMS + FX_CRACKLES_DISTRIBUTIONRAND], 0.0, 1.0) : 0.5);
+		distrib = 10.0 * LIMIT (params[SLOTS_OPTPARAMS + FX_CRACKLES_DISTRIBUTION] + r4 * params[SLOTS_OPTPARAMS + FX_CRACKLES_DISTRIBUTIONRAND], 0.0, 1.0);
 		c = 0;
 		crackles.clear();
 	}
@@ -77,8 +79,8 @@ public:
 		double t = double (c) / samplerate;
 		++c;
 
-		const Stereo s0 = (buffer && (*buffer) ? (**buffer)[0] : Stereo {0, 0});
-		if ((!playing) || (!pads)) return s0;
+		const Stereo s0 = (**buffer)[0];
+		if (!playing) return s0;
 
 		// Randomly generate new crackles
 		const double r = unidist (rnd);

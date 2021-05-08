@@ -32,11 +32,12 @@
 class FxSurprise : public Fx
 {
 public:
-	FxSurprise () : FxSurprise (nullptr, nullptr, nullptr, nullptr) {}
+	FxSurprise () = delete;
 
 	FxSurprise (RingBuffer<Stereo>** buffer, float* params, Pad* pads, BOops* plugin) :
 		Fx (buffer, params, pads), plugin (plugin), act (0)
 	{
+		if (!plugin) throw std::invalid_argument ("Fx initialized with plugin nullptr");
 		ratios.fill (0);
 		slots.fill (-1);
 	}
@@ -48,8 +49,8 @@ public:
 		float sr = 0;
 		for (int i = 0; i < FX_SURPRISE_NR; ++i)
 		{
-			ratios[i] = (params ? params[SLOTS_OPTPARAMS + i * 2 +  FX_SURPRISE_RATIO] : 0.5);
-			slots[i] = LIMIT (16.0 * (params ? params[SLOTS_OPTPARAMS + i * 2 +  FX_SURPRISE_SLOT] : 0.5), 0.0, 12.0) - 1.0;
+			ratios[i] = params[SLOTS_OPTPARAMS + i * 2 +  FX_SURPRISE_RATIO];
+			slots[i] = LIMIT (16.0 * params[SLOTS_OPTPARAMS + i * 2 +  FX_SURPRISE_SLOT], 0.0, 12.0) - 1.0;
 			if (slots[i] >= 0) sr += ratios[i];
 		}
 
@@ -82,7 +83,7 @@ public:
 			}
 		}
 
-		return (buffer && (*buffer) ? (**buffer)[0] : Stereo {0, 0});
+		return (**buffer)[0];
 	}
 
 protected:

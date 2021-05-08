@@ -29,7 +29,7 @@
 class FxWidth : public Fx
 {
 public:
-	FxWidth () : FxWidth (nullptr, nullptr, nullptr) {}
+	FxWidth () = delete;
 
 	FxWidth (RingBuffer<Stereo>** buffer, float* params, Pad* pads) :
 		Fx (buffer, params, pads),
@@ -40,22 +40,13 @@ public:
 	{
 		Fx::init (position);
 		const double r = bidist (rnd);
-		width =
-		(
-			params ?
-			pow
-			(
-				2 * LIMIT (params[SLOTS_OPTPARAMS + FX_WIDTH_WIDTH] + r * params[SLOTS_OPTPARAMS + FX_WIDTH_WIDTHRAND], 0.0, 1.0),
-				6.64385619
-			) :
-			1.0
-		);
+		width =pow (2 * LIMIT (params[SLOTS_OPTPARAMS + FX_WIDTH_WIDTH] + r * params[SLOTS_OPTPARAMS + FX_WIDTH_WIDTHRAND], 0.0, 1.0), 6.64385619);
 	}
 
 	virtual Stereo play (const double position, const double size, const double mixf) override
 	{
-		const Stereo s0 = (buffer && (*buffer) ? (**buffer)[0] : Stereo {0, 0});
-		if ((!playing) || (!pads)) return s0;
+		const Stereo s0 = (**buffer)[0];
+		if (!playing) return s0;
 
 		const float m = (s0.left + s0.right) / 2;
 		const float x = (s0.left - s0.right) * width / 2;

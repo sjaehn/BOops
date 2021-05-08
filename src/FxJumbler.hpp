@@ -26,7 +26,7 @@
 class FxJumbler : public Fx
 {
 public:
-	FxJumbler () : FxJumbler (nullptr, nullptr, nullptr, nullptr, nullptr) {}
+	FxJumbler () = delete;
 
 	FxJumbler (RingBuffer<Stereo>** buffer, float* params, Pad* pads, double* framesPerStep, size_t* size) :
 		Fx (buffer, params, pads),
@@ -34,48 +34,50 @@ public:
 		framesPerStep (24000),
 		sizePtr (size),
 		size (1),
-		delay (0) {}
+		delay (0)
+	{
+		if (!framesPerStep) throw std::invalid_argument ("Fx initialized with framesPerStep nullptr");
+		if (!size) throw std::invalid_argument ("Fx initialized with size nullptr");
+	}
 
 	virtual void init (const double position) override
 	{
 		Fx::init (position);
-		framesPerStep = (framesPerStepPtr ? *framesPerStepPtr : 24000.0);
-		size = (sizePtr ? *sizePtr : 1);
+		framesPerStep = *framesPerStepPtr;
+		size = *sizePtr;
 
 		delay = 0;
-		if (pads)
+
+		// Count number of blocks
+		int blocks = 0;
+		for (size_t i = 0; i < size; ++i)
 		{
-			// Count number of blocks
-			int blocks = 0;
-			for (size_t i = 0; i < size; ++i)
-			{
-				if ((pads[i].gate != 0) && (pads[i].size != 0) && (pads[i].mix != 0)) ++blocks;
-			}
+			if ((pads[i].gate != 0) && (pads[i].size != 0) && (pads[i].mix != 0)) ++blocks;
+		}
 
-			const int r1 = unidist (rnd) * double (blocks);
-			const int dblock = LIMIT (r1, 0, blocks - 1);
+		const int r1 = unidist (rnd) * double (blocks);
+		const int dblock = LIMIT (r1, 0, blocks - 1);
 
-			// Calculate delay
-			blocks = 0;
-			for (size_t i = 0; i < size; ++i)
+		// Calculate delay
+		blocks = 0;
+		for (size_t i = 0; i < size; ++i)
+		{
+			if ((pads[i].gate != 0) && (pads[i].size != 0) && (pads[i].mix != 0)) ++blocks;
+			if (blocks >= dblock)
 			{
-				if ((pads[i].gate != 0) && (pads[i].size != 0) && (pads[i].mix != 0)) ++blocks;
-				if (blocks >= dblock)
-				{
-					delay = (int (position) + size - i) % size;
-					break;
-				}
+				delay = (int (position) + size - i) % size;
+				break;
 			}
 		}
 	}
 
 	virtual Stereo play (const double position, const double padsize, const double mixf) override
 	{
-		const Stereo s0 = (buffer && (*buffer) ? (**buffer)[0] : Stereo {0, 0});
-		if ((!playing) || (!pads)) return s0;
+		const Stereo s0 = (**buffer)[0];
+		if (!playing) return s0;
 
 		const long frame = framesPerStep * delay;
-		const Stereo s1 = (buffer && (*buffer) ? (**buffer)[frame] : Stereo {0, 0});
+		const Stereo s1 = (**buffer)[frame];
 		return mix (s0, s1, position, padsize, mixf);
 	}
 

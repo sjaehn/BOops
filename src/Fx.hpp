@@ -27,6 +27,7 @@
 
 #include <random>
 #include <ctime>
+#include <stdexcept>
 #include "Stereo.hpp"
 #include "RingBuffer.hpp"
 #include "Pad.hpp"
@@ -36,13 +37,17 @@
 class Fx
 {
 public:
-	Fx () : Fx (nullptr, nullptr, nullptr) {}
+	Fx () = delete;
 
 	Fx (RingBuffer<Stereo>** buffer, float* params, Pad* pads) :
 		buffer (buffer), params (params), pads (pads),
 		playing (false), panf (), unpanf(),
 		rnd (time (0)), unidist (0.0, 1.0), bidist (-1.0, 1.0)
-	{}
+	{
+		if (!buffer) throw std::invalid_argument ("Fx initialized with buffer nullptr");
+		if (!params) throw std::invalid_argument ("Fx initialized with parameters nullptr");
+		if (!pads) throw std::invalid_argument ("Fx initialized with pads nullptr");
+	}
 
 	virtual ~Fx ()
 	{};
@@ -54,14 +59,14 @@ public:
 	virtual void init (const double position)
 	{
 		const int startPos = position;
-		playing = (unidist (rnd) < (pads ? pads[startPos >= 0 ? startPos : 0].gate : 0));
+		playing = (unidist (rnd) < pads[startPos >= 0 ? startPos : 0].gate);
 		panf = (Stereo {1.0, 1.0}).pan (params[SLOTS_PAN]);
 		unpanf = Stereo {1.0, 1.0} - panf;
 	}
 
 	virtual Stereo play (const double position, const double size, const double mixf)
 	{
-		return (buffer && (*buffer) ? (**buffer)[0] : Stereo {0, 0});
+		return (**buffer)[0];
 	}
 
 	virtual void end () {playing = false;}
@@ -79,8 +84,6 @@ protected:
 
 	float adsr (const double position, const double size) const
 	{
-		if ((!pads) || (!params)) return 0;
-
 		if ((position < 0) || (position >= size)) return 0;
 
 		float adr = params[SLOTS_ATTACK] + params[SLOTS_DECAY] + params[SLOTS_RELEASE];
@@ -104,7 +107,7 @@ protected:
 
 	Stereo getSample (const double frame)
 	{
-		return (buffer && (*buffer) ? BUtilities::mix<Stereo> ((**buffer)[frame], (**buffer)[frame + 1], fmod (frame, 1.0)) : Stereo {0, 0});
+		return BUtilities::mix<Stereo> ((**buffer)[frame], (**buffer)[frame + 1], fmod (frame, 1.0));
 	}
 
 	Stereo pan (const Stereo s0, const Stereo s1) const {return panf * s1 + unpanf * s0;}

@@ -32,7 +32,7 @@
 class FxDelay : public Fx
 {
 public:
-	FxDelay () : FxDelay (nullptr, nullptr, nullptr, nullptr, nullptr) {}
+	FxDelay () = delete;
 
 	FxDelay (RingBuffer<Stereo>** buffer, float* params, Pad* pads, double* framesPerStep, size_t* size) :
 		Fx (buffer, params, pads),
@@ -40,30 +40,34 @@ public:
 		framesPerStep (24000),
 		sizePtr (size),
 		size (1),
-		range (1.0f), delay (0.0f), feedback (0.0f) {}
+		range (1.0f), delay (0.0f), feedback (0.0f)
+	{
+		if (!framesPerStep) throw std::invalid_argument ("Fx initialized with framesPerStep nullptr");
+		if (!size) throw std::invalid_argument ("Fx initialized with size nullptr");
+	}
 
 	virtual void init (const double position) override
 	{
 		Fx::init (position);
-		framesPerStep = (framesPerStepPtr ? *framesPerStepPtr : 24000.0);
-		size = (sizePtr ? *sizePtr : 1);
+		framesPerStep = *framesPerStepPtr;
+		size = *sizePtr;
 		const double r1 = bidist (rnd);
 		const double r2 = bidist (rnd);
-		range = floor (params ? LIMIT (1.0 + params[SLOTS_OPTPARAMS + FX_DELAY_RANGE] * NR_STEPS, 1.0, size - 1) : 1.0f);
-		delay = (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_DELAY_DELAY] + r1 * params[SLOTS_OPTPARAMS + FX_DELAY_DELAYRAND], 0.0, 1.0) : 0.5);
-		feedback = (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_DELAY_FEEDBACK] + r2 * params[SLOTS_OPTPARAMS + FX_DELAY_FEEDBACKRAND], 0.0, 1.0) : 0.5);
+		range = floor (LIMIT (1.0 + params[SLOTS_OPTPARAMS + FX_DELAY_RANGE] * NR_STEPS, 1.0, *sizePtr - 1));
+		delay = LIMIT (params[SLOTS_OPTPARAMS + FX_DELAY_DELAY] + r1 * params[SLOTS_OPTPARAMS + FX_DELAY_DELAYRAND], 0.0, 1.0);
+		feedback = LIMIT (params[SLOTS_OPTPARAMS + FX_DELAY_FEEDBACK] + r2 * params[SLOTS_OPTPARAMS + FX_DELAY_FEEDBACKRAND], 0.0, 1.0);
 	}
 
 	virtual Stereo play (const double position, const double padsize, const double mixf) override
 	{
-		const Stereo s0 = (buffer && (*buffer) ? (**buffer)[0] : Stereo {0, 0});
-		if ((!playing) || (!pads)) return s0;
+		const Stereo s0 = (**buffer)[0];
+		if (!playing) return s0;
 
-		const double frame = framesPerStep * range * delay;
+		const double frame = *framesPerStepPtr * range * delay;
 		Stereo s1 = getSample (frame);
 		s1 = mix (s0, s1, position, padsize, mixf);
 		Stereo s2 = s1;
-		if (buffer && (*buffer)) (**buffer)[0] = s2.mix (s0, 1.0f - feedback);
+		(**buffer)[0] = s2.mix (s0, 1.0f - feedback);
 		return s1;
 	}
 

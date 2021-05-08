@@ -33,7 +33,7 @@
 class FxNoise : public Fx
 {
 public:
-	FxNoise () : FxNoise (nullptr, nullptr, nullptr) {}
+	FxNoise () = delete;
 
 	FxNoise (RingBuffer<Stereo>** buffer, float* params, Pad* pads) :
 		Fx (buffer, params, pads),
@@ -44,14 +44,14 @@ public:
 	{
 		Fx::init (position);
 		const double r = bidist (rnd);
-		const float db = -90.0 + 102.0 * (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_NOISE_AMP] + r * params[SLOTS_OPTPARAMS + FX_NOISE_AMPRAND], 0.0, 1.0) :0.5);
+		const float db = -90.0 + 102.0 * LIMIT (params[SLOTS_OPTPARAMS + FX_NOISE_AMP] + r * params[SLOTS_OPTPARAMS + FX_NOISE_AMPRAND], 0.0, 1.0);
 		amp = DB2CO (db);
 	}
 
 	virtual Stereo play (const double position, const double size, const double mixf) override
 	{
-		const Stereo s0 = (buffer && (*buffer) ? (**buffer)[0] : Stereo {0, 0});
-		if ((!playing) || (!pads)) return s0;
+		const Stereo s0 = (**buffer)[0];
+		if (!playing) return s0;
 
 		Stereo s1 = Stereo {unidist (rnd) * amp, unidist (rnd) * amp};
 		return mix (s0, s1, position, size, mixf);

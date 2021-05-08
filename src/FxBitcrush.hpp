@@ -31,7 +31,7 @@
 class FxBitcrush : public Fx
 {
 public:
-	FxBitcrush () : FxBitcrush (nullptr, nullptr, nullptr) {}
+	FxBitcrush () = delete;
 
 	FxBitcrush (RingBuffer<Stereo>** buffer, float* params, Pad* pads) :
 		Fx (buffer, params, pads),
@@ -41,16 +41,16 @@ public:
 	{
 		Fx::init (position);
 		const double r1 = bidist (rnd);
-		limit = (params ? LIMIT (0.01 + 1.99 * params[SLOTS_OPTPARAMS + FX_BITCRUSH_LIMIT] + 1.99 * r1 * params[SLOTS_OPTPARAMS + FX_BITCRUSH_LIMITRAND], 0.01, 2.0) : 1.0);
+		limit = LIMIT (0.01 + 1.99 * params[SLOTS_OPTPARAMS + FX_BITCRUSH_LIMIT] + 1.99 * r1 * params[SLOTS_OPTPARAMS + FX_BITCRUSH_LIMITRAND], 0.01, 2.0);
 		const double r2 = bidist (rnd);
-		bit = (params ? LIMIT (1.0 + 32.0 * (params[SLOTS_OPTPARAMS + FX_BITCRUSH_BIT] + r2 * params[SLOTS_OPTPARAMS + FX_BITCRUSH_BITRAND]), 1.0, 32.0) : 16.0);
+		bit = LIMIT (1.0 + 32.0 * (params[SLOTS_OPTPARAMS + FX_BITCRUSH_BIT] + r2 * params[SLOTS_OPTPARAMS + FX_BITCRUSH_BITRAND]), 1.0, 32.0);
 		f = pow (2, bit - 1);
 	}
 
 	virtual Stereo play (const double position, const double size, const double mixf) override
 	{
-		const Stereo s0 = (buffer && (*buffer) ? (**buffer)[0] : Stereo {0, 0});
-		if ((!playing) || (!pads)) return s0;
+		const Stereo s0 = (**buffer)[0];
+		if (!playing) return s0;
 
 		const float l1 = LIMIT (s0.left + limit, 0, 2.0 * limit) / (2.0 * limit);
 		const float l2 = round (l1 * f);

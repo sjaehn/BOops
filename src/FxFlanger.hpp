@@ -37,7 +37,7 @@
 class FxFlanger : public Fx
 {
 public:
-	FxFlanger () : FxFlanger (nullptr, nullptr, nullptr, nullptr, 24000) {}
+	FxFlanger () = delete;
 
 	FxFlanger (RingBuffer<Stereo>** buffer, float* params, Pad* pads, double* framesPerStep, double rate) :
 		Fx (buffer, params, pads),
@@ -49,37 +49,39 @@ public:
 		freq (0.25),
 		phase (0.0),
 		feedback (0.0f)
-	{}
+	{
+		if (!framesPerStep) throw std::invalid_argument ("Fx initialized with framesPerStep nullptr");
+	}
 
 	virtual void init (const double position) override
 	{
 		Fx::init (position);
 		const double r1 = bidist (rnd);
-		minDelay = 0.01 * (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_FLANGER_MINDELAY] + r1 * params[SLOTS_OPTPARAMS + FX_FLANGER_MINDELAYRAND], 0.0, 1.0) : 0.0);
+		minDelay = 0.01 * LIMIT (params[SLOTS_OPTPARAMS + FX_FLANGER_MINDELAY] + r1 * params[SLOTS_OPTPARAMS + FX_FLANGER_MINDELAYRAND], 0.0, 1.0);
 		const double r2 = bidist (rnd);
-		modDelay = 0.01 * (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_FLANGER_MODDELAY] + r2 * params[SLOTS_OPTPARAMS + FX_FLANGER_MODDELAYRAND], 0.0, 1.0) : 0.3333);
+		modDelay = 0.01 * LIMIT (params[SLOTS_OPTPARAMS + FX_FLANGER_MODDELAY] + r2 * params[SLOTS_OPTPARAMS + FX_FLANGER_MODDELAYRAND], 0.0, 1.0);
 		const double r3 = bidist (rnd);
-		freq = 10.0 * 2.0 * M_PI * pow (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_FLANGER_FREQ] + r3 * params[SLOTS_OPTPARAMS + FX_FLANGER_FREQRAND], 0.0, 1.0) : 0.1, 3.0);
+		freq = 10.0 * 2.0 * M_PI * pow (LIMIT (params[SLOTS_OPTPARAMS + FX_FLANGER_FREQ] + r3 * params[SLOTS_OPTPARAMS + FX_FLANGER_FREQRAND], 0.0, 1.0), 3.0);
 		const double r4 = bidist (rnd);
-		phase = 2.0 * M_PI * (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_FLANGER_PHASE] + r4 * params[SLOTS_OPTPARAMS + FX_FLANGER_PHASERAND], 0.0, 1.0) : 0.0);
+		phase = 2.0 * M_PI * LIMIT (params[SLOTS_OPTPARAMS + FX_FLANGER_PHASE] + r4 * params[SLOTS_OPTPARAMS + FX_FLANGER_PHASERAND], 0.0, 1.0);
 		const double r5 = bidist (rnd);
-		feedback = 2.0 * (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_FLANGER_FEEDBACK] + r5 * params[SLOTS_OPTPARAMS + FX_FLANGER_FEEDBACKRAND], 0.0, 1.0) : 0.0) - 1.0;
-		framesPerStep = (framesPerStepPtr ? *framesPerStepPtr : 24000.0);
+		feedback = 2.0 * LIMIT (params[SLOTS_OPTPARAMS + FX_FLANGER_FEEDBACK] + r5 * params[SLOTS_OPTPARAMS + FX_FLANGER_FEEDBACKRAND], 0.0, 1.0) - 1.0;
+		framesPerStep = *framesPerStepPtr;
 	}
 
 	virtual Stereo play (const double position, const double size, const double mixf) override
 	{
-		const Stereo s0 = (buffer && (*buffer) ? (**buffer)[0] : Stereo {0, 0});
-		if ((!playing) || (!pads)) return s0;
+		const Stereo s0 = (**buffer)[0];
+		if (!playing) return s0;
 
 		const double delayL = minDelay + (0.5 - 0.5 * cos (freq * position * framesPerStep / samplerate)) * modDelay;
 		const double delayR = minDelay + (0.5 - 0.5 * cos (phase + freq * position * framesPerStep / samplerate)) * modDelay;
 		const long frameL = (delayL * samplerate);
 		const long frameR = (delayR * samplerate);
-		Stereo s1 = (buffer && (*buffer) ? Stereo ((**buffer)[frameL].left, (**buffer)[frameR].right) : Stereo {0, 0});
+		Stereo s1 = Stereo ((**buffer)[frameL].left, (**buffer)[frameR].right);
 		s1 = mix (s0, s1, position, size, mixf);
 		Stereo s2 = s1;
-		if (buffer && (*buffer)) (**buffer)[0] = s2.mix (s0, 1.0f - feedback);
+		(**buffer)[0] = s2.mix (s0, 1.0f - feedback);
 		return s1;
 	}
 

@@ -31,7 +31,7 @@
 class FxBalance : public Fx
 {
 public:
-	FxBalance () : FxBalance (nullptr, nullptr, nullptr) {}
+	FxBalance () = delete;
 
 	FxBalance (RingBuffer<Stereo>** buffer, float* params, Pad* pads) :
 		Fx (buffer, params, pads),
@@ -42,23 +42,13 @@ public:
 	{
 		Fx::init (position);
 		const double r = bidist (rnd);
-		balance =
-		(
-			params ?
-			LIMIT
-			(
-				2.0 * (params[SLOTS_OPTPARAMS + FX_BALANCE_BALANCE] + r * params[SLOTS_OPTPARAMS + FX_BALANCE_BALANCERAND]) - 1.0,
-				-1.0,
-				1.0
-			) :
-			0.0
-		);
+		balance = LIMIT (2.0 * (params[SLOTS_OPTPARAMS + FX_BALANCE_BALANCE] + r * params[SLOTS_OPTPARAMS + FX_BALANCE_BALANCERAND]) - 1.0, -1.0, 1.0);
 	}
 
 	virtual Stereo play (const double position, const double size, const double mixf) override
 	{
-		const Stereo s0 = (buffer && (*buffer) ? (**buffer)[0] : Stereo {0, 0});
-		if ((!playing) || (!pads)) return s0;
+		const Stereo s0 = (**buffer)[0];
+		if (!playing) return s0;
 
 		const Stereo s1 = Stereo
 		{

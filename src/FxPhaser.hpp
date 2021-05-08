@@ -40,7 +40,7 @@
 class FxPhaser : public Fx
 {
 public:
-	FxPhaser () : FxPhaser (nullptr, nullptr, nullptr, nullptr, 24000) {}
+	FxPhaser () = delete;
 
 	FxPhaser (RingBuffer<Stereo>** buffer, float* params, Pad* pads, double* framesPerStep, double rate) :
 		Fx (buffer, params, pads),
@@ -55,35 +55,37 @@ public:
 		steps (5),
 		minDelta (0),
 		modDelta (0)
-	{}
+	{
+		if (!framesPerStep) throw std::invalid_argument ("Fx initialized with framesPerStep nullptr");
+	}
 
 	virtual void init (const double position) override
 	{
 		Fx::init (position);
 		const double r1 = bidist (rnd);
-		loFreq = 20.0 + 19980.0 * pow (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_PHASER_LOFREQ] + r1 * params[SLOTS_OPTPARAMS + FX_PHASER_LOFREQRAND], 0.0, 1.0) : 0.0, 3.0);
+		loFreq = 20.0 + 19980.0 * pow (LIMIT (params[SLOTS_OPTPARAMS + FX_PHASER_LOFREQ] + r1 * params[SLOTS_OPTPARAMS + FX_PHASER_LOFREQRAND], 0.0, 1.0), 3.0);
 		const double r2 = bidist (rnd);
-		hiFreq = 20.0 + 19980.0 * pow (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_PHASER_HIFREQ] + r2 * params[SLOTS_OPTPARAMS + FX_PHASER_HIFREQRAND], 0.0, 1.0) : 1.0, 3.0);
+		hiFreq = 20.0 + 19980.0 * pow (LIMIT (params[SLOTS_OPTPARAMS + FX_PHASER_HIFREQ] + r2 * params[SLOTS_OPTPARAMS + FX_PHASER_HIFREQRAND], 0.0, 1.0), 3.0);
 		const double r3 = bidist (rnd);
-		modRate = 10.0 * 2.0 * M_PI * pow (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_PHASER_MODRATE] + r3 * params[SLOTS_OPTPARAMS + FX_PHASER_MODRATERAND], 0.0, 1.0) : 0.1, 3.0);
+		modRate = 10.0 * 2.0 * M_PI * pow (LIMIT (params[SLOTS_OPTPARAMS + FX_PHASER_MODRATE] + r3 * params[SLOTS_OPTPARAMS + FX_PHASER_MODRATERAND], 0.0, 1.0), 3.0);
 		const double r4 = bidist (rnd);
-		modPhase = 2.0 * M_PI * (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_PHASER_MODPHASE] + r4 * params[SLOTS_OPTPARAMS + FX_PHASER_MODPHASERAND], 0.0, 1.0) : 0.0);
+		modPhase = 2.0 * M_PI * LIMIT (params[SLOTS_OPTPARAMS + FX_PHASER_MODPHASE] + r4 * params[SLOTS_OPTPARAMS + FX_PHASER_MODPHASERAND], 0.0, 1.0);
 		const double r5 = bidist (rnd);
-		feedback = 2.0 * (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_PHASER_FEEDBACK] + r5 * params[SLOTS_OPTPARAMS + FX_PHASER_FEEDBACKRAND], 0.0, 1.0) : 0.0) - 1.0;
-		steps = 1.0 + (params ? LIMIT (10.0 * params[SLOTS_OPTPARAMS + FX_PHASER_STEPS], 0.0, 9.0) : 4.0);
+		feedback = 2.0 * LIMIT (params[SLOTS_OPTPARAMS + FX_PHASER_FEEDBACK] + r5 * params[SLOTS_OPTPARAMS + FX_PHASER_FEEDBACKRAND], 0.0, 1.0) - 1.0;
+		steps = 1.0 + LIMIT (10.0 * params[SLOTS_OPTPARAMS + FX_PHASER_STEPS], 0.0, 9.0);
 
 		minDelta = 0.5 * loFreq / samplerate;
 		modDelta = (hiFreq > loFreq? 0.5 * hiFreq / samplerate - minDelta : 0.0);
 		std::fill (lFilters, lFilters + FX_PHASER_MAXSTEPS, AllPassFilter ());
 		std::fill (rFilters, rFilters + FX_PHASER_MAXSTEPS, AllPassFilter ());
 		lastSample = Stereo (0, 0);
-		framesPerStep = (framesPerStepPtr ? *framesPerStepPtr : 24000.0);
+		framesPerStep = *framesPerStepPtr;
 	}
 
 	virtual Stereo play (const double position, const double size, const double mixf) override
 	{
-		const Stereo s0 = (buffer && (*buffer) ? (**buffer)[0] : Stereo {0, 0});
-		if ((!playing) || (!pads)) return s0;
+		const Stereo s0 = (**buffer)[0];
+		if (!playing) return s0;
 
 		const double delayL = minDelta + (0.5 - 0.5 * cos (modRate * position * framesPerStep / samplerate)) * modDelta;
 		const double delayR = minDelta + (0.5 - 0.5 * cos (modPhase + modRate * position * framesPerStep / samplerate)) * modDelta;

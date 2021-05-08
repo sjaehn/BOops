@@ -35,33 +35,35 @@
 class FxWowFlutter : public Fx
 {
 public:
-	FxWowFlutter () : FxWowFlutter (nullptr, nullptr, nullptr, nullptr) {}
+	FxWowFlutter () = delete;
 
 	FxWowFlutter (RingBuffer<Stereo>** buffer, float* params, Pad* pads, double* framesPerStep) :
 		Fx (buffer, params, pads),
 		framesPerStepPtr (framesPerStep),
 		framesPerStep (24000),
 		wowDepth (0.0f), wowRate (1.0f), flutterDepth (0.0f), flutterRate (1.0f)
-	{}
+	{
+		if (!framesPerStep) throw std::invalid_argument ("Fx initialized with framesPerStep nullptr");
+	}
 
 	virtual void init (const double position) override
 	{
 		Fx::init (position);
 		const double r1 = bidist (rnd);
-		wowDepth = 0.01 * (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_WOWFLUTTER_WOWDEPTH] + r1 * params[SLOTS_OPTPARAMS + FX_WOWFLUTTER_WOWDEPTHRAND], 0.0, 1.0) : 0.5);
+		wowDepth = 0.01 * LIMIT (params[SLOTS_OPTPARAMS + FX_WOWFLUTTER_WOWDEPTH] + r1 * params[SLOTS_OPTPARAMS + FX_WOWFLUTTER_WOWDEPTHRAND], 0.0, 1.0);
 		const double r2 = bidist (rnd);
-		wowRate = 0.0625 + 0.9375 * (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_WOWFLUTTER_WOWRATE] + r2 * params[SLOTS_OPTPARAMS + FX_WOWFLUTTER_WOWRATERAND], 0.0, 1.0) : 1.0);
+		wowRate = 0.0625 + 0.9375 * LIMIT (params[SLOTS_OPTPARAMS + FX_WOWFLUTTER_WOWRATE] + r2 * params[SLOTS_OPTPARAMS + FX_WOWFLUTTER_WOWRATERAND], 0.0, 1.0);
 		const double r3 = bidist (rnd);
-		flutterDepth = 0.01 * (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_WOWFLUTTER_FLUTTERDEPTH] + r3 * params[SLOTS_OPTPARAMS + FX_WOWFLUTTER_FLUTTERDEPTHRAND], 0.0, 1.0) : 0.1);
+		flutterDepth = 0.01 * LIMIT (params[SLOTS_OPTPARAMS + FX_WOWFLUTTER_FLUTTERDEPTH] + r3 * params[SLOTS_OPTPARAMS + FX_WOWFLUTTER_FLUTTERDEPTHRAND], 0.0, 1.0);
 		const double r4 = bidist (rnd);
-		flutterRate = 1.0 + 15.0 * (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_WOWFLUTTER_FLUTTERRATE] + r4 * params[SLOTS_OPTPARAMS + FX_WOWFLUTTER_FLUTTERRATERAND], 0.0, 1.0) : 0.2);
-		framesPerStep = (framesPerStepPtr ? *framesPerStepPtr : 24000.0);
+		flutterRate = 1.0 + 15.0 * LIMIT (params[SLOTS_OPTPARAMS + FX_WOWFLUTTER_FLUTTERRATE] + r4 * params[SLOTS_OPTPARAMS + FX_WOWFLUTTER_FLUTTERRATERAND], 0.0, 1.0);
+		framesPerStep = *framesPerStepPtr;
 	}
 
 	virtual Stereo play (const double position, const double padsize, const double mixf) override
 	{
-		const Stereo s0 = (buffer && (*buffer) ? (**buffer)[0] : Stereo {0, 0});
-		if ((!playing) || (!pads)) return s0;
+		const Stereo s0 = (**buffer)[0];
+		if (!playing) return s0;
 
 		const double wow = (0.5 - 0.5 * cos (2 * M_PI * position * wowRate)) * wowDepth;
 		const double flutter = (0.5 - 0.5 * cos (2 * M_PI * position * flutterRate)) * flutterDepth;

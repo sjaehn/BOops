@@ -30,7 +30,7 @@
 class FxDecimate : public Fx
 {
 public:
-	FxDecimate () : FxDecimate (nullptr, nullptr, nullptr) {}
+	FxDecimate () = delete;
 
 	FxDecimate (RingBuffer<Stereo>** buffer, float* params, Pad* pads) :
 		Fx (buffer, params, pads),
@@ -41,17 +41,7 @@ public:
 	{
 		Fx::init (position);
 		const double r = bidist (rnd);
-		decimate =
-		(
-			params ?
-			LIMIT
-			(
-				0.01 + 0.99 * (params[SLOTS_OPTPARAMS + FX_DECIMATE_DECIMATE] + r * params[SLOTS_OPTPARAMS + FX_DECIMATE_DECIMATERAND]),
-				0.01,
-				1.0
-			) :
-			1.0
-		);
+		decimate = LIMIT (0.01 + 0.99 * (params[SLOTS_OPTPARAMS + FX_DECIMATE_DECIMATE] + r * params[SLOTS_OPTPARAMS + FX_DECIMATE_DECIMATERAND]), 0.01, 1.0);
 		stack = Stereo {0.0, 0.0};
 		live = Stereo {0.0, 0.0};
 		count = 0;
@@ -59,12 +49,12 @@ public:
 
 	virtual Stereo play (const double position, const double size, const double mixf) override
 	{
-		const Stereo s0 = (buffer && (*buffer) ? (**buffer)[0] : Stereo {0, 0});
-		if ((!playing) || (!pads)) return s0;
+		const Stereo s0 = (**buffer)[0];
+		if (!playing) return s0;
 
 		if (count + 1.0 >= 1.0 / decimate)
 		{
-			double c0 = 1.0/ decimate - count;
+			double c0 = 1.0 / decimate - count;
 			stack += s0 * c0;
 			live = stack * decimate;
 			count = 1.0 - c0;

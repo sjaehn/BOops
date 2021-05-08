@@ -34,7 +34,7 @@
 class FxOops : public Fx
 {
 public:
-	FxOops () : FxOops (nullptr, nullptr, nullptr, nullptr, 48000, nullptr) {}
+	FxOops () = delete;
 
 	FxOops (RingBuffer<Stereo>** buffer, float* params, Pad* pads, double* framesPerStep, double rate, const char* pluginpath) :
 		Fx (buffer, params, pads),
@@ -43,6 +43,8 @@ public:
 		framesPerStep (24000),
 		amp (0.0f), pitch (0.0f), offset (0.0)
 	{
+		if (!framesPerStep) throw std::invalid_argument ("Fx initialized with framesPerStep nullptr");
+
 		if (pluginpath)
 		{
 			char samplepath[1024] = {0};
@@ -64,17 +66,17 @@ public:
 	{
 		Fx::init (position);
 		const double r1 = bidist (rnd);
-		amp = (params ? LIMIT (2.0 * (params[SLOTS_OPTPARAMS + FX_OOPSAMP] + r1 * params[SLOTS_OPTPARAMS + FX_OOPSAMPRAND]), 0.0, 2.0) : 1.0);
+		amp = LIMIT (2.0 * (params[SLOTS_OPTPARAMS + FX_OOPSAMP] + r1 * params[SLOTS_OPTPARAMS + FX_OOPSAMPRAND]), 0.0, 2.0);
 		const double r2 = bidist (rnd);
-		pitch = pow (2.0, params ? LIMIT (2.0 * (params[SLOTS_OPTPARAMS + FX_OOPSPITCH] + r2 * params[SLOTS_OPTPARAMS + FX_OOPSPITCHRAND]) - 1.0, -1.0, 1.0) : 0.0);
-		framesPerStep = (framesPerStepPtr ? *framesPerStepPtr : 24000.0);
+		pitch = pow (2.0, LIMIT (2.0 * (params[SLOTS_OPTPARAMS + FX_OOPSPITCH] + r2 * params[SLOTS_OPTPARAMS + FX_OOPSPITCHRAND]) - 1.0, -1.0, 1.0));
+		framesPerStep = *framesPerStepPtr;
 		offset = (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_OOPSOFFSET] + r1 * params[SLOTS_OPTPARAMS + FX_OOPSOFFSETRAND], 0.0, 1.0) : 0.0);
 	}
 
 	virtual Stereo play (const double position, const double size, const double mixf) override
 	{
-		const Stereo s0 = (buffer && (*buffer) ? (**buffer)[0] : Stereo {0, 0});
-		if ((!playing) || (!pads)) return s0;
+		const Stereo s0 = (**buffer)[0];
+		if (!playing) return s0;
 
 		Stereo s1 = Stereo (0, 0);
 		if (position > offset)

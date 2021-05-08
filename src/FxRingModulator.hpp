@@ -32,7 +32,7 @@
 class FxRingModulator : public Fx
 {
 public:
-	FxRingModulator () : FxRingModulator (nullptr, nullptr, nullptr, nullptr, 24000) {}
+	FxRingModulator () = delete;
 
 	FxRingModulator (RingBuffer<Stereo>** buffer, float* params, Pad* pads, double* framesPerStep, double rate) :
 		Fx (buffer, params, pads),
@@ -40,23 +40,25 @@ public:
 		framesPerStepPtr (framesPerStep),
 		framesPerStep (24000),
 		ratio (0.5f), freq (100.0), env (SINE_WAVE)
-	{}
+	{
+		if (!framesPerStep) throw std::invalid_argument ("Fx initialized with framesPerStep nullptr");
+	}
 
 	virtual void init (const double position) override
 	{
 		Fx::init (position);
 		const double r1 = bidist (rnd);
-		ratio = (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_RINGMOD_RATIO] + r1 * params[SLOTS_OPTPARAMS + FX_RINGMOD_RATIORAND], 0.0, 1.0) : 0.5);
+		ratio = LIMIT (params[SLOTS_OPTPARAMS + FX_RINGMOD_RATIO] + r1 * params[SLOTS_OPTPARAMS + FX_RINGMOD_RATIORAND], 0.0, 1.0);
 		const double r2 = bidist (rnd);
-		freq = 20000.0f * pow (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_RINGMOD_FREQ] + r2 * params[SLOTS_OPTPARAMS + FX_RINGMOD_FREQRAND], 0.0, 1.0) : 1.0, 4.0);
+		freq = 20000.0f * pow (LIMIT (params[SLOTS_OPTPARAMS + FX_RINGMOD_FREQ] + r2 * params[SLOTS_OPTPARAMS + FX_RINGMOD_FREQRAND], 0.0, 1.0), 4.0);
 		env = BOopsWaveformIndex (LIMIT (int (round (params[SLOTS_OPTPARAMS + FX_RINGMOD_ENV] * 8)), 0, 4));
-		framesPerStep = (framesPerStepPtr ? *framesPerStepPtr : 24000.0);
+		framesPerStep = *framesPerStepPtr;
 	}
 
 	virtual Stereo play (const double position, const double size, const double mixf) override
 	{
-		const Stereo s0 = (buffer && (*buffer) ? (**buffer)[0] : Stereo {0, 0});
-		if ((!playing) || (!pads)) return s0;
+		const Stereo s0 = (**buffer)[0];
+		if (!playing) return s0;
 
 		float f = 0.0f;
 		double t = position * framesPerStep / rate;

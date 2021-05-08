@@ -29,26 +29,29 @@
 class FxTapeSpeed : public Fx
 {
 public:
-	FxTapeSpeed () : FxTapeSpeed (nullptr, nullptr, nullptr, nullptr) {}
+	FxTapeSpeed () = delete;
 
 	FxTapeSpeed (RingBuffer<Stereo>** buffer, float* params, Pad* pads, double* framesPerStep) :
 		Fx (buffer, params, pads),
 		framesPerStepPtr (framesPerStep),
 		framesPerStep (24000),
-		speed (1.0) {}
+		speed (1.0)
+	{
+		if (!framesPerStep) throw std::invalid_argument ("Fx initialized with framesPerStep nullptr");
+	}
 
 	virtual void init (const double position) override
 	{
 		Fx::init (position);
 		const double r = bidist (rnd);
-		speed = (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_TAPESPEED_SPEED] + r * params[SLOTS_OPTPARAMS + FX_TAPESPEED_SPEEDRAND], 0.0, 1.0) : 1.0);
-		framesPerStep = (framesPerStepPtr ? *framesPerStepPtr : 24000.0);
+		speed = LIMIT (params[SLOTS_OPTPARAMS + FX_TAPESPEED_SPEED] + r * params[SLOTS_OPTPARAMS + FX_TAPESPEED_SPEEDRAND], 0.0, 1.0);
+		framesPerStep = *framesPerStepPtr;
 	}
 
 	virtual Stereo play (const double position, const double size, const double mixf) override
 	{
-		const Stereo s0 = (buffer && (*buffer) ? (**buffer)[0] : Stereo {0, 0});
-		if ((!playing) || (!pads)) return s0;
+		const Stereo s0 = (**buffer)[0];
+		if (!playing) return s0;
 
 		const double frame = (1.0 - speed) * framesPerStep * position;
 		Stereo s1 = getSample (frame);

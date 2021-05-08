@@ -37,7 +37,7 @@
 class FxWah : public Fx
 {
 public:
-	FxWah () : FxWah (nullptr, nullptr, nullptr, 24000, nullptr) {}
+	FxWah () = delete;
 
 	FxWah (RingBuffer<Stereo>** buffer, float* params, Pad* pads, double rate, Shape<SHAPE_MAXNODES>* shape) :
 		Fx (buffer, params, pads),
@@ -49,19 +49,21 @@ public:
 		order (2),
 		reach (1.0),
 		filter (48000, 20, 20000, 8)
-	{}
+	{
+		if (!shape) throw std::invalid_argument ("Fx initialized with shape nullptr");
+	}
 
 	virtual void init (const double position) override
 	{
 		Fx::init (position);
 		const double r3 = bidist (rnd);
-		cFreq = 20.0 + 19980.0 * pow (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_WAH_CFREQ] + r3 * params[SLOTS_OPTPARAMS + FX_WAH_CFREQRAND], 0.0, 1.0) : 0.5, 3.0);
+		cFreq = 20.0 + 19980.0 * pow (LIMIT (params[SLOTS_OPTPARAMS + FX_WAH_CFREQ] + r3 * params[SLOTS_OPTPARAMS + FX_WAH_CFREQRAND], 0.0, 1.0), 3.0);
 		const double r4 = bidist (rnd);
 		depth = (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_WAH_DEPTH] + r4 * params[SLOTS_OPTPARAMS + FX_WAH_DEPTHRAND], 0.0, 1.0) : 0.5);
 		const double r5 = bidist (rnd);
 		width = (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_WAH_WIDTH] + r5 * params[SLOTS_OPTPARAMS + FX_WAH_WIDTHRAND], 0.0, 1.0) : 0.1);
-		order = 2 * int (params ? LIMIT (1.0 + 8.0 * params[SLOTS_OPTPARAMS + FX_WAH_ORDER], 0, 8) : 2);
-		reach = 1.0 + (params ? LIMIT (32.0 * params [SLOTS_OPTPARAMS + FX_WAH_REACH], 0, 31) : 0);
+		order = 2 * int (LIMIT (1.0 + 8.0 * params[SLOTS_OPTPARAMS + FX_WAH_ORDER], 0, 8));
+		reach = 1.0 + LIMIT (32.0 * params [SLOTS_OPTPARAMS + FX_WAH_REACH], 0, 31);
 
 		const float m = (shape ? shape->getMapValue (0): 0.0);
 		const float f = cFreq * (1 + depth * m);
@@ -70,10 +72,10 @@ public:
 
 	virtual Stereo play (const double position, const double size, const double mixf) override
 	{
-		const Stereo s0 = (buffer && (*buffer) ? (**buffer)[0] : Stereo {0, 0});
-		if ((!playing) || (!pads)) return s0;
+		const Stereo s0 = (**buffer)[0];
+		if (!playing) return s0;
 
-		const float m = (shape ? shape->getMapValue (fmod (position / reach, 1.0)): 0.0);
+		const float m = shape->getMapValue (fmod (position / reach, 1.0));
 		const float f = cFreq * (1.0f + depth * m);
 		const float fmin = LIMIT (f * (1.0f - width), 0.0f, 20000.0f);
 		const float fmax = LIMIT (f * (1.0f + width), 0.0f, 20000.0f);

@@ -26,27 +26,29 @@
 class FxReverser : public Fx
 {
 public:
-	FxReverser () : FxReverser (nullptr, nullptr, nullptr, 0) {}
+	FxReverser () = delete;
 
 	FxReverser (RingBuffer<Stereo>** buffer, float* params, Pad* pads, double* framesPerStep) :
 		Fx (buffer, params, pads),
 		framesPerStepPtr (framesPerStep),
 		framesPerStep (24000)
-	{}
+	{
+		if (!framesPerStep) throw std::invalid_argument ("Fx initialized with framesPerStep nullptr");
+	}
 
 	virtual void init (const double position) override
 	{
 		Fx::init (position);
-		framesPerStep = (framesPerStepPtr ? *framesPerStepPtr : 24000.0);
+		framesPerStep = *framesPerStepPtr;
 	}
 
 	virtual Stereo play (const double position, const double size, const double mixf) override
 	{
-		const Stereo s0 = (buffer && (*buffer) ? (**buffer)[0] : Stereo {0, 0});
-		if ((!playing) || (!pads)) return s0;
+		const Stereo s0 = (**buffer)[0];
+		if (!playing) return s0;
 
 		const long frame = 2.0 * framesPerStep * position;
-		Stereo s1 = (buffer && (*buffer) ? (**buffer)[frame] : Stereo {0, 0});
+		Stereo s1 = (**buffer)[frame];
 		return mix (s0, s1, position, size, mixf);
 	}
 

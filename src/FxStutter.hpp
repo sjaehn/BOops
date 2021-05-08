@@ -29,27 +29,29 @@
 class FxStutter : public Fx
 {
 public:
-	FxStutter () : FxStutter (nullptr, nullptr, nullptr, nullptr) {}
+	FxStutter () = delete;
 
 	FxStutter (RingBuffer<Stereo>** buffer, float* params, Pad* pads, double* framesPerStep) :
 		Fx (buffer, params, pads),
 		framesPerStepPtr (framesPerStep), framesPerStep (24000), framesPerStutter (24000),
 		stutters (1), smoothing (0.1f)
-	{}
+	{
+		if (!framesPerStep) throw std::invalid_argument ("Fx initialized with framesPerStep nullptr");
+	}
 
 	virtual void init (const double position) override
 	{
 		Fx::init (position);
-		framesPerStep = (framesPerStepPtr ? *framesPerStepPtr : 24000.0);
-		smoothing = (params ? params[SLOTS_OPTPARAMS + FX_STUTTER_SMOOTH] : 0.1f);
-		stutters = (params ? LIMIT (2.0 + 7.0 * params[SLOTS_OPTPARAMS + FX_STUTTER_STUTTERS], 2, 8) : 4);
+		framesPerStep = *framesPerStepPtr;
+		smoothing = params[SLOTS_OPTPARAMS + FX_STUTTER_SMOOTH];
+		stutters = LIMIT (2.0 + 7.0 * params[SLOTS_OPTPARAMS + FX_STUTTER_STUTTERS], 2, 8);
 		framesPerStutter = framesPerStep / double (stutters);
 	}
 
 	virtual Stereo play (const double position, const double size, const double mixf) override
 	{
-		const Stereo s0 = (buffer && (*buffer) ? (**buffer)[0] : Stereo {0, 0});
-		if ((!playing) || (!pads)) return s0;
+		const Stereo s0 = (**buffer)[0];
+		if (!playing) return s0;
 
 		const long nr = position * double (stutters);
 		const double frac = fmod (position, 1.0 / double (stutters));

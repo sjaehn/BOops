@@ -44,7 +44,7 @@
 class FxDistortion : public Fx
 {
 public:
-	FxDistortion () : FxDistortion (nullptr, nullptr, nullptr) {}
+	FxDistortion () = delete;
 
 	FxDistortion (RingBuffer<Stereo>** buffer, float* params, Pad* pads) :
 		Fx (buffer, params, pads),
@@ -55,15 +55,15 @@ public:
 		Fx::init (position);
 		method = BOopsDistortionIndex (LIMIT (int (round (params[SLOTS_OPTPARAMS + FX_DISTORTION_METHOD] * 8)), 0, 4));
 		const double r1 = bidist (rnd);
-		drive = DB2CO (-30.0 + 100.0 * (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_DISTORTION_DRIVE] + r1 * params[SLOTS_OPTPARAMS + FX_DISTORTION_DRIVERAND], 0.00, 1.0) : 0.5));
+		drive = DB2CO (-30.0 + 100.0 * LIMIT (params[SLOTS_OPTPARAMS + FX_DISTORTION_DRIVE] + r1 * params[SLOTS_OPTPARAMS + FX_DISTORTION_DRIVERAND], 0.00, 1.0));
 		const double r2 = bidist (rnd);
-		level = DB2CO (-70.0 + 100.0 * (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_DISTORTION_LEVEL] + r2 * params[SLOTS_OPTPARAMS + FX_DISTORTION_LEVELRAND], 0.0, 1.0) : 0.5));
+		level = DB2CO (-70.0 + 100.0 * LIMIT (params[SLOTS_OPTPARAMS + FX_DISTORTION_LEVEL] + r2 * params[SLOTS_OPTPARAMS + FX_DISTORTION_LEVELRAND], 0.0, 1.0));
 	}
 
 	virtual Stereo play (const double position, const double size, const double mixf) override
 	{
-		const Stereo s0 = (buffer && (*buffer) ? (**buffer)[0] : Stereo {0, 0});
-		if ((!playing) || (!pads)) return s0;
+		const Stereo s0 = (**buffer)[0];
+		if (!playing) return s0;
 
 		double l = s0.left * drive / level;
 		double r = s0.right * drive / level;

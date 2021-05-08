@@ -32,7 +32,7 @@
 class FxChopper : public Fx
 {
 public:
-	FxChopper () : FxChopper (nullptr, nullptr, nullptr) {}
+	FxChopper () = delete;
 
 	FxChopper (RingBuffer<Stereo>** buffer, float* params, Pad* pads) :
 		Fx (buffer, params, pads),
@@ -42,28 +42,20 @@ public:
 	virtual void init (const double position) override
 	{
 		Fx::init (position);
-		if (params)
+		nr = LIMIT (1 + 8.0f * params[SLOTS_OPTPARAMS + FX_CHOPPER_NR], 1, 8);
+		smoothing = params[SLOTS_OPTPARAMS + FX_CHOPPER_SMOOTH];
+		for (int i = 0; i < nr; ++i)
 		{
-			nr = LIMIT (1 + 8.0f * params[SLOTS_OPTPARAMS + FX_CHOPPER_NR], 1, 8);
-			smoothing = params[SLOTS_OPTPARAMS + FX_CHOPPER_SMOOTH];
-			for (int i = 0; i < nr; ++i)
-			{
-				const double r = bidist (rnd);
-				chops[i] = LIMIT
-				(
-					params[SLOTS_OPTPARAMS + FX_CHOPPER_STEPS + i] + r * params[SLOTS_OPTPARAMS + FX_CHOPPER_STEPRAND],
-					0.0,
-					1.0
-				);
-			}
-			reach = 1.0 + LIMIT (32.0 * params [SLOTS_OPTPARAMS + FX_CHOPPER_REACH], 0, 31);
+			const double r = bidist (rnd);
+			chops[i] = LIMIT (params[SLOTS_OPTPARAMS + FX_CHOPPER_STEPS + i] + r * params[SLOTS_OPTPARAMS + FX_CHOPPER_STEPRAND], 0.0, 1.0);
 		}
+		reach = 1.0 + LIMIT (32.0 * params [SLOTS_OPTPARAMS + FX_CHOPPER_REACH], 0, 31);
 	}
 
 	virtual Stereo play (const double position, const double size, const double mixf) override
 	{
-		const Stereo s0 = (buffer && (*buffer) ? (**buffer)[0] : Stereo {0, 0});
-		if ((!playing) || (!pads)) return s0;
+		const Stereo s0 = (**buffer)[0];
+		if (!playing) return s0;
 
 		const int p = nr * fmod (position / reach, 1.0);
 		const double frac = double (nr) * fmod (position / reach, 1.0) - double (p);

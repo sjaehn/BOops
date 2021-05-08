@@ -31,30 +31,33 @@
 class FxTapeStop : public Fx
 {
 public:
-	FxTapeStop () : FxTapeStop (nullptr, nullptr, nullptr, 0) {}
+	FxTapeStop () = delete;
 
 	FxTapeStop (RingBuffer<Stereo>** buffer, float* params, Pad* pads, double* framesPerStep) :
 		Fx (buffer, params, pads),
 		framesPerStepPtr (framesPerStep),
 		framesPerStep (24000),
-		reach (1.0), order (1.0), r (0.0) {}
+		reach (1.0), order (1.0), r (0.0)
+	{
+		if (!framesPerStep) throw std::invalid_argument ("Fx initialized with framesPerStep nullptr");
+	}
 
 	virtual void init (const double position) override
 	{
 		Fx::init (position);
 		const double r1 = bidist (rnd);
-		reach = (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_TAPESTOP_REACH] + r1 * params[SLOTS_OPTPARAMS + FX_TAPESTOP_REACHRAND], 0.0, 1.0) : 1.0);
+		reach = LIMIT (params[SLOTS_OPTPARAMS + FX_TAPESTOP_REACH] + r1 * params[SLOTS_OPTPARAMS + FX_TAPESTOP_REACHRAND], 0.0, 1.0);
 		const int startPos = position;
 		r = reach * pads[startPos].size;
 		const double r2 = bidist (rnd);
-		order = (params ? LIMIT (1.0 + 9.0 * (params[SLOTS_OPTPARAMS + FX_TAPESTOP_ORDER] + r2 * params[SLOTS_OPTPARAMS + FX_TAPESTOP_ORDERRAND]), 1.0, 10.0) : 2.0);
-		framesPerStep = (framesPerStepPtr ? *framesPerStepPtr : 24000.0);
+		order = LIMIT (1.0 + 9.0 * (params[SLOTS_OPTPARAMS + FX_TAPESTOP_ORDER] + r2 * params[SLOTS_OPTPARAMS + FX_TAPESTOP_ORDERRAND]), 1.0, 10.0);
+		framesPerStep = *framesPerStepPtr;
 	}
 
 	virtual Stereo play (const double position, const double size, const double mixf) override
 	{
-		const Stereo s0 = (buffer && (*buffer) ? (**buffer)[0] : Stereo {0, 0});
-		if ((!playing) || (!pads)) return s0;
+		const Stereo s0 = (**buffer)[0];
+		if (!playing) return s0;
 
 		const double frame = (log (exp (order * position) + exp (order * reach) - 1) / order - reach) * framesPerStep;
 		Stereo s1 = getSample (frame);
