@@ -13,6 +13,15 @@
 @prefix rsz: <http://lv2plug.in/ns/ext/resize-port#> .
 @prefix pset: <http://lv2plug.in/ns/ext/presets#> .
 
+<https://www.jahnichen.de/plugins/lv2/BOops#pages>
+	a lv2:Parameter ;
+	rdfs:label "Playback pages" ;
+	rdfs:range atom:Vector .
+
+<https://www.jahnichen.de/plugins/lv2/BOops#pageProperties>
+	a lv2:Parameter ;
+	rdfs:label "Playback page properties" ;
+	rdfs:range atom:Object .
 
 <http://www.jahnichen.de/sjaehn#me>
 	a foaf:Person;
@@ -33,8 +42,8 @@
 	rdfs:comment "Glitch effect sequencer LV2 plugin." ;
   	doap:maintainer <http://www.jahnichen.de/sjaehn#me> ;
   	doap:license <http://usefulinc.com/doap/licenses/gpl> ;
-	lv2:microVersion 10 ;
-	lv2:minorVersion 2 ;
+	lv2:microVersion 0 ;
+	lv2:minorVersion 3 ;
 	lv2:optionalFeature lv2:hardRTCapable , state:threadSafeRestore ;
 	lv2:extensionData state:interface , work:interface ;
   	lv2:requiredFeature urid:map , work:schedule ;
@@ -46,7 +55,7 @@
 		atom:supports time:Position ;
 		atom:supports midi:MidiEvent ;
 		lv2:designation lv2:control ;
-		rsz:minimumSize 65535;
+		rsz:minimumSize 131072;
 		lv2:index 0 ;
 		lv2:symbol "control" ;
 		lv2:name "Control" ;
@@ -57,7 +66,7 @@
 		lv2:index 1 ;
 		lv2:symbol "notify" ;
 		lv2:name "Notify" ;
-		rsz:minimumSize 65535;
+		rsz:minimumSize 131072;
 	] , [
 		a lv2:AudioPort , lv2:InputPort ;
 		lv2:index 2 ;

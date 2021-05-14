@@ -21,6 +21,7 @@
 #ifndef CONTROLLERLIMITS_HPP_
 #define CONTROLLERLIMITS_HPP_
 
+#include "Definitions.hpp"
 #include "Ports.hpp"
 #include "Limit.hpp"
 
@@ -276,6 +277,15 @@ const Limit controllerLimits[NR_CONTROLLERS] =
 	{0.0, 1.0, 0.0},
 	{0.0, 1.0, 0.0},
 	{0.0, 1.0, 0.0}
+};
+
+
+const Limit pageControlLimits[NR_MIDI_CTRLS] =
+{
+	{0, 15, 1},
+	{0, 16, 1},
+	{0, 128, 1},
+	{0, 128, 1}
 };
 
 

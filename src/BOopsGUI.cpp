@@ -25,6 +25,7 @@
 #include "getURIs.hpp"
 #include "MessageDefinitions.hpp"
 #include "FxDefaults.hpp"
+#include "MidiDefs.hpp"
 
 #include "OptionWidget.hpp"
 #include "OptionSurprise.hpp"
@@ -54,32 +55,35 @@ inline double floorfrac (const double value) {return value - floor (value);}
 inline double floormod (const double numer, const double denom) {return numer - floor(numer / denom) * denom;}
 
 BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features, PuglNativeView parentWindow) :
-	Window (1240, 608, "B.Oops", parentWindow, true, PUGL_MODULE, 0),
+	Window (1240, 648, "B.Oops", parentWindow, true, PUGL_MODULE, 0),
 	controller (NULL), write_function (NULL),
 	pluginPath (bundle_path ? std::string (bundle_path) + ((strlen (bundle_path) > 0) && (bundle_path[strlen (bundle_path) - 1] != BUTILITIES_PATH_SLASH[0]) ? BUTILITIES_PATH_SLASH : "") : std::string ("")),
 	sz (1.0), bgImageSurface (nullptr),
 	samplePath ("."), sampleStart (0), sampleEnd (0), sampleLoop (false),
 	urids (), forge (),
-	pattern (),
+	pageAct (0),
+	pageMax (0),
+	pageOffset (0),
+	patterns {},
 	clipBoard (),
 	cursor (0), wheelScrolled (false), padPressed (false), deleteMode (false),
 	actSlot (-1), dragOrigin {-1, -1},
 
-	mContainer (0, 0, 1240, 608, "main"),
+	mContainer (0, 0, 1240, 648, "main"),
 	messageLabel (400, 45, 600, 20, "ctlabel", ""),
-	helpButton (1168, 18, 24, 24, "widget", "Help"),
-	ytButton (1198, 18, 24, 24, "widget", "Introduction"),
+	helpButton (1168, 18, 24, 24, "widget", BOOPS_LABEL_HELP),
+	ytButton (1198, 18, 24, 24, "widget", BOOPS_LABEL_TUTORIAL),
 
 	settingsContainer (10, 90, 1220, 40, "widget"),
-	playButton (8, 8, 24, 24, "widget", "Play"),
-	bypassButton (38, 8, 24, 24, "widget", "Bypass"),
-	stopButton (68, 8, 24, 24, "widget", "Stop"),
-	sourceListBox (120, 10, 80, 20, 80, 60, "menu", BItems::ItemList ({{0, "Stream"}, {1, "Sample"}})),
+	playButton (8, 8, 24, 24, "widget", BOOPS_LABEL_PLAY),
+	bypassButton (38, 8, 24, 24, "widget", BOOPS_LABEL_BYPASS),
+	stopButton (68, 8, 24, 24, "widget", BOOPS_LABEL_STOP),
+	sourceListBox (120, 10, 80, 20, 80, 60, "menu", BItems::ItemList ({{0, BOOPS_LABEL_STREAM}, {1, BOOPS_LABEL_SAMPLE}})),
 	loadButton (220, 10, 20, 20, "menu/button"),
-	sampleLabel (240, 0, 140, 8, "smlabel", "Sample"),
+	sampleLabel (240, 0, 140, 8, "smlabel", BOOPS_LABEL_SAMPLE),
 	sampleNameLabel (240, 10, 140, 20, "boxlabel", ""),
 	fileChooser (nullptr),
-	sampleAmpLabel (398, 0, 24, 8, "smlabel", "Amp"),
+	sampleAmpLabel (398, 0, 24, 8, "smlabel", BOOPS_LABEL_AMP),
 	sampleAmpDial (398, 8, 24, 24, "dial", 1.0, 0.0, 1.0, 0.0),
 	playModeListBox (440, 10, 120, 20, 120, 80, "menu", BItems::ItemList ({{0, "Autoplay"}, {2, "Host-controlled"} , {1, "MIDI-controlled"}})),
 	onMidiListBox (580, 10, 120, 20, 120, 80, "menu", BItems::ItemList ({{0, "Restart"}, {2, "Restart & sync"}, {1, "Continue"}})),
@@ -103,26 +107,60 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 	transportGateCancelButton (240, 80, 60, 20, "menu/button", "Cancel"),
 	transportGateKeys (NR_PIANO_KEYS, false),
 
-	slotsContainer (20, 130, 260, 288, "widget"),
+	slotsContainer (20, 170, 260, 288, "widget"),
 	insLine (nullptr),
 
-	monitor (290, 130, 820, 288, "monitor"),
-	padSurface (290, 130, 820, 288, "padsurface"),
-	editContainer (578, 426, 284, 24, "widget"),
+	pageWidget (288, 136, 824, 30, "widget", 0.0),
+	pageBackSymbol (0, 0, 10, 30, "tab", LEFTSYMBOL),
+	pageForwardSymbol (800, 0, 10, 30, "tab", RIGHTSYMBOL), // TODO xpos
 
-	gettingstartedContainer (20, 438, 1200, 150, "widget", pluginPath + "inc/None_bg.png"),
+	midiBox (390, 170, 510, 120, "screen", 0),
+	midiText (20, 10, 450, 20, "tlabel", BOOPS_LABEL_MIDI_PAGE " #1"),
+	midiStatusLabel (10, 30, 130, 20, "ylabel", BOOPS_LABEL_MIDI_STATUS),
+	midiStatusListBox
+	(
+		10, 50, 130, 20, 0, 20, 130, 100, "menu",
+		BItems::ItemList ({{0, BOOPS_LABEL_NONE}, {9, BOOPS_LABEL_NOTE_ON}, {8, BOOPS_LABEL_NOTE_OFF}, {11, BOOPS_LABEL_CC}}),
+		0
+	),
+	midiChannelLabel (150, 30, 50, 20, "ylabel", BOOPS_LABEL_CHANNEL),
+	midiChannelListBox
+	(
+		150, 50, 50, 20, 0, 20, 50, 360, "menu",
+		BItems::ItemList
+		({
+			{0, BOOPS_LABEL_ALL}, {1, "1"}, {2, "2"}, {3, "3"},
+			{4, "4"}, {5, "5"}, {6, "6"}, {7, "7"},
+			{8, "8"}, {9, "9"}, {10, "10"}, {11, "11"},
+			{12, "12"}, {13, "13"}, {14, "14"}, {15, "15"}, {16, "16"}
+		}),
+		0
+	),
+	midiNoteLabel (210, 30, 160, 20, "ylabel", BOOPS_LABEL_NOTE),
+	midiNoteListBox (210, 50, 160, 20, 0, 20, 160, 360, "menu", BItems::ItemList ({NOTELIST}), 128),
+	midiValueLabel (380, 30, 50, 20, "ylabel", BOOPS_LABEL_VALUE),
+	midiValueListBox (380, 50, 50, 20, 0, 20, 50, 360, "menu", BItems::ItemList ({VALLIST}), 128),
+	midiLearnButton (440, 50, 60, 20, "menu/button", BOOPS_LABEL_LEARN),
+	midiCancelButton (170, 90, 60, 20, "menu/button", BOOPS_LABEL_CANCEL),
+	midiOkButton (280, 90, 60, 20, "menu/button", BOOPS_LABEL_OK),
+
+	monitor (290, 170, 820, 288, "monitor"),
+	padSurface (290, 170, 820, 288, "padsurface"),
+	editContainer (578, 466, 284, 24, "widget"),
+
+	gettingstartedContainer (20, 478, 1200, 150, "widget", pluginPath + "inc/None_bg.png"),
 	gettingstartedText
 	(
 		20, 30, 960, 110, "lflabel",
 		"Getting started\n"
 		" \n"
-		"1) Add an effect by clicking on the [+] symbol.\n"
+		"1) Add an effect by clicking on the [+] symbol below \"Fx\".\n"
 		"2) Click on the menu symbol left to the effect name to change the effect\n"
 		"3) Set a pattern right to the effect name to define the timepoint(s) to apply the effect on the incoming audio signal.\n"
 		"4) Continue with point 1 to add another effects. Change the order of the effects by clicking on the respective symbol."
 	),
 
-	padParamContainer (1120, 130, 100, 288, "widget"),
+	padParamContainer (1120, 170, 100, 288, "widget"),
 	padGateLabel (00, 90, 100, 20, "ctlabel", "Probability"),
 	padGateDial (20, 30, 60, 60, "dial", 1.0, 0.0, 1.0, 0.0, "%1.2f"),
 	padMixLabel (20, 180, 60, 20, "ctlabel", "Mix"),
@@ -141,6 +179,17 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 		slots[i].playPad = PadToggleButton (240, 0, 20, 24, "pad0", PLAYSYMBOL);
 	}
 
+	// Init tabs
+	for (int i = 0; i < NR_PAGES; ++i)
+	{
+		tabs[i].container = BWidgets::Widget (i * 80, 0, 78, 30, "tab");
+		tabs[i].icon = BWidgets::ImageIcon (0, 8, 40, 20, "widget", pluginPath + "inc/page" + std::to_string (i + 1) + ".png");
+		tabs[i].playSymbol = SymbolWidget (40, 12, 20, 16, "symbol", PLAYSYMBOL);
+		tabs[i].midiSymbol = SymbolWidget (60, 10, 20, 20, "symbol", MIDISYMBOL);
+		for (int j = 0; j < NR_MIDI_CTRLS; ++j) tabs[i].symbols[j] = SymbolWidget (68 - j * 10, 2, 8, 8, "symbol", SymbolIndex(j));
+		for (BWidgets::ValueWidget& m : tabs[i].midiWidgets) m = BWidgets::ValueWidget (0, 0, 0, 0, "widget", 0);
+	}
+
 	// Init editButtons
 	for (int i = 0; i < EDIT_RESET; ++i) edit1Buttons[i] = HaloToggleButton (i * 30, 0, 24, 24, "widget", editLabels[i]);
 	for (int i = 0; i < MAXEDIT - EDIT_RESET; ++i) edit2Buttons[i] = HaloButton (170 + i * 30, 0, 24, 24, "widget", editLabels[i + EDIT_RESET]);
@@ -148,7 +197,7 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 	// Init slot params
 	for (int i = 0; i < NR_SLOTS; ++i)
 	{
-		slotParams[i].container = BWidgets::ImageIcon (20, 438, 1200, 150, "widget", "");
+		slotParams[i].container = BWidgets::ImageIcon (20, 478, 1200, 150, "widget", "");
 		slotParams[i].nrIcon = BWidgets::ImageIcon (20, 8, 40, 20, "widget", "");
 		slotParams[i].nameIcon = BWidgets::ImageIcon (60, 8, 160, 20, "widget", "");
 		slotParams[i].attackLabel = BWidgets::Label (190, 30, 20, 20, "ctlabel", "A");
@@ -223,6 +272,24 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 		s.effectsListbox.setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, effectChangedCallback);
 	}
 
+	pageWidget.setCallbackFunction(BEvents::VALUE_CHANGED_EVENT, valueChangedCallback);
+	pageBackSymbol.setCallbackFunction(BEvents::BUTTON_PRESS_EVENT, pageScrollClickedCallback);
+	pageForwardSymbol.setCallbackFunction(BEvents::BUTTON_PRESS_EVENT, pageScrollClickedCallback);
+
+	for (Tab& t : tabs)
+	{
+		t.container.setCallbackFunction(BEvents::BUTTON_PRESS_EVENT, pageClickedCallback);
+		t.playSymbol.setCallbackFunction(BEvents::BUTTON_PRESS_EVENT, pagePlayClickedCallback);
+		t.midiSymbol.setCallbackFunction(BEvents::BUTTON_PRESS_EVENT, midiSymbolClickedCallback);
+		for (SymbolWidget& s : t.symbols) s.setCallbackFunction(BEvents::BUTTON_PRESS_EVENT, pageSymbolClickedCallback);
+		for (BWidgets::ValueWidget& m : t.midiWidgets) m.setCallbackFunction(BEvents::VALUE_CHANGED_EVENT, valueChangedCallback);
+	}
+
+	midiLearnButton.setCallbackFunction(BEvents::VALUE_CHANGED_EVENT, midiButtonClickedCallback);
+	midiCancelButton.setCallbackFunction(BEvents::VALUE_CHANGED_EVENT, midiButtonClickedCallback);
+	midiOkButton.setCallbackFunction(BEvents::VALUE_CHANGED_EVENT, midiButtonClickedCallback);
+	midiStatusListBox.setCallbackFunction(BEvents::VALUE_CHANGED_EVENT, midiStatusChangedCallback);
+
 	for (int i = 0; i < EDIT_RESET; ++i) edit1Buttons[i].setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, edit1ChangedCallback);
 	for (int i = 0; i < MAXEDIT - EDIT_RESET; ++i) edit2Buttons[i].setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, edit2ChangedCallback);
 
@@ -237,7 +304,7 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 	transportGatePiano.setKeysToggleable (true);
 	transportGateContainer.hide();
 
-	pattern.clear();
+	for (Pattern& p : patterns) p.clear ();
 	padSurface.setDraggable (true);
 	padSurface.setCallbackFunction (BEvents::BUTTON_PRESS_EVENT, padsPressedCallback);
 	padSurface.setCallbackFunction (BEvents::BUTTON_RELEASE_EVENT, padsPressedCallback);
@@ -259,6 +326,26 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 		s.effectsListbox.hide();
 	}
 	for (int i = 1; i < NR_SLOTS; ++i) slots[i].container.hide();
+
+	midiBox.hide();
+	pageBackSymbol.setFocusable (false);
+	pageForwardSymbol.setFocusable (false);
+	pageBackSymbol.hide();
+	pageForwardSymbol.hide();
+	for (Tab& t : tabs)
+	{
+		t.playSymbol.setState (BColors::INACTIVE);
+		t.midiSymbol.setState (BColors::INACTIVE);
+		for (int j = 0; j < 4; ++j) t.symbols[j].setState (BColors::ACTIVE);
+		t.container.hide();
+		t.icon.setClickable (false);
+	}
+	tabs[0].container.rename ("activetab");
+	tabs[0].playSymbol.setState (BColors::ACTIVE);
+	tabs[0].symbols[CLOSESYMBOL].hide(); // -
+	tabs[0].symbols[LEFTSYMBOL].hide(); // <
+	tabs[0].symbols[RIGHTSYMBOL].hide(); // >
+	tabs[0].container.show();
 
 	for (SlotParam& s : slotParams)
 	{
@@ -311,6 +398,20 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 		s.container.add (s.effectsListbox);
 	}
 
+	mContainer.add (pageWidget);
+	pageWidget.add (pageBackSymbol);
+	pageWidget.add (pageForwardSymbol);
+	for (int i = NR_PAGES - 1; i >= 0; --i)
+	{
+		Tab& t = tabs[i];
+		t.container.add (t.icon);
+		for (SymbolWidget& s : t.symbols) t.container.add (s);
+		for (BWidgets::ValueWidget& m : t.midiWidgets) t.container.add (m);
+		t.container.add (t.playSymbol);
+		t.container.add (t.midiSymbol);
+		pageWidget.add (t.container);
+	}
+
 	for (HaloToggleButton& e1 : edit1Buttons) editContainer.add (e1);
 	for (HaloButton& e2 : edit2Buttons) editContainer.add (e2);
 
@@ -354,6 +455,20 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 	mContainer.add (helpButton);
 	mContainer.add (ytButton);
 	mContainer.add (messageLabel);
+
+	mContainer.add (midiBox);
+	midiBox.add (midiText);
+	midiBox.add (midiStatusLabel);
+	midiBox.add (midiStatusListBox);
+	midiBox.add (midiChannelLabel);
+	midiBox.add (midiChannelListBox);
+	midiBox.add (midiNoteLabel);
+	midiBox.add (midiNoteListBox);
+	midiBox.add (midiValueLabel);
+	midiBox.add (midiValueListBox);
+	midiBox.add (midiLearnButton);
+	midiBox.add (midiCancelButton);
+	midiBox.add (midiOkButton);
 
 	drawPad();
 	add (mContainer);
@@ -505,17 +620,18 @@ void BOopsGUI::port_event(uint32_t port, uint32_t buffer_size,
 			// Slot pattern notification
 			else if (obj->body.otype == urids.bOops_slotEvent)
 			{
-				LV2_Atom *oSl = NULL, *oPd = NULL;
+				LV2_Atom *oPg = NULL, *oSl = NULL, *oPd = NULL;
+				int page = 0;
 				int slot = -1;
 				lv2_atom_object_get(obj,
+						    urids.bOops_pageID, &oPg,
 						    urids.bOops_slot, &oSl,
 						    urids.bOops_pads, &oPd,
 						    NULL);
 
-				if (oSl && (oSl->type == urids.atom_Int))
-				{
-					slot = ((LV2_Atom_Int*)oSl)->body;
-				}
+				if (oPg && (oPg->type == urids.atom_Int)) page = LIMIT (((LV2_Atom_Int*)oPg)->body, 0, NR_PAGES -1);
+
+				if (oSl && (oSl->type == urids.atom_Int)) slot = ((LV2_Atom_Int*)oSl)->body;
 
 				if (oPd && (oPd->type == urids.atom_Vector) && (slot >= 0) && (slot < NR_SLOTS))
 				{
@@ -524,7 +640,7 @@ void BOopsGUI::port_event(uint32_t port, uint32_t buffer_size,
 					{
 						if (wheelScrolled)
 						{
-							pattern.store ();
+							patterns[page].store ();
 							wheelScrolled = false;
 						}
 
@@ -532,10 +648,10 @@ void BOopsGUI::port_event(uint32_t port, uint32_t buffer_size,
 						Pad* p = (Pad*)(&vec->body + 1);
 						for (unsigned int i = 0; (i < size) && (i < NR_STEPS); ++i)
 						{
-							pattern.setPad (slot, i, p[i]);
+							patterns[page].setPad (slot, i, p[i]);
 						}
-						pattern.store ();
-						drawPad (slot);
+						patterns[page].store ();
+						if (page == pageAct) drawPad (slot);
 					}
 				}
 			}
@@ -598,7 +714,7 @@ void BOopsGUI::port_event(uint32_t port, uint32_t buffer_size,
 			// Status notifications
 			else if (obj->body.otype == urids.bOops_statusEvent)
 			{
-				LV2_Atom *oBpb = NULL, *oBu = NULL, *oBpm = NULL, *oPos = NULL;
+				LV2_Atom *oBpb = NULL, *oBu = NULL, *oBpm = NULL, *oPos = NULL, *oPg = NULL, *oMax = NULL, *oMid = NULL;
 				lv2_atom_object_get
 				(
 					obj,
@@ -606,6 +722,9 @@ void BOopsGUI::port_event(uint32_t port, uint32_t buffer_size,
 					urids.time_beatUnit, &oBu,
 					urids.time_beatsPerMinute, &oBpm,
 					urids.bOops_position, &oPos,
+					urids.bOops_pageID, &oPg,
+					urids.bOops_pageMax, &oMax,
+					urids.bOops_midiLearned, &oMid,
 					NULL
 				);
 
@@ -626,6 +745,69 @@ void BOopsGUI::port_event(uint32_t port, uint32_t buffer_size,
 					cursor = nCursor;
 					if (int (nCursor) != int (oCursor)) drawPad();
 				}
+
+				if (oMax && (oMax->type == urids.atom_Int))
+				{
+					int newMax = LIMIT (((LV2_Atom_Int*)oMax)->body, 0, NR_PAGES - 1);
+
+					while (newMax > pageMax) pushPage();
+					while (newMax < pageMax) popPage();
+				}
+
+				if (oPg && (oPg->type == urids.atom_Int)) pageWidget.setValue (LIMIT (((LV2_Atom_Int*)oPg)->body, 0, NR_PAGES - 1));
+
+				if (oMid && (oMid->type == urids.atom_Int))
+				{
+					uint32_t newMid = (((LV2_Atom_Int*)oMid)->body);
+					uint8_t st = newMid >> 24;
+					uint8_t ch = (newMid >> 16) & 0xFF;
+					uint8_t nt = (newMid >> 8) & 0xFF;
+					uint8_t vl = newMid & 0xFF;
+					midiStatusListBox.setValue ((st == 8) || (st == 9) || (st == 11) ? st : 0);
+					midiChannelListBox.setValue (LIMIT (ch, 0, 15) + 1);
+					midiNoteListBox.setValue (LIMIT (nt, 0, 127));
+					midiValueListBox.setValue (LIMIT (vl, 0, 127));
+					midiLearnButton.setValue (0.0);
+				}
+			}
+
+			// Process page properties
+			else if (obj->body.otype == urids.bOops_pagePropertiesEvent)
+			{
+				LV2_Atom *oId = NULL, *oStatus = NULL, *oChannel = NULL, *oMsg = NULL, *oValue = NULL;
+				int id = -1;
+				lv2_atom_object_get (obj,
+						     urids.bOops_pageID, &oId,
+		     				     urids.bOops_pageStatus, &oStatus,
+		     				     urids.bOops_pageChannel, &oChannel,
+		     				     urids.bOops_pageMessage, &oMsg,
+		     				     urids.bOops_pageValue, &oValue,
+						     NULL);
+
+				if (oId && (oId->type == urids.atom_Int) && (((LV2_Atom_Int*)oId)->body >= 0) && (((LV2_Atom_Int*)oId)->body < NR_PAGES))
+     				{
+     					id = ((LV2_Atom_Int*)oId)->body;
+
+					if (oStatus && (oStatus->type == urids.atom_Int))
+					{
+						tabs[id].midiWidgets[PAGE_CONTROLS_STATUS].setValue (LIMIT (((LV2_Atom_Int*)oStatus)->body, 0, 15));
+					}
+
+     					if (oChannel && (oChannel->type == urids.atom_Int))
+					{
+						tabs[id].midiWidgets[PAGE_CONTROLS_CHANNEL].setValue (LIMIT (((LV2_Atom_Int*)oChannel)->body, 0, 16));
+					}
+
+     					if (oMsg && (oMsg->type == urids.atom_Int))
+					{
+						tabs[id].midiWidgets[PAGE_CONTROLS_MESSAGE].setValue (LIMIT (((LV2_Atom_Int*)oMsg)->body, 0, 128));
+					}
+
+     					if (oValue && (oValue->type == urids.atom_Int))
+					{
+						tabs[id].midiWidgets[PAGE_CONTROLS_VALUE].setValue (LIMIT (((LV2_Atom_Int*)oValue)->body, 0, 128));
+					}
+     				}
 			}
 
 			// Path notification
@@ -713,7 +895,7 @@ void BOopsGUI::resize ()
 	smLabelFont.setFontSize (8 * sz);
 
 	//Background
-	cairo_surface_t* surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, 1240 * sz, 608 * sz);
+	cairo_surface_t* surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, 1240 * sz, 648 * sz);
 	cairo_t* cr = cairo_create (surface);
 	cairo_scale (cr, sz, sz);
 	cairo_set_source_surface(cr, bgImageSurface, 0, 0);
@@ -723,7 +905,7 @@ void BOopsGUI::resize ()
 	cairo_surface_destroy (surface);
 
 	//Scale widgets
-	RESIZE (mContainer, 0, 0, 1240, 608, sz);
+	RESIZE (mContainer, 0, 0, 1240, 648, sz);
 	RESIZE (messageLabel, 400, 45, 600, 20, sz);
 	RESIZE (helpButton, 1168, 18, 24, 24, sz);
 	RESIZE (ytButton, 1198, 18, 24, 24, sz);
@@ -772,20 +954,58 @@ void BOopsGUI::resize ()
 	RESIZE (transportGateOkButton, 320, 80, 40, 20, sz);
 	RESIZE (transportGateCancelButton, 240, 80, 60, 20, sz);
 
-	RESIZE (monitor, 290, 130, 820, 288, sz);
-	RESIZE (padSurface, 290, 130, 820, 288, sz);
-	RESIZE (editContainer, 578, 426, 284, 24, sz);
+	RESIZE (pageWidget, 288, 136, 824, 30, sz);
+	updatePageContainer();
+	for (Tab& t : tabs)
+	{
+		RESIZE (t.icon, 0, 8, 40, 20, sz);
+		RESIZE (t.playSymbol, 40, 12, 20, 16, sz);
+		RESIZE (t.midiSymbol, 60, 10, 20, 20, sz);
+		for (int j = 0; j < 4; ++j) RESIZE (t.symbols[j], 68 - j * 10, 2, 8, 8, sz);
+	}
 
-	RESIZE (gettingstartedContainer, 20, 438, 1200, 150, sz);
+
+
+	RESIZE (midiBox, 390, 170, 510, 120, sz);
+	RESIZE (midiText, 20, 10, 450, 20, sz);
+	RESIZE (midiStatusLabel, 10, 30, 130, 20, sz);
+	RESIZE (midiStatusListBox, 10, 50, 130, 20, sz);
+	midiStatusListBox.resizeListBox(BUtilities::Point (130 * sz, 100 * sz));
+	midiStatusListBox.moveListBox(BUtilities::Point (0, 20 * sz));
+	midiStatusListBox.resizeListBoxItems(BUtilities::Point (130 * sz, 20 * sz));
+	RESIZE (midiChannelLabel, 150, 30, 50, 20, sz);
+	RESIZE (midiChannelListBox, 150, 50, 50, 20, sz);
+	midiChannelListBox.resizeListBox(BUtilities::Point (50 * sz, 360 * sz));
+	midiChannelListBox.moveListBox(BUtilities::Point (0, 20 * sz));
+	midiChannelListBox.resizeListBoxItems(BUtilities::Point (50 * sz, 20 * sz));
+	RESIZE (midiNoteLabel, 210, 30, 160, 20, sz);
+	RESIZE (midiNoteListBox, 210, 50, 160, 20, sz);
+	midiNoteListBox.resizeListBox(BUtilities::Point (160 * sz, 360 * sz));
+	midiNoteListBox.moveListBox(BUtilities::Point (0, 20 * sz));
+	midiNoteListBox.resizeListBoxItems(BUtilities::Point (160 * sz, 20 * sz));
+	RESIZE (midiValueLabel, 380, 30, 50, 20, sz);
+	RESIZE (midiValueListBox, 380, 50, 50, 20, sz);
+	midiValueListBox.resizeListBox(BUtilities::Point (50 * sz, 360 * sz));
+	midiValueListBox.moveListBox(BUtilities::Point (0, 20 * sz));
+	midiValueListBox.resizeListBoxItems(BUtilities::Point (50 * sz, 20 * sz));
+	RESIZE (midiLearnButton, 440, 50, 60, 20, sz);
+	RESIZE (midiCancelButton, 170, 90, 60, 20, sz);
+	RESIZE (midiOkButton, 280, 90, 60, 20, sz);
+
+	RESIZE (monitor, 290, 170, 820, 288, sz);
+	RESIZE (padSurface, 290, 170, 820, 288, sz);
+	RESIZE (editContainer, 578, 466, 284, 24, sz);
+
+	RESIZE (gettingstartedContainer, 20, 478, 1200, 150, sz);
 	RESIZE (gettingstartedText, 20, 30, 960, 110, sz);
 
-	RESIZE (padParamContainer, 1120, 130, 100, 288, sz);
+	RESIZE (padParamContainer, 1120, 170, 100, 288, sz);
 	RESIZE (padGateLabel, 0, 90, 100, 20, sz);
 	RESIZE (padGateDial, 20, 30, 60, 60, sz);
 	RESIZE (padMixLabel, 20, 180, 60, 20, sz);
 	RESIZE (padMixDial, 20, 120, 60, 60, sz);
 
-	RESIZE (slotsContainer, 20, 130, 260, 288, sz);
+	RESIZE (slotsContainer, 20, 170, 260, 288, sz);
 
 	for (int i = 0; i < NR_SLOTS; ++i)
 	{
@@ -804,7 +1024,7 @@ void BOopsGUI::resize ()
 
 	for (int i = 0; i < NR_SLOTS; ++i)
 	{
-		RESIZE (slotParams[i].container, 20, 438, 1200, 150, sz);
+		RESIZE (slotParams[i].container, 20, 478, 1200, 150, sz);
 		RESIZE (slotParams[i].nrIcon, 20, 8, 40, 20, sz);
 		RESIZE (slotParams[i].nameIcon, 60, 8, 160, 20, sz);
 		RESIZE (slotParams[i].attackLabel, 190, 30, 20, 20, sz);
@@ -879,6 +1099,32 @@ void BOopsGUI::applyTheme (BStyles::Theme& theme)
 		s.playPad.applyTheme (theme);
 	};
 
+	pageWidget.applyTheme (theme);
+	pageBackSymbol.applyTheme (theme);
+	pageForwardSymbol.applyTheme (theme);
+	for (Tab& t : tabs)
+	{
+		t.container.applyTheme (theme);
+		t.icon.applyTheme (theme);
+		t.playSymbol.applyTheme (theme);
+		t.midiSymbol.applyTheme (theme);
+		for (SymbolWidget& s : t.symbols) s.applyTheme (theme);
+	}
+
+	midiBox.applyTheme (theme);
+	midiText.applyTheme (theme);
+	midiStatusLabel.applyTheme (theme);
+	midiStatusListBox.applyTheme (theme);
+	midiChannelLabel.applyTheme (theme);
+	midiChannelListBox.applyTheme (theme);
+	midiNoteLabel.applyTheme (theme);
+	midiNoteListBox.applyTheme (theme);
+	midiValueLabel.applyTheme (theme);
+	midiValueListBox.applyTheme (theme);
+	midiLearnButton.applyTheme (theme);
+	midiCancelButton.applyTheme (theme);
+	midiOkButton.applyTheme (theme);
+
 	monitor.applyTheme (theme);
 	padSurface.applyTheme (theme);
 
@@ -923,7 +1169,7 @@ void BOopsGUI::onConfigureRequest (BEvents::ExposeEvent* event)
 {
 	Window::onConfigureRequest (event);
 
-	sz = (getWidth() / 1240 > getHeight() / 608 ? getHeight() / 608 : getWidth() / 1240);
+	sz = (getWidth() / 1240 > getHeight() / 648 ? getHeight() / 648 : getWidth() / 1240);
 	resize ();
 }
 
@@ -993,15 +1239,17 @@ void BOopsGUI::sendUiOff ()
 	write_function(controller, CONTROL, lv2_atom_total_size(msg), urids.atom_eventTransfer, msg);
 }
 
-void BOopsGUI::sendSlot (const int slot)
+void BOopsGUI::sendSlot (const int page, const int slot)
 {
 	Pad pads[NR_STEPS];
-	for (int i = 0; i < NR_STEPS; ++i) pads[i] = pattern.getPad (slot, i);
+	for (int i = 0; i < NR_STEPS; ++i) pads[i] = patterns[page].getPad (slot, i);
 	uint8_t obj_buf[1024];
 	lv2_atom_forge_set_buffer(&forge, obj_buf, sizeof(obj_buf));
 
 	LV2_Atom_Forge_Frame frame;
 	LV2_Atom* msg = (LV2_Atom*)lv2_atom_forge_object(&forge, &frame, 0, urids.bOops_slotEvent);
+	lv2_atom_forge_key(&forge, urids.bOops_pageID);
+	lv2_atom_forge_int(&forge, page);
 	lv2_atom_forge_key(&forge, urids.bOops_slot);
 	lv2_atom_forge_int(&forge, slot);
 	lv2_atom_forge_key(&forge, urids.bOops_pads);
@@ -1010,21 +1258,82 @@ void BOopsGUI::sendSlot (const int slot)
 	write_function(controller, CONTROL, lv2_atom_total_size(msg), urids.atom_eventTransfer, msg);
 }
 
-void BOopsGUI::sendPad (const int slot, const int step)
+void BOopsGUI::sendPad (const int page, const int slot, const int step)
 {
-	Pad pad (pattern.getPad (slot, step));
+	Pad pad (patterns[page].getPad (slot, step));
 
-	uint8_t obj_buf[128];
+	uint8_t obj_buf[256];
 	lv2_atom_forge_set_buffer(&forge, obj_buf, sizeof(obj_buf));
 
 	LV2_Atom_Forge_Frame frame;
 	LV2_Atom* msg = (LV2_Atom*)lv2_atom_forge_object(&forge, &frame, 0, urids.bOops_padEvent);
+	lv2_atom_forge_key(&forge, urids.bOops_pageID);
+	lv2_atom_forge_int(&forge, page);
 	lv2_atom_forge_key(&forge, urids.bOops_slot);
 	lv2_atom_forge_int(&forge, slot);
 	lv2_atom_forge_key(&forge, urids.bOops_step);
 	lv2_atom_forge_int(&forge, step);
 	lv2_atom_forge_key(&forge, urids.bOops_pads);
 	lv2_atom_forge_vector(&forge, sizeof(float), urids.atom_Float, sizeof(Pad) / sizeof(float), (void*) &pad);
+	lv2_atom_forge_pop(&forge, &frame);
+	write_function(controller, CONTROL, lv2_atom_total_size(msg), urids.atom_eventTransfer, msg);
+}
+
+void BOopsGUI::sendMaxPage ()
+{
+	uint8_t obj_buf[128];
+	lv2_atom_forge_set_buffer(&forge, obj_buf, sizeof(obj_buf));
+
+	LV2_Atom_Forge_Frame frame;
+	LV2_Atom* msg = (LV2_Atom*)lv2_atom_forge_object(&forge, &frame, 0, urids.bOops_statusEvent);
+	lv2_atom_forge_key(&forge, urids.bOops_pageMax);
+	lv2_atom_forge_int(&forge, pageMax);
+	lv2_atom_forge_pop(&forge, &frame);
+	write_function(controller, CONTROL, lv2_atom_total_size(msg), urids.atom_eventTransfer, msg);
+}
+
+void BOopsGUI::sendPlaybackPage ()
+{
+	uint8_t obj_buf[128];
+	lv2_atom_forge_set_buffer(&forge, obj_buf, sizeof(obj_buf));
+
+	LV2_Atom_Forge_Frame frame;
+	LV2_Atom* msg = (LV2_Atom*)lv2_atom_forge_object(&forge, &frame, 0, urids.bOops_statusEvent);
+	lv2_atom_forge_key(&forge, urids.bOops_pageID);
+	lv2_atom_forge_int(&forge, int (pageWidget.getValue()));
+	lv2_atom_forge_pop(&forge, &frame);
+	write_function(controller, CONTROL, lv2_atom_total_size(msg), urids.atom_eventTransfer, msg);
+}
+
+void BOopsGUI::sendPageProperties (const int page)
+{
+	uint8_t obj_buf[256];
+	lv2_atom_forge_set_buffer(&forge, obj_buf, sizeof(obj_buf));
+	LV2_Atom_Forge_Frame frame;
+	LV2_Atom* msg = (LV2_Atom*)lv2_atom_forge_object(&forge, &frame, 0, urids.bOops_pagePropertiesEvent);
+	lv2_atom_forge_key(&forge, urids.bOops_pageID);
+	lv2_atom_forge_int(&forge, page);
+	lv2_atom_forge_key(&forge, urids.bOops_pageStatus);
+	lv2_atom_forge_int(&forge, tabs[page].midiWidgets[PAGE_CONTROLS_STATUS].getValue());
+	lv2_atom_forge_key(&forge, urids.bOops_pageChannel);
+	lv2_atom_forge_int(&forge, tabs[page].midiWidgets[PAGE_CONTROLS_CHANNEL].getValue());
+	lv2_atom_forge_key(&forge, urids.bOops_pageMessage);
+	lv2_atom_forge_int(&forge, tabs[page].midiWidgets[PAGE_CONTROLS_MESSAGE].getValue());
+	lv2_atom_forge_key(&forge, urids.bOops_pageValue);
+	lv2_atom_forge_int(&forge, tabs[page].midiWidgets[PAGE_CONTROLS_VALUE].getValue());
+	lv2_atom_forge_pop(&forge, &frame);
+	write_function(controller, CONTROL, lv2_atom_total_size(msg), urids.atom_eventTransfer, msg);
+}
+
+void BOopsGUI::sendRequestMidiLearn ()
+{
+	uint8_t obj_buf[128];
+	lv2_atom_forge_set_buffer(&forge, obj_buf, sizeof(obj_buf));
+
+	LV2_Atom_Forge_Frame frame;
+	LV2_Atom* msg = (LV2_Atom*)lv2_atom_forge_object(&forge, &frame, 0, urids.bOops_statusEvent);
+	lv2_atom_forge_key(&forge, urids.bOops_requestMidiLearn);
+	lv2_atom_forge_bool(&forge, midiLearnButton.getValue() != 0.0);
 	lv2_atom_forge_pop(&forge, &frame);
 	write_function(controller, CONTROL, lv2_atom_total_size(msg), urids.atom_eventTransfer, msg);
 }
@@ -1122,6 +1431,171 @@ void BOopsGUI::sendSampleAmp ()
 	write_function(controller, CONTROL, lv2_atom_total_size(msg), urids.atom_eventTransfer, msg);
 }
 
+void BOopsGUI::pushPage ()
+{
+	if (pageMax >= NR_PAGES - 1) return;
+
+	tabs[pageMax].symbols[CLOSESYMBOL].show();
+	tabs[pageMax].symbols[RIGHTSYMBOL].show();
+
+	tabs[pageMax + 1].container.show();
+	tabs[pageMax + 1].symbols[CLOSESYMBOL].show();
+	tabs[pageMax + 1].symbols[LEFTSYMBOL].show();
+	tabs[pageMax + 1].symbols[RIGHTSYMBOL].hide();
+
+	if (pageMax + 1 == NR_PAGES - 1)
+	{
+		for (Tab& t : tabs) t.symbols[ADDSYMBOL].hide();
+	}
+
+	++pageMax;
+	updatePageContainer();
+}
+
+void BOopsGUI::popPage ()
+{
+	if (pageMax <= 0) return;
+
+	tabs[pageMax - 1].symbols[RIGHTSYMBOL].hide();
+	if (pageMax == 1) tabs[0].symbols[CLOSESYMBOL].hide();
+	tabs[pageMax].container.hide();
+	for (Tab& t : tabs) t.symbols[ADDSYMBOL].show();
+
+	if (pageAct >= pageMax) gotoPage (pageMax - 1);
+	if (pageWidget.getValue() >= pageMax) pageWidget.setValue (0);
+
+	--pageMax;
+	updatePageContainer();
+}
+
+void BOopsGUI::gotoPage (const int page)
+{
+	if ((page < 0) || (page > pageMax)) return;
+
+	pageAct = page;
+	for (int i = 0; i < NR_PAGES; ++i)
+	{
+		if (i == page) tabs[i].container.rename ("activetab");
+		else tabs[i].container.rename ("tab");
+		tabs[i].container.applyTheme (theme);
+	}
+	drawPad();
+	updatePageContainer();
+}
+
+void BOopsGUI::insertPage (const int page)
+{
+	if ((page < 0) || (pageMax >= NR_PAGES - 1)) return;
+
+	pushPage();
+	sendMaxPage();
+	if (pageAct >= page) gotoPage (pageAct + 1);
+	if (pageWidget.getValue() >= page) pageWidget.setValue (pageWidget.getValue() + 1);
+
+	// Move pages
+	for (int i = pageMax; i > page; --i)
+	{
+		patterns[i] = patterns[i - 1];
+		for (int j = 0; j < NR_SLOTS; ++j) sendSlot (i, j);
+		if (i == pageAct) drawPad();
+		for (BWidgets::ValueWidget& m : tabs[i].midiWidgets) m.setValue (m.getValue());
+	}
+
+	// Init new page
+	patterns[page].clear();
+	for (int j = 0; j < NR_SLOTS; ++j) sendSlot (page, j);
+	if (page == pageAct) drawPad();
+	tabs[page].midiWidgets[PAGE_CONTROLS_STATUS].setValue (0);
+	tabs[page].midiWidgets[PAGE_CONTROLS_CHANNEL].setValue (0);
+	tabs[page].midiWidgets[PAGE_CONTROLS_MESSAGE].setValue (128);
+	tabs[page].midiWidgets[PAGE_CONTROLS_VALUE].setValue (128);
+}
+
+void BOopsGUI::deletePage (const int page)
+{
+	if ((page < 0) || (page > pageMax)) return;
+
+	if (pageAct > page) gotoPage (pageAct - 1);
+	if (pageWidget.getValue() > page) pageWidget.setValue (pageWidget.getValue() - 1);
+
+	for (int i = page; i < pageMax; ++i)
+	{
+		patterns[i] = patterns[i + 1];
+		for (int j = 0; j < NR_SLOTS; ++j) sendSlot (i, j);
+		if (i == pageAct) drawPad ();
+		for (int j = 0; j < NR_MIDI_CTRLS; ++j)
+		{
+			tabs[i].midiWidgets[j].setValue (tabs[i + 1].midiWidgets[j].getValue());
+		}
+	}
+
+	tabs[pageMax].midiWidgets[PAGE_CONTROLS_STATUS].setValue (0);
+	tabs[pageMax].midiWidgets[PAGE_CONTROLS_CHANNEL].setValue (0);
+	tabs[pageMax].midiWidgets[PAGE_CONTROLS_MESSAGE].setValue (128);
+	tabs[pageMax].midiWidgets[PAGE_CONTROLS_VALUE].setValue (128);
+
+	popPage();
+	sendMaxPage();
+}
+
+void BOopsGUI::swapPage (const int page1, const int page2)
+{
+	if ((page1 < 0) || (page1 > pageMax) || (page2 < 0) || (page2 > pageMax)) return;
+
+	Pattern p;
+	p.clear();
+	p = patterns[page1];
+	patterns[page1] = patterns[page2];
+	patterns[page2] = p;
+	for (int j = 0; j < NR_SLOTS; ++j) sendSlot (page1, j);
+	for (int j = 0; j < NR_SLOTS; ++j) sendSlot (page2, j);
+
+	if (pageAct == page1) gotoPage (page2);
+	else if (pageAct == page2) gotoPage (page1);
+
+	if (pageWidget.getValue() == page1) pageWidget.setValue (page2);
+	else if (pageWidget.getValue() == page2) pageWidget.setValue (page1);
+
+	for (int j = 0; j < NR_MIDI_CTRLS; ++j)
+	{
+		double v = tabs[page1].midiWidgets[j].getValue();
+		tabs[page1].midiWidgets[j].setValue (tabs[page2].midiWidgets[j].getValue());
+		tabs[page2].midiWidgets[j].setValue (v);
+	}
+}
+
+void BOopsGUI::updatePageContainer()
+{
+	if (pageMax > 9) pageOffset = LIMIT (pageOffset, 0, pageMax - 9);
+	else pageOffset = 0;
+
+	int x0 = (pageOffset == 0 ? 0 : 12 * sz);
+
+	if (pageOffset != 0) pageBackSymbol.show();
+	else pageBackSymbol.hide();
+
+	if (pageOffset + 9 < pageMax) pageForwardSymbol.show();
+	else pageForwardSymbol.hide();
+
+	for (int p = 0; p <= pageMax; ++p)
+	{
+		if ((p < pageOffset) || (p > pageOffset + 9)) tabs[p].container.hide();
+		else
+		{
+			tabs[p].container.moveTo (x0 + (p - pageOffset) * 80 * sz, 0);
+			tabs[p].container.resize (78 * sz, 30 * sz);
+			tabs[p].container.show();
+		}
+	}
+
+	for (int p = pageMax + 1; p < NR_PAGES; ++p ) tabs[p].container.hide();
+
+	pageBackSymbol.moveTo (0, 0);
+	pageBackSymbol.resize (10 * sz, 30 * sz);
+	pageForwardSymbol.moveTo (x0 + 800 * sz, 0);
+	pageForwardSymbol.resize (10 * sz, 30 * sz);
+}
+
 int BOopsGUI::getSlotsSize () const
 {
 	int slotSize = 0;
@@ -1138,13 +1612,16 @@ void BOopsGUI::clearSlot (int slot)
 		controllerWidgets[SLOTS + slot * (SLOTS_PARAMS + NR_PARAMS) + SLOTS_PARAMS + j]->setValue (fxDefaultValues[FX_NONE][j]);
 	}
 
-	for (int j = 0; j < NR_STEPS; ++j) pattern.setPad (slot, j, Pad());
+	for (Pattern& p : patterns)
+	{
+		for (int j = 0; j < NR_STEPS; ++j) p.setPad (slot, j, Pad());
+	}
 
 	slotParams[slot].shape.setDefaultShape();
 	sendShape (slot);
 	if (slotParams[slot].optionWidget) slotParams[slot].optionWidget->setShape (slotParams[slot].shape);
 
-	sendSlot (slot);
+	for (int i = 0; i < NR_PAGES; ++i) sendSlot (i, slot);
 	drawPad (slot);
 }
 
@@ -1156,13 +1633,16 @@ void BOopsGUI::copySlot (int dest, int source)
 		controllerWidgets[SLOTS + dest * (SLOTS_PARAMS + NR_PARAMS) + j]->setValue (controllerWidgets[SLOTS + source * (SLOTS_PARAMS + NR_PARAMS) + j]->getValue());
 	}
 
-	for (int j = 0; j < NR_STEPS; ++j) pattern.setPad (dest, j, pattern.getPad (source, j));
+	for (Pattern& p : patterns)
+	{
+		for (int j = 0; j < NR_STEPS; ++j) p.setPad (dest, j, p.getPad (source, j));
+	}
 
 	slotParams[dest].shape = slotParams[source].shape;
 	sendShape (dest);
 	if (slotParams[dest].optionWidget) slotParams[dest].optionWidget->setShape (slotParams[dest].shape);
 
-	sendSlot (dest);
+	for (int i = 0; i < NR_PAGES; ++i) sendSlot (i, dest);
 	drawPad (dest);
 }
 
@@ -1184,14 +1664,17 @@ void BOopsGUI::insertSlot (int slot, const BOopsEffectsIndex effect)
 	// Set new slot, slotParams, pads with defaults
 	controllerWidgets[SLOTS + slot * (SLOTS_PARAMS + NR_PARAMS) + SLOTS_EFFECT]->setValue (effect);
 	for (int j = 0; j < NR_PARAMS; ++j) controllerWidgets[SLOTS + slot * (SLOTS_PARAMS + NR_PARAMS) + SLOTS_PARAMS + j]->setValue (fxDefaultValues[effect][j]);
-	for (int j = 0; j < NR_STEPS; ++j) pattern.setPad (slot, j, Pad());
+	for (Pattern& p : patterns)
+	{
+		for (int j = 0; j < NR_STEPS; ++j) p.setPad (slot, j, Pad());
+	}
 	slotParams[slot].shape.setDefaultShape();
 	sendShape (slot);
 	if (slotParams[slot].optionWidget) slotParams[slot].optionWidget->setShape (slotParams[slot].shape);
 
-	pattern.store();
+	for (Pattern& p : patterns) p.store();
 	//updateSlots();
-	sendSlot (slot);
+	for (int i = 0; i < NR_PAGES; ++i) sendSlot (pageAct, slot);
 	drawPad (slot);
 }
 
@@ -1208,7 +1691,7 @@ void BOopsGUI::deleteSlot (int slot)
 	// Cleanup: Clear slots, slotParams, pads
 	for (int i = slotSize - 1; i < NR_SLOTS; ++i) clearSlot (i);
 
-	pattern.store();
+	for (Pattern& p : patterns) p.store();
 	updateSlots();
 }
 
@@ -1223,11 +1706,14 @@ void BOopsGUI::swapSlots (int slot1, int slot2)
 	slots[slot2].effectsListbox.hide();
 
 	// Swap pads
-	for (int j = 0; j < NR_STEPS; ++j)
+	for (Pattern& p : patterns)
 	{
-		Pad slot1Pad = pattern.getPad (slot1, j);
-		pattern.setPad (slot1, j, pattern.getPad (slot2, j));
-		pattern.setPad (slot2, j, slot1Pad);
+		for (int j = 0; j < NR_STEPS; ++j)
+		{
+			Pad slot1Pad = p.getPad (slot1, j);
+			p.setPad (slot1, j, p.getPad (slot2, j));
+			p.setPad (slot2, j, slot1Pad);
+		}
 	}
 
 	// Swap slots
@@ -1247,12 +1733,12 @@ void BOopsGUI::swapSlots (int slot1, int slot2)
 	if (slotParams[slot1].optionWidget) slotParams[slot1].optionWidget->setShape (slotParams[slot1].shape);
 	if (slotParams[slot2].optionWidget) slotParams[slot2].optionWidget->setShape (slotParams[slot2].shape);
 
-	pattern.store();
+	patterns[pageAct].store();
 	updateSlot (slot1);
-	sendSlot (slot1);
+	for (int i = 0; i < NR_PAGES; ++i) sendSlot (pageAct, slot1);
 	drawPad (slot1);
 	updateSlot (slot2);
-	sendSlot (slot2);
+	for (int i = 0; i < NR_PAGES; ++i) sendSlot (pageAct, slot2);
 	drawPad (slot2);
 }
 
@@ -1278,8 +1764,12 @@ void BOopsGUI::moveSlot (int source, int target)
 
 		// Buffer source
 		// Pads
-		std::array<Pad, NR_STEPS> sourcePads;
-		for (int i = 0; i < NR_STEPS; ++i) sourcePads[i] = pattern.getPad (source, i);
+		std::array<std::array<Pad, NR_STEPS>, NR_PAGES> sourcePads;
+		for (int i = 0; i < NR_PAGES; ++i)
+		{
+
+			for (int j = 0; j < NR_STEPS; ++j) sourcePads[i][j] = patterns[i].getPad (source, j);
+		}
 
 		// Params
 		std::array<double, SLOTS_PARAMS + NR_PARAMS> sourceParams;
@@ -1292,7 +1782,10 @@ void BOopsGUI::moveSlot (int source, int target)
 		for (int i = source; i != target - offs; i += inc)
 		{
 			// Move pads
-			for (int j = 0; j < NR_STEPS; ++j) pattern.setPad (i, j, pattern.getPad (i + inc, j));
+			for (Pattern& p : patterns)
+			{
+				for (int j = 0; j < NR_STEPS; ++j) p.setPad (i, j, p.getPad (i + inc, j));
+			}
 
 			// Move params
 			for (int j = 0; j < SLOTS_PARAMS + NR_PARAMS; ++j)
@@ -1308,18 +1801,21 @@ void BOopsGUI::moveSlot (int source, int target)
 		}
 
 		// Write target
-		for (int i = 0; i < NR_STEPS; ++i) pattern.setPad (target - offs, i, sourcePads[i]);
+		for (int i = 0; i < NR_PAGES; ++i)
+		{
+			for (int j = 0; j < NR_STEPS; ++j) patterns[i].setPad (target - offs, j, sourcePads[i][j]);
+		}
 		for (int j = 0; j < SLOTS_PARAMS + NR_PARAMS; ++j) controllerWidgets[SLOTS + (target - offs) * (SLOTS_PARAMS + NR_PARAMS) + j]->setValue (sourceParams[j]);
 		slotParams[target - offs].shape = sourceShape;
 		sendShape (target - offs);
 		if (slotParams[target - offs].optionWidget) slotParams[target - offs].optionWidget->setShape (slotParams[target - offs].shape);
 
 		// Apply changes
-		pattern.store();
+		for (Pattern& p : patterns) p.store();
 		for (int i = source; i != target + inc - offs; i += inc)
 		{
 			updateSlot (i);
-			sendSlot (i);
+			for (int j = 0; j < NR_PAGES; ++j) sendSlot (j, i);
 			drawPad (i);
 		}
 		gotoSlot (target - offs);
@@ -1776,6 +2272,228 @@ void BOopsGUI::valueChangedCallback(BEvents::Event* event)
 	}
 
 	else if (widget == &ui->sampleAmpDial) ui->sendSampleAmp();
+
+	else if (widget == &ui->pageWidget)
+	{
+		for (int i = 0; i < NR_PAGES; ++i)
+		{
+			ui->tabs[i].playSymbol.setState (i == ui->pageWidget.getValue() ? BColors::ACTIVE : BColors::INACTIVE);
+		}
+
+		ui->sendPlaybackPage();
+	}
+
+	else
+	{
+		for (int i = 0; i < NR_PAGES; ++i)
+		{
+			if
+			(
+				(widget == &ui->tabs[i].midiWidgets[PAGE_CONTROLS_STATUS]) ||
+				(widget == &ui->tabs[i].midiWidgets[PAGE_CONTROLS_CHANNEL]) ||
+				(widget == &ui->tabs[i].midiWidgets[PAGE_CONTROLS_MESSAGE]) ||
+				(widget == &ui->tabs[i].midiWidgets[PAGE_CONTROLS_VALUE])
+			)
+			{
+				ui->tabs[i].midiSymbol.setState (ui->tabs[i].midiWidgets[PAGE_CONTROLS_STATUS].getValue() >=8 ? BColors::ACTIVE : BColors::INACTIVE);
+				ui->sendPageProperties (i);
+				return;
+			}
+		}
+	}
+}
+
+
+void BOopsGUI::pageClickedCallback(BEvents::Event* event)
+{
+	if (!event) return;
+	BWidgets::Widget* widget = event->getWidget ();
+	if (!widget) return;
+	BOopsGUI* ui = (BOopsGUI*) widget->getMainWindow();
+	if (!ui) return;
+
+	for (int i = 0; i <= ui->pageMax; ++i)
+	{
+		if (&ui->tabs[i].container == widget)
+		{
+			ui->gotoPage (i);
+			break;
+		}
+	}
+}
+
+void BOopsGUI::pageSymbolClickedCallback(BEvents::Event* event)
+{
+	if (!event) return;
+	SymbolWidget* widget = (SymbolWidget*)event->getWidget ();
+	if (!widget) return;
+	BOopsGUI* ui = (BOopsGUI*) widget->getMainWindow();
+	if (!ui) return;
+
+	for (int i = 0; i <= ui->pageMax; ++i)
+	{
+		for (int j = 0; j < 4; ++j)
+		{
+			if (&ui->tabs[i].symbols[j] == widget)
+			{
+				switch (j)
+				{
+					// Symbol +
+					case ADDSYMBOL:		ui->insertPage (i + 1);
+								break;
+
+					// Symbol -
+					case CLOSESYMBOL: 	ui->deletePage (i);
+								break;
+
+					// Symbol <
+					case LEFTSYMBOL:	ui->swapPage (i, i - 1);
+								break;
+
+					// Symbol >
+					case RIGHTSYMBOL:	ui->swapPage (i, i + 1);
+								break;
+				}
+				return;
+			}
+		}
+	}
+}
+
+void BOopsGUI::pagePlayClickedCallback(BEvents::Event* event)
+{
+	if (!event) return;
+	SymbolWidget* widget = (SymbolWidget*)event->getWidget ();
+	if (!widget) return;
+	BOopsGUI* ui = (BOopsGUI*) widget->getMainWindow();
+	if (!ui) return;
+
+	for (int i = 0; i <= ui->pageMax; ++i)
+	{
+		if (&ui->tabs[i].playSymbol == widget)
+		{
+			ui->pageWidget.setValue (i);
+			break;
+		}
+	}
+}
+
+void BOopsGUI::pageScrollClickedCallback(BEvents::Event* event)
+{
+	if (!event) return;
+	SymbolWidget* widget = (SymbolWidget*)event->getWidget ();
+	if (!widget) return;
+	BOopsGUI* ui = (BOopsGUI*) widget->getMainWindow();
+	if (!ui) return;
+
+	if (widget == &ui->pageBackSymbol) --ui->pageOffset;
+	else if (widget == &ui->pageForwardSymbol) ++ui->pageOffset;
+
+	ui->updatePageContainer();
+}
+
+void BOopsGUI::midiSymbolClickedCallback(BEvents::Event* event)
+{
+	if (!event) return;
+	SymbolWidget* widget = (SymbolWidget*)event->getWidget ();
+	if (!widget) return;
+	BOopsGUI* ui = (BOopsGUI*) widget->getMainWindow();
+	if (!ui) return;
+
+	for (int i = 0; i <= ui->pageMax; ++i)
+	{
+		if (widget == &ui->tabs[i].midiSymbol)
+		{
+			ui->midiText.setText (BOOPS_LABEL_MIDI_PAGE " #" + std::to_string (i + 1));
+			ui->midiStatusListBox.setValue (ui->tabs[i].midiWidgets[PAGE_CONTROLS_STATUS].getValue());
+			ui->midiChannelListBox.setValue (ui->tabs[i].midiWidgets[PAGE_CONTROLS_CHANNEL].getValue());
+			ui->midiNoteListBox.setValue (ui->tabs[i].midiWidgets[PAGE_CONTROLS_MESSAGE].getValue());
+			ui->midiValueListBox.setValue (ui->tabs[i].midiWidgets[PAGE_CONTROLS_VALUE].getValue());
+			ui->midiBox.setValue (i);
+			ui->midiBox.show();
+			return;
+		}
+	}
+}
+
+void BOopsGUI::midiButtonClickedCallback(BEvents::Event* event)
+{
+	if (!event) return;
+	BWidgets::ValueWidget* widget = (BWidgets::ValueWidget*) event->getWidget ();
+	if (!widget) return;
+	float value = widget->getValue();
+	BOopsGUI* ui = (BOopsGUI*) widget->getMainWindow();
+	if (!ui) return;
+
+	if (widget == &ui->midiLearnButton)
+	{
+		if (value == 1) ui->sendRequestMidiLearn();
+	}
+
+	else if (widget == &ui->midiCancelButton)
+	{
+		if (value == 1)
+		{
+			ui->midiLearnButton.setValue (0);
+			ui->midiBox.hide();
+		}
+	}
+
+	else if (widget == &ui->midiOkButton)
+	{
+		if (value == 1)
+		{
+			int page = ui->midiBox.getValue();
+			ui->midiLearnButton.setValue (0);
+			ui->tabs[page].midiWidgets[PAGE_CONTROLS_STATUS].setValue (ui->midiStatusListBox.getValue());
+			ui->tabs[page].midiWidgets[PAGE_CONTROLS_CHANNEL].setValue (ui->midiChannelListBox.getValue());
+			ui->tabs[page].midiWidgets[PAGE_CONTROLS_MESSAGE].setValue (ui->midiNoteListBox.getValue());
+			ui->tabs[page].midiWidgets[PAGE_CONTROLS_VALUE].setValue (ui->midiValueListBox.getValue());
+			ui->midiBox.hide();
+		}
+	}
+}
+
+void BOopsGUI::midiStatusChangedCallback(BEvents::Event* event)
+{
+	if (!event) return;
+	BWidgets::PopupListBox* widget = (BWidgets::PopupListBox*) event->getWidget ();
+	if (!widget) return;
+	float value = widget->getValue();
+	BOopsGUI* ui = (BOopsGUI*) widget->getMainWindow();
+	if (!ui) return;
+
+	BWidgets::PopupListBox& nlb = ui->midiNoteListBox;
+	BWidgets::Label& nl = ui->midiNoteLabel;
+	int nr = nlb.getValue();
+
+	if (value == 11)
+	{
+		nlb = BWidgets::PopupListBox
+		(
+			210 * ui->sz, 50 * ui->sz, 160 * ui->sz, 20 * ui->sz, 0, 20 * ui->sz, 160 * ui->sz, 360 *ui->sz,
+			"menu",
+			BItems::ItemList ({CCLIST}),
+			0
+		);
+		nl.setText (BOOPS_LABEL_CC);
+	}
+
+	else
+	{
+		nlb = BWidgets::PopupListBox
+		(
+			210 * ui->sz, 50 * ui->sz, 160 * ui->sz, 20 * ui->sz, 0, 20 * ui->sz, 160 * ui->sz, 360 * ui->sz,
+			"menu",
+			BItems::ItemList ({NOTELIST}),
+			0
+		);
+		nl.setText (BOOPS_LABEL_NOTE);
+	}
+
+	nlb.resizeListBoxItems(BUtilities::Point (160 * ui->sz, 20 * ui->sz));
+	nlb.applyTheme (ui->theme);
+	nlb.setValue (nr);
 }
 
 void BOopsGUI::playStopBypassChangedCallback(BEvents::Event* event)
@@ -2131,7 +2849,7 @@ void BOopsGUI::edit2ChangedCallback(BEvents::Event* event)
 		{
 			if (ui->wheelScrolled)
 			{
-				ui->pattern.store ();
+				ui->patterns[ui->pageAct].store ();
 				ui->wheelScrolled = false;
 			}
 
@@ -2139,24 +2857,24 @@ void BOopsGUI::edit2ChangedCallback(BEvents::Event* event)
 			{
 				for (int s = 0; s < NR_STEPS; ++s)
 				{
-					ui->pattern.setPad (r, s, Pad ());
-					ui->sendPad (r, s);
+					ui->patterns[ui->pageAct].setPad (r, s, Pad ());
+					ui->sendPad (ui->pageAct, r, s);
 				}
 			}
 
 			ui->drawPad ();
-			ui->pattern.store ();
+			ui->patterns[ui->pageAct].store ();
 		}
 		break;
 
 		case EDIT_UNDO:
 		{
-			std::vector<PadMessage> padMessages = ui->pattern.undo ();
+			std::vector<PadMessage> padMessages = ui->patterns[ui->pageAct].undo ();
 			for (PadMessage const& p : padMessages)
 			{
 				size_t r = LIMIT (p.row, 0, NR_SLOTS);
 				size_t s = LIMIT (p.step, 0, NR_STEPS);
-				ui->sendPad (r, s);
+				ui->sendPad (ui->pageAct, r, s);
 			}
 			ui->drawPad ();
 		}
@@ -2164,12 +2882,12 @@ void BOopsGUI::edit2ChangedCallback(BEvents::Event* event)
 
 		case EDIT_REDO:
 		{
-			std::vector<PadMessage> padMessages = ui->pattern.redo ();
+			std::vector<PadMessage> padMessages = ui->patterns[ui->pageAct].redo ();
 			for (PadMessage const& p : padMessages)
 			{
 				size_t r = LIMIT (p.row, 0, NR_SLOTS);
 				size_t s = LIMIT (p.step, 0, NR_STEPS);
-				ui->sendPad (r, s);
+				ui->sendPad (ui->pageAct, r, s);
 			}
 			ui->drawPad ();
 		}
@@ -2197,7 +2915,7 @@ void BOopsGUI::padsPressedCallback (BEvents::Event* event)
 	{
 		if (ui->wheelScrolled)
 		{
-			ui->pattern.store ();
+			ui->patterns[ui->pageAct].store ();
 			ui->wheelScrolled = false;
 		}
 
@@ -2268,8 +2986,8 @@ void BOopsGUI::padsPressedCallback (BEvents::Event* event)
 											(step + s < maxstep)
 										)
 										{
-											ui->pattern.setPad (row + r, step + s, ui->clipBoard.data.at(r).at(s));
-											ui->sendPad (row + r, step + s);
+											ui->patterns[ui->pageAct].setPad (row + r, step + s, ui->clipBoard.data.at(r).at(s));
+											ui->sendPad (ui->pageAct, row + r, step + s);
 											ui->drawPad (row + r, step + s);
 										}
 									}
@@ -2298,7 +3016,7 @@ void BOopsGUI::padsPressedCallback (BEvents::Event* event)
 							size = 1;
 						}
 
-						const Pad oldPad = ui->pattern.getPad (row, s);
+						const Pad oldPad = ui->patterns[ui->pageAct].getPad (row, s);
 
 						if (!ui->padPressed) ui->deleteMode =
 						(
@@ -2306,7 +3024,7 @@ void BOopsGUI::padsPressedCallback (BEvents::Event* event)
 							(oldPad.mix == float (ui->padMixDial.getValue()))
 						);
 						Pad newPad = (ui->deleteMode ? Pad () : Pad (ui->padGateDial.getValue(), size, ui->padMixDial.getValue()));
-						if (newPad != oldPad) ui->setPad (row, s, newPad);
+						if (newPad != oldPad) ui->setPad (ui->pageAct, row, s, newPad);
 					}
 
 					ui->padPressed = true;
@@ -2314,8 +3032,8 @@ void BOopsGUI::padsPressedCallback (BEvents::Event* event)
 
 				else if (pointerEvent->getButton() == BDevices::RIGHT_BUTTON)
 				{
-					ui->padGateDial.setValue (ui->pattern.getPad (row, step).gate);
-					ui->padMixDial.setValue (ui->pattern.getPad (row, step).mix);
+					ui->padGateDial.setValue (ui->patterns[ui->pageAct].getPad (row, step).gate);
+					ui->padMixDial.setValue (ui->patterns[ui->pageAct].getPad (row, step).mix);
 				}
 			}
 		}
@@ -2356,14 +3074,14 @@ void BOopsGUI::padsPressedCallback (BEvents::Event* event)
 							for (int ds = 0; ds < int ((clipSMax + 1 - clipSMin) / 2); ++ds)
 							{
 
-								const Pad pd = ui->pattern.getPad (r, clipSMin + ds);
-								ui->pattern.setPad (r, clipSMin + ds, ui->pattern.getPad (r, clipSMax - ds));
-								ui->sendPad (r, clipSMin + ds);
-								ui->pattern.setPad (r, clipSMax - ds, pd);
-								ui->sendPad (r, clipSMax - ds);
+								const Pad pd = ui->patterns[ui->pageAct].getPad (r, clipSMin + ds);
+								ui->patterns[ui->pageAct].setPad (r, clipSMin + ds, ui->patterns[ui->pageAct].getPad (r, clipSMax - ds));
+								ui->sendPad (ui->pageAct, r, clipSMin + ds);
+								ui->patterns[ui->pageAct].setPad (r, clipSMax - ds, pd);
+								ui->sendPad (ui->pageAct, r, clipSMax - ds);
 							}
 						}
-						ui->pattern.store ();
+						ui->patterns[ui->pageAct].store ();
 						ui->drawPad();
 					}
 
@@ -2375,14 +3093,14 @@ void BOopsGUI::padsPressedCallback (BEvents::Event* event)
 							for (int s = 0; s < clipSMax; ++s)
 							{
 
-								const Pad pd = ui->pattern.getPad (clipRMin + dr, s);
-								ui->pattern.setPad (clipRMin + dr, s, ui->pattern.getPad (clipRMax - dr, s));
-								ui->sendPad (clipRMin + dr, s);
-								ui->pattern.setPad (clipRMax - dr, s, pd);
-								ui->sendPad (clipRMax - dr, s);
+								const Pad pd = ui->patterns[ui->pageAct].getPad (clipRMin + dr, s);
+								ui->patterns[ui->pageAct].setPad (clipRMin + dr, s, ui->patterns[ui->pageAct].getPad (clipRMax - dr, s));
+								ui->sendPad (ui->pageAct, clipRMin + dr, s);
+								ui->patterns[ui->pageAct].setPad (clipRMax - dr, s, pd);
+								ui->sendPad (ui->pageAct, clipRMax - dr, s);
 							}
 						}
-						ui->pattern.store ();
+						ui->patterns[ui->pageAct].store ();
 						ui->drawPad();
 					}
 
@@ -2394,7 +3112,7 @@ void BOopsGUI::padsPressedCallback (BEvents::Event* event)
 					{
 						std::vector<Pad> padRow;
 						padRow.clear ();
-						for (int s = clipSMin; s <= clipSMax; ++s) padRow.push_back (ui->pattern.getPad (r, s));
+						for (int s = clipSMin; s <= clipSMax; ++s) padRow.push_back (ui->patterns[ui->pageAct].getPad (r, s));
 						ui->clipBoard.data.push_back (padRow);
 					}
 
@@ -2406,14 +3124,14 @@ void BOopsGUI::padsPressedCallback (BEvents::Event* event)
 							for (int r = clipRMin; r <= clipRMax; ++r)
 							{
 								// Limit action to not empty pads
-								if (ui->pattern.getPad (r, s) != Pad())
+								if (ui->patterns[ui->pageAct].getPad (r, s) != Pad())
 								{
-									ui->pattern.setPad (r, s,  Pad ());
-									ui->sendPad (r, s);
+									ui->patterns[ui->pageAct].setPad (r, s,  Pad ());
+									ui->sendPad (ui->pageAct, r, s);
 								}
 							}
 						}
-						ui->pattern.store ();
+						ui->patterns[ui->pageAct].store ();
 					}
 
 					ui->clipBoard.ready = true;
@@ -2424,7 +3142,7 @@ void BOopsGUI::padsPressedCallback (BEvents::Event* event)
 			else
 			{
 				ui->padPressed = false;
-				ui->pattern.store ();
+				ui->patterns[ui->pageAct].store ();
 			}
 		}
 	}
@@ -2449,10 +3167,10 @@ void BOopsGUI::padsScrolledCallback (BEvents::Event* event)
 
 		if ((row >= 0) && (row < NR_SLOTS) && (step >= 0) && (step < maxstep))
 		{
-			Pad pd = ui->pattern.getPad (row, step);
+			Pad pd = ui->patterns[ui->pageAct].getPad (row, step);
 			pd.mix = LIMIT (pd.mix + 0.01 * wheelEvent->getDelta().y, 0.0, 1.0);
-			ui->pattern.setPad (row, step, pd);
-			ui->sendPad (row, step);
+			ui->patterns[ui->pageAct].setPad (row, step, pd);
+			ui->sendPad (ui->pageAct, row, step);
 			ui->drawPad (row, step);
 			ui->wheelScrolled = true;
 		}
@@ -2478,7 +3196,7 @@ void BOopsGUI::padsFocusedCallback (BEvents::Event* event)
 
 	if ((row >= 0) && (row < NR_SLOTS) && (step >= 0) && (step < maxstep))
 	{
-		const Pad pd = ui->pattern.getPad (row, ui->getPadOrigin (row, step));
+		const Pad pd = ui->patterns[ui->pageAct].getPad (row, ui->getPadOrigin (ui->pageAct, row, step));
 
 		ui->padSurface.focusText.setText
 		(
@@ -2565,11 +3283,11 @@ void BOopsGUI::ytButtonClickedCallback (BEvents::Event* event)
 	if (BUtilities::vsystem (argv) == -1) std::cerr << "BOops.lv2#GUI: Couldn't fork.\n";
 }
 
-int BOopsGUI::getPadOrigin (const int slot, const int step) const
+int BOopsGUI::getPadOrigin (const int page, const int slot, const int step) const
 {
 	for (int i = step; i >= 0; --i)
 	{
-		Pad pd = pattern.getPad (slot, i);
+		Pad pd = patterns[page].getPad (slot, i);
 		if ((pd.gate != 0) && (pd.size != 0) && (pd.mix != 0))
 		{
 			if (i + pd.size > step) return i;
@@ -2580,16 +3298,16 @@ int BOopsGUI::getPadOrigin (const int slot, const int step) const
 	return step;
 }
 
-void BOopsGUI::setPad (const int slot, const int step, const Pad pad)
+void BOopsGUI::setPad (const int page, const int slot, const int step, const Pad pad)
 {
 	const int size = LIMIT (pad.size, 1, NR_STEPS - step);
-	const Pad oPad = pattern.getPad (slot, step);
+	const Pad oPad = patterns[page].getPad (slot, step);
 
 	// Check if overlap with previous pad
 	if (step >= 1)
 	{
-		int pStep = getPadOrigin (slot, step - 1);
-		Pad pPad = pattern.getPad (slot, pStep);
+		int pStep = getPadOrigin (page, slot, step - 1);
+		Pad pPad = patterns[page].getPad (slot, pStep);
 		if (pPad.gate && pPad.size && pPad.mix)
 		{
 			// Previous pad overlaps start of actual pad: clip previous pad
@@ -2597,7 +3315,7 @@ void BOopsGUI::setPad (const int slot, const int step, const Pad pad)
 			{
 				Pad newPad = pPad;
 				newPad.size = step - pStep;
-				setPad (slot, pStep, newPad);
+				setPad (page, slot, pStep, newPad);
 			}
 
 			// Previous pad overlaps even the end of actual pad: create a pad after the end
@@ -2605,7 +3323,7 @@ void BOopsGUI::setPad (const int slot, const int step, const Pad pad)
 			{
 				Pad newPad = pPad;
 				newPad.size = pPad.size - (step - pStep) - size;
-				setPad (slot, step + size, newPad);
+				setPad (page, slot, step + size, newPad);
 			}
 		}
 	}
@@ -2613,25 +3331,25 @@ void BOopsGUI::setPad (const int slot, const int step, const Pad pad)
 	// Actual pad hides start of next pad
 	for (int i = step + 1; i < step + size; ++i)
 	{
-		Pad nPad = pattern.getPad (slot, i);
+		Pad nPad = patterns[page].getPad (slot, i);
 		if (nPad.gate && nPad.size && nPad.mix)
 		{
 			// Delete next pad
-			setPad (slot, i, Pad());
+			setPad (page, slot, i, Pad());
 
 			// Next pad exceeds end of actual pad: create a pad after the end
 			if (i + nPad.size > step + size)
 			{
 				Pad newPad = nPad;
 				newPad.size = nPad.size - (step - i) - size;
-				setPad (slot, step + size, newPad);
+				setPad (page, slot, step + size, newPad);
 			}
 		}
 	}
 
-	pattern.setPad (slot, step, pad);
-	sendPad (slot, step);
-	drawPad (slot, step);
+	patterns[page].setPad (slot, step, pad);
+	sendPad (page, slot, step);
+	if (page == pageAct) drawPad (slot, step);
 
 	// Show removed pads
 	for (int i = size; i < oPad.size; ++i) drawPad (slot, step + i);
@@ -2644,7 +3362,10 @@ void BOopsGUI::drawPad ()
 	int maxstep = controllerWidgets[STEPS]->getValue ();
 	for (int row = 0; row < NR_SLOTS; ++row)
 	{
-		for (int step = 0; step < maxstep; step += (pattern.getPad (row, step).size > 1 ? pattern.getPad (row, step).size : 1)) drawPad (cr, row, step);
+		for (int step = 0; step < maxstep; step += (patterns[pageAct].getPad (row, step).size > 1 ? patterns[pageAct].getPad (row, step).size : 1))
+		{
+			drawPad (cr, row, step);
+		}
 	}
 	cairo_destroy (cr);
 	padSurface.update();
@@ -2655,7 +3376,10 @@ void BOopsGUI::drawPad (const int slot)
 	cairo_surface_t* surface = padSurface.getDrawingSurface();
 	cairo_t* cr = cairo_create (surface);
 	int maxstep = controllerWidgets[STEPS]->getValue ();
-	for (int step = 0; step < maxstep; step += (pattern.getPad (slot, step).size > 1 ? pattern.getPad (slot, step).size : 1)) drawPad (cr, slot, step);
+	for (int step = 0; step < maxstep; step += (patterns[pageAct].getPad (slot, step).size > 1 ? patterns[pageAct].getPad (slot, step).size : 1))
+	{
+		drawPad (cr, slot, step);
+	}
 	cairo_destroy (cr);
 	padSurface.update();
 }
@@ -2675,8 +3399,8 @@ void BOopsGUI::drawPad (cairo_t* cr, const int row, const int step)
 	if ((!cr) || (cairo_status (cr) != CAIRO_STATUS_SUCCESS) || (row < 0) || (row >= NR_SLOTS) || (step < 0) || (step >= maxstep)) return;
 
 	// Get origin and size of pad data
-	const int p0 = getPadOrigin (row, step);
-	const Pad pd = pattern.getPad (row, p0);
+	const int p0 = getPadOrigin (pageAct, row, step);
+	const Pad pd = patterns[pageAct].getPad (row, p0);
 	const int ps = LIMIT (pd.size, 1.0, maxstep - p0);
 
 	// Get size of drawing area
@@ -2760,9 +3484,9 @@ static LV2UI_Handle instantiate (const LV2UI_Descriptor *descriptor,
 	double sz = 1.0;
 	int screenWidth  = getScreenWidth ();
 	int screenHeight = getScreenHeight ();
-	if ((screenWidth < 860) || (screenHeight < 450)) sz = 0.5;
-	else if ((screenWidth < 1280) || (screenHeight < 650)) sz = 0.66;
-	if (resize) resize->ui_resize(resize->handle, 1240 * sz, 608 * sz);
+	if ((screenWidth < 860) || (screenHeight < 480)) sz = 0.5;
+	else if ((screenWidth < 1280) || (screenHeight < 680)) sz = 0.66;
+	if (resize) resize->ui_resize(resize->handle, 1240 * sz, 648 * sz);
 
 	*widget = (LV2UI_Widget) puglGetNativeWindow (ui->getPuglView ());
 

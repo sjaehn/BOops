@@ -48,6 +48,11 @@ BOops::BOops (double samplerate, const char* bundle_path, const LV2_Feature* con
 	activated (false),
 	positions {{0.0, -1, 0.0, 0, {samplerate, 120.0f, 1.0f, 0ul, 0.0f, 4.0f}, 1.0, true}, {0.0, -1, 0.0, 0, {0.0, 120.0f, 1.0f, 0ul, 0.0f, 4.0f}, 0.0, true}},
 	transportGateKeys {false},
+	pages {},
+	pageNr (0),
+	pageMax (0),
+	midiLearn (false),
+	midiLearned {0},
 	controlPort(NULL), notifyPort(NULL),
 	audioInput1(NULL), audioInput2(NULL), audioOutput1(NULL), audioOutput2(NULL),
 	new_controllers {NULL}, globalControllers {0},
@@ -55,9 +60,12 @@ BOops::BOops (double samplerate, const char* bundle_path, const LV2_Feature* con
 	sample (NULL), sampleAmp (1.0f),
 	waveform {0}, waveformCounter (0), lastWaveformCounter (0),
 	message (), ui_on(false), scheduleNotifySlot {false},
+	scheduleNotifyPageControls {false},
 	scheduleNotifyStatus (false), scheduleResizeBuffers (false), scheduleSetFx {false},
 	scheduleNotifyWaveformToGui (false), scheduleNotifyTransportGateKeys (false),
-	scheduleNotifySamplePathToGui (false), scheduleStateChanged (false)
+	scheduleNotifySamplePathToGui (false),
+	scheduleNotifyMidiLearnedToGui (false),
+	scheduleStateChanged (false)
 
 {
 	if (bundle_path) strncpy (pluginPath, bundle_path, 1023);
@@ -89,6 +97,9 @@ BOops::BOops (double samplerate, const char* bundle_path, const LV2_Feature* con
 
 	// Initialize slots
 	std::fill (slots, slots + NR_SLOTS, Slot (this, FX_NONE, nullptr, nullptr, 16, 1.0f, 0.25 * samplerate));
+
+	// Init pages
+	pages.fill ({{0, 0, 0, 0}, std::array<std::array<Pad, NR_STEPS>, NR_SLOTS>()});
 }
 
 BOops::~BOops ()
@@ -336,7 +347,8 @@ void BOops::run (uint32_t n_samples)
 			if (obj->body.otype == urids.bOops_uiOn)
 			{
 				ui_on = true;
-				std::fill (scheduleNotifySlot, scheduleNotifySlot + NR_SLOTS, true);
+				std::fill ((bool*)scheduleNotifySlot, (bool*)scheduleNotifySlot + NR_PAGES * NR_SLOTS, true);
+				std::fill (scheduleNotifyPageControls, scheduleNotifyPageControls + NR_PAGES, true);
 				std::fill (scheduleNotifyShape, scheduleNotifyShape + NR_SLOTS, true);
 				scheduleNotifyTransportGateKeys = true;
 				scheduleNotifySamplePathToGui = true;
@@ -344,6 +356,83 @@ void BOops::run (uint32_t n_samples)
 
 			// Process GUI off status data
 			else if (obj->body.otype == urids.bOops_uiOff) ui_on = false;
+
+
+			// Process page properties
+			else if (obj->body.otype == urids.bOops_pagePropertiesEvent)
+			{
+				LV2_Atom *oId = NULL, *oStatus = NULL, *oChannel = NULL, *oMsg = NULL, *oValue = NULL;
+				int id = -1;
+				lv2_atom_object_get (obj,
+						     urids.bOops_pageID, &oId,
+		     				     urids.bOops_pageStatus, &oStatus,
+		     				     urids.bOops_pageChannel, &oChannel,
+		     				     urids.bOops_pageMessage, &oMsg,
+		     				     urids.bOops_pageValue, &oValue,
+						     NULL);
+
+				if (oId && (oId->type == urids.atom_Int) && (((LV2_Atom_Int*)oId)->body >= 0) && (((LV2_Atom_Int*)oId)->body < NR_PAGES))
+     				{
+     					id = ((LV2_Atom_Int*)oId)->body;
+
+					if (oStatus && (oStatus->type == urids.atom_Int)) pages[id].controls.status = LIMIT (((LV2_Atom_Int*)oStatus)->body, 0, 15);
+     					if (oChannel && (oChannel->type == urids.atom_Int)) pages[id].controls.channel = LIMIT (((LV2_Atom_Int*)oChannel)->body, 0, 16);
+     					if (oMsg && (oMsg->type == urids.atom_Int)) pages[id].controls.message = LIMIT (((LV2_Atom_Int*)oMsg)->body, 0, 128);
+     					if (oValue && (oValue->type == urids.atom_Int)) pages[id].controls.value = LIMIT (((LV2_Atom_Int*)oValue)->body, 0, 128);
+     				}
+
+				scheduleStateChanged = true;
+			}
+
+
+			// Process page selection
+			else if (obj->body.otype == urids.bOops_statusEvent)
+			{
+				LV2_Atom * oMl = NULL, *oId = NULL, *oMax = NULL;
+				lv2_atom_object_get (obj,
+						     urids.bOops_requestMidiLearn, &oMl,
+						     urids.bOops_pageID, &oId,
+						     urids.bOops_pageMax, &oMax,
+						     NULL);
+
+				// Midi learn request notification
+				if (oMl && (oMl->type == urids.atom_Bool)) midiLearn = ((LV2_Atom_Bool*)oMl)->body;
+
+				if (oId && (oId->type == urids.atom_Int) && (((LV2_Atom_Int*)oId)->body >= 0) && (((LV2_Atom_Int*)oId)->body < NR_PAGES))
+     				{
+     					const int id = ((LV2_Atom_Int*)oId)->body;
+
+					// Schedule fader for page change
+					if (id != pageNr)
+					{
+						Position np = backPosition();
+						pushBackPosition (np);
+						pageNr = id;
+					}
+
+					if (pageMax < pageNr) pageMax = pageNr;
+
+					scheduleStateChanged = true;
+     				}
+
+				if (oMax && (oMax->type == urids.atom_Int) && (((LV2_Atom_Int*)oMax)->body >= 0) && (((LV2_Atom_Int*)oMax)->body < NR_PAGES))
+     				{
+     					pageMax = ((LV2_Atom_Int*)oMax)->body;
+
+					if (pageNr > pageMax)
+					{
+						// Limit pageNr to pageMax
+						pageNr = pageMax;
+
+						// Schedule fader for page change
+						Position np = backPosition();
+						pushBackPosition (np);
+					}
+
+					scheduleStateChanged = true;
+     				}
+			}
+
 
 			// Process transportGateKey data
 			else if (obj->body.otype == urids.bOops_transportGateKeyEvent)
@@ -375,12 +464,20 @@ void BOops::run (uint32_t n_samples)
 			// Process slot pads data
 			else if (obj->body.otype == urids.bOops_slotEvent)
 			{
-				LV2_Atom *oSl = NULL, *oPd = NULL;
+				LV2_Atom *oPg = NULL, *oSl = NULL, *oPd = NULL;
+				int pg = 0;
 				int slot = -1;
 				lv2_atom_object_get (obj,
+					 	     urids.bOops_pageID, &oPg,
 					 	     urids.bOops_slot, &oSl,
 						     urids.bOops_pads, &oPd,
 						     NULL);
+
+				// Page nr notification
+     				if (oPg && (oPg->type == urids.atom_Int) && (((LV2_Atom_Int*)oPg)->body >= 0) && (((LV2_Atom_Int*)oPg)->body < NR_PAGES))
+     				{
+     					pg = ((LV2_Atom_Int*)oPg)->body;
+     				}
 
 				// Slot nr notification
 				if (oSl && (oSl->type == urids.atom_Int) && (((LV2_Atom_Int*)oSl)->body >= 0) && (((LV2_Atom_Int*)oSl)->body < NR_SLOTS))
@@ -396,7 +493,12 @@ void BOops::run (uint32_t n_samples)
 					{
 						const uint32_t size = (uint32_t) ((oPd->size - sizeof(LV2_Atom_Vector_Body)) / sizeof (Pad));
 						Pad* pad = (Pad*) (&vec->body + 1);
-						for (unsigned int i = 0; (i < size) && (i < NR_STEPS); ++i) slots[slot].setPad (i, pad[i]);
+						for (unsigned int i = 0; (i < size) && (i < NR_STEPS); ++i) pages[pg].pads[slot][i] = pad[i];
+						if (pg == pageNr)
+						{
+							for (unsigned int i = 0; (i < size) && (i < NR_STEPS); ++i) slots[slot].setPad (i, pad[i]);
+						}
+
 						scheduleStateChanged = true;
 					}
 				}
@@ -405,16 +507,24 @@ void BOops::run (uint32_t n_samples)
 			// Process single pad data
 			else if (obj->body.otype == urids.bOops_padEvent)
 			{
-				LV2_Atom *oSl = NULL, *oSt = NULL, *oPd = NULL;
+				LV2_Atom *oPg = NULL, *oSl = NULL, *oSt = NULL, *oPd = NULL;
+				int pg = 0;
 				int slot = -1;
 				int step = -1;
 				lv2_atom_object_get (obj,
+					 	     urids.bOops_pageID, &oPg,
 					 	     urids.bOops_slot, &oSl,
 						     urids.bOops_step, &oSt,
 						     urids.bOops_pads, &oPd,
 						     NULL);
 
-				// Slot nr notification
+				// Page nr notification
+  				if (oPg && (oPg->type == urids.atom_Int) && (((LV2_Atom_Int*)oPg)->body >= 0) && (((LV2_Atom_Int*)oPg)->body < NR_PAGES))
+  				{
+  					pg = ((LV2_Atom_Int*)oPg)->body;
+  				}
+
+		     		// Slot nr notification
 				if (oSl && (oSl->type == urids.atom_Int) && (((LV2_Atom_Int*)oSl)->body >= 0) && (((LV2_Atom_Int*)oSl)->body < NR_SLOTS))
 				{
 					slot = ((LV2_Atom_Int*)oSl)->body;
@@ -436,7 +546,8 @@ void BOops::run (uint32_t n_samples)
 						if (size == 1)
 						{
 							Pad* pad = (Pad*) (&vec->body + 1);
-							slots[slot].setPad (step, *pad);
+							pages[pg].pads[slot][step] = *pad;
+							if (pg == pageNr) slots[slot].setPad (step, *pad);
 							scheduleStateChanged = true;
 						}
 					}
@@ -645,78 +756,127 @@ void BOops::run (uint32_t n_samples)
 		if (ev->body.type == urids.midi_Event)
 		{
 			const uint8_t* const msg = (const uint8_t*)(ev + 1);
+			const uint8_t status = (msg[0] >> 4);
+			const uint8_t channel = msg[0] & 0x0F;
+			const uint8_t note = ((status == 8) || (status == 9) || (status == 11) ? msg[1] : 0);
+			const uint8_t value = ((status == 8) || (status == 9) || (status == 11) ? msg[2] : 0);
+
+			if (midiLearn)
+			{
+				midiLearned[0] = status;
+				midiLearned[1] = channel;
+				midiLearned[2] = note;
+				midiLearned[3] = value;
+				midiLearn = false;
+				scheduleNotifyMidiLearnedToGui = true;
+			}
 
 			// Analyze MIDI event
-			if (globalControllers[PLAY_MODE] == MIDI_CONTROLLED)
+			else
 			{
-				const uint8_t typ = lv2_midi_message_type(msg);
-				// uint8_t chn = msg[0] & 0x0F;
-				const uint8_t note = msg[1];
-				const bool isTransportGateKey = ((note < NR_PIANO_KEYS) && transportGateKeys[note]);
-
-
-				switch (typ)
+				for (int p = 0; p <= pageMax; ++p)
 				{
-					case LV2_MIDI_MSG_NOTE_ON:
+					if
+					(
+						pages[p].controls.status &&
+						(pages[p].controls.status == status) &&
+						(
+							(pages[p].controls.channel == 0) ||
+							(pages[p].controls.channel - 1 == channel)
+						) &&
+						(
+							(pages[p].controls.message == 128) ||
+							(pages[p].controls.message == note)
+						) &&
+						(
+							(pages[p].controls.value == 128) ||
+							(pages[p].controls.value == value)
+						)
+					)
 					{
-						if (isTransportGateKey)
+						if (p != pageNr)
 						{
-							Position p = backPosition();
+							Position np = backPosition();
+							pushBackPosition (np);
+							pageNr = p;
+							scheduleNotifyStatus = true;
+						}
 
-							switch (int (globalControllers[ON_MIDI]))
+						break;
+					}
+				}
+
+				if (globalControllers[PLAY_MODE] == MIDI_CONTROLLED)
+				{
+					const uint8_t typ = lv2_midi_message_type(msg);
+					// uint8_t chn = msg[0] & 0x0F;
+					const uint8_t note = msg[1];
+					const bool isTransportGateKey = ((note < NR_PIANO_KEYS) && transportGateKeys[note]);
+
+
+					switch (typ)
+					{
+						case LV2_MIDI_MSG_NOTE_ON:
+						{
+							if (isTransportGateKey)
 							{
-								case 0:	// Restart
-									p.offset = floorfrac (p.sequence + p.offset);
-									p.sequence = 0;
-									p.refFrame = ev->time.frames;
-									break;
+								Position p = backPosition();
 
-								case 2: // Restart & sync
-									{
-										double steppos = fmod (p.sequence, 1.0 / double (globalControllers[STEPS]));
-										p.offset = floorfrac (1.0 + p.sequence + p.offset - steppos);
-										p.sequence = steppos;
+								switch (int (globalControllers[ON_MIDI]))
+								{
+									case 0:	// Restart
+										p.offset = floorfrac (p.sequence + p.offset);
+										p.sequence = 0;
 										p.refFrame = ev->time.frames;
-									}
-									break;
+										break;
 
-								default:// Continue
-									break;
+									case 2: // Restart & sync
+										{
+											double steppos = fmod (p.sequence, 1.0 / double (globalControllers[STEPS]));
+											p.offset = floorfrac (1.0 + p.sequence + p.offset - steppos);
+											p.sequence = steppos;
+											p.refFrame = ev->time.frames;
+										}
+										break;
+
+									default:// Continue
+										break;
+								}
+
+								p.playing = true;
+								pushBackPosition (p);
+								scheduleNotifyStatus = true;
 							}
-
-							p.playing = true;
-							pushBackPosition (p);
-							scheduleNotifyStatus = true;
 						}
-					}
-					break;
+						break;
 
-					case LV2_MIDI_MSG_NOTE_OFF:
-					{
-						if (isTransportGateKey)
+						case LV2_MIDI_MSG_NOTE_OFF:
 						{
-							Position p = backPosition();
-							p.playing = false;
-							pushBackPosition (p);
-							scheduleNotifyStatus = true;
+							if (isTransportGateKey)
+							{
+								Position p = backPosition();
+								p.playing = false;
+								pushBackPosition (p);
+								scheduleNotifyStatus = true;
+							}
 						}
-					}
-					break;
+						break;
 
-					case LV2_MIDI_MSG_CONTROLLER:
-					{
-						if ((note == LV2_MIDI_CTL_ALL_NOTES_OFF) ||
-						    (note == LV2_MIDI_CTL_ALL_SOUNDS_OFF))
+						case LV2_MIDI_MSG_CONTROLLER:
 						{
-							Position p = backPosition();
-							p.playing = false;
-							pushBackPosition (p);
-							scheduleNotifyStatus = true;
+							if ((note == LV2_MIDI_CTL_ALL_NOTES_OFF) ||
+							    (note == LV2_MIDI_CTL_ALL_SOUNDS_OFF))
+							{
+								Position p = backPosition();
+								p.playing = false;
+								pushBackPosition (p);
+								scheduleNotifyStatus = true;
+							}
 						}
-					}
-					break;
+						break;
 
-					default: break;
+						default: break;
+					}
 				}
 			}
 		}
@@ -747,11 +907,19 @@ void BOops::run (uint32_t n_samples)
 	{
 		if (message.isScheduled ()) notifyMessageToGui ();
 		if (scheduleNotifyStatus) notifyStatusToGui ();
-		for (int i = 0; i < NR_SLOTS; ++i) {if (scheduleNotifySlot[i]) notifySlotToGui (i);}
+		for (int i = 0; i < NR_PAGES; ++i)
+		{
+			for (int j = 0; j < NR_SLOTS; ++j)
+			{
+				if (scheduleNotifySlot[i][j]) notifySlotToGui (i, j);
+			}
+		}
+		for (int i = 0; i < NR_PAGES; ++i) {if (scheduleNotifyPageControls[i]) notifyPageControls (i);}
 		for (int i = 0; i < NR_SLOTS; ++i) {if (scheduleNotifyShape[i]) notifyShapeToGui (i);}
 		if (scheduleNotifyTransportGateKeys) notifyTransportGateKeysToGui();
 		if (scheduleNotifyWaveformToGui) notifyWaveformToGui (lastWaveformCounter, waveformCounter);
 		if (scheduleNotifySamplePathToGui) notifySamplePathToGui();
+		if (scheduleNotifyMidiLearnedToGui) notifyMidiLearnedToGui ();
 	}
 	if (scheduleStateChanged) notifyStateChanged();
 	lv2_atom_forge_pop (&forge, &notify_frame);
@@ -770,17 +938,17 @@ void BOops::resizeSteps ()
 	}
 }
 
-void BOops::notifySlotToGui (const int slot)
+void BOops::notifySlotToGui (const int page, const int slot)
 {
 	Pad pads[NR_STEPS];
-	for (unsigned int i = 0; i < NR_STEPS; ++i) pads[i] = slots[slot].getPad (i);
+	for (unsigned int i = 0; i < NR_STEPS; ++i) pads[i] = pages[page].pads[slot][i];
 
 	LV2_Atom_Forge_Frame frame;
 	lv2_atom_forge_frame_time(&forge, 0);
-	forgePads (&forge, &frame, slot, pads, NR_STEPS);
+	forgePads (&forge, &frame, page, slot, pads, NR_STEPS);
 	lv2_atom_forge_pop(&forge, &frame);
 
-	scheduleNotifySlot[slot] = false;
+	scheduleNotifySlot[page][slot] = false;
 }
 
 void BOops::notifyShapeToGui (const int slot)
@@ -825,6 +993,10 @@ void BOops::notifyStatusToGui()
 	lv2_atom_forge_float(&forge, p.transport.bpm);
 	lv2_atom_forge_key(&forge, urids.bOops_position);
 	lv2_atom_forge_double(&forge, pos);
+	lv2_atom_forge_key(&forge, urids.bOops_pageID);
+	lv2_atom_forge_int(&forge, pageNr);
+	lv2_atom_forge_key(&forge, urids.bOops_pageMax);
+	lv2_atom_forge_int(&forge, pageMax);
 	lv2_atom_forge_pop(&forge, &frame);
 
 	scheduleNotifyStatus = false;
@@ -914,6 +1086,27 @@ void BOops::notifyStateChanged()
 	scheduleStateChanged = false;
 }
 
+void BOops::notifyPageControls (const int pageId)
+{
+	LV2_Atom_Forge_Frame frame;
+	lv2_atom_forge_frame_time (&forge, 0);
+	forgePageControls (&forge, &frame, pageId);
+	lv2_atom_forge_pop(&forge, &frame);
+	scheduleNotifyPageControls[pageId] = false;
+}
+
+void BOops::notifyMidiLearnedToGui ()
+{
+	uint32_t ml = midiLearned[0] * 0x1000000 + midiLearned[1] * 0x10000 + midiLearned[2] * 0x100 + midiLearned[3];
+	LV2_Atom_Forge_Frame frame;
+	lv2_atom_forge_frame_time(&forge, 0);
+	lv2_atom_forge_object(&forge, &frame, 0, urids.bOops_statusEvent);
+	lv2_atom_forge_key(&forge, urids.bOops_midiLearned);
+	lv2_atom_forge_int(&forge, ml);
+	lv2_atom_forge_pop(&forge, &frame);
+	scheduleNotifyMidiLearnedToGui = false;
+}
+
 LV2_Atom_Forge_Ref BOops::forgeSamplePath (LV2_Atom_Forge* forge, LV2_Atom_Forge_Frame* frame, const char* path, const int64_t start, const int64_t end, const float amp, const int32_t loop)
 {
 	const LV2_Atom_Forge_Ref msg = lv2_atom_forge_object (forge, frame, 0, urids.bOops_samplePathEvent);
@@ -944,7 +1137,7 @@ LV2_Atom_Forge_Ref BOops::forgeTransportGateKeys (LV2_Atom_Forge* forge, LV2_Ato
 	return msg;
 }
 
-LV2_Atom_Forge_Ref  BOops::forgeShape (LV2_Atom_Forge* forge, LV2_Atom_Forge_Frame* frame, const int slot, const Shape<SHAPE_MAXNODES>* shape)
+LV2_Atom_Forge_Ref BOops::forgeShape (LV2_Atom_Forge* forge, LV2_Atom_Forge_Frame* frame, const int slot, const Shape<SHAPE_MAXNODES>* shape)
 {
 	float nodes[SHAPE_MAXNODES][7];
 	for (unsigned int i = 0; i < shape->size(); ++i)
@@ -970,15 +1163,37 @@ LV2_Atom_Forge_Ref  BOops::forgeShape (LV2_Atom_Forge* forge, LV2_Atom_Forge_Fra
 	return msg;
 }
 
-LV2_Atom_Forge_Ref BOops::forgePads (LV2_Atom_Forge* forge, LV2_Atom_Forge_Frame* frame, const int slot, const Pad* pads, const size_t size)
+LV2_Atom_Forge_Ref BOops::forgePads (LV2_Atom_Forge* forge, LV2_Atom_Forge_Frame* frame, const int page, const int slot, const Pad* pads, const size_t size)
 {
 	const LV2_Atom_Forge_Ref msg = lv2_atom_forge_object(forge, frame, 0, urids.bOops_slotEvent);
 	if (msg)
 	{
+		lv2_atom_forge_key(forge, urids.bOops_pageID);
+		lv2_atom_forge_int(forge, page);
 		lv2_atom_forge_key(forge, urids.bOops_slot);
 		lv2_atom_forge_int(forge, slot);
 		lv2_atom_forge_key(forge, urids.bOops_pads);
 		lv2_atom_forge_vector(forge, sizeof(float), urids.atom_Float, sizeof(Pad) / sizeof(float) * NR_STEPS, (void*) pads);
+	}
+	return msg;
+}
+
+LV2_Atom_Forge_Ref BOops::forgePageControls (LV2_Atom_Forge* forge, LV2_Atom_Forge_Frame* frame, const int pageId)
+{
+	const LV2_Atom_Forge_Ref msg = lv2_atom_forge_object(forge, frame, 0, urids.bOops_pagePropertiesEvent);
+	if (msg)
+	{
+		const PageControls& controls = pages[pageId].controls;
+		lv2_atom_forge_key(forge, urids.bOops_pageID);
+		lv2_atom_forge_int(forge, pageId);
+		lv2_atom_forge_key(forge, urids.bOops_pageStatus);
+		lv2_atom_forge_int(forge, controls.status);
+		lv2_atom_forge_key(forge, urids.bOops_pageChannel);
+		lv2_atom_forge_int(forge, controls.channel);
+		lv2_atom_forge_key(forge, urids.bOops_pageMessage);
+		lv2_atom_forge_int(forge, controls.message);
+		lv2_atom_forge_key(forge, urids.bOops_pageValue);
+		lv2_atom_forge_int(forge, controls.value);
 	}
 	return msg;
 }
@@ -1140,7 +1355,18 @@ void BOops::play (uint32_t start, uint32_t end)
 		audioOutput1[i] = (1.0 - p.fader) * audioOutput1[i] + p.fader * output.left;
 		audioOutput2[i] = (1.0 - p.fader) * audioOutput2[i] + p.fader * output.right;
 
-		if ((p.fader == 0) && (sizePosition() > 1)) popFrontPosition();
+		// Just faded out ?
+		if ((p.fader <= 0) && (sizePosition() > 1))
+		{
+			// Switch to new position data to fade in
+			popFrontPosition();
+
+			// Copy pads
+			for (int i = 0; i < NR_SLOTS; ++i)
+			{
+				for (int j = 0; j < NR_STEPS; ++j) slots[i].setPad (j, pages[pageNr].pads[i][j]);
+			}
+		}
 	}
 }
 
@@ -1229,26 +1455,45 @@ LV2_State_Status BOops::state_save (LV2_State_Store_Function store, LV2_State_Ha
 		store (handle, urids.bOops_transportGateKeys, &atom, keysize * sizeof (int) + sizeof(LV2_Atom_Vector_Body), urids.atom_Vector, LV2_STATE_IS_POD);
 	}
 
+	// Store pageNr
+	store (handle, urids.bOops_pageID, &pageNr, sizeof (int), urids.atom_Int, LV2_STATE_IS_POD);
+
+	// Store pageMax
+	store (handle, urids.bOops_pageMax, &pageMax, sizeof (int), urids.atom_Int, LV2_STATE_IS_POD);
+
+	// Store page control properties
+	{
+		AtomPageControls atom;
+		for (int i = 0; i <= pageMax; ++i) atom.data[i] = pages[i].controls;
+		atom.body.child_type = urids.atom_Int;
+		atom.body.child_size = sizeof(int);
+
+		store (handle, urids.bOops_pageControls, &atom, (pageMax + 1) * sizeof (PageControls) + sizeof(LV2_Atom_Vector_Body), urids.atom_Vector, LV2_STATE_IS_POD);
+	}
+
 	// Store pads
 	{
 		char padDataString[0x8010] = "\nMatrix data:\n";
 
-		for (int slotNr = 0; slotNr < NR_SLOTS; ++slotNr)
+		for (int pgNr = 0; pgNr <= pageMax; ++pgNr)
 		{
-			if ((slots[slotNr].effect == FX_NONE) || (slots[slotNr].effect == FX_INVALID)) continue;
-
-			for (int stepNr = 0; stepNr < NR_STEPS; ++stepNr)
+			for (int slotNr = 0; slotNr < NR_SLOTS; ++slotNr)
 			{
-				Pad p = slots[slotNr].getPad (stepNr);
-				if ((p.gate > 0) && (p.size > 0) && (p.mix > 0))
-				{
-					char valueString[64];
-					snprintf (valueString, 62, "sl:%d; st:%d; gt:%1.3f; sz:%d; mx:%1.3f", slotNr, stepNr, p.gate, int (p.size), p.mix);
-					if ((slotNr < NR_SLOTS - 1) || (stepNr < NR_STEPS)) strcat (valueString, ";\n");
-					else strcat(valueString, "\n");
-					strcat (padDataString, valueString);
-				}
+				if ((slots[slotNr].effect == FX_NONE) || (slots[slotNr].effect == FX_INVALID)) continue;
 
+				for (int stepNr = 0; stepNr < NR_STEPS; ++stepNr)
+				{
+					Pad p = pages[pgNr].pads[slotNr][stepNr];
+					if ((p.gate > 0) && (p.size > 0) && (p.mix > 0))
+					{
+						char valueString[64];
+						snprintf (valueString, 62, "pg:%d; sl:%d; st:%d; gt:%1.3f; sz:%d; mx:%1.3f", pgNr, slotNr, stepNr, p.gate, int (p.size), p.mix);
+						if ((slotNr < NR_SLOTS - 1) || (stepNr < NR_STEPS)) strcat (valueString, ";\n");
+						else strcat(valueString, "\n");
+						strcat (padDataString, valueString);
+					}
+
+				}
 			}
 		}
 		store (handle, urids.bOops_statePad, padDataString, strlen (padDataString) + 1, urids.atom_String, LV2_STATE_IS_POD);
@@ -1447,34 +1692,113 @@ LV2_State_Status BOops::state_restore (LV2_State_Retrieve_Function retrieve, LV2
 		scheduleNotifyTransportGateKeys = true;
         }
 
+	// Retrieve pageNr
+	pageNr = 0;
+	const void* pageNrData = retrieve(handle, urids.bOops_pageID, &size, &type, &valflags);
+	if (pageNrData && (type == urids.atom_Int))
+	{
+		const int pgNr = LIMIT (*(const int*)pageNrData, 0, NR_PAGES - 1);
+
+		if (pgNr != pageNr)
+		{
+			Position np = backPosition();
+			pushBackPosition (np);
+		}
+
+		pageNr = pgNr;
+		if (pageMax < pageNr) pageMax = pageNr;
+		fprintf(stderr, "Retrieve pageNr = %i\n", pageNr);
+        }
+
+	// Retrieve pageMax
+	pageMax = 0;
+	const void* pageMaxData = retrieve(handle, urids.bOops_pageMax, &size, &type, &valflags);
+	if (pageMaxData && (type == urids.atom_Int))
+	{
+		pageMax = LIMIT (*(const int*)pageMaxData, 0, NR_PAGES - 1);
+
+		if (pageNr > pageMax)
+		{
+			// Limit pageNr to pageMax
+			pageNr = pageMax;
+
+			// Schedule fader for page change
+			Position np = backPosition();
+			pushBackPosition (np);
+		}
+		fprintf(stderr, "Retrieve pageMax = %i\n", pageMax);
+        }
+	scheduleNotifyStatus = true;
+
+	// Retrieve page control properties
+	const void* pageControlsData = retrieve(handle, urids.bOops_pageControls, &size, &type, &valflags);
+	if (pageControlsData && (type == urids.atom_Vector))
+	{
+		const AtomPageControls* atom = (const AtomPageControls*) pageControlsData;
+		const int nr = LIMIT ((size - sizeof (LV2_Atom_Vector_Body)) / sizeof(PageControls), 0, NR_PAGES - 1);
+
+		for (Page& page : pages) page.controls = {0, 0, 0, 0};
+		for (int i = 0; i < nr; ++i) pages[i].controls = atom->data[i];
+		for (int i = 0; i < NR_PAGES; ++i) scheduleNotifyPageControls[i] = true;
+        }
 
 	// Retrieve pattern
 	const void* padData = retrieve(handle, urids.bOops_statePad, &size, &type, &valflags);
 	if (padData && (type == urids.atom_String))
 	{
+		// Clear pads
+		for (int pg = 0; pg < NR_PAGES; ++pg)
+		{
+			for (std::array<Pad, NR_STEPS>& row : pages[pg].pads) row.fill (Pad());
+		}
+
+		// Also clear pads stored in slots
 		for (int slotNr = 0; slotNr < NR_SLOTS; ++slotNr)
 		{
 			for (unsigned int i = 0; i < NR_STEPS; ++i) slots[slotNr].setPad (i, Pad());
 		}
 
 		std::string padDataString = (char*) padData;
-		const std::string keywords[5] = {"sl:", "st:", "gt:", "sz:", "mx:"};
+		const std::string keywords[6] = {"pg:", "sl:", "st:", "gt:", "sz:", "mx:"};
 
 		// Restore pads
 		// Parse retrieved data
 		while (!padDataString.empty())
 		{
-			// Look for mandatory "sl:"
-			int slotNr = -1;
+			// Look for optional "pg:"
+			int pgNr = 0;
 			size_t strPos = padDataString.find (keywords[0]);
 			size_t nextPos = 0;
+			if (strPos != std::string::npos)
+			{
+				if (strPos + 3 > padDataString.length()) break;	// Nothing more after pg => end
+				padDataString.erase (0, strPos + 3);
+				try {pgNr = BUtilities::stof (padDataString, &nextPos);}
+				catch  (const std::exception& e)
+				{
+					fprintf (stderr, "BOops.lv2: Restore pad state incomplete. Can't parse page nr from \"%s...\"\n", padDataString.substr (0, 63).c_str());
+					break;
+				}
+
+				if (nextPos > 0) padDataString.erase (0, nextPos);
+				if ((pgNr < 0) || (pgNr >= NR_PAGES))
+				{
+					fprintf (stderr, "BOops.lv2: Restore pad state incomplete. Invalid page nr %i.\n", pgNr);
+					break;
+				}
+			}
+
+			// Look for mandatory "sl:"
+			int slotNr = -1;
+			strPos = padDataString.find (keywords[1]);
+			nextPos = 0;
 			if (strPos == std::string::npos) break;	// No "sl:" found => end
 			if (strPos + 3 > padDataString.length()) break;	// Nothing more after sl => end
 			padDataString.erase (0, strPos + 3);
 			try {slotNr = BUtilities::stof (padDataString, &nextPos);}
 			catch  (const std::exception& e)
 			{
-				fprintf (stderr, "BOops.lv2: Restore pad state incomplete. Can't parse slot nr from \"%s...\"", padDataString.substr (0, 63).c_str());
+				fprintf (stderr, "BOops.lv2: Restore pad state incomplete. Can't parse slot nr from \"%s...\"\n", padDataString.substr (0, 63).c_str());
 				break;
 			}
 
@@ -1487,7 +1811,7 @@ LV2_State_Status BOops::state_restore (LV2_State_Retrieve_Function retrieve, LV2
 
 			// Look for mandatory "st:"
 			int stepNr = -1;
-			strPos = padDataString.find (keywords[1]);
+			strPos = padDataString.find (keywords[2]);
 			nextPos = 0;
 			if (strPos == std::string::npos) break;	// No "st:" found => end
 			if (strPos + 3 > padDataString.length()) break;	// Nothing more after st => end
@@ -1495,7 +1819,7 @@ LV2_State_Status BOops::state_restore (LV2_State_Retrieve_Function retrieve, LV2
 			try {stepNr = BUtilities::stof (padDataString, &nextPos);}
 			catch  (const std::exception& e)
 			{
-				fprintf (stderr, "BOops.lv2: Restore pad state incomplete. Can't parse step nr from \"%s...\"", padDataString.substr (0, 63).c_str());
+				fprintf (stderr, "BOops.lv2: Restore pad state incomplete. Can't parse step nr from \"%s...\"\n", padDataString.substr (0, 63).c_str());
 				break;
 			}
 
@@ -1507,7 +1831,7 @@ LV2_State_Status BOops::state_restore (LV2_State_Retrieve_Function retrieve, LV2
 			}
 
 			// Look for pad data
-			for (int i = 2; i < 5; ++i)
+			for (int i = 3; i < 6; ++i)
 			{
 				nextPos = 0;
 				strPos = padDataString.find (keywords[i]);
@@ -1522,32 +1846,33 @@ LV2_State_Status BOops::state_restore (LV2_State_Retrieve_Function retrieve, LV2
 				try {val = BUtilities::stof (padDataString, &nextPos);}
 				catch  (const std::exception& e)
 				{
-					fprintf (stderr, "BOops.lv2: Restore padstate incomplete. Can't parse %s from \"%s...\"",
+					fprintf (stderr, "BOops.lv2: Restore pad state incomplete. Can't parse %s from \"%s...\"\n",
 							 keywords[i].substr(0,2).c_str(), padDataString.substr (0, 63).c_str());
 					break;
 				}
 
 				if (nextPos > 0) padDataString.erase (0, nextPos);
 
-				Pad p = slots[slotNr].getPad (stepNr);
+				Pad& p = pages[pgNr].pads[slotNr][stepNr];
 				switch (i)
 				{
-					case 2:	p.gate = LIMIT (val, 0, 1);
+					case 3:	p.gate = LIMIT (val, 0, 1);
 						break;
 
-					case 3:	p.size = LIMIT (val, 1, NR_STEPS - stepNr);
+					case 4:	p.size = LIMIT (val, 1, NR_STEPS - stepNr);
 						break;
 
-					case 4:	p.mix = LIMIT (val, 0, 1);
+					case 5:	p.mix = LIMIT (val, 0, 1);
 						break;
 
 					default:break;
 				}
-				slots[slotNr].setPad (stepNr, p);
+				if (pageNr == pgNr) slots[slotNr].setPad (stepNr, p);
 			}
 		}
 
-		std::fill (scheduleNotifySlot, scheduleNotifySlot + NR_SLOTS, true);
+		// Schedule notify GUI
+		std::fill ((bool*)scheduleNotifySlot, (bool*)scheduleNotifySlot + NR_PAGES * NR_SLOTS, true);
 	}
 
 	// Retrieve shapes

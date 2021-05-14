@@ -84,6 +84,16 @@ void getURIs (LV2_URID_Map* m, BOopsURIDs* uris)
 	uris->bOops_sampleLoop = m->map(m->handle, BOOPS_URI "#sampleLoop");
 	uris->bOops_installSample = m->map(m->handle, BOOPS_URI "#installSample");
 	uris->bOops_sampleFreeEvent = m->map(m->handle, BOOPS_URI "#sampleFreeEvent");
+	uris->bOops_pagePropertiesEvent = m->map(m->handle, BOOPS_URI "#pagePropertiesEvent");
+	uris->bOops_pageID = m->map(m->handle, BOOPS_URI "#pageID");
+	uris->bOops_pageMax = m->map(m->handle, BOOPS_URI "#pageMax");
+	uris->bOops_pageControls = m->map(m->handle, BOOPS_URI "#pageControls");
+	uris->bOops_pageStatus = m->map(m->handle, BOOPS_URI "#pageStatus");
+	uris->bOops_pageChannel = m->map(m->handle, BOOPS_URI "#pageChannel");
+	uris->bOops_pageMessage = m->map(m->handle, BOOPS_URI "#pageMessage");
+	uris->bOops_pageValue = m->map(m->handle, BOOPS_URI "#pageValue");
+	uris->bOops_requestMidiLearn = m->map(m->handle, BOOPS_URI "#requestMidiLearn");
+	uris->bOops_midiLearned = m->map(m->handle, BOOPS_URI "#midiLearned");
 }
 
 #endif /* GETURIS_HPP_ */

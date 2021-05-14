@@ -68,6 +68,7 @@ GUI_CXX_INCL = \
 	src/BWidgets/HPianoRoll.cpp \
 	src/BWidgets/PianoWidget.cpp \
 	src/BWidgets/MessageBox.cpp \
+	src/BWidgets/TextToggleButton.cpp \
 	src/BWidgets/TextButton.cpp \
 	src/BWidgets/DrawingSurface.cpp \
 	src/BWidgets/PopupListBox.cpp \

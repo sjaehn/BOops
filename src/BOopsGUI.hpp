@@ -37,6 +37,7 @@
 #include "BWidgets/PopupListBox.hpp"
 #include "BWidgets/HPianoRoll.hpp"
 #include "BWidgets/TextButton.hpp"
+#include "BWidgets/TextToggleButton.hpp"
 #include "BWidgets/HSlider.hpp"
 #include "screen.h"
 
@@ -62,6 +63,13 @@
 #include "MonitorWidget.hpp"
 #include "SampleChooser.hpp"
 #include "HLine.hpp"
+#include "SymbolWidget.hpp"
+
+#ifdef LOCALEFILE
+#include LOCALEFILE
+#else
+#include "Locale_EN.hpp"
+#endif
 
 #define BG_FILE "inc/surface.png"
 #define HELP_URL "https://github.com/sjaehn/BOops/blob/master/README.md"
@@ -85,6 +93,14 @@ enum editIndex
 	MAXEDIT		= 8
 };
 
+enum PageControlsIndex
+{
+	PAGE_CONTROLS_STATUS	= 0,
+	PAGE_CONTROLS_CHANNEL	= 1,
+	PAGE_CONTROLS_MESSAGE	= 2,
+	PAGE_CONTROLS_VALUE	= 3,
+};
+
 const std::string editLabels[MAXEDIT] = {"Select & cut", "Select & copy", "Select & X flip", "Select & Y flip", "Paste", "Reset", "Undo", "Redo"};
 
 class BOopsGUI : public BWidgets::Window
@@ -95,12 +111,23 @@ public:
 	void port_event (uint32_t port_index, uint32_t buffer_size, uint32_t format, const void *buffer);
 	void sendUiOn ();
 	void sendUiOff ();
-	void sendSlot (const int slot);
-	void sendPad (const int slot, const int step);
+	void sendMaxPage ();
+	void sendPlaybackPage ();
+	void sendPageProperties (const int page);
+	void sendRequestMidiLearn ();
+	void sendSlot (const int page, const int slot);
+	void sendPad (const int page, const int slot, const int step);
 	void sendShape (const int slot);
 	void sendTransportGateKeys();
 	void sendSamplePath();
 	void sendSampleAmp();
+	void pushPage ();
+	void popPage ();
+	void gotoPage (const int page);
+	void insertPage (const int page);
+	void deletePage (const int page);
+	void swapPage (const int page1, const int page2);
+	void updatePageContainer ();
 	virtual void onConfigureRequest (BEvents::ExposeEvent* event) override;
 	virtual void onKeyPressed (BEvents::KeyEvent* event) override;
 	virtual void onKeyReleased (BEvents::KeyEvent* event) override;
@@ -114,6 +141,13 @@ public:
 
 private:
 	static void valueChangedCallback(BEvents::Event* event);
+	static void pageClickedCallback(BEvents::Event* event);
+	static void pageSymbolClickedCallback(BEvents::Event* event);
+	static void pagePlayClickedCallback(BEvents::Event* event);
+	static void pageScrollClickedCallback(BEvents::Event* event);
+	static void midiSymbolClickedCallback(BEvents::Event* event);
+	static void midiButtonClickedCallback(BEvents::Event* event);
+	static void midiStatusChangedCallback(BEvents::Event* event);
 	static void playStopBypassChangedCallback(BEvents::Event* event);
 	static void effectChangedCallback(BEvents::Event* event);
 	static void addClickedCallback(BEvents::Event* event);
@@ -145,8 +179,8 @@ private:
 	void gotoSlot (const int slot);
 	void setOptionWidget (const int slot);
 	void loadOptions (const int slot);
-	int getPadOrigin (const int slot, const int step) const;
-	void setPad (const int slot, const int step, const Pad pad);
+	int getPadOrigin (const int page, const int slot, const int step) const;
+	void setPad (const int page, const int slot, const int step, const Pad pad);
 	void drawPad ();
 	void drawPad (const int slot);
 	void drawPad (const int slot, const int step);
@@ -165,6 +199,11 @@ private:
 
 	// Controllers
 	std::array<BWidgets::ValueWidget*, NR_CONTROLLERS> controllerWidgets;
+
+	// Pages
+	int pageAct;
+	int pageMax;
+	int pageOffset;
 
 	//Pads
 	class Pattern
@@ -186,7 +225,7 @@ private:
 		} changes;
 	};
 
-	Pattern pattern;
+	std::array<Pattern, NR_PAGES> patterns;
 
 	struct ClipBoard
 	{
@@ -266,6 +305,36 @@ private:
 
 	std::array<Slot, NR_SLOTS> slots;
 	HLine* insLine;
+
+	BWidgets::ValueWidget pageWidget;
+	SymbolWidget pageBackSymbol;
+	SymbolWidget pageForwardSymbol;
+
+	struct Tab
+	{
+		BWidgets::Widget container;
+		BWidgets::ImageIcon icon;
+		SymbolWidget playSymbol;
+		SymbolWidget midiSymbol;
+		std::array<SymbolWidget, 4> symbols;
+		std::array<BWidgets::ValueWidget, 4> midiWidgets;
+	};
+
+	std::array<Tab, NR_PAGES> tabs;
+
+	BWidgets::ValueWidget midiBox;
+	BWidgets::Label midiText;
+	BWidgets::Label midiStatusLabel;
+	BWidgets::PopupListBox midiStatusListBox;
+	BWidgets::Label midiChannelLabel;
+	BWidgets::PopupListBox midiChannelListBox;
+	BWidgets::Label midiNoteLabel;
+	BWidgets::PopupListBox midiNoteListBox;
+	BWidgets::Label midiValueLabel;
+	BWidgets::PopupListBox midiValueListBox;
+	BWidgets::TextToggleButton midiLearnButton;
+	BWidgets::TextButton midiCancelButton;
+	BWidgets::TextButton midiOkButton;
 
 	MonitorWidget monitor;
 	PadSurface padSurface;
@@ -361,8 +430,8 @@ private:
 	BStyles::Border focusborder = BStyles::Border (BStyles::Line (BColors::Color (0.0, 0.0, 0.0, 0.5), 2.0));
 	BStyles::Border padborder = {BStyles::noLine, 1.0, 0.0, 0.0};
 	BStyles::Fill widgetBg = BStyles::noFill;
-	BStyles::Fill tabBg = BStyles::Fill (BColors::Color (0.75, 0.75, 0.0, 0.5));
-	BStyles::Fill activeTabBg = BStyles::Fill (BColors::Color (0.75, 0.75, 0.0, 1.0));
+	BStyles::Fill tabBg = BStyles::Fill (BColors::Color (1.0, 1.0, 1.0, 0.25));
+	BStyles::Fill activeTabBg = BStyles::Fill (BColors::Color (1.0, 1.0, 1.0, 0.75));
 	BStyles::Fill menuBg = BStyles::Fill (BColors::Color (0.0, 0.0, 0.05, 1.0));
 	BStyles::Fill screenBg = BStyles::Fill (BColors::Color (0.0, 0.0, 0.0, 0.8));
 	BStyles::Fill boxBg = BStyles::Fill (BColors::Color (0.0, 0.0, 0.0, 0.9));

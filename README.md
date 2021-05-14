@@ -365,20 +365,18 @@ not. Select at least two slots and set the likelihood ratio for each slot.
 
 ## What's new
 
-* New fader algorithm (without nasty clicks)
-* FileChooser now supports XFS
-* Show error messages in SampleChooser
-* Bugfixes
-  * Install
-  * Clang warnings
-  * Substitute fork for calling help / tutorial
-
+* Multiple patterns
+* MIDI triggering pattern
+* Basic locale support upon installation
 
 
 ## TODO
 
-* Multiple patterns
-* MIDI triggering pattern
+* Load / save / export pattern separately
+* Store non audio-relevant working data in plugin state (like actual working pattern)
+* Documentation of pattern features
+* Update presets
+* Internationalization
 * Implement effects
   * Reverb
   * Pitch (?)

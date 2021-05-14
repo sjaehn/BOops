@@ -30,10 +30,12 @@ enum SymbolIndex
         NOSYMBOL        = -1,
         ADDSYMBOL       = 0,
         CLOSESYMBOL     = 1,
-        UPSYMBOL        = 2,
-        DOWNSYMBOL      = 3,
-        PLAYSYMBOL      = 4,
-        MIDISYMBOL      = 5
+        LEFTSYMBOL      = 2,
+        RIGHTSYMBOL     = 3,
+        UPSYMBOL        = 4,
+        DOWNSYMBOL      = 5,
+        PLAYSYMBOL      = 6,
+        MIDISYMBOL      = 7
 };
 
 void drawSymbol (cairo_t* cr, const double x0, const double y0, const double w, const double h, const BColors::Color& color, SymbolIndex symbol = NOSYMBOL)
@@ -57,6 +59,20 @@ void drawSymbol (cairo_t* cr, const double x0, const double y0, const double w, 
 
                 case CLOSESYMBOL:       cairo_move_to (cr, x0 + w / 2 - ext / 2, y0 + h / 2);
                                         cairo_line_to (cr, x0 + w / 2 + ext / 2, y0 + h / 2);
+                                        cairo_set_line_width (cr, 2.0);
+                                        cairo_stroke (cr);
+                                        break;
+
+                case LEFTSYMBOL:        cairo_move_to (cr, x0 + w / 2 + 0.25 * ext, y0 + h / 2 - ext / 2);
+                                        cairo_line_to (cr, x0 + w / 2 - 0.25 * ext, y0 + h / 2);
+                                        cairo_line_to (cr, x0 + w / 2 + 0.25 * ext, y0 + h / 2 + ext / 2);
+                                        cairo_set_line_width (cr, 2.0);
+                                        cairo_stroke (cr);
+                                        break;
+
+                case RIGHTSYMBOL:       cairo_move_to (cr, x0 + w / 2 - 0.25 * ext, y0 + h / 2 - ext / 2);
+                                        cairo_line_to (cr, x0 + w / 2 + 0.25 * ext, y0 + h / 2);
+                                        cairo_line_to (cr, x0 + w / 2 - 0.25 * ext, y0 + h / 2 + ext / 2);
                                         cairo_set_line_width (cr, 2.0);
                                         cairo_stroke (cr);
                                         break;

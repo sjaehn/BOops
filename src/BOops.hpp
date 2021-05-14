@@ -61,6 +61,20 @@ struct Position
 	bool playing;		// Status.
 };
 
+struct PageControls
+{
+	int status;
+	int channel;
+	int message;
+	int value;
+};
+
+struct Page
+{
+	PageControls controls;
+	std::array<std::array<Pad, NR_STEPS>, NR_SLOTS> pads;
+};
+
 class BOops
 {
 public:
@@ -81,7 +95,7 @@ public:
 private:
 	void play(uint32_t start, uint32_t end);
 	void resizeSteps ();
-	void notifySlotToGui (const int slot);
+	void notifySlotToGui (const int page, const int slot);
 	void notifyShapeToGui (const int slot);
 	void notifyMessageToGui ();
 	void notifyStatusToGui ();
@@ -89,10 +103,13 @@ private:
 	void notifyTransportGateKeysToGui ();
 	void notifySamplePathToGui ();
 	void notifyStateChanged ();
+	void notifyPageControls (const int pageId);
+	void notifyMidiLearnedToGui ();
 	LV2_Atom_Forge_Ref forgeSamplePath (LV2_Atom_Forge* forge, LV2_Atom_Forge_Frame* frame,  const char* path, const int64_t start, const int64_t end, const float amp, const int32_t loop);
 	LV2_Atom_Forge_Ref forgeShape (LV2_Atom_Forge* forge, LV2_Atom_Forge_Frame* frame, const int slot, const Shape<SHAPE_MAXNODES>* shape);
 	LV2_Atom_Forge_Ref forgeTransportGateKeys (LV2_Atom_Forge* forge, LV2_Atom_Forge_Frame* frame, const int* keys, const size_t size);
-	LV2_Atom_Forge_Ref forgePads (LV2_Atom_Forge* forge, LV2_Atom_Forge_Frame* frame, const int slot, const Pad* pads, const size_t size);
+	LV2_Atom_Forge_Ref forgePads (LV2_Atom_Forge* forge, LV2_Atom_Forge_Frame* frame, const int page, const int slot, const Pad* pads, const size_t size);
+	LV2_Atom_Forge_Ref forgePageControls (LV2_Atom_Forge* forge, LV2_Atom_Forge_Frame* frame, const int pageId);
 	double getPositionFromBeats (const Transport& transport, const double beats);
 	double getPositionFromFrames (const Transport& transport, const uint64_t frames);
 	uint64_t getFramesFromPosition (const Transport& transport, const double position) const;
@@ -113,6 +130,12 @@ private:
 	bool activated;
 	Position positions[2];
 	bool transportGateKeys[NR_PIANO_KEYS];
+
+	std::array<Page, NR_PAGES> pages;
+	int pageNr;
+	int pageMax;
+	bool midiLearn;
+	uint8_t midiLearned[4];
 
 	// Atom ports
 	LV2_Atom_Sequence* controlPort;
@@ -142,7 +165,8 @@ private:
 
 	Message message;
 	bool ui_on;
-	bool scheduleNotifySlot[NR_SLOTS];
+	bool scheduleNotifySlot[NR_PAGES][NR_SLOTS];
+	bool scheduleNotifyPageControls[NR_PAGES];
 	bool scheduleNotifyShape[NR_SLOTS];
 	bool scheduleNotifyStatus;
 	bool scheduleResizeBuffers;
@@ -150,6 +174,7 @@ private:
 	bool scheduleNotifyWaveformToGui;
 	bool scheduleNotifyTransportGateKeys;
 	bool scheduleNotifySamplePathToGui;
+	bool scheduleNotifyMidiLearnedToGui;
 	bool scheduleStateChanged;
 
 	struct Atom_BufferList
@@ -162,6 +187,12 @@ private:
 	{
 		LV2_Atom_Vector_Body body;
 		int keys[NR_PIANO_KEYS];
+	};
+
+	struct AtomPageControls
+	{
+		LV2_Atom_Vector_Body body;
+		PageControls data[NR_PAGES];
 	};
 
 	struct Atom_Fx

@@ -27,6 +27,8 @@
 #define FADINGTIME 0.01
 #define GRIDSIZE 2.0
 #define NR_PIANO_KEYS 120
+#define NR_PAGES 16
+#define NR_MIDI_CTRLS 4
 #define WAVEFORMSIZE 1024
 #define BOOPS_URI "https://www.jahnichen.de/plugins/lv2/BOops"
 #define BOOPS_GUI_URI "https://www.jahnichen.de/plugins/lv2/BOops#gui"

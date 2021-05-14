@@ -84,6 +84,16 @@ struct BOopsURIDs
 	LV2_URID bOops_sampleLoop;
 	LV2_URID bOops_installSample;
 	LV2_URID bOops_sampleFreeEvent;
+	LV2_URID bOops_pagePropertiesEvent;
+	LV2_URID bOops_pageID;
+	LV2_URID bOops_pageMax;
+	LV2_URID bOops_pageControls;
+	LV2_URID bOops_pageStatus;
+	LV2_URID bOops_pageChannel;
+	LV2_URID bOops_pageMessage;
+	LV2_URID bOops_pageValue;
+	LV2_URID bOops_requestMidiLearn;
+	LV2_URID bOops_midiLearned;
 };
 
 #endif /* URIDS_HPP_ */
