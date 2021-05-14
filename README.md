@@ -140,6 +140,29 @@ change an effect and select one out of more than 20 effects by pressing the menu
 button.
 
 
+#### Pattern page tabs
+
+You can find the pattern page tabs on the top of the centrally located pattern. The tabs provide access to up to 16
+patterns. Click on a tab to highlight the tab and to edit the respective pattern. Press ▸ on the tab to switch playback
+to the respective pattern. Press the piano keys symbol to enable / disable MIDI-controlled playback of the respective
+pattern.
+
+| Symbol | Description |
+| --- | --- |
+| + | Add a pattern page after the respective page. |
+| - | Remove this pattern page. |
+| < | Move pattern page backward. |
+| > | Move pattern page forward. |
+
+
+#### MIDI control page
+
+This menu appears upon clicking on the piano keys symbol in the respective tab. Enable / disable
+MIDI-controlled playback of the respective pattern by selection or deselection (= none) of a MIDI
+status. You can manually set the parameters to which B.Oops shall respond or you can use MIDI
+learning. Don't forget to confirm ("OK") or discard changes ("Cancel")!
+
+
 #### Pattern
 
 The pattern matrix is located in the center of user interface. Each line of the pattern is linked to an effect slot in the
@@ -374,7 +397,6 @@ not. Select at least two slots and set the likelihood ratio for each slot.
 
 * Load / save / export pattern separately
 * Store non audio-relevant working data in plugin state (like actual working pattern)
-* Documentation of pattern features
 * Update presets
 * Internationalization
 * Implement effects
