@@ -54,6 +54,10 @@ is recommended to improve the plugin performance. Alternatively, you may build a
 variable `PREFIX` while installing: `sudo make install PREFIX=/usr`. If you want to freely choose the
 install target directory, change the variable `LV2DIR` (e.g., `make install LV2DIR=~/.lv2`).
 
+**Optional:** Further supported parameters include `LANGUAGE` (usually two letters code) to change the GUI
+language (see customize).
+
+
 
 ## Running
 
@@ -386,11 +390,19 @@ The surprise box isn't an effect by itself. The surprise box controls if the eff
 not. Select at least two slots and set the likelihood ratio for each slot.
 
 
+## Customize
+
+You can create customized builds of B.Oops using the parameter `LANGUAGE` (e.g., `make LANGUAGE=EN`).
+To create a new language pack, copy `src/Locale_EN.hpp` and edit the text for the respective definitions.
+But do not change or delete any definition symbol!
+
+
 ## What's new
 
 * Multiple patterns
 * MIDI triggering pattern
 * Basic locale support upon installation
+* Enable internationalization for the plugin core
 
 
 ## TODO
@@ -398,7 +410,7 @@ not. Select at least two slots and set the likelihood ratio for each slot.
 * Load / save / export pattern separately
 * Store non audio-relevant working data in plugin state (like actual working pattern)
 * Update presets
-* Internationalization
+* Enable internationalization for the Fx modules
 * Implement effects
   * Reverb
   * Pitch (?)

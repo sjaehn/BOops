@@ -78,6 +78,7 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 	playButton (8, 8, 24, 24, "widget", BOOPS_LABEL_PLAY),
 	bypassButton (38, 8, 24, 24, "widget", BOOPS_LABEL_BYPASS),
 	stopButton (68, 8, 24, 24, "widget", BOOPS_LABEL_STOP),
+	sourceLabel (110, 0, 80, 8, "smlabel", BOOPS_LABEL_SOURCE),
 	sourceListBox (120, 10, 80, 20, 80, 60, "menu", BItems::ItemList ({{0, BOOPS_LABEL_STREAM}, {1, BOOPS_LABEL_SAMPLE}})),
 	loadButton (220, 10, 20, 20, "menu/button"),
 	sampleLabel (240, 0, 140, 8, "smlabel", BOOPS_LABEL_SAMPLE),
@@ -85,26 +86,32 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 	fileChooser (nullptr),
 	sampleAmpLabel (398, 0, 24, 8, "smlabel", BOOPS_LABEL_AMP),
 	sampleAmpDial (398, 8, 24, 24, "dial", 1.0, 0.0, 1.0, 0.0),
-	playModeListBox (440, 10, 120, 20, 120, 80, "menu", BItems::ItemList ({{0, "Autoplay"}, {2, "Host-controlled"} , {1, "MIDI-controlled"}})),
-	onMidiListBox (580, 10, 120, 20, 120, 80, "menu", BItems::ItemList ({{0, "Restart"}, {2, "Restart & sync"}, {1, "Continue"}})),
+	modeLabel (450, 0, 80, 8, "smlabel", BOOPS_LABEL_MODE),
+	playModeListBox (440, 10, 120, 20, 120, 80, "menu", BItems::ItemList ({{0, BOOPS_LABEL_AUTOPLAY}, {2, BOOPS_LABEL_HOST_CONTROLLED} , {1, BOOPS_LABEL_MIDI_CONTROLLED}})),
+	onMidiListBox (580, 10, 120, 20, 120, 80, "menu", BItems::ItemList ({{0, BOOPS_LABEL_RESTART}, {2, BOOPS_LABEL_RESTART_SYNC}, {1, BOOPS_LABEL_CONTINUE}})),
 	transportGateButton (720, 10, 60, 20, "widget", 48, 59),
-	autoplayBpmLabel (580, 0, 80, 8, "smlabel", "bpm"),
+	autoplayBpmLabel (580, 0, 80, 8, "smlabel", BOOPS_LABEL_BPM),
 	autoplayBpmSlider (580, 10, 80, 20, "slider", 120, 1, 300, 0, "%1.0f"),
-	autoplayBpbLabel (680, 0, 80, 8, "smlabel", "bpBar"),
+	autoplayBpbLabel (680, 0, 80, 8, "smlabel", BOOPS_LABEL_BPBAR),
 	autoplayBpbSlider (680, 10, 80, 20, "slider", 4, 1, 16, 0, "%1.0f", [] (double x) {return floor (x);}),
-	autoplayPositionLabel (780, 0, 110, 8, "smlabel", "Adjust position"),
+	autoplayPositionLabel (780, 0, 110, 8, "smlabel", BOOPS_LABEL_ADJUST_POSITION),
 	autoplayPositionSlider (780, 14, 110, 12, "slider", 0.0, -0.5, 0.5, 0.0),
+	sequenceSizeLabel (945, 0, 100, 8, "smlabel", BOOPS_LABEL_PATTERN_SIZE),
 	sequenceSizeSelect (910, 12, 80, 16, "select", 1, 1, 16, 0.01),
-	sequenceBaseListBox (1010, 10, 90, 20, 0, 20, 90, 80, "menu", BItems::ItemList ({{0, "Seconds"}, {1, "Beats"}, {2, "Bars"}}), 1),
+	sequenceBaseListBox (1010, 10, 90, 20, 0, 20, 90, 80, "menu", BItems::ItemList ({{0, BOOPS_LABEL_SECONDS}, {1, BOOPS_LABEL_BEATS}, {2, BOOPS_LABEL_BARS}}), 1),
+	stepsLabel (1115, 0, 80, 8, "smlabel", BOOPS_LABEL_STEPS),
 	stepsListBox (1120, 10, 90, 20, 0, 20, 90, 240, "menu",
-		     BItems::ItemList ({{2, "2 Steps"}, {3, "3 Steps"}, {4, "4 Steps"}, {6, "6 Steps"}, {8, "8 Steps"}, {9, "9 Steps"},
-		     			{12, "12 Steps"}, {16, "16 Steps"}, {18, "18 Steps"}, {24, "24 Steps"}, {32, "32 Steps"}}), 16),
+		     BItems::ItemList
+		     ({
+			     {2, "2 " BOOPS_LABEL_STEPS}, {3, "3 " BOOPS_LABEL_STEPS}, {4, "4 " BOOPS_LABEL_STEPS}, {6, "6 " BOOPS_LABEL_STEPS},
+			     {8, "8 " BOOPS_LABEL_STEPS}, {9, "9 " BOOPS_LABEL_STEPS}, {12, "12 " BOOPS_LABEL_STEPS}, {16, "16 " BOOPS_LABEL_STEPS},
+			     {18, "18 " BOOPS_LABEL_STEPS}, {24, "24 " BOOPS_LABEL_STEPS}, {32, "32 " BOOPS_LABEL_STEPS}}), 16),
 
 	transportGateContainer (420, 130, 600, 110, "screen"),
-	transportGateLabel (210, 10, 180, 20, "ctlabel", "Select keys"),
+	transportGateLabel (210, 10, 180, 20, "ctlabel", BOOPS_LABEL_SELECT_KEYS),
 	transportGatePiano (10, 40, 580, 30, "widget", 0, NR_PIANO_KEYS - 1),
-	transportGateOkButton (320, 80, 40, 20, "menu/button", "OK"),
-	transportGateCancelButton (240, 80, 60, 20, "menu/button", "Cancel"),
+	transportGateOkButton (320, 80, 40, 20, "menu/button", BOOPS_LABEL_OK),
+	transportGateCancelButton (240, 80, 60, 20, "menu/button", BOOPS_LABEL_CANCEL),
 	transportGateKeys (NR_PIANO_KEYS, false),
 
 	slotsContainer (20, 170, 260, 288, "widget"),
@@ -149,21 +156,12 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 	editContainer (578, 466, 284, 24, "widget"),
 
 	gettingstartedContainer (20, 478, 1200, 150, "widget", pluginPath + "inc/None_bg.png"),
-	gettingstartedText
-	(
-		20, 30, 960, 110, "lflabel",
-		"Getting started\n"
-		" \n"
-		"1) Add an effect by clicking on the [+] symbol below \"Fx\".\n"
-		"2) Click on the menu symbol left to the effect name to change the effect\n"
-		"3) Set a pattern right to the effect name to define the timepoint(s) to apply the effect on the incoming audio signal.\n"
-		"4) Continue with point 1 to add another effects. Change the order of the effects by clicking on the respective symbol."
-	),
+	gettingstartedText (20, 30, 960, 110, "lflabel",BOOPS_LABEL_GETTING_STARTED),
 
 	padParamContainer (1120, 170, 100, 288, "widget"),
-	padGateLabel (00, 90, 100, 20, "ctlabel", "Probability"),
+	padGateLabel (00, 90, 100, 20, "ctlabel", BOOPS_LABEL_PROBABILITY),
 	padGateDial (20, 30, 60, 60, "dial", 1.0, 0.0, 1.0, 0.0, "%1.2f"),
-	padMixLabel (20, 180, 60, 20, "ctlabel", "Mix"),
+	padMixLabel (20, 180, 60, 20, "ctlabel", BOOPS_LABEL_MIX),
 	padMixDial (20, 120, 60, 60, "dial", 1.0, 0.0, 1.0, 0.0, "%1.2f")
 {
 	// Init slots
@@ -200,18 +198,18 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 		slotParams[i].container = BWidgets::ImageIcon (20, 478, 1200, 150, "widget", "");
 		slotParams[i].nrIcon = BWidgets::ImageIcon (20, 8, 40, 20, "widget", "");
 		slotParams[i].nameIcon = BWidgets::ImageIcon (60, 8, 160, 20, "widget", "");
-		slotParams[i].attackLabel = BWidgets::Label (190, 30, 20, 20, "ctlabel", "A");
-		slotParams[i].decayLabel = BWidgets::Label (190, 60, 20, 20, "ctlabel", "D");
-		slotParams[i].sustainLabel = BWidgets::Label (190, 90, 20, 20, "ctlabel", "S");
-		slotParams[i].releaseLabel = BWidgets::Label (190, 120, 20, 20, "ctlabel", "R");
+		slotParams[i].attackLabel = BWidgets::Label (190, 30, 20, 20, "ctlabel", BOOPS_LABEL_ADSR_A);
+		slotParams[i].decayLabel = BWidgets::Label (190, 60, 20, 20, "ctlabel", BOOPS_LABEL_ADSR_D);
+		slotParams[i].sustainLabel = BWidgets::Label (190, 90, 20, 20, "ctlabel", BOOPS_LABEL_ADSR_S);
+		slotParams[i].releaseLabel = BWidgets::Label (190, 120, 20, 20, "ctlabel", BOOPS_LABEL_ADSR_R);
 		slotParams[i].attackSlider = HSlider (210, 30, 60, 20, "slider", 0.1, 0.0, 1.0, 0.0, "%1.2f", [] (double x) {return x;}, [] (double x) {return x;}, [] (double x) {return pow (x, 1.0 / 2.0);}, [] (double x) {return pow (x, 2.0);});
 		slotParams[i].decaySlider = HSlider (210, 60, 60, 20, "slider", 0.1, 0.0, 1.0, 0.0, "%1.2f", [] (double x) {return x;}, [] (double x) {return x;}, [] (double x) {return pow (x, 1.0 / 2.0);}, [] (double x) {return pow (x, 2.0);});
 		slotParams[i].sustainSlider = HSlider (210, 90, 60, 20, "slider", 1.0, 0.0, 1.0, 0.0, "%1.2f");
 		slotParams[i].releaseSlider = HSlider (210, 120, 60, 20, "slider", 0.1, 0.0, 1.0, 0.0, "%1.2f", [] (double x) {return x;}, [] (double x) {return x;}, [] (double x) {return pow (x, 1.0 / 2.0);}, [] (double x) {return pow (x, 2.0);});
 		slotParams[i].adsrDisplay = CurveChart (10, 30, 170, 110, "slider");
-		slotParams[i].panLabel = BWidgets::Label (280, 110, 60, 20, "ctlabel", "Pan");
+		slotParams[i].panLabel = BWidgets::Label (280, 110, 60, 20, "ctlabel", BOOPS_LABEL_PAN);
 		slotParams[i].panDial = Dial (280, 40, 60, 60, "dial", 0.0, -1.0, 1.0, 0.0, "%1.2f");
-		slotParams[i].mixLabel = BWidgets::Label (360, 110, 60, 20, "ctlabel", "Mix");
+		slotParams[i].mixLabel = BWidgets::Label (360, 110, 60, 20, "ctlabel", BOOPS_LABEL_MIX);
 		slotParams[i].mixDial = Dial (360, 40, 60, 60, "dial", 0.0, 0.0, 1.0, 0.0, "%1.2f");
 		for (int j = 0; j < NR_OPTPARAMS; ++j) slotParams[i].options[j] = Dial (0, 0, 0, 0, "widget", 0.0, 0.0, 1.0, 0.0);
 		slotParams[i].shape = Shape<SHAPE_MAXNODES>();
@@ -363,12 +361,14 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 	settingsContainer.add (playButton);
 	settingsContainer.add (bypassButton);
 	settingsContainer.add (stopButton);
+	settingsContainer.add (sourceLabel);
 	settingsContainer.add (sourceListBox);
 	settingsContainer.add (loadButton);
 	settingsContainer.add (sampleLabel);
 	settingsContainer.add (sampleNameLabel);
 	settingsContainer.add (sampleAmpLabel);
 	settingsContainer.add (sampleAmpDial);
+	settingsContainer.add (modeLabel);
 	settingsContainer.add (playModeListBox);
 	settingsContainer.add (onMidiListBox);
 	settingsContainer.add (transportGateButton);
@@ -378,8 +378,10 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 	settingsContainer.add (autoplayBpbSlider);
 	settingsContainer.add (autoplayPositionLabel);
 	settingsContainer.add (autoplayPositionSlider);
+	settingsContainer.add (sequenceSizeLabel);
 	settingsContainer.add (sequenceSizeSelect);
 	settingsContainer.add (sequenceBaseListBox);
+	settingsContainer.add (stepsLabel);
 	settingsContainer.add (stepsListBox);
 
 	transportGateContainer.add (transportGateLabel);
@@ -914,6 +916,7 @@ void BOopsGUI::resize ()
 	RESIZE (playButton, 8, 8, 24, 24, sz);
 	RESIZE (bypassButton, 38, 8, 24, 24, sz);
 	RESIZE (stopButton, 68, 8, 24, 24, sz);
+	RESIZE (sourceLabel, 110, 0, 80, 8, sz);
 	RESIZE (sourceListBox, 120, 10, 80, 20, sz);
 	sourceListBox.resizeListBox (BUtilities::Point (80 * sz, 60 * sz));
 	sourceListBox.resizeListBoxItems (BUtilities::Point (80 * sz, 20 * sz));
@@ -923,6 +926,7 @@ void BOopsGUI::resize ()
 	RESIZE (sampleNameLabel, 240, 10, 140, 20, sz);
 	if (fileChooser) RESIZE ((*fileChooser), 200, 140, 640, 400, sz);
 	RESIZE (sampleAmpDial, 398, 8, 24, 24, sz);
+	RESIZE (modeLabel, 450, 0, 80, 8, sz);
 	RESIZE (playModeListBox, 440, 10, 120, 20, sz);
 	playModeListBox.resizeListBox(BUtilities::Point (120 * sz, 80 * sz));
 	playModeListBox.moveListBox(BUtilities::Point (0, 20 * sz));
@@ -938,11 +942,13 @@ void BOopsGUI::resize ()
 	RESIZE (autoplayBpbSlider, 680, 10, 80, 20, sz);
 	RESIZE (autoplayPositionLabel, 780, 0, 110, 8, sz);
 	RESIZE (autoplayPositionSlider, 780, 14, 110, 12, sz);
+	RESIZE (sequenceSizeLabel, 945, 0, 100, 8, sz);
 	RESIZE (sequenceSizeSelect, 910, 12, 80, 16, sz);
 	RESIZE (sequenceBaseListBox, 1010, 10, 90, 20, sz);
 	sequenceBaseListBox.resizeListBox(BUtilities::Point (90 * sz, 80 * sz));
 	sequenceBaseListBox.moveListBox(BUtilities::Point (0, 20 * sz));
 	sequenceBaseListBox.resizeListBoxItems(BUtilities::Point (90 * sz, 20 * sz));
+	RESIZE (stepsLabel, 1115, 0, 80, 8, sz);
 	RESIZE (stepsListBox, 1120, 10, 90, 20, sz);
 	stepsListBox.resizeListBox(BUtilities::Point (90 * sz, 240 * sz));
 	stepsListBox.moveListBox(BUtilities::Point (0, 20 * sz));
@@ -1059,6 +1065,7 @@ void BOopsGUI::applyTheme (BStyles::Theme& theme)
 	playButton.applyTheme (theme);
 	bypassButton.applyTheme (theme);
 	stopButton.applyTheme (theme);
+	sourceLabel.applyTheme (theme);
 	sourceListBox.applyTheme (theme);
 	loadButton.applyTheme (theme);
 	sampleLabel.applyTheme (theme);
@@ -1066,6 +1073,7 @@ void BOopsGUI::applyTheme (BStyles::Theme& theme)
 	if (fileChooser) fileChooser->applyTheme (theme);
 	sampleAmpLabel.applyTheme (theme);
 	sampleAmpDial.applyTheme (theme);
+	modeLabel.applyTheme (theme);
 	playModeListBox.applyTheme (theme);
 	onMidiListBox.applyTheme (theme);
 	transportGateButton.applyTheme (theme);
@@ -1075,8 +1083,10 @@ void BOopsGUI::applyTheme (BStyles::Theme& theme)
 	autoplayBpbSlider.applyTheme (theme);
 	autoplayPositionLabel.applyTheme (theme);
 	autoplayPositionSlider.applyTheme (theme);
+	sequenceSizeLabel.applyTheme (theme);
 	sequenceSizeSelect.applyTheme (theme);
 	sequenceBaseListBox.applyTheme (theme);
+	stepsLabel.applyTheme (theme);
 	stepsListBox.applyTheme (theme);
 
 	transportGateContainer.applyTheme (theme);
@@ -3200,11 +3210,11 @@ void BOopsGUI::padsFocusedCallback (BEvents::Event* event)
 
 		ui->padSurface.focusText.setText
 		(
-			"Row: " + std::to_string (row + 1) + "\n" +
-			"Step: " + std::to_string (step + 1) + "\n" +
-			"Size: " + BUtilities::to_string (pd.size, "%1.0f \n") +
-			"Gate: " + BUtilities::to_string (pd.gate, "%1.2f \n") +
-			"Mix: " + BUtilities::to_string (pd.mix, "%1.2f")
+			BOOPS_LABEL_ROW ": " + std::to_string (row + 1) + "\n" +
+			BOOPS_LABEL_STEP ": " + std::to_string (step + 1) + "\n" +
+			BOOPS_LABEL_SIZE ": " + BUtilities::to_string (pd.size, "%1.0f \n") +
+			BOOPS_LABEL_PROBABILITY ": " + BUtilities::to_string (pd.gate, "%1.2f \n") +
+			BOOPS_LABEL_MIX ": " + BUtilities::to_string (pd.mix, "%1.2f")
 		);
 	}
 }
@@ -3243,10 +3253,17 @@ void BOopsGUI::loadButtonClickedCallback (BEvents::Event* event)
 		200, 140, 640, 400, "filechooser", ui->samplePath,
 		std::vector<BWidgets::FileFilter>
 		{
-			BWidgets::FileFilter {"All files", std::regex (".*")},
-			BWidgets::FileFilter {"Audio files", std::regex (".*\\.((wav)|(wave)|(aif)|(aiff)|(au)|(sd2)|(flac)|(caf)|(ogg)|(mp3))$", std::regex_constants::icase)}
+			BWidgets::FileFilter {BOOPS_LABEL_ALL_FILES, std::regex (".*")},
+			BWidgets::FileFilter {BOOPS_LABEL_AUDIO_FILES, std::regex (".*\\.((wav)|(wave)|(aif)|(aiff)|(au)|(sd2)|(flac)|(caf)|(ogg)|(mp3))$", std::regex_constants::icase)}
 		},
-		"Open");
+		std::vector<std::string>
+		{
+			BOOPS_LABEL_OK, BOOPS_LABEL_OPEN, BOOPS_LABEL_CANCEL, BOOPS_LABEL_PLAY_AS_LOOP,
+			BOOPS_LABEL_FILE, BOOPS_LABEL_SELECTION_START, BOOPS_LABEL_SELECTION_END,
+			BOOPS_LABEL_FRAMES, BOOPS_LABEL_NO_FILE_SELECTED
+		}
+
+	);
 	if (ui->fileChooser)
 	{
 		const std::string filename = ui->sampleNameLabel.getText();
@@ -3260,7 +3277,7 @@ void BOopsGUI::loadButtonClickedCallback (BEvents::Event* event)
 
 		RESIZE ((*ui->fileChooser), 200, 140, 640, 400, ui->sz);
 		ui->fileChooser->applyTheme (ui->theme);
-		ui->fileChooser->selectFilter ("Audio files");
+		ui->fileChooser->selectFilter (BOOPS_LABEL_AUDIO_FILES);
 		ui->mContainer.add (*ui->fileChooser);
 	}
 }

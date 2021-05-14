@@ -24,6 +24,12 @@
 #include <string>
 #include <array>
 
+#ifdef LOCALEFILE
+#include LOCALEFILE
+#else
+#include "Locale_EN.hpp"
+#endif
+
 enum MessageNr
 {
 	NO_MSG			= 0,
@@ -36,9 +42,9 @@ enum MessageNr
 const std::array<const std::string, MAX_MSG + 1> messageStrings =
 {{
 	"",
-	"Msg: Jack transport off or halted. Plugin halted.",
-	"Msg: Can't open sample file.",
-	"Msg:"
+	BOOPS_LABEL_JACK_OFF,
+	BOOPS_LABEL_CANT_OPEN_SAMPLE,
+	BOOPS_LABEL_MSG
 }};
 
 #endif /* MESSAGEDEFINITIONS_HPP_*/

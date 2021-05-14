@@ -1,8 +1,10 @@
 #ifndef BOOPS_LOCALE
 #define BOOPS_LOCALE
 
+// Plugin core
 #define BOOPS_LABEL_JACK_OFF "Msg: Jack transport off or halted. Plugin halted."
 #define BOOPS_LABEL_CANT_OPEN_SAMPLE "Msg: Can't open sample file."
+#define BOOPS_LABEL_MSG "Msg:"
 #define BOOPS_LABEL_SELECT_CUT "Select & cut"
 #define BOOPS_LABEL_SELECT_COPY "Select & copy"
 #define BOOPS_LABEL_SELECT_XFLIP "Select & X flip"
@@ -27,20 +29,31 @@
 #define BOOPS_LABEL_STREAM "Stream"
 #define BOOPS_LABEL_SAMPLE "Sample"
 #define BOOPS_LABEL_AMP "Amp"
+#define BOOPS_LABEL_AUTOPLAY "Autoplay"
+#define BOOPS_LABEL_HOST_CONTROLLED "Host-controlled"
+#define BOOPS_LABEL_MIDI_CONTROLLED "MIDI-controlled"
+#define BOOPS_LABEL_RESTART "Restart"
+#define BOOPS_LABEL_RESTART_SYNC "Restart & sync"
+#define BOOPS_LABEL_CONTINUE "Continue"
+#define BOOPS_LABEL_SOURCE "Source"
+#define BOOPS_LABEL_MODE "Mode"
+#define BOOPS_LABEL_BPM "bpm"
+#define BOOPS_LABEL_BPBAR "bpBar"
+#define BOOPS_LABEL_ADJUST_POSITION "Adjust position"
+#define BOOPS_LABEL_PATTERN_SIZE "Pattern size"
 #define BOOPS_LABEL_PLAY "Play"
 #define BOOPS_LABEL_BYPASS "Bypass"
 #define BOOPS_LABEL_STOP "Stop"
-#define BOOPS_LABEL_ADD "Add"
-#define BOOPS_LABEL_REPLACE "Replace"
 #define BOOPS_LABEL_SECONDS "Seconds"
 #define BOOPS_LABEL_BEATS "Beats"
 #define BOOPS_LABEL_BARS "Bars"
 #define BOOPS_LABEL_STEPS "Steps"
+#define BOOPS_LABEL_SELECT_KEYS "Select keys"
 #define BOOPS_LABEL_HELP "Help"
 #define BOOPS_LABEL_TUTORIAL "Introduction"
 #define BOOPS_LABEL_ROW "Row"
 #define BOOPS_LABEL_STEP "Step"
-#define BOOPS_LABEL_LEVEL "Level"
+#define BOOPS_LABEL_SIZE "Size"
 #define BOOPS_LABEL_ALL_FILES "All files"
 #define BOOPS_LABEL_AUDIO_FILES "Audio files"
 #define BOOPS_LABEL_OPEN "Open"
@@ -50,14 +63,21 @@
 #define BOOPS_LABEL_SELECTION_END "Selection end"
 #define BOOPS_LABEL_FRAMES "frames"
 #define BOOPS_LABEL_NO_FILE_SELECTED "No audio file selected"
-#define BOOPS_LABEL_SOURCE "Source"
-#define BOOPS_LABEL_CALIBRATION "Calibration"
-#define BOOPS_LABEL_STEP_EDIT_MODE "Step edit mode"
-#define BOOPS_LABEL_STEP_SIZE "Step size"
-#define BOOPS_LABEL_PATTERN_SIZE "Pattern size"
-#define BOOPS_LABEL_PAD_LEVEL "Pad level"
-#define BOOPS_LABEL_PLAYBACK "Playback"
-#define BOOPS_LABEL_SPEED "Speed"
+#define BOOPS_LABEL_PROBABILITY "Probability"
+#define BOOPS_LABEL_MIX "Mix"
+#define BOOPS_LABEL_GETTING_STARTED "Getting started\n" \
+        " \n" \
+        "1) Add an effect by clicking on the [+] symbol below \"Fx\".\n" \
+        "2) Click on the menu symbol left to the effect name to change the effect\n" \
+        "3) Set a pattern right to the effect name to define the timepoint(s) to apply the effect on the incoming audio signal.\n" \
+        "4) Continue with point 1 to add another effects. Change the order of the effects by clicking on the respective symbol."
+#define BOOPS_LABEL_PAN "Pan"
+#define BOOPS_LABEL_ADSR_A "A"
+#define BOOPS_LABEL_ADSR_D "D"
+#define BOOPS_LABEL_ADSR_S "S"
+#define BOOPS_LABEL_ADSR_R "R"
+
+// TODO Fx modules
 
 
 #endif

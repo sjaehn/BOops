@@ -101,7 +101,17 @@ enum PageControlsIndex
 	PAGE_CONTROLS_VALUE	= 3,
 };
 
-const std::string editLabels[MAXEDIT] = {"Select & cut", "Select & copy", "Select & X flip", "Select & Y flip", "Paste", "Reset", "Undo", "Redo"};
+const std::string editLabels[MAXEDIT] =
+{
+	BOOPS_LABEL_SELECT_CUT,
+	BOOPS_LABEL_SELECT_COPY,
+	BOOPS_LABEL_SELECT_XFLIP,
+	BOOPS_LABEL_SELECT_YFLIP,
+	BOOPS_LABEL_PASTE,
+	BOOPS_LABEL_RESET,
+	BOOPS_LABEL_UNDO,
+	BOOPS_LABEL_REDO
+};
 
 class BOopsGUI : public BWidgets::Window
 {
@@ -263,6 +273,7 @@ private:
 	HaloToggleButton playButton;
 	HaloToggleButton bypassButton;
 	HaloButton stopButton;
+	BWidgets::Label sourceLabel;
 	BWidgets::PopupListBox sourceListBox;
 	LoadButton loadButton;
 	BWidgets::Label sampleLabel;
@@ -270,6 +281,7 @@ private:
 	SampleChooser* fileChooser;
 	BWidgets::Label sampleAmpLabel;
 	Dial sampleAmpDial;
+	BWidgets::Label modeLabel;
 	BWidgets::PopupListBox playModeListBox;
 	BWidgets::PopupListBox onMidiListBox;
 	BWidgets::HPianoRoll transportGateButton;
@@ -279,8 +291,10 @@ private:
 	HSlider autoplayBpbSlider;
 	BWidgets::Label autoplayPositionLabel;
 	BWidgets::HSlider autoplayPositionSlider;
+	BWidgets::Label sequenceSizeLabel;
 	ValueSelect sequenceSizeSelect;
 	BWidgets::PopupListBox sequenceBaseListBox;
+	BWidgets::Label stepsLabel;
 	BWidgets::PopupListBox stepsListBox;
 
 	BWidgets::Widget transportGateContainer;
