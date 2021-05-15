@@ -716,7 +716,7 @@ void BOopsGUI::port_event(uint32_t port, uint32_t buffer_size,
 			// Status notifications
 			else if (obj->body.otype == urids.bOops_statusEvent)
 			{
-				LV2_Atom *oBpb = NULL, *oBu = NULL, *oBpm = NULL, *oPos = NULL, *oPg = NULL, *oMax = NULL, *oMid = NULL;
+				LV2_Atom *oBpb = NULL, *oBu = NULL, *oBpm = NULL, *oPos = NULL, *oPg = NULL, *oMax = NULL, *oMid = NULL, *oEdPg = NULL, *oEdSl = NULL;
 				lv2_atom_object_get
 				(
 					obj,
@@ -727,6 +727,8 @@ void BOopsGUI::port_event(uint32_t port, uint32_t buffer_size,
 					urids.bOops_pageID, &oPg,
 					urids.bOops_pageMax, &oMax,
 					urids.bOops_midiLearned, &oMid,
+					urids.bOops_editorPage, &oEdPg,
+					urids.bOops_editorSlot, &oEdSl,
 					NULL
 				);
 
@@ -771,6 +773,10 @@ void BOopsGUI::port_event(uint32_t port, uint32_t buffer_size,
 					midiValueListBox.setValue (LIMIT (vl, 0, 127));
 					midiLearnButton.setValue (0.0);
 				}
+
+				if (oEdPg && (oEdPg->type == urids.atom_Int)) gotoPage (LIMIT (((LV2_Atom_Int*)oEdPg)->body, 0, NR_PAGES - 1));
+
+				if (oEdSl && (oEdSl->type == urids.atom_Int)) gotoSlot (LIMIT (((LV2_Atom_Int*)oEdSl)->body, 0, NR_SLOTS - 1));
 			}
 
 			// Process page properties
@@ -1348,6 +1354,34 @@ void BOopsGUI::sendRequestMidiLearn ()
 	write_function(controller, CONTROL, lv2_atom_total_size(msg), urids.atom_eventTransfer, msg);
 }
 
+void BOopsGUI::sendEditorPage ()
+{
+	uint8_t obj_buf[128];
+	lv2_atom_forge_set_buffer(&forge, obj_buf, sizeof(obj_buf));
+
+	LV2_Atom_Forge_Frame frame;
+	LV2_Atom* msg = (LV2_Atom*)lv2_atom_forge_object(&forge, &frame, 0, urids.bOops_statusEvent);
+	lv2_atom_forge_key(&forge, urids.bOops_editorPage);
+	lv2_atom_forge_int(&forge, pageAct);
+	lv2_atom_forge_pop(&forge, &frame);
+
+	write_function(controller, CONTROL, lv2_atom_total_size(msg), urids.atom_eventTransfer, msg);
+}
+
+void BOopsGUI::sendEditorSlot ()
+{
+	uint8_t obj_buf[128];
+	lv2_atom_forge_set_buffer(&forge, obj_buf, sizeof(obj_buf));
+
+	LV2_Atom_Forge_Frame frame;
+	LV2_Atom* msg = (LV2_Atom*)lv2_atom_forge_object(&forge, &frame, 0, urids.bOops_statusEvent);
+	lv2_atom_forge_key(&forge, urids.bOops_editorSlot);
+	lv2_atom_forge_int(&forge, actSlot);
+	lv2_atom_forge_pop(&forge, &frame);
+
+	write_function(controller, CONTROL, lv2_atom_total_size(msg), urids.atom_eventTransfer, msg);
+}
+
 void BOopsGUI::sendShape (const int slot)
 {
 	size_t size = slotParams[slot].shape.size ();
@@ -1471,7 +1505,6 @@ void BOopsGUI::popPage ()
 	tabs[pageMax].container.hide();
 	for (Tab& t : tabs) t.symbols[ADDSYMBOL].show();
 
-	if (pageAct >= pageMax) gotoPage (pageMax - 1);
 	if (pageWidget.getValue() >= pageMax) pageWidget.setValue (0);
 
 	--pageMax;
@@ -1480,9 +1513,7 @@ void BOopsGUI::popPage ()
 
 void BOopsGUI::gotoPage (const int page)
 {
-	if ((page < 0) || (page > pageMax)) return;
-
-	pageAct = page;
+	pageAct = LIMIT (page, 0, pageMax);
 	for (int i = 0; i < NR_PAGES; ++i)
 	{
 		if (i == page) tabs[i].container.rename ("activetab");
@@ -1491,6 +1522,7 @@ void BOopsGUI::gotoPage (const int page)
 	}
 	drawPad();
 	updatePageContainer();
+	sendEditorPage();
 }
 
 void BOopsGUI::insertPage (const int page)
@@ -1525,7 +1557,7 @@ void BOopsGUI::deletePage (const int page)
 {
 	if ((page < 0) || (page > pageMax)) return;
 
-	if (pageAct > page) gotoPage (pageAct - 1);
+	if ((pageAct > page) || (pageAct == pageMax)) gotoPage (pageAct - 1);
 	if (pageWidget.getValue() > page) pageWidget.setValue (pageWidget.getValue() - 1);
 
 	for (int i = page; i < pageMax; ++i)
@@ -1921,7 +1953,9 @@ void BOopsGUI::gotoSlot (const int slot)
 
 		else slotParams[i].container.hide();
 	}
+
 	drawPad();
+	sendEditorSlot();
 }
 
 void BOopsGUI::setOptionWidget (const int slot)

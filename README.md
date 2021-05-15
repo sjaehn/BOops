@@ -403,12 +403,12 @@ But do not change or delete any definition symbol!
 * MIDI triggering pattern
 * Basic locale support upon installation
 * Enable internationalization
+* Store non audio-relevant working data in plugin state (like actual working pattern)
 
 
 ## TODO
 
 * Load / save / export pattern separately
-* Store non audio-relevant working data in plugin state (like actual working pattern)
 * Update presets
 * Implement effects
   * Reverb

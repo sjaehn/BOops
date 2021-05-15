@@ -94,6 +94,8 @@ void getURIs (LV2_URID_Map* m, BOopsURIDs* uris)
 	uris->bOops_pageValue = m->map(m->handle, BOOPS_URI "#pageValue");
 	uris->bOops_requestMidiLearn = m->map(m->handle, BOOPS_URI "#requestMidiLearn");
 	uris->bOops_midiLearned = m->map(m->handle, BOOPS_URI "#midiLearned");
+	uris->bOops_editorPage = m->map(m->handle, BOOPS_URI "#editorPage");
+	uris->bOops_editorSlot = m->map(m->handle, BOOPS_URI "#editorSlot");
 }
 
 #endif /* GETURIS_HPP_ */

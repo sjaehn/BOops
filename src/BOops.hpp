@@ -137,6 +137,9 @@ private:
 	bool midiLearn;
 	uint8_t midiLearned[4];
 
+	int editorPage;
+	int editorSlot;
+
 	// Atom ports
 	LV2_Atom_Sequence* controlPort;
 	LV2_Atom_Sequence* notifyPort;

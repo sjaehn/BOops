@@ -94,6 +94,8 @@ struct BOopsURIDs
 	LV2_URID bOops_pageValue;
 	LV2_URID bOops_requestMidiLearn;
 	LV2_URID bOops_midiLearned;
+	LV2_URID bOops_editorPage;
+	LV2_URID bOops_editorSlot;
 };
 
 #endif /* URIDS_HPP_ */

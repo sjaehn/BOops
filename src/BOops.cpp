@@ -53,6 +53,8 @@ BOops::BOops (double samplerate, const char* bundle_path, const LV2_Feature* con
 	pageMax (0),
 	midiLearn (false),
 	midiLearned {0},
+	editorPage (0),
+	editorSlot (0),
 	controlPort(NULL), notifyPort(NULL),
 	audioInput1(NULL), audioInput2(NULL), audioOutput1(NULL), audioOutput2(NULL),
 	new_controllers {NULL}, globalControllers {0},
@@ -352,6 +354,7 @@ void BOops::run (uint32_t n_samples)
 				std::fill (scheduleNotifyShape, scheduleNotifyShape + NR_SLOTS, true);
 				scheduleNotifyTransportGateKeys = true;
 				scheduleNotifySamplePathToGui = true;
+				scheduleNotifyStatus = true;
 			}
 
 			// Process GUI off status data
@@ -388,11 +391,13 @@ void BOops::run (uint32_t n_samples)
 			// Process page selection
 			else if (obj->body.otype == urids.bOops_statusEvent)
 			{
-				LV2_Atom * oMl = NULL, *oId = NULL, *oMax = NULL;
+				LV2_Atom * oMl = NULL, *oId = NULL, *oMax = NULL, *oEdPg = NULL, *oEdSl = NULL;
 				lv2_atom_object_get (obj,
 						     urids.bOops_requestMidiLearn, &oMl,
 						     urids.bOops_pageID, &oId,
 						     urids.bOops_pageMax, &oMax,
+						     urids.bOops_editorPage, &oEdPg,
+						     urids.bOops_editorSlot, &oEdSl,
 						     NULL);
 
 				// Midi learn request notification
@@ -431,6 +436,10 @@ void BOops::run (uint32_t n_samples)
 
 					scheduleStateChanged = true;
      				}
+
+				if (oEdPg && (oEdPg->type == urids.atom_Int)) editorPage = LIMIT (((LV2_Atom_Int*)oEdPg)->body, 0, NR_PAGES - 1);
+
+				if (oEdSl && (oEdSl->type == urids.atom_Int)) editorSlot = LIMIT (((LV2_Atom_Int*)oEdSl)->body, 0, NR_SLOTS - 1);
 			}
 
 
@@ -997,6 +1006,10 @@ void BOops::notifyStatusToGui()
 	lv2_atom_forge_int(&forge, pageNr);
 	lv2_atom_forge_key(&forge, urids.bOops_pageMax);
 	lv2_atom_forge_int(&forge, pageMax);
+	lv2_atom_forge_key(&forge, urids.bOops_editorPage);
+	lv2_atom_forge_int(&forge, editorPage);
+	lv2_atom_forge_key(&forge, urids.bOops_editorSlot);
+	lv2_atom_forge_int(&forge, editorSlot);
 	lv2_atom_forge_pop(&forge, &frame);
 
 	scheduleNotifyStatus = false;
@@ -1461,6 +1474,10 @@ LV2_State_Status BOops::state_save (LV2_State_Store_Function store, LV2_State_Ha
 	// Store pageMax
 	store (handle, urids.bOops_pageMax, &pageMax, sizeof (int), urids.atom_Int, LV2_STATE_IS_POD);
 
+	// Store editor data
+	store (handle, urids.bOops_editorPage, &editorPage, sizeof (int), urids.atom_Int, LV2_STATE_IS_POD);
+	store (handle, urids.bOops_editorSlot, &editorSlot, sizeof (int), urids.atom_Int, LV2_STATE_IS_POD);
+
 	// Store page control properties
 	{
 		AtomPageControls atom;
@@ -1707,7 +1724,6 @@ LV2_State_Status BOops::state_restore (LV2_State_Retrieve_Function retrieve, LV2
 
 		pageNr = pgNr;
 		if (pageMax < pageNr) pageMax = pageNr;
-		fprintf(stderr, "Retrieve pageNr = %i\n", pageNr);
         }
 
 	// Retrieve pageMax
@@ -1726,8 +1742,18 @@ LV2_State_Status BOops::state_restore (LV2_State_Retrieve_Function retrieve, LV2
 			Position np = backPosition();
 			pushBackPosition (np);
 		}
-		fprintf(stderr, "Retrieve pageMax = %i\n", pageMax);
         }
+
+	// Retrieve editor data
+	editorPage = 0;
+	editorSlot = 0;
+
+	const void* editorPageData = retrieve(handle, urids.bOops_editorPage, &size, &type, &valflags);
+	if (editorPageData && (type == urids.atom_Int)) editorPage = LIMIT (*(const int*)editorPageData, 0, NR_PAGES - 1);
+
+	const void* editorSlotData = retrieve(handle, urids.bOops_editorSlot, &size, &type, &valflags);
+	if (editorSlotData && (type == urids.atom_Int)) editorSlot = LIMIT (*(const int*)editorSlotData, 0, NR_SLOTS - 1);
+
 	scheduleNotifyStatus = true;
 
 	// Retrieve page control properties

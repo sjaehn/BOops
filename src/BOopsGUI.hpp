@@ -125,6 +125,8 @@ public:
 	void sendPlaybackPage ();
 	void sendPageProperties (const int page);
 	void sendRequestMidiLearn ();
+	void sendEditorPage ();
+	void sendEditorSlot ();
 	void sendSlot (const int page, const int slot);
 	void sendPad (const int page, const int slot, const int step);
 	void sendShape (const int slot);
