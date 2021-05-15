@@ -25,6 +25,12 @@
 #include "BOopsGUI.hpp"
 #include "Shape.hpp"
 
+#ifdef LOCALEFILE
+#include LOCALEFILE
+#else
+#include "Locale_EN.hpp"
+#endif
+
 class OptionWidget : public BWidgets::Widget
 {
 public:
@@ -120,7 +126,7 @@ public:
 
 		moveTo (getPosition().x * f / zoom_, getPosition().y * f / zoom_);
 		resize (getWidth() * f / zoom_, getHeight() * f / zoom_);
-		
+
 		zoom_ = f;
 	}
 

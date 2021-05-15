@@ -32,39 +32,39 @@ public:
 	OptionScratch () : OptionScratch (0.0, 0.0, 0.0, 0.0, "widget", "") {}
 	OptionScratch (const double x, const double y, const double width, const double height, const std::string& name, const std::string& pluginPath) :
 		OptionWidget (x, y, width, height, name),
-		rangeLabel (10, 90, 60, 20, "ctlabel", "Depth"),
-		reachLabel (410, 90, 60, 20, "ctlabel", "Reach"),
+		rangeLabel (10, 90, 60, 20, "ctlabel", BOOPS_LABEL_DEPTH),
+		reachLabel (410, 90, 60, 20, "ctlabel", BOOPS_LABEL_REACH),
 		shapeWidget (85, 10, 310, 85, "pad0"),
 		toolboxIcon (86, 100, 308, 20, "widget", pluginPath + "inc/shape_tb.png"),
 		shapeToolButtons
 		{
-			HaloToggleButton (83.5, 100, 20, 20, "widget", "Select"),
-			HaloToggleButton (106, 100, 20, 20, "widget", "Point node"),
-			HaloToggleButton (128.5, 100, 20, 20, "widget", "Auto Bezier node"),
-			HaloToggleButton (151, 100, 20, 20, "widget", "Symmetric Bezier node"),
-			HaloToggleButton (173.5, 100, 20, 20, "widget", "Asymmetric Bezier node")
+			HaloToggleButton (83.5, 100, 20, 20, "widget", BOOPS_LABEL_SELECT),
+			HaloToggleButton (106, 100, 20, 20, "widget", BOOPS_LABEL_POINT_NODE),
+			HaloToggleButton (128.5, 100, 20, 20, "widget", BOOPS_LABEL_AUTO_BEZIER_NODE),
+			HaloToggleButton (151, 100, 20, 20, "widget", BOOPS_LABEL_SYMMETRIC_BEZIER_NODE),
+			HaloToggleButton (173.5, 100, 20, 20, "widget", BOOPS_LABEL_ASYMMETRIC_BEZIER_NODE)
 		},
 		editToolButtons
 		{
-			HaloButton (203.5, 100, 20, 20, "widget", "Cut"),
-			HaloButton (226, 100, 20, 20, "widget", "Copy"),
-			HaloButton (248.5, 100, 20, 20, "widget", "Paste")
+			HaloButton (203.5, 100, 20, 20, "widget", BOOPS_LABEL_CUT),
+			HaloButton (226, 100, 20, 20, "widget", BOOPS_LABEL_COPY),
+			HaloButton (248.5, 100, 20, 20, "widget", BOOPS_LABEL_PASTE)
 		},
 		historyToolButtons
 		{
-			HaloButton (278.5, 100, 20, 20, "widget", "Reset"),
-			HaloButton (301, 100, 20, 20, "widget", "Undo"),
-			HaloButton (323.5, 100, 20, 20, "widget", "Redo")
+			HaloButton (278.5, 100, 20, 20, "widget", BOOPS_LABEL_RESET),
+			HaloButton (301, 100, 20, 20, "widget", BOOPS_LABEL_UNDO),
+			HaloButton (323.5, 100, 20, 20, "widget", BOOPS_LABEL_REDO)
 		},
-		gridShowButton (353.5, 100, 20, 20, "widget", "Show grid"),
-		gridSnapButton (376, 100, 20, 20, "widget", "Snap to grid"),
+		gridShowButton (353.5, 100, 20, 20, "widget", BOOPS_LABEL_SHOW_GRID),
+		gridSnapButton (376, 100, 20, 20, "widget", BOOPS_LABEL_SNAP_TO_GRID),
 		clipboard()
 	{
 		try
 		{
 			options[0] = new DialRange (10, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.2f");
 			options[1] = new BWidgets::ValueWidget (0, 0, 0, 0, "widget", 0.0);
-			options[2] = new Dial (410, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, "%1.0f", "steps", [] (double x) {return floor (1.0 + LIMIT (32.0 * x, 0.0, 31.0));}, [] (double x) {return (LIMIT (x, 1.0, 32.0) - 1.0) / 32.0;});
+			options[2] = new Dial (410, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, "%1.0f", BOOPS_LABEL_STEPS, [] (double x) {return floor (1.0 + LIMIT (32.0 * x, 0.0, 31.0));}, [] (double x) {return (LIMIT (x, 1.0, 32.0) - 1.0) / 32.0;});
 		}
 		catch (std::bad_alloc& ba) {throw ba;}
 

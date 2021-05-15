@@ -31,13 +31,13 @@ public:
 	OptionDelay () : OptionDelay (0.0, 0.0, 0.0, 0.0, "widget") {}
 	OptionDelay (const double x, const double y, const double width, const double height, const std::string& name) :
 		OptionWidget (x, y, width, height, name),
-		stepsLabel (10, 90, 60, 20, "ctlabel", "Range"),
-		delayLabel (90, 90, 60, 20, "ctlabel", "Delay"),
-		feedbackLabel (170, 90, 60, 20, "ctlabel", "Feedback")
+		stepsLabel (10, 90, 60, 20, "ctlabel", BOOPS_LABEL_RANGE),
+		delayLabel (90, 90, 60, 20, "ctlabel", BOOPS_LABEL_DELAY),
+		feedbackLabel (170, 90, 60, 20, "ctlabel", BOOPS_LABEL_FEEDBACK)
 	{
 		try
 		{
-			options[0] = new Dial (10, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, "%1.0f", "steps", [] (double x) {return floor (LIMIT (1.0 + x * NR_STEPS, 1, NR_STEPS - 1));}, [] (double x) {return (LIMIT (x, 1, NR_STEPS - 1) - 1.0) / NR_STEPS;});
+			options[0] = new Dial (10, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, "%1.0f", BOOPS_LABEL_STEPS, [] (double x) {return floor (LIMIT (1.0 + x * NR_STEPS, 1, NR_STEPS - 1));}, [] (double x) {return (LIMIT (x, 1, NR_STEPS - 1) - 1.0) / NR_STEPS;});
 			options[1] = new DialRange (90, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.2f");
 			options[2] = new BWidgets::ValueWidget (0, 0, 0, 0, "widget", 0.0);
 			options[3] = new DialRange (170, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.2f");
@@ -109,7 +109,7 @@ public:
 		if (widget == p->getWidget(0))
 		{
 			const int steps = LIMIT (1.0 + value * (NR_STEPS - 1.0), 1, NR_STEPS - 1);
-			((Dial*)widget)->setUnit (steps == 1? "step" : "steps");
+			((Dial*)widget)->setUnit (steps == 1? BOOPS_LABEL_STEP : BOOPS_LABEL_STEPS);
 		}
 
 		// options[2 or 4] changed ? Send to range

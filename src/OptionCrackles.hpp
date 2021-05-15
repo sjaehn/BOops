@@ -31,14 +31,14 @@ public:
 	OptionCrackles () : OptionCrackles (0.0, 0.0, 0.0, 0.0, "widget") {}
 	OptionCrackles (const double x, const double y, const double width, const double height, const std::string& name) :
 		OptionWidget (x, y, width, height, name),
-		ampLabel (10, 90, 60, 20, "ctlabel", "Level"),
-		rateLabel (90, 90, 60, 20, "ctlabel", "Rate"),
-		maxsizeLabel (170, 90, 60, 20, "ctlabel", "Max. size"),
-		distribLabel (240, 90, 80, 20, "ctlabel", "Distribution")
+		ampLabel (10, 90, 60, 20, "ctlabel", BOOPS_LABEL_LEVEL),
+		rateLabel (90, 90, 60, 20, "ctlabel", BOOPS_LABEL_RATE),
+		maxsizeLabel (170, 90, 60, 20, "ctlabel", BOOPS_LABEL_MAX_SIZE),
+		distribLabel (240, 90, 80, 20, "ctlabel", BOOPS_LABEL_DISTRIBUTION)
 	{
 		try
 		{
-			options[0] = new DialRange (10, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.1f", "db", [] (double x) {return -36.0 + 48.0 * x;}, [] (double x) {return (LIMIT (x, -36.0, 12.0) + 36.0) / 48.0;});
+			options[0] = new DialRange (10, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.1f", BOOPS_LABEL_DB, [] (double x) {return -36.0 + 48.0 * x;}, [] (double x) {return (LIMIT (x, -36.0, 12.0) + 36.0) / 48.0;});
 			options[1] = new BWidgets::ValueWidget (0, 0, 0, 0, "widget", 0.0);
 			options[2] = new DialRange (90, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.2f", "", [] (double x) {return 200.0 * x;}, [] (double x) {return LIMIT (x, 0.0, 200.0) / 200.0;});
 			options[3] = new BWidgets::ValueWidget (0, 0, 0, 0, "widget", 0.0);

@@ -48,9 +48,10 @@ public:
 					BItems::ItemList
 					(
 						{
-							{0, "None"}, {1.0/16.0, "Slot 1"}, {2.0/16.0, "Slot 2"}, {3.0/16.0, "Slot 3"}, {4.0/16.0, "Slot 4"},
-							{5.0/16.0, "Slot 5"}, {6.0/16.0, "Slot 6"}, {7.0/16.0, "Slot 7"}, {8.0/16.0, "Slot 8"},
-							{9.0/16.0, "Slot 9"}, {10.0/16.0, "Slot 10"}, {11.0/16.0, "Slot 11"}, {12.0/16.0, "Slot 12"}
+							{0, BOOPS_LABEL_NONE}, {1.0/16.0, BOOPS_LABEL_SLOT " 1"}, {2.0/16.0, BOOPS_LABEL_SLOT " 2"}, {3.0/16.0, BOOPS_LABEL_SLOT " 3"},
+							{4.0/16.0, BOOPS_LABEL_SLOT " 4"}, {5.0/16.0, BOOPS_LABEL_SLOT " 5"}, {6.0/16.0, BOOPS_LABEL_SLOT " 6"},
+							{7.0/16.0, BOOPS_LABEL_SLOT " 7"}, {8.0/16.0, BOOPS_LABEL_SLOT " 8"}, {9.0/16.0, BOOPS_LABEL_SLOT " 9"},
+							{10.0/16.0, BOOPS_LABEL_SLOT " 10"}, {11.0/16.0, BOOPS_LABEL_SLOT " 11"}, {12.0/16.0, BOOPS_LABEL_SLOT " 12"}
 						}
 					),
 					0

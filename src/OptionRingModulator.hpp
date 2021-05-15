@@ -152,15 +152,15 @@ public:
 	OptionRingModulator () : OptionRingModulator (0.0, 0.0, 0.0, 0.0, "widget") {}
 	OptionRingModulator (const double x, const double y, const double width, const double height, const std::string& name) :
 		OptionWidget (x, y, width, height, name),
-		ratioLabel (10, 90, 60, 20, "ctlabel", "Ratio"),
-		freqLabel (80, 90, 80, 20, "ctlabel", "Frequency"),
-		waveformLabel (170, 90, 90, 20, "ctlabel", "Waveform")
+		ratioLabel (10, 90, 60, 20, "ctlabel", BOOPS_LABEL_RATIO),
+		freqLabel (80, 90, 80, 20, "ctlabel", BOOPS_LABEL_FREQUENCY),
+		waveformLabel (170, 90, 90, 20, "ctlabel", BOOPS_LABEL_WAVEFORM)
 	{
 		try
 		{
 			options[0] = new DialRange (10, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.2f");
 			options[1] = new BWidgets::ValueWidget (0, 0, 0, 0, "widget", 0.0);
-			options[2] = new DialRange (90, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.0f", "Hz", [] (double x) {return 20000.0 * pow (x, 4.0);}, [] (double x) {return pow (LIMIT (x, 0, 20000) / 20000.0, 0.25);});
+			options[2] = new DialRange (90, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.0f", BOOPS_LABEL_HZ, [] (double x) {return 20000.0 * pow (x, 4.0);}, [] (double x) {return pow (LIMIT (x, 0, 20000) / 20000.0, 0.25);});
 			options[3] = new BWidgets::ValueWidget (0, 0, 0, 0, "widget", 0.0);
 			options[4] = new WaveformSelect (170, 20, 90, 60, "pad0", 0.0);
 		}

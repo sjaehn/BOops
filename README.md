@@ -402,7 +402,7 @@ But do not change or delete any definition symbol!
 * Multiple patterns
 * MIDI triggering pattern
 * Basic locale support upon installation
-* Enable internationalization for the plugin core
+* Enable internationalization
 
 
 ## TODO
@@ -410,7 +410,6 @@ But do not change or delete any definition symbol!
 * Load / save / export pattern separately
 * Store non audio-relevant working data in plugin state (like actual working pattern)
 * Update presets
-* Enable internationalization for the Fx modules
 * Implement effects
   * Reverb
   * Pitch (?)

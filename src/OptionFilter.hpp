@@ -31,17 +31,17 @@ public:
 	OptionFilter () : OptionFilter (0.0, 0.0, 0.0, 0.0, "widget") {}
 	OptionFilter (const double x, const double y, const double width, const double height, const std::string& name) :
 		OptionWidget (x, y, width, height, name),
-		loLabel (0, 90, 80, 20, "ctlabel", "High pass"),
-		hiLabel (90, 90, 60, 20, "ctlabel", "Low pass"),
-		ordLabel (170, 90, 60, 20, "ctlabel", "Roll off")
+		loLabel (0, 90, 80, 20, "ctlabel", BOOPS_LABEL_HIGHPASS),
+		hiLabel (90, 90, 60, 20, "ctlabel", BOOPS_LABEL_LOWPASS),
+		ordLabel (170, 90, 60, 20, "ctlabel", BOOPS_LABEL_ROLL_OFF)
 	{
 		try
 		{
-			options[0] = new DialRange (10, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.0f", "Hz", [] (double x) {return 20.0 + 19980.0 * pow (x, 4.0);}, [] (double x) {return pow ((LIMIT (x, 20, 20000) - 20.0) / 19980.0, 0.25);});
+			options[0] = new DialRange (10, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.0f", BOOPS_LABEL_HZ, [] (double x) {return 20.0 + 19980.0 * pow (x, 4.0);}, [] (double x) {return pow ((LIMIT (x, 20, 20000) - 20.0) / 19980.0, 0.25);});
 			options[1] = new BWidgets::ValueWidget (0, 0, 0, 0, "widget", 0.0);
-			options[2] = new DialRange (90, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.0f", "Hz", [] (double x) {return 20.0 + 19980.0 * pow (x, 4.0);}, [] (double x) {return pow ((LIMIT (x, 20, 20000) - 20.0) / 19980.0, 0.25);});
+			options[2] = new DialRange (90, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.0f", BOOPS_LABEL_HZ, [] (double x) {return 20.0 + 19980.0 * pow (x, 4.0);}, [] (double x) {return pow ((LIMIT (x, 20, 20000) - 20.0) / 19980.0, 0.25);});
 			options[3] = new BWidgets::ValueWidget (0, 0, 0, 0, "widget", 0.0);
-			options[4] = new Dial (170, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, "%1.0f", "-db/o", [] (double x) {return 12 * int (LIMIT (1.0 + 8.0 * x, 1, 8));}, [] (double x) {return (LIMIT (x, 12.0, 96.0) / 12.0 - 1.0) / 8.0;});
+			options[4] = new Dial (170, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, "%1.0f", BOOPS_LABEL_MINUS_DB_PER_OCTAVE, [] (double x) {return 12 * int (LIMIT (1.0 + 8.0 * x, 1, 8));}, [] (double x) {return (LIMIT (x, 12.0, 96.0) / 12.0 - 1.0) / 8.0;});
 		}
 		catch (std::bad_alloc& ba) {throw ba;}
 

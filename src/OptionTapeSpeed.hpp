@@ -31,7 +31,7 @@ public:
 	OptionTapeSpeed () : OptionTapeSpeed (0.0, 0.0, 0.0, 0.0, "widget") {}
 	OptionTapeSpeed (const double x, const double y, const double width, const double height, const std::string& name) :
 		OptionWidget (x, y, width, height, name),
-		tapeSpeedLabel (10, 90, 60, 20, "ctlabel", "Speed")
+		tapeSpeedLabel (10, 90, 60, 20, "ctlabel", BOOPS_LABEL_SPEED)
 	{
 		try
 		{

@@ -31,8 +31,8 @@ public:
 	OptionTapeStop () : OptionTapeStop (0.0, 0.0, 0.0, 0.0, "widget") {}
 	OptionTapeStop (const double x, const double y, const double width, const double height, const std::string& name) :
 		OptionWidget (x, y, width, height, name),
-		distLabel (10, 90, 60, 20, "ctlabel", "Reach"),
-		ordLabel (80, 90, 80, 20, "ctlabel", "Deceleration")
+		distLabel (10, 90, 60, 20, "ctlabel", BOOPS_LABEL_REACH),
+		ordLabel (80, 90, 80, 20, "ctlabel", BOOPS_LABEL_DECELERATION)
 	{
 		try
 		{

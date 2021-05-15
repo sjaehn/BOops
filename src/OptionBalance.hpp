@@ -31,7 +31,7 @@ public:
 	OptionBalance () : OptionBalance (0.0, 0.0, 0.0, 0.0, "widget") {}
 	OptionBalance (const double x, const double y, const double width, const double height, const std::string& name) :
 		OptionWidget (x, y, width, height, name),
-		balanceLabel (10, 90, 60, 20, "ctlabel", "Balance")
+		balanceLabel (10, 90, 60, 20, "ctlabel", BOOPS_LABEL_BALANCE)
 	{
 		try
 		{

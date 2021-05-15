@@ -32,47 +32,47 @@ public:
 	OptionWah () : OptionWah (0.0, 0.0, 0.0, 0.0, "widget", "") {}
 	OptionWah (const double x, const double y, const double width, const double height, const std::string& name, const std::string& pluginPath) :
 		OptionWidget (x, y, width, height, name),
-		cFreqLabel (490, 90, 60, 20, "ctlabel", "Center"),
-		depthLabel (410, 90, 60, 20, "ctlabel", "Depth"),
-		widthLabel (570, 90, 60, 20, "ctlabel", "Width"),
-		orderLabel (650, 90, 60, 20, "ctlabel", "Roll off"),
-		reachLabel (330, 90, 60, 20, "ctlabel", "Reach"),
+		cFreqLabel (490, 90, 60, 20, "ctlabel", BOOPS_LABEL_CENTER),
+		depthLabel (410, 90, 60, 20, "ctlabel", BOOPS_LABEL_DEPTH),
+		widthLabel (570, 90, 60, 20, "ctlabel", BOOPS_LABEL_WIDTH),
+		orderLabel (650, 90, 60, 20, "ctlabel", BOOPS_LABEL_ROLL_OFF),
+		reachLabel (330, 90, 60, 20, "ctlabel", BOOPS_LABEL_REACH),
 		shapeWidget (5, 10, 310, 85, "pad0"),
 		toolboxIcon (6, 100, 308, 20, "widget", pluginPath + "inc/shape_tb.png"),
 		shapeToolButtons
 		{
-			HaloToggleButton (3.5, 100, 20, 20, "widget", "Select"),
-			HaloToggleButton (26, 100, 20, 20, "widget", "Point node"),
-			HaloToggleButton (48.5, 100, 20, 20, "widget", "Auto Bezier node"),
-			HaloToggleButton (71, 100, 20, 20, "widget", "Symmetric Bezier node"),
-			HaloToggleButton (93.5, 100, 20, 20, "widget", "Asymmetric Bezier node")
+			HaloToggleButton (3.5, 100, 20, 20, "widget", BOOPS_LABEL_SELECT),
+			HaloToggleButton (26, 100, 20, 20, "widget", BOOPS_LABEL_POINT_NODE),
+			HaloToggleButton (48.5, 100, 20, 20, "widget", BOOPS_LABEL_AUTO_BEZIER_NODE),
+			HaloToggleButton (71, 100, 20, 20, "widget", BOOPS_LABEL_SYMMETRIC_BEZIER_NODE),
+			HaloToggleButton (93.5, 100, 20, 20, "widget", BOOPS_LABEL_ASYMMETRIC_BEZIER_NODE)
 		},
 		editToolButtons
 		{
-			HaloButton (123.5, 100, 20, 20, "widget", "Cut"),
-			HaloButton (146, 100, 20, 20, "widget", "Copy"),
-			HaloButton (168.5, 100, 20, 20, "widget", "Paste")
+			HaloButton (123.5, 100, 20, 20, "widget", BOOPS_LABEL_CUT),
+			HaloButton (146, 100, 20, 20, "widget", BOOPS_LABEL_COPY),
+			HaloButton (168.5, 100, 20, 20, "widget", BOOPS_LABEL_PASTE)
 		},
 		historyToolButtons
 		{
-			HaloButton (198.5, 100, 20, 20, "widget", "Reset"),
-			HaloButton (221, 100, 20, 20, "widget", "Undo"),
-			HaloButton (243.5, 100, 20, 20, "widget", "Redo")
+			HaloButton (198.5, 100, 20, 20, "widget", BOOPS_LABEL_RESET),
+			HaloButton (221, 100, 20, 20, "widget", BOOPS_LABEL_UNDO),
+			HaloButton (243.5, 100, 20, 20, "widget", BOOPS_LABEL_REDO)
 		},
-		gridShowButton (273.5, 100, 20, 20, "widget", "Show grid"),
-		gridSnapButton (296, 100, 20, 20, "widget", "Snap to grid"),
+		gridShowButton (273.5, 100, 20, 20, "widget", BOOPS_LABEL_SHOW_GRID),
+		gridSnapButton (296, 100, 20, 20, "widget", BOOPS_LABEL_SNAP_TO_GRID),
 		clipboard()
 	{
 		try
 		{
-			options[0] = new DialRange (490, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.0f", "Hz", [] (double x) {return 20.0 + 19980.0 * pow (x, 3.0);}, [] (double x) {return pow ((LIMIT (x, 20, 20000) - 20.0) / 19980.0, 1.0 / 3.0);});
+			options[0] = new DialRange (490, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.0f", BOOPS_LABEL_HZ, [] (double x) {return 20.0 + 19980.0 * pow (x, 3.0);}, [] (double x) {return pow ((LIMIT (x, 20, 20000) - 20.0) / 19980.0, 1.0 / 3.0);});
 			options[1] = new BWidgets::ValueWidget (0, 0, 0, 0, "widget", 0.0);
 			options[2] = new DialRange (410, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.2f");
 			options[3] = new BWidgets::ValueWidget (0, 0, 0, 0, "widget", 0.0);
 			options[4] = new DialRange (570, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.2f");
 			options[5] = new BWidgets::ValueWidget (0, 0, 0, 0, "widget", 0.0);
-			options[6] = new Dial (650, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, "%1.0f", "-db/o", [] (double x) {return 12 * int (LIMIT (1.0 + 8.0 * x, 1, 8));}, [] (double x) {return (LIMIT (x, 12.0, 96.0) / 12.0 - 1.0) / 8.0;});
-			options[7] = new Dial (330, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, "%1.0f", "steps", [] (double x) {return floor (1 + LIMIT (32.0 * x, 0.0, 31.0));}, [] (double x) {return (LIMIT (x, 1.0, 32.0) - 1.0) / 32.0;});
+			options[6] = new Dial (650, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, "%1.0f", BOOPS_LABEL_MINUS_DB_PER_OCTAVE, [] (double x) {return 12 * int (LIMIT (1.0 + 8.0 * x, 1, 8));}, [] (double x) {return (LIMIT (x, 12.0, 96.0) / 12.0 - 1.0) / 8.0;});
+			options[7] = new Dial (330, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, "%1.0f", BOOPS_LABEL_STEPS, [] (double x) {return floor (1 + LIMIT (32.0 * x, 0.0, 31.0));}, [] (double x) {return (LIMIT (x, 1.0, 32.0) - 1.0) / 32.0;});
 		}
 		catch (std::bad_alloc& ba) {throw ba;}
 

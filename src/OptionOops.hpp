@@ -31,15 +31,15 @@ public:
 	OptionOops () : OptionOops (0.0, 0.0, 0.0, 0.0, "widget") {}
 	OptionOops (const double x, const double y, const double width, const double height, const std::string& name) :
 		OptionWidget (x, y, width, height, name),
-		ampLabel (10, 90, 60, 20, "ctlabel", "Amp"),
-		pitchLabel (90, 90, 60, 20, "ctlabel", "Pitch"),
-		offsetLabel (170, 90, 60, 20, "ctlabel", "Offset")
+		ampLabel (10, 90, 60, 20, "ctlabel", BOOPS_LABEL_AMP),
+		pitchLabel (90, 90, 60, 20, "ctlabel", BOOPS_LABEL_PITCH),
+		offsetLabel (170, 90, 60, 20, "ctlabel", BOOPS_LABEL_OFFSET)
 	{
 		try
 		{
 			options[0] = new DialRange (10, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.2f", "", [] (double x) {return 2.0 * x;}, [] (double x) {return 0.5 * LIMIT (x, 0.0, 2.0);});
 			options[1] = new BWidgets::ValueWidget (0, 0, 0, 0, "widget", 0.0);
-			options[2] = new DialRange (90, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.2f", "semi", [] (double x) {return 24.0 * x - 12.0;}, [] (double x) {return (LIMIT (x, -12.0, 12.0) + 12.0) / 24.0;});
+			options[2] = new DialRange (90, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.2f", BOOPS_LABEL_SEMI, [] (double x) {return 24.0 * x - 12.0;}, [] (double x) {return (LIMIT (x, -12.0, 12.0) + 12.0) / 24.0;});
 			options[3] = new BWidgets::ValueWidget (0, 0, 0, 0, "widget", 0.0);
 			options[4] = new DialRange (170, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.2f");
 			options[5] = new BWidgets::ValueWidget (0, 0, 0, 0, "widget", 0.0);

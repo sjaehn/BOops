@@ -31,7 +31,7 @@ public:
 	OptionAmp () : OptionAmp (0.0, 0.0, 0.0, 0.0, "widget") {}
 	OptionAmp (const double x, const double y, const double width, const double height, const std::string& name) :
 		OptionWidget (x, y, width, height, name),
-		ampLabel (10, 90, 60, 20, "ctlabel", "Amp")
+		ampLabel (10, 90, 60, 20, "ctlabel", BOOPS_LABEL_AMP)
 	{
 		try
 		{

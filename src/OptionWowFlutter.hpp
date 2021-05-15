@@ -31,12 +31,12 @@ public:
 	OptionWowFlutter () : OptionWowFlutter (0.0, 0.0, 0.0, 0.0, "widget") {}
 	OptionWowFlutter (const double x, const double y, const double width, const double height, const std::string& name) :
 		OptionWidget (x, y, width, height, name),
-		wowLabel (50, 80, 60, 20, "ctlabel", "Wow"),
-		flutterLabel (210, 80, 60, 20, "ctlabel", "Flutter"),
-		wowDepthLabel (10, 100, 60, 20, "ctlabel", "Depth"),
-		wowRateLabel (90, 100, 60, 20, "ctlabel", "Rate"),
-		flutterDepthLabel (170, 100, 60, 20, "ctlabel", "Depth"),
-		flutterRateLabel (250, 100, 60, 20, "ctlabel", "Rate")
+		wowLabel (50, 80, 60, 20, "ctlabel", BOOPS_LABEL_WOW),
+		flutterLabel (210, 80, 60, 20, "ctlabel", BOOPS_LABEL_FLUTTER),
+		wowDepthLabel (10, 100, 60, 20, "ctlabel", BOOPS_LABEL_DEPTH),
+		wowRateLabel (90, 100, 60, 20, "ctlabel", BOOPS_LABEL_RATE),
+		flutterDepthLabel (170, 100, 60, 20, "ctlabel", BOOPS_LABEL_DEPTH),
+		flutterRateLabel (250, 100, 60, 20, "ctlabel", BOOPS_LABEL_RATE)
 	{
 		try
 		{

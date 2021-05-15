@@ -31,20 +31,20 @@ public:
 	OptionPhaser () : OptionPhaser (0.0, 0.0, 0.0, 0.0, "widget") {}
 	OptionPhaser (const double x, const double y, const double width, const double height, const std::string& name) :
 		OptionWidget (x, y, width, height, name),
-		loFreqLabel (10, 100, 60, 20, "ctlabel", "Low Freq."),
-		hiFreqLabel (90, 100, 60, 20, "ctlabel", "High Freq."),
-		modRateLabel (160, 100, 80, 20, "ctlabel", "Modulation"),
-		modPhaseLabel (240, 100, 80, 20, "ctlabel", "Stereo phase"),
-		stepsLabel (330, 100, 60, 20, "ctlabel", "Steps"),
-		feedbackLabel (410, 100, 60, 20, "ctlabel", "Feedback")
+		loFreqLabel (10, 100, 60, 20, "ctlabel", BOOPS_LABEL_LOW_FREQ),
+		hiFreqLabel (90, 100, 60, 20, "ctlabel", BOOPS_LABEL_HIGH_FREQ),
+		modRateLabel (160, 100, 80, 20, "ctlabel", BOOPS_LABEL_MODULATION),
+		modPhaseLabel (240, 100, 80, 20, "ctlabel", BOOPS_LABEL_STEREO_PHASE),
+		stepsLabel (330, 100, 60, 20, "ctlabel", BOOPS_LABEL_STEPS),
+		feedbackLabel (410, 100, 60, 20, "ctlabel", BOOPS_LABEL_FEEDBACK)
 	{
 		try
 		{
-			options[0] = new DialRange (10, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.0f", "Hz", [] (double x) {return 20.0 + 19980.0 * pow (x, 3.0);}, [] (double x) {return pow ((LIMIT (x, 20, 20000) - 20.0) / 19980.0, 1.0 / 3.0);});
+			options[0] = new DialRange (10, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.0f", BOOPS_LABEL_HZ, [] (double x) {return 20.0 + 19980.0 * pow (x, 3.0);}, [] (double x) {return pow ((LIMIT (x, 20, 20000) - 20.0) / 19980.0, 1.0 / 3.0);});
 			options[1] = new BWidgets::ValueWidget (0, 0, 0, 0, "widget", 0.0);
-			options[2] = new DialRange (90, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.0f", "Hz", [] (double x) {return 20.0 + 19980.0 * pow (x, 3.0);}, [] (double x) {return pow ((LIMIT (x, 20, 20000) - 20.0) / 19980.0, 1.0 / 3.0);});
+			options[2] = new DialRange (90, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.0f", BOOPS_LABEL_HZ, [] (double x) {return 20.0 + 19980.0 * pow (x, 3.0);}, [] (double x) {return pow ((LIMIT (x, 20, 20000) - 20.0) / 19980.0, 1.0 / 3.0);});
 			options[3] = new BWidgets::ValueWidget (0, 0, 0, 0, "widget", 0.0);
-			options[4] = new DialRange (170, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.2f", "Hz", [] (double x) {return 10.0 * pow (x, 3.0);}, [] (double x) {return pow (LIMIT (x, 0.0, 10.0) / 10.0, 1.0 / 3.0);});
+			options[4] = new DialRange (170, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.2f", BOOPS_LABEL_HZ, [] (double x) {return 10.0 * pow (x, 3.0);}, [] (double x) {return pow (LIMIT (x, 0.0, 10.0) / 10.0, 1.0 / 3.0);});
 			options[5] = new BWidgets::ValueWidget (0, 0, 0, 0, "widget", 0.0);
 			options[6] = new DialRange (250, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.1f", "°", [] (double x) {return 360.0 * x;}, [] (double x) {return LIMIT (x, 0.0, 360.0) / 360.0;});
 			options[7] = new BWidgets::ValueWidget (0, 0, 0, 0, "widget", 0.0);

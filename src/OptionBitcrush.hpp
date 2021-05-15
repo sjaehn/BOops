@@ -31,8 +31,8 @@ public:
 	OptionBitcrush () : OptionBitcrush (0.0, 0.0, 0.0, 0.0, "widget") {}
 	OptionBitcrush (const double x, const double y, const double width, const double height, const std::string& name) :
 		OptionWidget (x, y, width, height, name),
-		limitLabel (10, 90, 60, 20, "ctlabel", "Limit"),
-		bitLabel (80, 90, 80, 20, "ctlabel", "Bits")
+		limitLabel (10, 90, 60, 20, "ctlabel", BOOPS_LABEL_LIMIT),
+		bitLabel (80, 90, 80, 20, "ctlabel", BOOPS_LABEL_BITS)
 	{
 		try
 		{

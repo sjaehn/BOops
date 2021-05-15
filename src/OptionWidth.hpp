@@ -31,7 +31,7 @@ public:
 	OptionWidth () : OptionWidth (0.0, 0.0, 0.0, 0.0, "widget") {}
 	OptionWidth (const double x, const double y, const double width, const double height, const std::string& name) :
 		OptionWidget (x, y, width, height, name),
-		widthLabel (10, 90, 60, 20, "ctlabel", "Width")
+		widthLabel (10, 90, 60, 20, "ctlabel", BOOPS_LABEL_WIDTH)
 	{
 		try
 		{

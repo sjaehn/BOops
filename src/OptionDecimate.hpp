@@ -31,7 +31,7 @@ public:
 	OptionDecimate () : OptionDecimate (0.0, 0.0, 0.0, 0.0, "widget") {}
 	OptionDecimate (const double x, const double y, const double width, const double height, const std::string& name) :
 		OptionWidget (x, y, width, height, name),
-		decimateLabel (0, 90, 80, 20, "ctlabel", "Resolution")
+		decimateLabel (0, 90, 80, 20, "ctlabel", BOOPS_LABEL_RESOLUTION)
 	{
 		try
 		{

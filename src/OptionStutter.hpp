@@ -32,8 +32,8 @@ public:
 	OptionStutter () : OptionStutter (0.0, 0.0, 0.0, 0.0, "widget") {}
 	OptionStutter (const double x, const double y, const double width, const double height, const std::string& name) :
 		OptionWidget (x, y, width, height, name),
-		stepsLabel (10, 90, 60, 20, "ctlabel", "Stutters"),
-		smoothLabel (90, 90, 60, 20, "ctlabel", "Smooth")
+		stepsLabel (10, 90, 60, 20, "ctlabel", BOOPS_LABEL_STUTTERS),
+		smoothLabel (90, 90, 60, 20, "ctlabel", BOOPS_LABEL_SMOOTH)
 
 	{
 		try
