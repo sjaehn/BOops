@@ -29,12 +29,12 @@ struct Pad
 			gate (gate), size (size), mix (mix)
 	{}
 
-	bool operator== (const Pad& that)
+	bool operator== (const Pad& that) const
 	{
 		return ((gate == that.gate) && (size == that.size) && (mix == that.mix));
 	}
 
-	bool operator!= (const Pad& that) {return (!operator== (that));}
+	bool operator!= (const Pad& that) const {return (!operator== (that));}
 
 	float gate;
 	float size;

@@ -190,12 +190,19 @@ selected pad area is stored in the clipboard.
 
 ##### Paste mode
 
-Once you selected the paste, you can paste the clipboard pads by clicking to any pad in the pattern.
+Once you selected the paste option, you can paste the clipboard pads by clicking to any pad in the pattern.
 
 
 ##### Reset, undo and redo
 
 No description required.
+
+
+##### Load and save
+
+In addition to the host-provided options to load and save the plugin state including its patterns (e. g., load/save project,
+load/save presets), B.Oops also allows to load and save patterns separately from and to pattern files ("*.boos.pat"). This
+feature can be used to import / export patterns to other plugin instances or to other projects.
 
 
 #### Waveform
@@ -401,6 +408,7 @@ But do not change or delete any definition symbol!
 
 * Multiple patterns
 * MIDI triggering pattern
+* Load / save pattern separately (= import / export)
 * Basic locale support upon installation
 * Enable internationalization
 * Store non audio-relevant working data in plugin state (like actual working pattern)
@@ -408,8 +416,6 @@ But do not change or delete any definition symbol!
 
 ## TODO
 
-* Load / save / export pattern separately
-* Update presets
 * Implement effects
   * Reverb
   * Pitch (?)

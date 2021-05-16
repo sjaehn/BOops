@@ -383,6 +383,18 @@ void SampleChooser::update ()
 			loopLabel.hide();
 			noFileLabel.hide();
 		}
+
+		confirmLabel.resize();
+		const double confirmBoxWidth = (confirmLabel.getWidth() + 40 > 2 * okWidth + 60 ? confirmLabel.getWidth() + 40 : 2 * okWidth + 60);
+		const double confirmBoxHeight = confirmLabel.getHeight() + okHeight + 60;
+		confirmBox.resize (confirmBoxWidth, confirmBoxHeight);
+		confirmBox.moveTo (0.5 * getWidth() - 0.5 * confirmBoxWidth, 0.5 * getHeight() - 0.5 * confirmBoxHeight);
+		confirmLabel.moveTo (20, 20);
+		confirmCancelButton.moveTo (0.5 * confirmBoxWidth - okWidth - 10, confirmBoxHeight - okHeight - 10);
+		confirmCancelButton.resize (okWidth, okHeight);
+		confirmOkButton.moveTo (0.5 * confirmBoxWidth + 10, confirmBoxHeight - okHeight - 10);
+		confirmOkButton.resize (okWidth, okHeight);
+		confirmBox.show();
 	}
 
 	else
@@ -403,6 +415,7 @@ void SampleChooser::update ()
 		fileNameLabel.hide();
 		fileNameBox.hide();
 		filterPopupListBox.hide ();
+		confirmBox.hide();
 	}
 
 	Widget::update();

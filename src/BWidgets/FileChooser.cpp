@@ -44,7 +44,7 @@ FileChooser::FileChooser (const double x, const double y, const double width, co
 		filters (filters),
 		dirs (),
 		files (),
-		labels ({"OK", "Open", "Cancel"}),
+		labels ({"OK", "Open", "Cancel", "", ""}),
 		bgColors (BWIDGETS_DEFAULT_BGCOLORS),
 		pathNameBox (0, 0, 0, 0, name + "/textbox", ""),
 		fileListBox (0, 0, 0, 0, name + "/listbox"),
@@ -55,10 +55,11 @@ FileChooser::FileChooser (const double x, const double y, const double width, co
 		okButton (0, 0, 0, 0, name + "/button", labels[BWIDGETS_DEFAULT_FILECHOOSER_OK_INDEX]),
 		fileListBoxFileLabel (0, 0, 0, 0, name + "/listbox/item/file", ""),
 		fileListBoxDirLabel (0, 0, 0, 0, name + "/listbox/item/dir", ""),
-		filterPopupListBoxFilterLabel (0, 0, 0, 0, name + "/popup/listbox/item", "")
-		//fileFont ("Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL, 12.0, BStyles::TEXT_ALIGN_LEFT, BStyles::TEXT_VALIGN_MIDDLE),
-		//dirFont ("Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD, 12.0, BStyles::TEXT_ALIGN_LEFT, BStyles::TEXT_VALIGN_MIDDLE),
-		//filterFont ("Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL, 12.0, BStyles::TEXT_ALIGN_LEFT, BStyles::TEXT_VALIGN_MIDDLE)
+		filterPopupListBoxFilterLabel (0, 0, 0, 0, name + "/popup/listbox/item", ""),
+		confirmBox (0, 0, 0, 0, name),
+		confirmLabel (0, 0, 0, 0, name, ""),
+		confirmCancelButton (0, 0, 0, 0, name + "/button", "Cancel"),
+		confirmOkButton (0, 0, 0, 0, name + "/button", "Cancel")
 {
 	for (int i = 0; (i < int(texts.size())) && (i < int(labels.size())); ++i) labels[i] = texts[i];
 	okButton.getLabel()->setText (labels[BWIDGETS_DEFAULT_FILECHOOSER_OK_INDEX]);
@@ -84,6 +85,8 @@ FileChooser::FileChooser (const double x, const double y, const double width, co
 
 	cancelButton.setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, cancelButtonClickedCallback);
 	okButton.setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, okButtonClickedCallback);
+	confirmCancelButton.setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, confirmCancelButtonClickedCallback);
+	confirmOkButton.setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, confirmOkButtonClickedCallback);
 
 	BItems::ItemList items;
 	for (FileFilter const& f : filters)
@@ -98,6 +101,13 @@ FileChooser::FileChooser (const double x, const double y, const double width, co
 	}
 	filterPopupListBox = PopupListBox (0, 0, 0, 0, 0, 0, name + "/popup", items, (items.size() > 0 ? 1.0 : 0.0));
 	filterPopupListBox.setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, filterPopupListBoxClickedCallback);
+
+	// confirmBox.setDraggable (true); TODO Fix oversize bug first (parts not shown if position < (0, 0))
+	confirmBox.setStacking (BWidgets::STACKING_OVERSIZE);
+
+	confirmBox.add (confirmLabel);
+	confirmBox.add (confirmCancelButton);
+	confirmBox.add (confirmOkButton);
 
 	add (pathNameBox);
 	add (fileListBox);
@@ -142,9 +152,6 @@ FileChooser& FileChooser::operator= (const FileChooser& that)
 	files = that.files;
 	labels = that.labels;
 	bgColors = that.bgColors;
-	//fileFont = that.fileFont;
-	//dirFont = that.dirFont;
-	//filterFont = that.filterFont;
 	pathNameBox = that.pathNameBox;
 	fileListBox = that.fileListBox;
 	fileNameLabel = that.fileNameLabel;
@@ -326,6 +333,18 @@ void FileChooser::update ()
 			fileListBox.show();
 		}
 		else fileListBox.hide();
+
+		confirmLabel.resize();
+		const double confirmBoxWidth = (confirmLabel.getWidth() + 40 > 2 * okWidth + 60 ? confirmLabel.getWidth() + 40 : 2 * okWidth + 60);
+		const double confirmBoxHeight = confirmLabel.getHeight() + okHeight + 60;
+		confirmBox.resize (confirmBoxWidth, confirmBoxHeight);
+		confirmBox.moveTo (0.5 * getWidth() - 0.5 * confirmBoxWidth, 0.5 * getHeight() - 0.5 * confirmBoxHeight);
+		confirmLabel.moveTo (20, 20);
+		confirmCancelButton.moveTo (0.5 * confirmBoxWidth - okWidth - 10, confirmBoxHeight - okHeight - 10);
+		confirmCancelButton.resize (okWidth, okHeight);
+		confirmOkButton.moveTo (0.5 * confirmBoxWidth + 10, confirmBoxHeight - okHeight - 10);
+		confirmOkButton.resize (okWidth, okHeight);
+		confirmBox.show();
 	}
 
 	else
@@ -336,6 +355,7 @@ void FileChooser::update ()
 		fileNameLabel.hide();
 		fileNameBox.hide();
 		filterPopupListBox.hide ();
+		confirmBox.hide();
 	}
 
 	Widget::update();
@@ -356,6 +376,10 @@ void FileChooser::applyTheme (BStyles::Theme& theme, const std::string& name)
 	fileListBoxFileLabel.applyTheme (theme, name + "/listbox/item/file");
 	fileListBoxDirLabel.applyTheme (theme, name + "/listbox/item/dir");
 	filterPopupListBoxFilterLabel.applyTheme (theme, name + "/popup/listbox/item");
+	confirmBox.applyTheme (theme, name);
+	confirmLabel.applyTheme (theme, name + "/label");
+	confirmCancelButton.applyTheme (theme, name + "/button");
+	confirmOkButton.applyTheme (theme, name + "/button");
 
 	BItems::ItemList* il = fileListBox.getItemList();
 	if (il)
@@ -434,12 +458,29 @@ void FileChooser::cancelButtonClickedCallback (BEvents::Event* event)
 	if (!w) return;
 	FileChooser* fc = (FileChooser*)w->getParent();
 	if (!fc) return;
-
 	BEvents::ValueChangedEvent* ev = (BEvents::ValueChangedEvent*)event;
+
 	if (ev->getValue() == 1.0)
 	{
 		fc->setValue (0.0);
 		fc->postCloseRequest();
+	}
+}
+
+void FileChooser::confirmCancelButtonClickedCallback (BEvents::Event* event)
+{
+	if (!event) return;
+	TextButton* w = (TextButton*)event->getWidget();
+	if (!w) return;
+	Widget* c = w->getParent();
+	if (!c) return;
+	FileChooser* fc = (FileChooser*)c->getParent();
+	if (!fc) return;
+	BEvents::ValueChangedEvent* ev = (BEvents::ValueChangedEvent*)event;
+
+	if (ev->getValue() == 1.0)
+	{
+		fc->release (&fc->confirmBox);
 	}
 }
 
@@ -450,8 +491,8 @@ void FileChooser::okButtonClickedCallback (BEvents::Event* event)
 	if (!w) return;
 	FileChooser* fc = (FileChooser*)w->getParent();
 	if (!fc) return;
-
 	BEvents::ValueChangedEvent* ev = (BEvents::ValueChangedEvent*)event;
+
 	if (ev->getValue() == 1.0)
 	{
 		double lb = fc->fileListBox.getValue();
@@ -479,19 +520,29 @@ void FileChooser::okButtonClickedCallback (BEvents::Event* event)
 			}
 
 			// File selected: OK on file
-			else
-			{
-				fc->setValue (1.0);
-				fc->postCloseRequest();
-			}
+			else fc->processFileSelected();
 		}
 
 		// File name set: OK on file
-		else if (fc->fileNameBox.getText() != "")
-		{
-			fc->setValue (1.0);
-			fc->postCloseRequest();
-		}
+		else if (fc->fileNameBox.getText() != "") fc->processFileSelected();
+	}
+}
+
+void FileChooser::confirmOkButtonClickedCallback (BEvents::Event* event)
+{
+	if (!event) return;
+	TextButton* w = (TextButton*)event->getWidget();
+	if (!w) return;
+	Widget* c = w->getParent();
+	if (!c) return;
+	FileChooser* fc = (FileChooser*)c->getParent();
+	if (!fc) return;
+	BEvents::ValueChangedEvent* ev = (BEvents::ValueChangedEvent*)event;
+
+	 if (ev->getValue() == 1.0)
+	{
+		fc->setValue (1.0);
+		fc->postCloseRequest();
 	}
 }
 
@@ -584,6 +635,40 @@ void FileChooser::enterDir ()
 		}
 
 		fileListBox.setTop (1);
+	}
+}
+
+void FileChooser::processFileSelected()
+{
+	struct stat buffer;
+	const std::string fileName = getPath() + PATH_SEPARATOR + getFileName();
+	const bool fileExists = (stat (fileName.c_str(), &buffer) == 0);
+
+	// Open file exists dialog
+	if (fileExists && (labels[BWIDGETS_DEFAULT_FILECHOOSER_FILE_EXISTS_INDEX] != ""))
+	{
+		confirmLabel.setText (labels[BWIDGETS_DEFAULT_FILECHOOSER_FILE_EXISTS_INDEX]);
+		confirmCancelButton.getLabel()->setText (cancelButton.getLabel()->getText());
+		confirmOkButton.getLabel()->setText (okButton.getLabel()->getText());
+		update();
+		if (!isChild (&confirmBox)) add (confirmBox);
+	}
+
+	// Open file not exists dialog
+	else if ((!fileExists) && (labels[BWIDGETS_DEFAULT_FILECHOOSER_FILE_NOT_EXISTS_INDEX] != ""))
+	{
+		confirmLabel.setText (labels[BWIDGETS_DEFAULT_FILECHOOSER_FILE_NOT_EXISTS_INDEX]);
+		confirmCancelButton.getLabel()->setText (cancelButton.getLabel()->getText());
+		confirmOkButton.getLabel()->setText (okButton.getLabel()->getText());
+		update();
+		if (!isChild (&confirmBox)) add (confirmBox);
+	}
+
+	// Otherwise finish directly
+	else
+	{
+		setValue (1.0);
+		postCloseRequest();
 	}
 }
 

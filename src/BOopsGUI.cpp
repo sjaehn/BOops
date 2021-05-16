@@ -19,6 +19,7 @@
  */
 
 #include <limits.h>		// PATH_MAX
+#include <fstream>
 #include "BOopsGUI.hpp"
 #include "BUtilities/to_string.hpp"
 #include "BUtilities/vsystem.hpp"
@@ -83,7 +84,7 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 	loadButton (220, 10, 20, 20, "menu/button"),
 	sampleLabel (240, 0, 140, 8, "smlabel", BOOPS_LABEL_SAMPLE),
 	sampleNameLabel (240, 10, 140, 20, "boxlabel", ""),
-	fileChooser (nullptr),
+	sampleChooser (nullptr),
 	sampleAmpLabel (398, 0, 24, 8, "smlabel", BOOPS_LABEL_AMP),
 	sampleAmpDial (398, 8, 24, 24, "dial", 1.0, 0.0, 1.0, 0.0),
 	modeLabel (450, 0, 80, 8, "smlabel", BOOPS_LABEL_MODE),
@@ -153,7 +154,8 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 
 	monitor (290, 170, 820, 288, "monitor"),
 	padSurface (290, 170, 820, 288, "padsurface"),
-	editContainer (578, 466, 284, 24, "widget"),
+	editContainer (538, 466, 364, 24, "widget"),
+	patternChooser (nullptr),
 
 	gettingstartedContainer (20, 478, 1200, 150, "widget", pluginPath + "inc/None_bg.png"),
 	gettingstartedText (20, 30, 960, 110, "lflabel",BOOPS_LABEL_GETTING_STARTED),
@@ -190,7 +192,8 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 
 	// Init editButtons
 	for (int i = 0; i < EDIT_RESET; ++i) edit1Buttons[i] = HaloToggleButton (i * 30, 0, 24, 24, "widget", editLabels[i]);
-	for (int i = 0; i < MAXEDIT - EDIT_RESET; ++i) edit2Buttons[i] = HaloButton (170 + i * 30, 0, 24, 24, "widget", editLabels[i + EDIT_RESET]);
+	for (int i = 0; i < EDIT_LOAD - EDIT_RESET; ++i) edit2Buttons[i] = HaloButton (170 + i * 30, 0, 24, 24, "widget", editLabels[i + EDIT_RESET]);
+	for (int i = 0; i < MAXEDIT - EDIT_LOAD; ++i) edit3Buttons[i] = HaloButton (280 + i * 30, 0, 24, 24, "widget", editLabels[i + EDIT_LOAD]);
 
 	// Init slot params
 	for (int i = 0; i < NR_SLOTS; ++i)
@@ -254,8 +257,8 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 	transportGateButton.setCallbackFunction (BEvents::BUTTON_CLICK_EVENT, transportGateButtonClickedCallback);
 	transportGateOkButton.setCallbackFunction (BEvents::BUTTON_CLICK_EVENT, transportGateButtonClickedCallback);
 	transportGateCancelButton.setCallbackFunction (BEvents::BUTTON_CLICK_EVENT, transportGateButtonClickedCallback);
-	loadButton.setCallbackFunction(BEvents::BUTTON_PRESS_EVENT, loadButtonClickedCallback);
-	sampleNameLabel.setCallbackFunction(BEvents::BUTTON_PRESS_EVENT, loadButtonClickedCallback);
+	loadButton.setCallbackFunction(BEvents::BUTTON_PRESS_EVENT, sampleLoadButtonClickedCallback);
+	sampleNameLabel.setCallbackFunction(BEvents::BUTTON_PRESS_EVENT, sampleLoadButtonClickedCallback);
 
 	for (Slot& s : slots)
 	{
@@ -288,8 +291,9 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 	midiOkButton.setCallbackFunction(BEvents::VALUE_CHANGED_EVENT, midiButtonClickedCallback);
 	midiStatusListBox.setCallbackFunction(BEvents::VALUE_CHANGED_EVENT, midiStatusChangedCallback);
 
-	for (int i = 0; i < EDIT_RESET; ++i) edit1Buttons[i].setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, edit1ChangedCallback);
-	for (int i = 0; i < MAXEDIT - EDIT_RESET; ++i) edit2Buttons[i].setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, edit2ChangedCallback);
+	for (HaloToggleButton& e1 : edit1Buttons) e1.setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, edit1ChangedCallback);
+	for (HaloButton& e2 : edit2Buttons) e2.setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, edit2ChangedCallback);
+	for (HaloButton& e3 : edit3Buttons) e3.setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, edit3ChangedCallback);
 
 	// Configure widgets
 	loadButton.hide();
@@ -416,6 +420,7 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 
 	for (HaloToggleButton& e1 : edit1Buttons) editContainer.add (e1);
 	for (HaloButton& e2 : edit2Buttons) editContainer.add (e2);
+	for (HaloButton& e3 : edit3Buttons) editContainer.add (e3);
 
 	gettingstartedContainer.add (gettingstartedText);
 
@@ -502,82 +507,11 @@ BOopsGUI::~BOopsGUI ()
 		if (s.optionWidget) delete (s.optionWidget);
 	}
 
-	if (fileChooser) delete fileChooser;
+	if (sampleChooser) delete sampleChooser;
+	if (patternChooser) delete patternChooser;
 	if (insLine) delete insLine;
 
 	sendUiOff ();
-}
-
-void BOopsGUI::Pattern::clear ()
-{
-	Pad pad0 = Pad ();
-
-	changes.oldMessage.clear ();
-	changes.newMessage.clear ();
-	journal.clear ();
-
-	for (int r = 0; r < NR_SLOTS; ++r)
-	{
-		for (int s = 0; s < NR_STEPS; ++s)
-		{
-			setPad (r, s, pad0);
-		}
-	}
-
-	store ();
-}
-
-Pad BOopsGUI::Pattern::getPad (const size_t row, const size_t step) const
-{
-	return pads[LIMIT (row, 0, NR_SLOTS)][LIMIT (step, 0, NR_STEPS)];
-}
-void BOopsGUI::Pattern::setPad (const size_t row, const size_t step, const Pad& pad)
-{
-	size_t r = LIMIT (row, 0, NR_SLOTS);
-	size_t s = LIMIT (step, 0, NR_STEPS);
-	changes.oldMessage.push_back (PadMessage (r, s, pads[r][s]));
-	changes.newMessage.push_back (PadMessage (r, s, pad));
-	pads[r][s] = pad;
-}
-
-std::vector<PadMessage> BOopsGUI::Pattern::undo ()
-{
-	if (!changes.newMessage.empty ()) store ();
-
-	std::vector<PadMessage> padMessages = journal.undo ();
-	std::reverse (padMessages.begin (), padMessages.end ());
-	for (PadMessage const& p : padMessages)
-	{
-		size_t r = LIMIT (p.row, 0, NR_SLOTS);
-		size_t s = LIMIT (p.step, 0, NR_STEPS);
-		pads[r][s] = Pad (p);
-	}
-
-	return padMessages;
-}
-
-std::vector<PadMessage> BOopsGUI::Pattern::redo ()
-{
-	if (!changes.newMessage.empty ()) store ();
-
-	std::vector<PadMessage> padMessages = journal.redo ();
-	for (PadMessage const& p : padMessages)
-	{
-		size_t r = LIMIT (p.row, 0, NR_SLOTS);
-		size_t s = LIMIT (p.step, 0, NR_STEPS);
-		pads[r][s] = Pad (p);
-	}
-
-	return padMessages;
-}
-
-void BOopsGUI::Pattern::store ()
-{
-	if (changes.newMessage.empty ()) return;
-
-	journal.push (changes.oldMessage, changes.newMessage);
-	changes.oldMessage.clear ();
-	changes.newMessage.clear ();
 }
 
 void BOopsGUI::port_event(uint32_t port, uint32_t buffer_size,
@@ -930,7 +864,7 @@ void BOopsGUI::resize ()
 	RESIZE (sampleAmpLabel, 398, 0, 24, 8, sz);
 	RESIZE (sampleLabel, 240, 0, 140, 8, sz);
 	RESIZE (sampleNameLabel, 240, 10, 140, 20, sz);
-	if (fileChooser) RESIZE ((*fileChooser), 200, 140, 640, 400, sz);
+	if (sampleChooser) RESIZE ((*sampleChooser), 200, 140, 640, 400, sz);
 	RESIZE (sampleAmpDial, 398, 8, 24, 24, sz);
 	RESIZE (modeLabel, 450, 0, 80, 8, sz);
 	RESIZE (playModeListBox, 440, 10, 120, 20, sz);
@@ -1006,7 +940,7 @@ void BOopsGUI::resize ()
 
 	RESIZE (monitor, 290, 170, 820, 288, sz);
 	RESIZE (padSurface, 290, 170, 820, 288, sz);
-	RESIZE (editContainer, 578, 466, 284, 24, sz);
+	RESIZE (editContainer, 538, 466, 364, 24, sz);
 
 	RESIZE (gettingstartedContainer, 20, 478, 1200, 150, sz);
 	RESIZE (gettingstartedText, 20, 30, 960, 110, sz);
@@ -1032,7 +966,9 @@ void BOopsGUI::resize ()
 	}
 
 	for (int i = 0; i < EDIT_RESET; ++i) RESIZE (edit1Buttons[i], i * 30, 0, 24, 24, sz);
-	for (int i = 0; i < MAXEDIT - EDIT_RESET; ++i) RESIZE (edit2Buttons[i], 170 + i * 30, 0, 24, 24, sz);
+	for (int i = 0; i < EDIT_LOAD - EDIT_RESET; ++i) RESIZE (edit2Buttons[i], 170 + i * 30, 0, 24, 24, sz);
+	for (int i = 0; i < MAXEDIT - EDIT_LOAD; ++i) RESIZE (edit3Buttons[i], 280 + i * 30, 0, 24, 24, sz);
+	if (patternChooser) RESIZE ((*patternChooser), 200, 140, 640, 400, sz);
 
 	for (int i = 0; i < NR_SLOTS; ++i)
 	{
@@ -1076,7 +1012,7 @@ void BOopsGUI::applyTheme (BStyles::Theme& theme)
 	loadButton.applyTheme (theme);
 	sampleLabel.applyTheme (theme);
 	sampleNameLabel.applyTheme (theme);
-	if (fileChooser) fileChooser->applyTheme (theme);
+	if (sampleChooser) sampleChooser->applyTheme (theme);
 	sampleAmpLabel.applyTheme (theme);
 	sampleAmpDial.applyTheme (theme);
 	modeLabel.applyTheme (theme);
@@ -1147,6 +1083,8 @@ void BOopsGUI::applyTheme (BStyles::Theme& theme)
 	editContainer.applyTheme (theme);
 	for (HaloToggleButton& e1 : edit1Buttons) e1.applyTheme (theme);
 	for (HaloButton& e2 : edit2Buttons) e2.applyTheme (theme);
+	for (HaloButton& e3 : edit3Buttons) e3.applyTheme (theme);
+	if (patternChooser) patternChooser->applyTheme (theme);
 
 	gettingstartedContainer.applyTheme (theme);
 	gettingstartedText.applyTheme (theme);
@@ -1211,22 +1149,103 @@ void BOopsGUI::onCloseRequest (BEvents::WidgetEvent* event)
 	Widget* requestWidget = event->getRequestWidget ();
 	if (!requestWidget) return;
 
-	if (requestWidget == fileChooser)
+	if (requestWidget == sampleChooser)
 	{
-		if (fileChooser->getValue() == 1.0)
+		if (sampleChooser->getValue() == 1.0)
 		{
-			sampleNameLabel.setText (fileChooser->getFileName());
-			samplePath = fileChooser->getPath();
-			sampleStart = fileChooser->getStart();
-			sampleEnd = fileChooser->getEnd();
-			sampleLoop = fileChooser->getLoop();
+			sampleNameLabel.setText (sampleChooser->getFileName());
+			samplePath = sampleChooser->getPath();
+			sampleStart = sampleChooser->getStart();
+			sampleEnd = sampleChooser->getEnd();
+			sampleLoop = sampleChooser->getLoop();
 			sendSamplePath ();
 		}
 
-		// Close fileChooser
-		mContainer.release (fileChooser);	// TODO Check why this is required
-		delete fileChooser;
-		fileChooser = nullptr;
+		// Close sampleChooser
+		mContainer.release (sampleChooser);	// TODO Check why this is required
+		delete sampleChooser;
+		sampleChooser = nullptr;
+		return;
+	}
+
+	if (requestWidget == patternChooser)
+	{
+		if (patternChooser->getValue() == 1.0)
+		{
+			// Save pattern
+			if (patternChooser->getButtonText() == BOOPS_LABEL_SAVE)
+			{
+				const std::string path = patternChooser->getPath() + BUTILITIES_PATH_SLASH + patternChooser->getFileName();
+				std::ofstream file (path, std::ios::out | std::ios::trunc);
+				if (file.good())
+				{
+					file << "appliesTo: <" BOOPS_URI ">;\n" << patterns[pageAct].toString (std::array<std::string, 5> {"sl", "st", "gt", "sz", "mx"});
+					if (file.is_open()) file.close();
+				}
+
+				else std::cerr << "BOoops.lv2#GUI: Failed to save " << path << " .\n";
+			}
+
+			// Load pattern
+			else if (patternChooser->getButtonText() == BOOPS_LABEL_LOAD)
+			{
+				const std::string path = patternChooser->getPath() + BUTILITIES_PATH_SLASH + patternChooser->getFileName();
+				std::ifstream file (path);
+				if (file.good())
+				{
+					// Store pattern
+					if (wheelScrolled)
+					{
+						patterns[pageAct].store ();
+						wheelScrolled = false;
+					}
+
+					// Load file
+					std::string text = "";
+					std::string line;
+					while (getline (file, line)) text += line;
+
+					// Check header
+					size_t pos = text.find ("appliesTo:");
+					const std::string uri = BOOPS_URI;
+					if (pos != std::string::npos)
+					{
+						pos = text.find ("<", pos + 1);
+						if (pos != std::string::npos)
+						{
+							if (text.substr (pos + 1, uri.size()) == uri)
+							{
+								pos += uri.size() + 1;
+								if (text.substr (pos, 1) == ">")
+								{
+									// Parse file
+									pos += 1;
+									patterns[pageAct].fromString (text.substr (pos), std::array<std::string, 5> {"sl", "st", "gt", "sz", "mx"});
+
+									// Send to DSP & draw
+									for (int r = 0; r < NR_SLOTS; ++r) sendSlot (pageAct, r);
+									drawPad ();
+								}
+								else std::cerr << "BOoops.lv2#GUI: Failed to load " << path << " . Not identied as " BOOPS_URI "pattern.\n";
+							}
+							else std::cerr << "BOoops.lv2#GUI: Failed to load " << path << " . Not identied as " BOOPS_URI "pattern.\n";
+						}
+						else std::cerr << "BOoops.lv2#GUI: Failed to load " << path << " . Not identied as " BOOPS_URI "pattern.\n";
+					}
+					else std::cerr << "BOoops.lv2#GUI: Failed to load " << path << " . Not identied as " BOOPS_URI "pattern.\n";
+
+					// Close file
+					if (file.is_open()) file.close();
+				}
+
+				else std::cerr << "BOoops.lv2#GUI: Failed to load " << path << " .\n";
+			}
+		}
+
+		// Close patternChooser
+		mContainer.release (patternChooser);	// TODO Check why this is required
+		delete patternChooser;
+		patternChooser = nullptr;
 		return;
 	}
 
@@ -2877,7 +2896,7 @@ void BOopsGUI::edit2ChangedCallback(BEvents::Event* event)
 
 	// Identify editButtons: RESET ... REDO
 	int widgetNr = -1;
-	for (int i = 0; i < MAXEDIT - EDIT_RESET; ++i)
+	for (int i = 0; i < EDIT_LOAD - EDIT_RESET; ++i)
 	{
 		if (widget == &ui->edit2Buttons[i])
 		{
@@ -2899,11 +2918,8 @@ void BOopsGUI::edit2ChangedCallback(BEvents::Event* event)
 
 			for (int r = 0; r < NR_SLOTS; ++r)
 			{
-				for (int s = 0; s < NR_STEPS; ++s)
-				{
-					ui->patterns[ui->pageAct].setPad (r, s, Pad ());
-					ui->sendPad (ui->pageAct, r, s);
-				}
+				for (int s = 0; s < NR_STEPS; ++s) ui->patterns[ui->pageAct].setPad (r, s, Pad ());
+				ui->sendSlot (ui->pageAct, r);
 			}
 
 			ui->drawPad ();
@@ -2940,6 +2956,86 @@ void BOopsGUI::edit2ChangedCallback(BEvents::Event* event)
 		default:	break;
 	}
 }
+
+
+void BOopsGUI::edit3ChangedCallback(BEvents::Event* event)
+{
+	if (!event) return;
+	BWidgets::ValueWidget* widget = (BWidgets::ValueWidget*) event->getWidget ();
+	if (!widget) return;
+	float value = widget->getValue();
+	if (value != 1.0) return;
+	BOopsGUI* ui = (BOopsGUI*) widget->getMainWindow();
+	if (!ui) return;
+
+	// Identify editButtons: LOAD .. SAVE
+	int widgetNr = -1;
+	for (int i = 0; i < MAXEDIT - EDIT_LOAD; ++i)
+	{
+		if (widget == &ui->edit3Buttons[i])
+		{
+			widgetNr = i + EDIT_LOAD;
+			break;
+		}
+	}
+
+	// RESET ... REDO
+	switch (widgetNr)
+	{
+		case EDIT_LOAD:
+		{
+			if (ui->patternChooser) delete ui->patternChooser;
+			ui->patternChooser = new BWidgets::FileChooser
+			(
+				200, 140, 640, 400, "filechooser", ".",
+				std::vector<BWidgets::FileFilter>
+				{
+					BWidgets::FileFilter {BOOPS_LABEL_ALL_FILES, std::regex (".*")},
+					BWidgets::FileFilter {BOOPS_LABEL_PATTERN_FILES, std::regex (".*\\.boops.pat$", std::regex_constants::icase)}
+				},
+				std::vector<std::string> {BOOPS_LABEL_LOAD, BOOPS_LABEL_OPEN, BOOPS_LABEL_CANCEL, "", ""}
+
+			);
+			if (ui->patternChooser)
+			{
+				ui->patternChooser->setFileName ("");
+				RESIZE ((*ui->patternChooser), 200, 140, 640, 400, ui->sz);
+				ui->patternChooser->applyTheme (ui->theme);
+				ui->patternChooser->selectFilter (BOOPS_LABEL_PATTERN_FILES);
+				ui->mContainer.add (*ui->patternChooser);
+			}
+		}
+		break;
+
+		case EDIT_SAVE:
+		{
+			if (ui->patternChooser) delete ui->patternChooser;
+			ui->patternChooser = new BWidgets::FileChooser
+			(
+				200, 140, 640, 400, "filechooser", ".",
+				std::vector<BWidgets::FileFilter>
+				{
+					BWidgets::FileFilter {BOOPS_LABEL_ALL_FILES, std::regex (".*")},
+					BWidgets::FileFilter {BOOPS_LABEL_PATTERN_FILES, std::regex (".*\\.boops.pat$", std::regex_constants::icase)}
+				},
+				std::vector<std::string> {BOOPS_LABEL_SAVE, BOOPS_LABEL_OPEN, BOOPS_LABEL_CANCEL, BOOPS_LABEL_FILE_EXISTS, ""}
+
+			);
+			if (ui->patternChooser)
+			{
+				ui->patternChooser->setFileName ("Pattern.boops.pat");
+				RESIZE ((*ui->patternChooser), 200, 140, 640, 400, ui->sz);
+				ui->patternChooser->applyTheme (ui->theme);
+				ui->patternChooser->selectFilter (BOOPS_LABEL_PATTERN_FILES);
+				ui->mContainer.add (*ui->patternChooser);
+			}
+		}
+		break;
+
+		default:	break;
+	}
+}
+
 
 void BOopsGUI::padsPressedCallback (BEvents::Event* event)
 {
@@ -3273,7 +3369,7 @@ void BOopsGUI::transportGateButtonClickedCallback (BEvents::Event* event)
 	else ui->transportGateContainer.show();
 }
 
-void BOopsGUI::loadButtonClickedCallback (BEvents::Event* event)
+void BOopsGUI::sampleLoadButtonClickedCallback (BEvents::Event* event)
 {
 	if (!event) return;
 	BWidgets::Widget* widget = event->getWidget ();
@@ -3281,8 +3377,8 @@ void BOopsGUI::loadButtonClickedCallback (BEvents::Event* event)
 	BOopsGUI* ui = (BOopsGUI*) widget->getMainWindow();
 	if (!ui) return;
 
-	if (ui->fileChooser) delete ui->fileChooser;
-	ui->fileChooser = new SampleChooser
+	if (ui->sampleChooser) delete ui->sampleChooser;
+	ui->sampleChooser = new SampleChooser
 	(
 		200, 140, 640, 400, "filechooser", ui->samplePath,
 		std::vector<BWidgets::FileFilter>
@@ -3292,27 +3388,27 @@ void BOopsGUI::loadButtonClickedCallback (BEvents::Event* event)
 		},
 		std::vector<std::string>
 		{
-			BOOPS_LABEL_OK, BOOPS_LABEL_OPEN, BOOPS_LABEL_CANCEL, BOOPS_LABEL_PLAY_AS_LOOP,
+			BOOPS_LABEL_OK, BOOPS_LABEL_OPEN, BOOPS_LABEL_CANCEL, "", "", BOOPS_LABEL_PLAY_AS_LOOP,
 			BOOPS_LABEL_FILE, BOOPS_LABEL_SELECTION_START, BOOPS_LABEL_SELECTION_END,
 			BOOPS_LABEL_FRAMES, BOOPS_LABEL_NO_FILE_SELECTED
 		}
 
 	);
-	if (ui->fileChooser)
+	if (ui->sampleChooser)
 	{
 		const std::string filename = ui->sampleNameLabel.getText();
 		if (filename != "")
 		{
-			ui->fileChooser->setFileName (ui->sampleNameLabel.getText());
-			ui->fileChooser->setStart (ui->sampleStart);
-			ui->fileChooser->setEnd (ui->sampleEnd);
-			ui->fileChooser->setLoop (ui->sampleLoop);
+			ui->sampleChooser->setFileName (ui->sampleNameLabel.getText());
+			ui->sampleChooser->setStart (ui->sampleStart);
+			ui->sampleChooser->setEnd (ui->sampleEnd);
+			ui->sampleChooser->setLoop (ui->sampleLoop);
 		}
 
-		RESIZE ((*ui->fileChooser), 200, 140, 640, 400, ui->sz);
-		ui->fileChooser->applyTheme (ui->theme);
-		ui->fileChooser->selectFilter (BOOPS_LABEL_AUDIO_FILES);
-		ui->mContainer.add (*ui->fileChooser);
+		RESIZE ((*ui->sampleChooser), 200, 140, 640, 400, ui->sz);
+		ui->sampleChooser->applyTheme (ui->theme);
+		ui->sampleChooser->selectFilter (BOOPS_LABEL_AUDIO_FILES);
+		ui->mContainer.add (*ui->sampleChooser);
 	}
 }
 

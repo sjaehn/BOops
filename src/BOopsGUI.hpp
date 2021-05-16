@@ -50,6 +50,7 @@
 #include "Pad.hpp"
 #include "PadMessage.hpp"
 #include "Journal.hpp"
+#include "Pattern.hpp"
 #include "PadButton.hpp"
 #include "LoadButton.hpp"
 #include "IconPadButton.hpp"
@@ -90,7 +91,9 @@ enum editIndex
 	EDIT_RESET	= 5,
 	EDIT_UNDO	= 6,
 	EDIT_REDO	= 7,
-	MAXEDIT		= 8
+	EDIT_LOAD	= 8,
+	EDIT_SAVE	= 9,
+	MAXEDIT		= 10
 };
 
 enum PageControlsIndex
@@ -110,7 +113,9 @@ const std::string editLabels[MAXEDIT] =
 	BOOPS_LABEL_PASTE,
 	BOOPS_LABEL_RESET,
 	BOOPS_LABEL_UNDO,
-	BOOPS_LABEL_REDO
+	BOOPS_LABEL_REDO,
+	BOOPS_LABEL_LOAD,
+	BOOPS_LABEL_SAVE
 };
 
 class BOopsGUI : public BWidgets::Window
@@ -171,11 +176,12 @@ private:
 	static void effectReleasedCallback(BEvents::Event* event);
 	static void edit1ChangedCallback(BEvents::Event* event);
 	static void edit2ChangedCallback(BEvents::Event* event);
+	static void edit3ChangedCallback(BEvents::Event* event);
 	static void padsPressedCallback (BEvents::Event* event);
 	static void padsScrolledCallback (BEvents::Event* event);
 	static void padsFocusedCallback (BEvents::Event* event);
 	static void transportGateButtonClickedCallback (BEvents::Event* event);
-	static void loadButtonClickedCallback (BEvents::Event* event);
+	static void sampleLoadButtonClickedCallback (BEvents::Event* event);
 	static void helpButtonClickedCallback (BEvents::Event* event);
 	static void ytButtonClickedCallback (BEvents::Event* event);
 	virtual void resize () override;
@@ -218,25 +224,6 @@ private:
 	int pageOffset;
 
 	//Pads
-	class Pattern
-	{
-	public:
-		void clear ();
-		Pad getPad (const size_t row, const size_t step) const;
-		void setPad (const size_t row, const size_t step, const Pad& pad);
-		std::vector<PadMessage> undo ();
-		std::vector<PadMessage> redo ();
-		void store ();
-	private:
-		Journal<std::vector<PadMessage>, MAXUNDO> journal;
-		std::array<std::array<Pad, NR_STEPS>, NR_SLOTS> pads;
-		struct
-		{
-			std::vector<PadMessage> oldMessage;
-			std::vector<PadMessage> newMessage;
-		} changes;
-	};
-
 	std::array<Pattern, NR_PAGES> patterns;
 
 	struct ClipBoard
@@ -280,7 +267,7 @@ private:
 	LoadButton loadButton;
 	BWidgets::Label sampleLabel;
 	BWidgets::Label sampleNameLabel;
-	SampleChooser* fileChooser;
+	SampleChooser* sampleChooser;
 	BWidgets::Label sampleAmpLabel;
 	Dial sampleAmpDial;
 	BWidgets::Label modeLabel;
@@ -357,7 +344,9 @@ private:
 
 	BWidgets::Widget editContainer;
 	std::array<HaloToggleButton, EDIT_RESET> edit1Buttons;
-	std::array<HaloButton, MAXEDIT - EDIT_RESET> edit2Buttons;
+	std::array<HaloButton, EDIT_LOAD - EDIT_RESET> edit2Buttons;
+	std::array<HaloButton, MAXEDIT - EDIT_LOAD> edit3Buttons;
+	BWidgets::FileChooser* patternChooser;
 
 	struct SlotParam
 	{

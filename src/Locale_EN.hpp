@@ -13,6 +13,8 @@
 #define BOOPS_LABEL_RESET "Reset"
 #define BOOPS_LABEL_UNDO "Undo"
 #define BOOPS_LABEL_REDO "Redo"
+#define BOOPS_LABEL_LOAD "Load"
+#define BOOPS_LABEL_SAVE "Save"
 #define BOOPS_LABEL_MIDI_PAGE "MIDI control page"
 #define BOOPS_LABEL_MIDI_STATUS "MIDI status"
 #define BOOPS_LABEL_NONE "None"
@@ -63,6 +65,8 @@
 #define BOOPS_LABEL_SELECTION_END "Selection end"
 #define BOOPS_LABEL_FRAMES "frames"
 #define BOOPS_LABEL_NO_FILE_SELECTED "No audio file selected"
+#define BOOPS_LABEL_FILE_EXISTS "File already exists. Overwrite?"
+#define BOOPS_LABEL_PATTERN_FILES "Pattern files"
 #define BOOPS_LABEL_PROBABILITY "Probability"
 #define BOOPS_LABEL_MIX "Mix"
 #define BOOPS_LABEL_GETTING_STARTED "Getting started\n" \
