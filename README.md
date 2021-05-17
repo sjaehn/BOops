@@ -2,12 +2,13 @@
 Description: Glitch effect sequencer LV2 plugin
 
 Key features:
-* Multi-effect plugin controlled by a step sequencer pattern
+* Multi-effect plugin controlled by step sequencer patterns
 * Apply glitch effects in live or on a sample track
 * 24 effects
 * Up to 12 effect slots, freely select effects and effect order
 * Random effects: 3 different ways of randomization
-* Autoplay, host controlled, or MIDI controlled sequencer
+* Autoplay, host controlled, or MIDI controlled playback
+* Up to 16 patterns, MIDI controlled pattern change
 
 ![screenshot](https://raw.githubusercontent.com/sjaehn/BOops/master/doc/screenshot.png "Screenshot from B.Oops")
 
@@ -84,10 +85,10 @@ Notes:
 
 ### Quickstart
 
-1) Add an effect by clicking on the [+] symbol.
-2) Click on the menu symbol left to the effect name to change the effect
+1) Add an effect by clicking on the [+] symbol below "Fx".
+2) Click on the menu symbol left to the effect name to change the effect.
 3) Set a pattern right to the effect name to define the timepoint(s) to apply the effect on the incoming audio signal.
-4) Continue with point 1 to add another effects. Change the order of the effects by clicking on the respective symbol.
+4) Continue with point 1 to add another effects. Change the order of the effects by dragging the effect or by clicking on the respective symbol.
 
 
 ### User interface
@@ -124,7 +125,7 @@ the time or beat/bar position data are automatically used in the host controlled
 
 ##### Pattern size
 
-Temporal size of a full pattern loop.
+Temporal size of a full pattern loop in beat, bars, or seconds.
 
 
 ##### Steps
@@ -159,12 +160,13 @@ pattern.
 | > | Move pattern page forward. |
 
 
-#### MIDI control page
+#### MIDI control pattern \#1 - 16
 
-This menu appears upon clicking on the piano keys symbol in the respective tab. Enable / disable
-MIDI-controlled playback of the respective pattern by selection or deselection (= none) of a MIDI
-status. You can manually set the parameters to which B.Oops shall respond or you can use MIDI
-learning. Don't forget to confirm ("OK") or discard changes ("Cancel")!
+You can move through the up to 16 patterns in B.Oops using MIDI signals (e. g., from a pad controller or a keyboard). The
+respective control menu appears upon clicking on the piano keys symbol in the respective tab. Enable / disable MIDI
+control of the respective pattern by selection or deselection (= none) of a MIDI status. You can manually set the
+parameters to which B.Oops shall respond or you can use MIDI learning. Don't forget to confirm ("OK") or discard changes
+("Cancel")!
 
 
 #### Pattern
@@ -176,7 +178,7 @@ of the user interface.
 
 ##### Drawing mode
 
-You are in the drawing mode if none of the cut, copy, x-flip, y-flip, or paste symbols is selected. Left click on a pad to
+You are in the drawing mode if none of the cut, copy, x-flip, y-flip, or paste symbols is selected. Left-click on a pad to
 set the pad and apply properties from the right of the user interface. If you click again, you will un-set this pad.
 Dragging results in linked pads. And right-clicking results in copying the properties of the respective pad to the pad
 properties in the right of the user interface. Directly change the pad mix property by mouse wheel scrolling.
@@ -234,8 +236,10 @@ for all active pads of a slot. The slot properties consist of ADSR envelope, pan
 
 ##### ADSR envelope
 
-The ADSR envelope parameters ((A)ttack, (D)ecay, (S)ustain, (R)elease) are used for each active pad. The values are
-relative to one step.
+The ADSR envelope parameters ((A)ttack, (D)ecay, (S)ustain, and (R)elease) are used for each active pad. The values are
+relative to one step. This means that (the sum of) attack, decay, and release can take only up to one step (1.00) even if
+the pad is longer than one step.
+
 
 ##### Pan
 
@@ -250,7 +254,7 @@ Dry / wet mixing value of an effect.
 
 ##### Effect-dependent parameters
 
-See effects.
+Each effect may provide up to 12 optional parameters. See effects.
 
 
 ### Effects
@@ -301,7 +305,7 @@ achieved by increasing the smoothness parameter.
 
 #### Jumble
 
-Plays randomly one of the pads of the respective slot.
+Plays randomly one of the pads set for the respective slot.
 
 
 #### Tape stop
@@ -422,6 +426,7 @@ But do not change or delete any definition symbol!
   * Pitch (?)
   * Tape start (?)
 * Latency ? (Pitch, Tape start)
+* More tooltips
 * Reduce CPU load
 
 

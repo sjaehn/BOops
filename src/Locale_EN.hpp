@@ -15,7 +15,7 @@
 #define BOOPS_LABEL_REDO "Redo"
 #define BOOPS_LABEL_LOAD "Load"
 #define BOOPS_LABEL_SAVE "Save"
-#define BOOPS_LABEL_MIDI_PAGE "MIDI control page"
+#define BOOPS_LABEL_MIDI_PAGE "MIDI control pattern"
 #define BOOPS_LABEL_MIDI_STATUS "MIDI status"
 #define BOOPS_LABEL_NONE "None"
 #define BOOPS_LABEL_NOTE_ON "Note on"

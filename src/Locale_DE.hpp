@@ -15,7 +15,7 @@
 #define BOOPS_LABEL_REDO "Wiederherstellen"
 #define BOOPS_LABEL_LOAD "Laden"
 #define BOOPS_LABEL_SAVE "Speichern"
-#define BOOPS_LABEL_MIDI_PAGE "MIDI-Kontrollseite"
+#define BOOPS_LABEL_MIDI_PAGE "MIDI-Kontrolle Pattern"
 #define BOOPS_LABEL_MIDI_STATUS "MIDI-Status"
 #define BOOPS_LABEL_NONE "Nichts"
 #define BOOPS_LABEL_NOTE_ON "Note an"
