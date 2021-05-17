@@ -158,7 +158,7 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 	patternChooser (nullptr),
 
 	gettingstartedContainer (20, 478, 1200, 150, "widget", pluginPath + "inc/None_bg.png"),
-	gettingstartedText (20, 30, 960, 110, "lflabel",BOOPS_LABEL_GETTING_STARTED),
+	gettingstartedText (20, 30, 1160, 110, "lflabel",BOOPS_LABEL_GETTING_STARTED),
 
 	padParamContainer (1120, 170, 100, 288, "widget"),
 	padGateLabel (00, 90, 100, 20, "ctlabel", BOOPS_LABEL_PROBABILITY),
@@ -943,7 +943,7 @@ void BOopsGUI::resize ()
 	RESIZE (editContainer, 538, 466, 364, 24, sz);
 
 	RESIZE (gettingstartedContainer, 20, 478, 1200, 150, sz);
-	RESIZE (gettingstartedText, 20, 30, 960, 110, sz);
+	RESIZE (gettingstartedText, 20, 30, 1160, 110, sz);
 
 	RESIZE (padParamContainer, 1120, 170, 100, 288, sz);
 	RESIZE (padGateLabel, 0, 90, 100, 20, sz);

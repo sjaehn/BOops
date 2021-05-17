@@ -399,7 +399,7 @@ not. Select at least two slots and set the likelihood ratio for each slot.
 
 ## Customize
 
-You can create customized builds of B.Oops using the parameter `LANGUAGE` (e.g., `make LANGUAGE=EN`).
+You can create customized builds of B.Oops using the parameter `LANGUAGE` (e.g., `make LANGUAGE=DE`).
 To create a new language pack, copy `src/Locale_EN.hpp` and edit the text for the respective definitions.
 But do not change or delete any definition symbol!
 
@@ -411,6 +411,7 @@ But do not change or delete any definition symbol!
 * Load / save pattern separately (= import / export)
 * Basic locale support upon installation
 * Enable internationalization
+* Add DE locale
 * Store non audio-relevant working data in plugin state (like actual working pattern)
 
 

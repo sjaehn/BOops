@@ -74,7 +74,7 @@
         "1) Add an effect by clicking on the [+] symbol below \"Fx\".\n" \
         "2) Click on the menu symbol left to the effect name to change the effect\n" \
         "3) Set a pattern right to the effect name to define the timepoint(s) to apply the effect on the incoming audio signal.\n" \
-        "4) Continue with point 1 to add another effects. Change the order of the effects by clicking on the respective symbol."
+        "4) Continue with point 1 to add another effects. Change the order of the effects by dragging the effect or by clicking on the respective symbol."
 #define BOOPS_LABEL_PAN "Pan"
 #define BOOPS_LABEL_ADSR_A "A"
 #define BOOPS_LABEL_ADSR_D "D"
