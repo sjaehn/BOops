@@ -66,6 +66,8 @@
 #define BOOPS_LABEL_FRAMES "frames"
 #define BOOPS_LABEL_NO_FILE_SELECTED "No audio file selected"
 #define BOOPS_LABEL_FILE_EXISTS "File already exists. Overwrite?"
+#define BOOPS_LABEL_NEW_FOLDER "Create new folder:"
+#define BOOPS_LABEL_CANT_CREATE_NEW_FOLDER "Error: Can't create new folder"
 #define BOOPS_LABEL_PATTERN_FILES "Pattern files"
 #define BOOPS_LABEL_PROBABILITY "Probability"
 #define BOOPS_LABEL_MIX "Mix"

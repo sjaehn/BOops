@@ -2993,8 +2993,11 @@ void BOopsGUI::edit3ChangedCallback(BEvents::Event* event)
 					BWidgets::FileFilter {BOOPS_LABEL_ALL_FILES, std::regex (".*")},
 					BWidgets::FileFilter {BOOPS_LABEL_PATTERN_FILES, std::regex (".*\\.boops.pat$", std::regex_constants::icase)}
 				},
-				std::vector<std::string> {BOOPS_LABEL_LOAD, BOOPS_LABEL_OPEN, BOOPS_LABEL_CANCEL, "", ""}
-
+				std::vector<std::string>
+				{
+					BOOPS_LABEL_LOAD, BOOPS_LABEL_OPEN, BOOPS_LABEL_CANCEL,
+					"", "", BOOPS_LABEL_NEW_FOLDER, BOOPS_LABEL_CANT_CREATE_NEW_FOLDER
+				}
 			);
 			if (ui->patternChooser)
 			{
@@ -3018,7 +3021,11 @@ void BOopsGUI::edit3ChangedCallback(BEvents::Event* event)
 					BWidgets::FileFilter {BOOPS_LABEL_ALL_FILES, std::regex (".*")},
 					BWidgets::FileFilter {BOOPS_LABEL_PATTERN_FILES, std::regex (".*\\.boops.pat$", std::regex_constants::icase)}
 				},
-				std::vector<std::string> {BOOPS_LABEL_SAVE, BOOPS_LABEL_OPEN, BOOPS_LABEL_CANCEL, BOOPS_LABEL_FILE_EXISTS, ""}
+				std::vector<std::string>
+				{
+					BOOPS_LABEL_SAVE, BOOPS_LABEL_OPEN, BOOPS_LABEL_CANCEL,
+					BOOPS_LABEL_FILE_EXISTS, "", BOOPS_LABEL_NEW_FOLDER, BOOPS_LABEL_CANT_CREATE_NEW_FOLDER
+				}
 
 			);
 			if (ui->patternChooser)
@@ -3388,7 +3395,8 @@ void BOopsGUI::sampleLoadButtonClickedCallback (BEvents::Event* event)
 		},
 		std::vector<std::string>
 		{
-			BOOPS_LABEL_OK, BOOPS_LABEL_OPEN, BOOPS_LABEL_CANCEL, "", "", BOOPS_LABEL_PLAY_AS_LOOP,
+			BOOPS_LABEL_OK, BOOPS_LABEL_OPEN, BOOPS_LABEL_CANCEL,
+			"", "", BOOPS_LABEL_NEW_FOLDER, BOOPS_LABEL_CANT_CREATE_NEW_FOLDER, BOOPS_LABEL_PLAY_AS_LOOP,
 			BOOPS_LABEL_FILE, BOOPS_LABEL_SELECTION_START, BOOPS_LABEL_SELECTION_END,
 			BOOPS_LABEL_FRAMES, BOOPS_LABEL_NO_FILE_SELECTED
 		}

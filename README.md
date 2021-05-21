@@ -410,17 +410,16 @@ But do not change or delete any definition symbol!
 
 ## What's new
 
-* Multiple patterns
-* MIDI triggering pattern
-* Load / save pattern separately (= import / export)
-* Basic locale support upon installation
-* Enable internationalization
-* Add DE locale
+* Up to 16 MIDI-controlled patterns
+* Import / export patterns
+* Build B.Oops in your native language
+* Add language packs: EN, DE
 * Store non audio-relevant working data in plugin state (like actual working pattern)
 
 
 ## TODO
 
+* Pattern preview in pattern file chooser
 * Implement effects
   * Reverb
   * Pitch (?)

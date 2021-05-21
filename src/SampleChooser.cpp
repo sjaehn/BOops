@@ -231,7 +231,7 @@ void SampleChooser::update ()
 	double w = getEffectiveWidth();
 	double h = getEffectiveHeight();
 
-	if ((w >= 20) && (h >= 20))
+	if ((w >= 40) && (h >= 20))
 	{
 		double val = fileListBox.getValue();
 		if ((val == UNSELECTED) || (val > dirs.size())) okButton.getLabel()->setText (labels[BWIDGETS_DEFAULT_FILECHOOSER_OK_INDEX]);
@@ -252,7 +252,10 @@ void SampleChooser::update ()
 		double fileNameWidth = fileNameLabel.getWidth();
 
 		pathNameBox.moveTo (x0 + 10, y0 + 10);
-		pathNameBox.resize (w - 20, pathNameHeight);
+		pathNameBox.resize (w - pathNameHeight - 30, pathNameHeight);
+
+		newFolderButton.moveTo (x0 + w - 10 - pathNameHeight, y0 + 10);
+		newFolderButton.resize (pathNameHeight, pathNameHeight);
 
 		okButton.moveTo (x0 + w - okWidth - 10, y0 + h - okHeight - 10);
 		okButton.resize (okWidth, okHeight);
@@ -395,6 +398,24 @@ void SampleChooser::update ()
 		confirmOkButton.moveTo (0.5 * confirmBoxWidth + 10, confirmBoxHeight - okHeight - 10);
 		confirmOkButton.resize (okWidth, okHeight);
 		confirmBox.show();
+
+		createLabel.resize();
+		createInput.resize();
+		createError.resize();
+		const double createLabelsWidth = (createLabel.getWidth() > createError.getWidth() ? createLabel.getWidth() : createError.getWidth());
+		const double createBoxWidth = (createLabelsWidth + 40 > 2 * okWidth + 100 ? createLabelsWidth + 40 : 2 * okWidth + 100);
+		const double createBoxHeight = createLabel.getHeight() + createInput.getHeight() + createError.getHeight() + okHeight + 60;
+		createBox.resize (createBoxWidth, createBoxHeight);
+		createBox.moveTo (0.5 * getWidth() - 0.5 * createBoxWidth, 0.5 * getHeight() - 0.5 * createBoxHeight);
+		createLabel.moveTo (20, 20);
+		createInput.resize (createBoxWidth - 40, createInput.getHeight());
+		createInput.moveTo (20, 30 + createLabel.getHeight());
+		createError.moveTo (20, 40 + createLabel.getHeight() + createInput.getHeight());
+		createCancelButton.moveTo (0.5 * createBoxWidth - okWidth - 10, createBoxHeight - okHeight - 10);
+		createCancelButton.resize (okWidth, okHeight);
+		createOkButton.moveTo (0.5 * createBoxWidth + 10, createBoxHeight - okHeight - 10);
+		createOkButton.resize (okWidth, okHeight);
+		createBox.show();
 	}
 
 	else
@@ -416,6 +437,7 @@ void SampleChooser::update ()
 		fileNameBox.hide();
 		filterPopupListBox.hide ();
 		confirmBox.hide();
+		createBox.hide();
 	}
 
 	Widget::update();
