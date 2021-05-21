@@ -62,7 +62,7 @@ public:
 
 	virtual Stereo play (const double position, const double padsize, const double mixf) override
 	{
-		const Stereo s0 = (**buffer)[0];
+		const Stereo s0 = (**buffer).front();
 		if (!playing) return s0;
 
 		const double wow = (0.5 - 0.5 * cos (2 * M_PI * position * wowRate)) * wowDepth;

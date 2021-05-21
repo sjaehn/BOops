@@ -83,7 +83,7 @@ public:
 			}
 		}
 
-		return (**buffer)[0];
+		return (**buffer).front();
 	}
 
 protected:

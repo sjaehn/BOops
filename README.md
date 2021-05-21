@@ -410,11 +410,7 @@ But do not change or delete any definition symbol!
 
 ## What's new
 
-* Up to 16 MIDI-controlled patterns
-* Import / export patterns
-* Build B.Oops in your native language
-* Add language packs: EN, DE
-* Store non audio-relevant working data in plugin state (like actual working pattern)
+* Faster
 
 
 ## TODO
@@ -433,6 +429,7 @@ But do not change or delete any definition symbol!
 
 * Introduction / Quick start tutorial video: https://www.youtube.com/watch?v=bGUmZHWqdkE
 * Presets demo: https://www.youtube.com/watch?v=W2UBQbYq7Mw
+* Install tutorial: https://www.youtube.com/watch?v=XGgB5nCAqZo
 
 
 ## Acknowledgments

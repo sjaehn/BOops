@@ -50,7 +50,7 @@ public:
 
 	virtual Stereo play (const double position, const double size, const double mixf) override
 	{
-		const Stereo s0 = (**buffer)[0];
+		const Stereo s0 = (**buffer).front();
 		if (!playing) return s0;
 
 		const double frame = (1.0 - speed) * framesPerStep * position;

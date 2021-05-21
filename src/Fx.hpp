@@ -66,7 +66,7 @@ public:
 
 	virtual Stereo play (const double position, const double size, const double mixf)
 	{
-		return (**buffer)[0];
+		return (**buffer).front();
 	}
 
 	virtual void end () {playing = false;}

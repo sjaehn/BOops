@@ -60,14 +60,14 @@ public:
 
 	virtual Stereo play (const double position, const double padsize, const double mixf) override
 	{
-		const Stereo s0 = (**buffer)[0];
+		const Stereo s0 = (**buffer).front();
 		if (!playing) return s0;
 
 		const double frame = *framesPerStepPtr * range * delay;
 		Stereo s1 = getSample (frame);
 		s1 = mix (s0, s1, position, padsize, mixf);
 		Stereo s2 = s1;
-		(**buffer)[0] = s2.mix (s0, 1.0f - feedback);
+		(**buffer).front() = s2.mix (s0, 1.0f - feedback);
 		return s1;
 	}
 

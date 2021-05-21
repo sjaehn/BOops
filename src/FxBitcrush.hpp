@@ -49,7 +49,7 @@ public:
 
 	virtual Stereo play (const double position, const double size, const double mixf) override
 	{
-		const Stereo s0 = (**buffer)[0];
+		const Stereo s0 = (**buffer).front();
 		if (!playing) return s0;
 
 		const float l1 = LIMIT (s0.left + limit, 0, 2.0 * limit) / (2.0 * limit);

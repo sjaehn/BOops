@@ -219,14 +219,14 @@ Fx* Slot::newFx (const BOopsEffectsIndex effect)
 Stereo Slot::play (const double position)
 {
 	if ((!fx) || (!buffer)) return Stereo();
-	if (!isPadSet(position)) return (*buffer)[0];
+	if (!isPadSet(position)) return (*buffer).front();
 
 	const int index = startPos[int(position)];
-	if (!params[SLOTS_PLAY]) return (*buffer)[0];
+	if (!params[SLOTS_PLAY]) return (*buffer).front();
 
 	// Get effect
 	const double relpos = position - double (index);
-	const Stereo s0 = (*buffer)[0];
+	const Stereo s0 = (*buffer).front();
 	const Stereo s1 = fx->play (relpos, pads[index].size, pads[index].mix);
 	return BUtilities::mix<Stereo> (s0, s1, mixf);
 }

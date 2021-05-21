@@ -79,7 +79,7 @@ public:
 		double t = double (c) / samplerate;
 		++c;
 
-		const Stereo s0 = (**buffer)[0];
+		const Stereo s0 = (**buffer).front();
 		if (!playing) return s0;
 
 		// Randomly generate new crackles
