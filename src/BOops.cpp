@@ -61,7 +61,7 @@ BOops::BOops (double samplerate, const char* bundle_path, const LV2_Feature* con
 	forge (), notify_frame (),
 	sample (NULL), sampleAmp (1.0f),
 	waveform {0}, waveformCounter (0), lastWaveformCounter (0),
-	message (), ui_on(false), scheduleNotifySlot {false},
+	message (), ui_on(false), scheduleNotifyAllSlots (false),
 	scheduleNotifyPageControls {false},
 	scheduleNotifyStatus (false), scheduleResizeBuffers (false), scheduleSetFx {false},
 	scheduleNotifyWaveformToGui (false), scheduleNotifyTransportGateKeys (false),
@@ -98,7 +98,7 @@ BOops::BOops (double samplerate, const char* bundle_path, const LV2_Feature* con
 	lv2_atom_forge_init (&forge, map);
 
 	// Initialize slots
-	std::fill (slots, slots + NR_SLOTS, Slot (this, FX_NONE, nullptr, nullptr, 16, 1.0f, 0.25 * samplerate));
+	slots.fill (Slot (this, FX_NONE, nullptr, nullptr, 16, 1.0f, 0.25 * samplerate));
 
 	// Init pages
 	pages.fill ({{0, 0, 0, 0}, std::array<std::array<Pad, NR_STEPS>, NR_SLOTS>()});
@@ -279,7 +279,7 @@ void BOops::run (uint32_t n_samples)
 
 			else if (i == STEPS)
 			{
-				for (int i = 0; i < NR_SLOTS; ++i) slots[i].size = newValue;
+				for (Slot& s : slots) s.size = newValue;
 				resizeSteps ();
 			}
 
@@ -349,7 +349,7 @@ void BOops::run (uint32_t n_samples)
 			if (obj->body.otype == urids.bOops_uiOn)
 			{
 				ui_on = true;
-				std::fill ((bool*)scheduleNotifySlot, (bool*)scheduleNotifySlot + NR_PAGES * NR_SLOTS, true);
+				scheduleNotifyAllSlots = true;
 				std::fill (scheduleNotifyPageControls, scheduleNotifyPageControls + NR_PAGES, true);
 				std::fill (scheduleNotifyShape, scheduleNotifyShape + NR_SLOTS, true);
 				scheduleNotifyTransportGateKeys = true;
@@ -416,8 +416,6 @@ void BOops::run (uint32_t n_samples)
 					}
 
 					if (pageMax < pageNr) pageMax = pageNr;
-
-					scheduleStateChanged = true;
      				}
 
 				if (oMax && (oMax->type == urids.atom_Int) && (((LV2_Atom_Int*)oMax)->body >= 0) && (((LV2_Atom_Int*)oMax)->body < NR_PAGES))
@@ -433,13 +431,13 @@ void BOops::run (uint32_t n_samples)
 						Position np = backPosition();
 						pushBackPosition (np);
 					}
-
-					scheduleStateChanged = true;
      				}
 
 				if (oEdPg && (oEdPg->type == urids.atom_Int)) editorPage = LIMIT (((LV2_Atom_Int*)oEdPg)->body, 0, NR_PAGES - 1);
 
 				if (oEdSl && (oEdSl->type == urids.atom_Int)) editorSlot = LIMIT (((LV2_Atom_Int*)oEdSl)->body, 0, NR_SLOTS - 1);
+
+				scheduleStateChanged = true;
 			}
 
 
@@ -916,13 +914,7 @@ void BOops::run (uint32_t n_samples)
 	{
 		if (message.isScheduled ()) notifyMessageToGui ();
 		if (scheduleNotifyStatus) notifyStatusToGui ();
-		for (int i = 0; i < NR_PAGES; ++i)
-		{
-			for (int j = 0; j < NR_SLOTS; ++j)
-			{
-				if (scheduleNotifySlot[i][j]) notifySlotToGui (i, j);
-			}
-		}
+		if (scheduleNotifyAllSlots) notifyAllSlotsToGui();
 		for (int i = 0; i < NR_PAGES; ++i) {if (scheduleNotifyPageControls[i]) notifyPageControls (i);}
 		for (int i = 0; i < NR_SLOTS; ++i) {if (scheduleNotifyShape[i]) notifyShapeToGui (i);}
 		if (scheduleNotifyTransportGateKeys) notifyTransportGateKeysToGui();
@@ -937,7 +929,7 @@ void BOops::run (uint32_t n_samples)
 void BOops::resizeSteps ()
 {
 	double fpst = getFramesPerStep (backPosition().transport);
-	for (int i = 0; i < NR_SLOTS; ++i) slots[i].framesPerStep = fpst;
+	for (Slot& s : slots) s.framesPerStep = fpst;
 
 	if (!scheduleResizeBuffers)
 	{
@@ -947,17 +939,20 @@ void BOops::resizeSteps ()
 	}
 }
 
-void BOops::notifySlotToGui (const int page, const int slot)
+void BOops::notifyAllSlotsToGui ()
 {
-	Pad pads[NR_STEPS];
-	for (unsigned int i = 0; i < NR_STEPS; ++i) pads[i] = pages[page].pads[slot][i];
+	for (unsigned int page = 0; page < NR_PAGES; ++page)
+	{
+		for (unsigned int slot = 0; slot < NR_SLOTS; ++slot)
+		{
+			LV2_Atom_Forge_Frame frame;
+			lv2_atom_forge_frame_time(&forge, 0);
+			forgePads (&forge, &frame, page, slot, NR_STEPS);
+			lv2_atom_forge_pop(&forge, &frame);
+		}
+	}
 
-	LV2_Atom_Forge_Frame frame;
-	lv2_atom_forge_frame_time(&forge, 0);
-	forgePads (&forge, &frame, page, slot, pads, NR_STEPS);
-	lv2_atom_forge_pop(&forge, &frame);
-
-	scheduleNotifySlot[page][slot] = false;
+	scheduleNotifyAllSlots = false;
 }
 
 void BOops::notifyShapeToGui (const int slot)
@@ -1176,7 +1171,7 @@ LV2_Atom_Forge_Ref BOops::forgeShape (LV2_Atom_Forge* forge, LV2_Atom_Forge_Fram
 	return msg;
 }
 
-LV2_Atom_Forge_Ref BOops::forgePads (LV2_Atom_Forge* forge, LV2_Atom_Forge_Frame* frame, const int page, const int slot, const Pad* pads, const size_t size)
+LV2_Atom_Forge_Ref BOops::forgePads (LV2_Atom_Forge* forge, LV2_Atom_Forge_Frame* frame, const int page, const int slot, const size_t size)
 {
 	const LV2_Atom_Forge_Ref msg = lv2_atom_forge_object(forge, frame, 0, urids.bOops_slotEvent);
 	if (msg)
@@ -1186,7 +1181,7 @@ LV2_Atom_Forge_Ref BOops::forgePads (LV2_Atom_Forge* forge, LV2_Atom_Forge_Frame
 		lv2_atom_forge_key(forge, urids.bOops_slot);
 		lv2_atom_forge_int(forge, slot);
 		lv2_atom_forge_key(forge, urids.bOops_pads);
-		lv2_atom_forge_vector(forge, sizeof(float), urids.atom_Float, sizeof(Pad) / sizeof(float) * NR_STEPS, (void*) pads);
+		lv2_atom_forge_vector(forge, sizeof(float), urids.atom_Float, sizeof(Pad) / sizeof(float) * NR_STEPS, (void*) &(pages[page].pads[slot][0]));
 	}
 	return msg;
 }
@@ -1211,6 +1206,25 @@ LV2_Atom_Forge_Ref BOops::forgePageControls (LV2_Atom_Forge* forge, LV2_Atom_For
 	return msg;
 }
 
+Stereo BOops::getSample (const Position& p, const double pos)
+{
+	if (sample && (sample->end > sample->start))
+	{
+		const uint64_t f0 = getFramesFromPosition (p.transport, pos);
+		const int64_t frame =
+		(
+			sample->loop ?
+			(f0  % (sample->end - sample->start)) + sample->start :
+			f0 + sample->start
+		);
+
+		if (frame < sample->end) return Stereo (sample->get (frame, 0, host.rate), sample->get (frame, 1, host.rate)) * sampleAmp;
+		else return Stereo();
+	}
+
+	else return Stereo();
+}
+
 void BOops::play (uint32_t start, uint32_t end)
 {
 	if (end < start) return;
@@ -1219,7 +1233,7 @@ void BOops::play (uint32_t start, uint32_t end)
 	{
 		for (uint32_t i = start; i < end; ++i)
 		{
-			for (int j = 0; j < NR_SLOTS; ++j) slots[j].buffer->push_front (Stereo {audioInput1[i], audioInput2[i]});
+			for (Slot& s : slots) s.buffer->push_front (Stereo {audioInput1[i], audioInput2[i]});
 		}
 		memset(&audioOutput1[start], 0, (end - start) * sizeof(float));
 		memset(&audioOutput2[start], 0, (end - start) * sizeof(float));
@@ -1237,32 +1251,10 @@ void BOops::play (uint32_t start, uint32_t end)
 			double pos = floorfrac (p.sequence + relpos);				// 0..1 position sequence
 
 			// Input signal
-			Stereo input = Stereo (audioInput1[i], audioInput2[i]);
-			if (globalControllers[SOURCE] == SOURCE_SAMPLE)
-			{
-				if (sample)
-				{
-					if (sample->end <= sample->start) input = Stereo();
-
-					else
-					{
-						const uint64_t f0 = getFramesFromPosition (p.transport, pos);
-						const int64_t frame =
-						(
-							sample->loop ?
-							(f0  % (sample->end - sample->start)) + sample->start :
-							f0 + sample->start
-						);
-
-						if (frame < sample->end) input = Stereo (sample->get (frame, 0, host.rate), sample->get (frame, 1, host.rate)) * sampleAmp;
-						else input = Stereo();
-					}
-				}
-				else input = Stereo();
-			}
+			Stereo input = (globalControllers[SOURCE] == SOURCE_SAMPLE) ? getSample (p, pos) : Stereo (audioInput1[i], audioInput2[i]);
 
 			// Load samples to buffer
-			for (int j = 0; j < NR_SLOTS; ++j) slots[j].buffer->push_front (input);
+			for (Slot& s : slots) s.buffer->push_front (input);
 
 			// Waveform
 			waveformCounter = int (pos * WAVEFORMSIZE) % WAVEFORMSIZE;
@@ -1295,29 +1287,7 @@ void BOops::play (uint32_t start, uint32_t end)
 		double pos = floorfrac (p.sequence + relpos);				// 0..1 position sequence
 
 		// Input
-		Stereo input = Stereo (audioInput1[i], audioInput2[i]);
-		if (globalControllers[SOURCE] == SOURCE_SAMPLE)
-		{
-			if (sample)
-			{
-				if (sample->end <= sample->start) input = Stereo();
-
-				else
-				{
-					const uint64_t f0 = getFramesFromPosition (p.transport, pos);
-					const int64_t frame =
-					(
-						sample->loop ?
-						(f0  % (sample->end - sample->start)) + sample->start :
-						f0 + sample->start
-					);
-
-					if (frame < sample->end) input = Stereo (sample->get (frame, 0, host.rate), sample->get (frame, 1, host.rate)) * sampleAmp;
-					else input = Stereo();
-				}
-			}
-			else input = Stereo();
-		}
+		Stereo input = (globalControllers[SOURCE] == SOURCE_SAMPLE) ? getSample (p, pos) : Stereo (audioInput1[i], audioInput2[i]);
 		Stereo output = input;
 
 		// Waveform
@@ -1334,32 +1304,36 @@ void BOops::play (uint32_t start, uint32_t end)
 			double step = pos * globalControllers[STEPS];
 			int iStep = LIMIT (step, 0, globalControllers[STEPS] - 1);
 
-			for (int k = 0; k < NR_SLOTS; ++k)
+			// Enter next step ?
+			if (p.step != iStep)
 			{
-				input = output;
-				Slot& iSlot = slots[k];
-				iSlot.buffer->push_front (input);
-				if ((iSlot.effect == FX_INVALID) || (iSlot.effect == FX_NONE)) break;
-
-				// Next step ?
-				if (p.step != iStep)
+				for (Slot& s : slots)
 				{
-					// Old pad ended?
-					const int iStart = iSlot.startPos[iStep];
+					if ((s.effect == FX_INVALID) || (s.effect == FX_NONE)) break;
 
-					if ((p.step < 0) || (iSlot.startPos[p.step] != iStart))
+					// Old pad ended?
+					const int iStart = s.startPos[iStep];
+					if ((p.step < 0) || (s.startPos[p.step] != iStart))
 					{
 						// Stop old pad
-						iSlot.end ();
+						s.end ();
 
 						// Start new pad (if set)
-						if (iStart >= 0) iSlot.init (iStart);
+						if (iStart >= 0) s.init (iStart);
 					}
 				}
+			}
+
+			// Play slots
+			for (Slot& s : slots)
+			{
+				input = output;
+				s.buffer->push_front (input);
+				if ((s.effect == FX_INVALID) || (s.effect == FX_NONE)) break;
 
 				// Play music :-)
-				output = (iSlot.params[SLOTS_PLAY] ? iSlot.play (step) : input);
-				iSlot.mixf = 1.0f;
+				output = (s.params[SLOTS_PLAY] ? s.play (step) : input);
+				s.mixf = 1.0f;
 			}
 
 			p.step = iStep;
@@ -1779,9 +1753,9 @@ LV2_State_Status BOops::state_restore (LV2_State_Retrieve_Function retrieve, LV2
 		}
 
 		// Also clear pads stored in slots
-		for (int slotNr = 0; slotNr < NR_SLOTS; ++slotNr)
+		for (Slot& s : slots)
 		{
-			for (unsigned int i = 0; i < NR_STEPS; ++i) slots[slotNr].setPad (i, Pad());
+			for (unsigned int i = 0; i < NR_STEPS; ++i) s.setPad (i, Pad());
 		}
 
 		std::string padDataString = (char*) padData;
@@ -1898,7 +1872,7 @@ LV2_State_Status BOops::state_restore (LV2_State_Retrieve_Function retrieve, LV2
 		}
 
 		// Schedule notify GUI
-		std::fill ((bool*)scheduleNotifySlot, (bool*)scheduleNotifySlot + NR_PAGES * NR_SLOTS, true);
+		scheduleNotifyAllSlots = true;
 	}
 
 	// Retrieve shapes

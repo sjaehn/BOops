@@ -93,9 +93,10 @@ public:
 	LV2_Worker_Schedule* workerSchedule;
 
 private:
+	Stereo getSample (const Position& p, const double pos);
 	void play(uint32_t start, uint32_t end);
 	void resizeSteps ();
-	void notifySlotToGui (const int page, const int slot);
+	void notifyAllSlotsToGui ();
 	void notifyShapeToGui (const int slot);
 	void notifyMessageToGui ();
 	void notifyStatusToGui ();
@@ -108,7 +109,7 @@ private:
 	LV2_Atom_Forge_Ref forgeSamplePath (LV2_Atom_Forge* forge, LV2_Atom_Forge_Frame* frame,  const char* path, const int64_t start, const int64_t end, const float amp, const int32_t loop);
 	LV2_Atom_Forge_Ref forgeShape (LV2_Atom_Forge* forge, LV2_Atom_Forge_Frame* frame, const int slot, const Shape<SHAPE_MAXNODES>* shape);
 	LV2_Atom_Forge_Ref forgeTransportGateKeys (LV2_Atom_Forge* forge, LV2_Atom_Forge_Frame* frame, const int* keys, const size_t size);
-	LV2_Atom_Forge_Ref forgePads (LV2_Atom_Forge* forge, LV2_Atom_Forge_Frame* frame, const int page, const int slot, const Pad* pads, const size_t size);
+	LV2_Atom_Forge_Ref forgePads (LV2_Atom_Forge* forge, LV2_Atom_Forge_Frame* frame, const int page, const int slot, const size_t size);
 	LV2_Atom_Forge_Ref forgePageControls (LV2_Atom_Forge* forge, LV2_Atom_Forge_Frame* frame, const int pageId);
 	double getPositionFromBeats (const Transport& transport, const double beats);
 	double getPositionFromFrames (const Transport& transport, const uint64_t frames);
@@ -158,7 +159,7 @@ private:
 	LV2_Atom_Forge_Frame notify_frame;
 
 	// Internals
-public:	Slot slots[NR_SLOTS];
+public:	std::array<Slot, NR_SLOTS> slots;
 private:
 	Sample* sample;
 	float sampleAmp;
@@ -168,7 +169,7 @@ private:
 
 	Message message;
 	bool ui_on;
-	bool scheduleNotifySlot[NR_PAGES][NR_SLOTS];
+	bool scheduleNotifyAllSlots;
 	bool scheduleNotifyPageControls[NR_PAGES];
 	bool scheduleNotifyShape[NR_SLOTS];
 	bool scheduleNotifyStatus;
