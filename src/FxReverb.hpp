@@ -41,7 +41,7 @@ public:
 
 	FxReverb (RingBuffer<Stereo>** buffer, float* params, Pad* pads, double rate) :
 		Fx (buffer, params, pads),
-		reverb (rate, 0.75, powf (10.0f, .05f * -20.0f), -0.015f, 0.5f),
+		reverb (rate, 0.75, powf (10.0f, .05f * -20.0f), -0.015f, 1.0f),
 		rsize (0.5f)
 	{}
 
@@ -57,7 +57,6 @@ public:
 	virtual Stereo play (const double position, const double size, const double mixf) override
 	{
 		const Stereo s0 = (**buffer).front();
-
 
 		Stereo s1 = Stereo();
 		reverb.reverb (&s0.left, &s0.right, &s1.left, &s1.right, 1);

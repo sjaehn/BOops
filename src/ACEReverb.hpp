@@ -45,6 +45,7 @@ public:
 
 	void clear ();
 	void setRoomSize (const float rs);
+	void setMix (const float mix);
 	void reverb (const float* inbuf0, const float* inbuf1, float* outbuf0, float* outbuf1, size_t n_samples);
 
 protected:
@@ -179,6 +180,12 @@ void AceReverb::setRoomSize (const float rs)
 	gain[1] = 0.802 * roomsz;
 	gain[2] = 0.753 * roomsz;
 	gain[3] = 0.733 * roomsz;
+}
+
+void AceReverb::setMix (const float mix)
+{
+	wet = mix;
+	dry = 1.0f - mix;
 }
 
 void AceReverb::reverb (const float* inbuf0, const float* inbuf1, float* outbuf0, float* outbuf1, size_t n_samples)
