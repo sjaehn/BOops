@@ -280,6 +280,11 @@ Balances the input signal to the left (balance < 0.0) or the right (balance > 0.
 Stereo widening of the input signal.
 
 
+#### Reverb
+
+Simple one parameter reverb.
+
+
 #### Delay
 
 Delays the input signal by range * delay steps. Optional feedback.
@@ -411,13 +416,14 @@ But do not change or delete any definition symbol!
 ## What's new
 
 * Faster
+* Reverb
 
 
 ## TODO
 
 * Pattern preview in pattern file chooser
 * Implement effects
-  * Reverb
+  * Extreme Reverb
   * Pitch (?)
   * Tape start (?)
 * Latency ? (Pitch, Tape start)
