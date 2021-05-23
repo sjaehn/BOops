@@ -1,45 +1,53 @@
-/*
+/* B.Oops
+ * Glitch effect sequencer LV2 plugin
+ *
  * Copyright (C) 2003-2004 Fredrik Kilander <fk@dsv.su.se>
  * Copyright (C) 2008-2016 Robin Gareus <robin@gareus.org>
  * Copyright (C) 2012 Will Panther <pantherb@setbfree.org>
  * Copyright (C) 2016 Damien Zammit <damien@zamaudio.com>
+ * Copyright (C) 2020 - 2021 by Sven Jähnichen
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
+ * the Free Software Foundation; either version 3, or (at your option)
+ * any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software Foundation,
+ * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef _GNU_SOURCE
-#define _GNU_SOURCE // needed for M_PI
-#endif
+#ifndef ACEREVERB_HPP_
+#define ACEREVERB_HPP_
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <ctype.h>
-#include <math.h>
-#include <string.h>
+#include <cmath>
+#include <cstring>
+#include <new>
+//#include <array>
 
 #define RV_NZ 7
 #define DENORMAL_PROTECT (1e-14)
 
-#ifdef COMPILER_MSVC
-#include <float.h>
-#define isfinite_local(val) (bool)_finite((double)val)
-#else
-#define isfinite_local isfinite
-#endif
+class AceReverb
+{
+public:
+	AceReverb ();
+	AceReverb (const double rate, const float roomSize, const float inputGain, const float feedback, const float mix);
+	AceReverb (const AceReverb& that) = delete;
+	~AceReverb ();
 
-typedef struct {
+	AceReverb& operator= (const AceReverb& that) = delete;
+
+	void clear ();
+	void setRoomSize (const float rs);
+	void reverb (const float* inbuf0, const float* inbuf1, float* outbuf0, float* outbuf1, size_t n_samples);
+
+protected:
 	float* delays[2][RV_NZ]; /**< delay line buffer */
 	size_t size[2][RV_NZ];
 
@@ -55,128 +63,155 @@ typedef struct {
 
 	int end[2][RV_NZ];
 
+	double rate;		/**< Rate in fps */
+	float roomsz;		/**< Room size */
 	float inputGain;	/**< Input gain value */
 	float fbk;	/**< Feedback gain */
 	float wet;	/**< Output dry gain */
 	float dry;	/**< Output wet gain */
-} b_reverb;
 
-static int
-setReverbPointers (b_reverb *r, int i, int c, const double rate)
+	int setReverbPointers (int i, int c, const double rate);
+};
+
+AceReverb::AceReverb () : AceReverb
+(
+	48000.0,
+	0.75f,
+	powf (10.0f, .05f * -20.0f) /* - 20 db */,
+	-0.015f,
+	0.5f
+)
+{}
+
+AceReverb::AceReverb (const double rate, const float roomSize, const float inputGain, const float feedback, const float mix) :
+	rate (rate),
+	roomsz (roomSize),
+	inputGain (inputGain),
+	fbk (feedback),
+	wet (mix),
+	dry (1.0f - mix)
 {
-	int e = (r->end[c][i] * rate / 25000.0);
+	int stereowidth = 7;
+
+	/* feedback combfilter */
+	setRoomSize (roomSize);
+
+	/* all-pass filter */
+	gain[4] = sqrtf (0.5);
+	gain[5] = sqrtf (0.5);
+	gain[6] = sqrtf (0.5);
+
+	/* delay lines left */
+	end[0][0] = 1687;
+	end[0][1] = 1601;
+	end[0][2] = 2053;
+	end[0][3] = 2251;
+
+	/* all pass filters left */
+	end[0][4] = 347;
+	end[0][5] = 113;
+	end[0][6] = 37;
+
+	/* right */
+	for (int i = 0; i < RV_NZ; ++i)
+	{
+		end[1][i] = end[0][i] + stereowidth;
+	}
+
+	for (int i = 0; i < RV_NZ; ++i) {
+		delays[0][i] = NULL;
+		delays[1][i] = NULL;
+	}
+
+	yy1_0 = 0.0;
+	y_1_0 = 0.0;
+	yy1_1 = 0.0;
+	y_1_1 = 0.0;
+
+	for (int i = 0; i < RV_NZ; ++i) {
+		if (setReverbPointers (i, 0, rate)) throw std::bad_alloc();
+		if (setReverbPointers (i, 1, rate)) throw std::bad_alloc();
+	}
+}
+
+AceReverb::~AceReverb ()
+{
+	for (int i = 0; i < RV_NZ; ++i) {
+		free (delays[0][i]);
+		free (delays[1][i]);
+	}
+}
+
+int AceReverb::setReverbPointers (int i, int c, const double rate)
+{
+	int e = (end[c][i] * rate / 25000.0);
 	e = e | 1;
-	r->size[c][i] = e + 2;
-	r->delays[c][i] = (float*)realloc ((void*)r->delays[c][i], r->size[c][i] * sizeof (float));
-	if (!r->delays[c][i]) {
+	size[c][i] = e + 2;
+	delays[c][i] = (float*)realloc ((void*)delays[c][i], size[c][i] * sizeof (float));
+	if (!delays[c][i]) {
 		return -1;
 	} else {
-		memset (r->delays[c][i], 0 , r->size[c][i] * sizeof (float));
+		memset (delays[c][i], 0 , size[c][i] * sizeof (float));
 	}
-	r->endp[c][i] = r->delays[c][i] + e + 1;
-	r->idx0[c][i] = r->idxp[c][i] = &(r->delays[c][i][0]);
+	endp[c][i] = delays[c][i] + e + 1;
+	idx0[c][i] = idxp[c][i] = &(delays[c][i][0]);
 
 	return 0;
 }
 
-static int
-initReverb (b_reverb *r, const double rate)
+void AceReverb::clear ()
 {
-	int err = 0;
-	int stereowidth = 7;
-
-	r->inputGain = powf (10.0, .05 * -20.0);  // -20dB
-	r->fbk = -0.015; /* Feedback gain */
-	r->wet = 0.3;
-	r->dry = 0.7;
-
-	/* feedback combfilter */
-	r->gain[0] = 0.773;
-	r->gain[1] = 0.802;
-	r->gain[2] = 0.753;
-	r->gain[3] = 0.733;
-
-	/* all-pass filter */
-	r->gain[4] = sqrtf (0.5);
-	r->gain[5] = sqrtf (0.5);
-	r->gain[6] = sqrtf (0.5);
-
-	/* delay lines left */
-	r->end[0][0] = 1687;
-	r->end[0][1] = 1601;
-	r->end[0][2] = 2053;
-	r->end[0][3] = 2251;
-
-	/* all pass filters left */
-	r->end[0][4] = 347;
-	r->end[0][5] = 113;
-	r->end[0][6] = 37;
-
-	/* delay lines right */
-	r->end[1][0] = 1687 + stereowidth;
-	r->end[1][1] = 1601 + stereowidth;
-	r->end[1][2] = 2053 + stereowidth;
-	r->end[1][3] = 2251 + stereowidth;
-
-	/* all pass filters right */
-	r->end[1][4] = 347 + stereowidth;
-	r->end[1][5] = 113 + stereowidth;
-	r->end[1][6] = 37 + stereowidth;
-
+	y_1_0 = 0;
+	yy1_0 = 0;
+	y_1_1 = 0;
+	yy1_1 = 0;
 	for (int i = 0; i < RV_NZ; ++i) {
-		r->delays[0][i] = NULL;
-		r->delays[1][i] = NULL;
+		for (int c = 0; c < 2; ++c) {
+			memset (delays[c][i], 0, size[c][i] * sizeof (float));
+		}
 	}
-
-	r->yy1_0 = 0.0;
-	r->y_1_0 = 0.0;
-	r->yy1_1 = 0.0;
-	r->y_1_1 = 0.0;
-
-	for (int i = 0; i < RV_NZ; ++i) {
-		err |= setReverbPointers (r, i, 0, rate);
-		err |= setReverbPointers (r, i, 1, rate);
-	}
-	return err;
 }
 
-static void
-reverb (b_reverb* r,
-        const float* inbuf0,
-        const float* inbuf1,
-        float* outbuf0,
-        float* outbuf1,
-        size_t n_samples)
+void AceReverb::setRoomSize (const float rs)
 {
-	float** const idxp0 = r->idxp[0];
-	float** const idxp1 = r->idxp[1];
-	float* const* const endp0 = r->endp[0];
-	float* const* const endp1 = r->endp[1];
-	float* const* const idx00 = r->idx0[0];
-	float* const* const idx01 = r->idx0[1];
-	const float* const gain = r->gain;
-	const float inputGain = r->inputGain;
-	const float fbk = r->fbk;
-	const float wet = r->wet;
-	const float dry = r->dry;
+	roomsz = rs;
+	gain[0] = 0.773 * roomsz;
+	gain[1] = 0.802 * roomsz;
+	gain[2] = 0.753 * roomsz;
+	gain[3] = 0.733 * roomsz;
+}
+
+void AceReverb::reverb (const float* inbuf0, const float* inbuf1, float* outbuf0, float* outbuf1, size_t n_samples)
+{
+	float** const idxp0 = this->idxp[0];
+	float** const idxp1 = this->idxp[1];
+	float* const* const endp0 = this->endp[0];
+	float* const* const endp1 = this->endp[1];
+	float* const* const idx00 = this->idx0[0];
+	float* const* const idx01 = this->idx0[1];
+	const float* const gain = this->gain;
+	const float inputGain = this->inputGain;
+	const float fbk = this->fbk;
+	const float wet = this->wet;
+	const float dry = this->dry;
 
 	const float* xp0 = inbuf0;
 	const float* xp1 = inbuf1;
 	float* yp0 = outbuf0;
 	float* yp1 = outbuf1;
 
-	float y_1_0 = r->y_1_0;
-	float yy1_0 = r->yy1_0;
-	float y_1_1 = r->y_1_1;
-	float yy1_1 = r->yy1_1;
+	float y_1_0 = this->y_1_0;
+	float yy1_0 = this->yy1_0;
+	float y_1_1 = this->y_1_1;
+	float yy1_1 = this->yy1_1;
 
 	for (size_t i = 0; i < n_samples; ++i) {
 		int j;
 		float y;
 		float xo0 = *xp0++;
 		float xo1 = *xp1++;
-		if (!isfinite_local(xo0) || fabsf (xo0) > 10.f) { xo0 = 0; }
-		if (!isfinite_local(xo1) || fabsf (xo1) > 10.f) { xo1 = 0; }
+		if (!std::isfinite(xo0) || fabsf (xo0) > 10.f) { xo0 = 0; }
+		if (!std::isfinite(xo1) || fabsf (xo1) > 10.f) { xo1 = 0; }
 		xo0 += DENORMAL_PROTECT;
 		xo1 += DENORMAL_PROTECT;
 		const float x0 = y_1_0 + (inputGain * xo0);
@@ -234,229 +269,15 @@ reverb (b_reverb* r,
 		*yp1++ = ((wet * y) + (dry * xo1));
 	}
 
-	if (!isfinite_local(y_1_0)) { y_1_0 = 0; }
-	if (!isfinite_local(yy1_1)) { yy1_0 = 0; }
-	if (!isfinite_local(y_1_1)) { y_1_1 = 0; }
-	if (!isfinite_local(yy1_1)) { yy1_1 = 0; }
+	if (!std::isfinite(y_1_0)) { y_1_0 = 0; }
+	if (!std::isfinite(yy1_1)) { yy1_0 = 0; }
+	if (!std::isfinite(y_1_1)) { y_1_1 = 0; }
+	if (!std::isfinite(yy1_1)) { yy1_1 = 0; }
 
-	r->y_1_0 = y_1_0 + DENORMAL_PROTECT;
-	r->yy1_0 = yy1_0 + DENORMAL_PROTECT;
-	r->y_1_1 = y_1_1 + DENORMAL_PROTECT;
-	r->yy1_1 = yy1_1 + DENORMAL_PROTECT;
+	this->y_1_0 = y_1_0 + DENORMAL_PROTECT;
+	this->yy1_0 = yy1_0 + DENORMAL_PROTECT;
+	this->y_1_1 = y_1_1 + DENORMAL_PROTECT;
+	this->yy1_1 = yy1_1 + DENORMAL_PROTECT;
 }
 
-/******************************************************************************
- * LV2 wrapper
- */
-
-#include "lv2/lv2plug.in/ns/lv2core/lv2.h"
-
-typedef enum {
-	AR_INPUT0     = 0,
-	AR_INPUT1     = 1,
-	AR_OUTPUT0    = 2,
-	AR_OUTPUT1    = 3,
-	AR_MIX        = 4,
-	AR_ROOMSZ     = 5,
-	AR_ENABLE     = 6,
-} PortIndex;
-
-typedef struct {
-	float* input0;
-	float* input1;
-	float* output0;
-	float* output1;
-
-	float* mix;
-	float* roomsz;
-	float* enable;
-
-	float v_mix;
-	float v_roomsz;
-	float srate;
-	float tau;
-
-	b_reverb r;
-} AReverb;
-
-static LV2_Handle
-instantiate (const LV2_Descriptor*     descriptor,
-             double                    rate,
-             const char*               bundle_path,
-             const LV2_Feature* const* features)
-{
-	AReverb* self = (AReverb*)calloc (1, sizeof (AReverb));
-	if (!self) {
-		return NULL;
-	}
-	if (initReverb (&self->r, rate)) {
-		return NULL;
-	}
-
-	// these are set in initReverb()
-	self->v_roomsz = 0.75;
-	self->v_mix = 0.1;
-	self->srate = rate;
-	self->tau = 1.f - expf (-2.f * M_PI * 64.f * 15.f / self->srate); // 15Hz, 64fpp
-
-	return (LV2_Handle)self;
-}
-
-static void
-connect_port (LV2_Handle instance,
-              uint32_t   port,
-              void*      data)
-{
-	AReverb* self = (AReverb*)instance;
-
-	switch ((PortIndex)port) {
-		case AR_INPUT0:
-			self->input0 = (float*)data;
-			break;
-		case AR_INPUT1:
-			self->input1 = (float*)data;
-			break;
-		case AR_OUTPUT0:
-			self->output0 = (float*)data;
-			break;
-		case AR_OUTPUT1:
-			self->output1 = (float*)data;
-			break;
-		case AR_MIX:
-			self->mix = (float*)data;
-			break;
-		case AR_ROOMSZ:
-			self->roomsz = (float*)data;
-			break;
-		case AR_ENABLE:
-			self->enable = (float*)data;
-			break;
-	}
-}
-
-static void
-activate (LV2_Handle instance)
-{
-	AReverb* self = (AReverb*)instance;
-
-	self->r.y_1_0 = 0;
-	self->r.yy1_0 = 0;
-	self->r.y_1_1 = 0;
-	self->r.yy1_1 = 0;
-	for (int i = 0; i < RV_NZ; ++i) {
-		for (int c = 0; c < 2; ++c) {
-			memset (self->r.delays[c][i], 0, self->r.size[c][i] * sizeof (float));
-		}
-	}
-}
-
-static void
-deactivate (LV2_Handle instance)
-{
-	activate(instance);
-}
-
-static void
-run (LV2_Handle instance, uint32_t n_samples)
-{
-	AReverb* self = (AReverb*)instance;
-
-	const float* const input0 = self->input0;
-	const float* const input1 = self->input1;
-	float* const      output0 = self->output0;
-	float* const      output1 = self->output1;
-
-	const float tau = self->tau;
-	const float mix = *self->enable <= 0 ? 0 : *self->mix;
-
-	uint32_t remain = n_samples;
-	uint32_t offset = 0;
-	uint32_t iterpolate = 0;
-
-	if (fabsf (mix - self->v_mix) < .01) { // 40dB
-		if (self->v_mix != mix && *self->enable <= 0) {
-			// entering bypass, reset reverb
-			activate (self);
-		}
-		self->v_mix = mix;
-		self->r.wet = self->v_mix;
-		self->r.dry = 1.0 - self->v_mix;
-	} else {
-		iterpolate |= 1;
-	}
-
-	if (fabsf (*self->roomsz  - self->v_roomsz) < .01) {
-		self->v_roomsz = *self->roomsz;
-	} else {
-		iterpolate |= 2;
-	}
-
-	while (remain > 0) {
-		uint32_t p_samples = remain;
-		if (iterpolate && p_samples > 64) {
-			p_samples = 64;
-		}
-
-		if (iterpolate & 1) {
-			self->v_mix += tau * (mix - self->v_mix);
-			self->r.wet = self->v_mix;
-			self->r.dry = 1.0 - self->v_mix;
-		}
-		if (iterpolate & 2) {
-			self->v_roomsz += tau * ( *self->roomsz - self->v_roomsz);
-			self->r.gain[0] = 0.773 * self->v_roomsz;
-			self->r.gain[1] = 0.802 * self->v_roomsz;
-			self->r.gain[2] = 0.753 * self->v_roomsz;
-			self->r.gain[3] = 0.733 * self->v_roomsz;
-		}
-
-		reverb (&self->r,
-				&input0[offset], &input1[offset],
-				&output0[offset], &output1[offset],
-				p_samples);
-
-		offset += p_samples;
-		remain -= p_samples;
-	}
-}
-
-
-static void
-cleanup (LV2_Handle instance)
-{
-	AReverb* self = (AReverb*)instance;
-	for (int i = 0; i < RV_NZ; ++i) {
-		free (self->r.delays[0][i]);
-		free (self->r.delays[1][i]);
-	}
-	free (instance);
-}
-
-static const void*
-extension_data (const char* uri)
-{
-	return NULL;
-}
-
-static const LV2_Descriptor descriptor = {
-	"urn:ardour:a-reverb",
-	instantiate,
-	connect_port,
-	activate,
-	run,
-	deactivate,
-	cleanup,
-	extension_data
-};
-
-LV2_SYMBOL_EXPORT
-const LV2_Descriptor*
-lv2_descriptor (uint32_t index)
-{
-	switch (index) {
-		case 0:
-			return &descriptor;
-		default:
-			return NULL;
-	}
-}
+#endif /* ACEREVERB_HPP_ */
