@@ -51,17 +51,17 @@ public:
 		const double r1 = bidist (rnd);
 		rsize = 0.5 + 0.5 * LIMIT (params[SLOTS_OPTPARAMS + FX_REVERB_SIZE] + r1 * params[SLOTS_OPTPARAMS + FX_REVERB_SIZERAND], 0.0, 1.0);
 
-		reverb.clear();
 		reverb.setRoomSize (rsize);
 	}
 
 	virtual Stereo play (const double position, const double size, const double mixf) override
 	{
 		const Stereo s0 = (**buffer).front();
-		if (!playing) return s0;
+
 
 		Stereo s1 = Stereo();
 		reverb.reverb (&s0.left, &s0.right, &s1.left, &s1.right, 1);
+		if (!playing) return s0;
 		return mix (s0, s1, position, size, mixf);
 	}
 
