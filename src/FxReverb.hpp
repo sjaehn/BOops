@@ -48,8 +48,8 @@ public:
 	virtual void init (const double position) override
 	{
 		Fx::init (position);
-		const double r2 = bidist (rnd);
-		rsize = 0.5 + 0.5 * LIMIT (params[SLOTS_OPTPARAMS + FX_REVERB_SIZE] + r2 * params[SLOTS_OPTPARAMS + FX_REVERB_SIZERAND], 0.0, 1.0);
+		const double r1 = bidist (rnd);
+		rsize = 0.5 + 0.5 * LIMIT (params[SLOTS_OPTPARAMS + FX_REVERB_SIZE] + r1 * params[SLOTS_OPTPARAMS + FX_REVERB_SIZERAND], 0.0, 1.0);
 
 		reverb.clear();
 		reverb.setRoomSize (rsize);

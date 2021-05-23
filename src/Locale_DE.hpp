@@ -142,6 +142,7 @@
 #define BOOPS_LABEL_WIDTH "Breite"
 #define BOOPS_LABEL_WOW "Jaulen"
 #define BOOPS_LABEL_FLUTTER "Flattern"
+#define BOOPS_LABEL_ROOMSIZE "Raumgröße"
 
 
 #endif

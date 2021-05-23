@@ -143,6 +143,7 @@
 #define BOOPS_LABEL_WIDTH "Width"
 #define BOOPS_LABEL_WOW "Wow"
 #define BOOPS_LABEL_FLUTTER "Flutter"
+#define BOOPS_LABEL_ROOMSIZE "Room size"
 
 
 #endif

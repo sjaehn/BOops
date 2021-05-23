@@ -56,7 +56,8 @@ const std::array<const std::array<const float, NR_PARAMS>, NR_FX> fxDefaultValue
 	{{1.0, 0.1, 0.1, 1.0, 0.1, 0.0, 0.5, 0.0, 0, 1.0, 0, 0.32183, 0, 0, 0, 0.5, 0, 0.4, 0}},// FX_PHASER
 	{{STDPARAMS, 0.5, 0.0, 0.2, 0.0, 0, 0, 0, 0, 0, 0, 0, 0}},				// FX_RINGMOD
 	{{STDPARAMS, 0.5, 0.0, 0.5, 0.0, 0, 0, 0, 0, 0, 0, 0, 0}},				// FX_OOPS
-	{{STDPARAMS, 0.28855, 0.0, 0.6667, 0.0, 0.3333, 0.0, 0.375, 0, 0, 0, 0, 0}}		// FX_WAH
+	{{STDPARAMS, 0.28855, 0.0, 0.6667, 0.0, 0.3333, 0.0, 0.375, 0, 0, 0, 0, 0}},		// FX_WAH
+	{{STDPARAMS, 0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0}}				// FX_REVERB
 
 }};
 
@@ -88,7 +89,8 @@ const std::array<const std::string, NR_FX> fxIconFileNames =
 		"Phaser",
 		"Ringmod",
 		"Oops",
-		"Wah"
+		"Wah",
+		"Reverb"
 }};
 
 

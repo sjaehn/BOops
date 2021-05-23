@@ -51,6 +51,7 @@
 #include "OptionRingModulator.hpp"
 #include "OptionOops.hpp"
 #include "OptionWah.hpp"
+#include "OptionReverb.hpp"
 
 inline double floorfrac (const double value) {return value - floor (value);}
 inline double floormod (const double numer, const double denom) {return numer - floor(numer / denom) * denom;}
@@ -2058,6 +2059,9 @@ void BOopsGUI::setOptionWidget (const int slot)
 
 		case FX_WAH:		slotParams[slot].optionWidget = new OptionWah (430, 20, 720, 130, "widget", pluginPath);
 					if (slotParams[slot].optionWidget) ((OptionWah*)slotParams[slot].optionWidget)->setShape (slotParams[slot].shape);
+					break;
+
+		case FX_REVERB:		slotParams[slot].optionWidget = new OptionReverb (430, 20, 80, 130, "widget");
 					break;
 
 		default:		slotParams[slot].optionWidget = new OptionWidget (0, 0, 0, 0, "widget");
