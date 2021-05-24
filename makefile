@@ -59,7 +59,8 @@ B_FILES = $(addprefix $(BUNDLE)/, $(ROOTFILES) $(INCFILES))
 DSP_INCL = \
 	src/Message.cpp \
 	src/BUtilities/stof.cpp \
-	src/Slot.cpp
+	src/Slot.cpp \
+	src/Airwindows/Galactic.cpp
 
 GUI_CXX_INCL = \
 	src/SampleChooser.cpp \

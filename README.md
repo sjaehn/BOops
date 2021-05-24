@@ -285,6 +285,13 @@ Stereo widening of the input signal.
 Simple one parameter room reverb.
 
 
+#### Galactic reverb
+
+Really big reverb from the Airwindows project. The reverb is controlled by the parameters replace, brightness, detune,
+and bigness. Replace and bigness control the size of the reverb itself, whereas brightness controls an internal lowpass
+filter, and detune a frequency shift.
+
+
 #### Delay
 
 Delays the input signal by range * delay steps. Optional feedback.
@@ -416,7 +423,9 @@ But do not change or delete any definition symbol!
 ## What's new
 
 * Faster
-* Reverb
+* New effects:
+  * Room reverb
+  * Galactic reverb
 
 
 ## TODO
@@ -442,3 +451,4 @@ But do not change or delete any definition symbol!
 
 * inc/oops44100.wav by WIM https://freesound.org/people/WIM/sounds/9020/ (CC-BY-3.0)
 * ACE Room reverb from the Ardour project (https://github.com/Ardour/ardour) by Fredrik Kilander, Robin Gareus, Will Panther, and Damien Zammit.
+* Galactic reverb from the Airwindows project (https://github.com/airwindows/airwindows) by Chris Johnson.

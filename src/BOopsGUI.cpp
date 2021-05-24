@@ -52,6 +52,7 @@
 #include "OptionOops.hpp"
 #include "OptionWah.hpp"
 #include "OptionReverb.hpp"
+#include "OptionGalactic.hpp"
 
 inline double floorfrac (const double value) {return value - floor (value);}
 inline double floormod (const double numer, const double denom) {return numer - floor(numer / denom) * denom;}
@@ -2062,6 +2063,9 @@ void BOopsGUI::setOptionWidget (const int slot)
 					break;
 
 		case FX_REVERB:		slotParams[slot].optionWidget = new OptionReverb (430, 20, 80, 130, "widget");
+					break;
+
+		case FX_GALACTIC:	slotParams[slot].optionWidget = new OptionGalactic (430, 20, 320, 130, "widget");
 					break;
 
 		default:		slotParams[slot].optionWidget = new OptionWidget (0, 0, 0, 0, "widget");

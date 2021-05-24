@@ -49,6 +49,7 @@
 #include "FxOops.hpp"
 #include "FxWah.hpp"
 #include "FxReverb.hpp"
+#include "FxGalactic.hpp"
 
 Slot::Slot () : Slot (nullptr, FX_INVALID, nullptr, nullptr, 0, 0.0f, 0.0) {}
 
@@ -209,6 +210,9 @@ Fx* Slot::newFx (const BOopsEffectsIndex effect)
 					break;
 
 		case FX_REVERB:		fx = new FxReverb (&buffer, params, pads, plugin ? plugin->host.rate : 48000);
+					break;
+
+		case FX_GALACTIC:	fx = new FxGalactic (&buffer, params, pads, plugin ? plugin->host.rate : 48000);
 					break;
 
 		case FX_INVALID:	fx = nullptr;

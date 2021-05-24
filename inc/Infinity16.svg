@@ -13,8 +13,8 @@
    version="1.1"
    id="svg907"
    inkscape:version="1.0.2 (394de47547, 2021-03-26)"
-   sodipodi:docname="Reverb16.svg"
-   inkscape:export-filename="/home/sven/dev/c/BOops/inc/Reverb16.png"
+   sodipodi:docname="Infinity16.svg"
+   inkscape:export-filename="/home/sven/dev/c/BOops/inc/Infinity16.png"
    inkscape:export-xdpi="96"
    inkscape:export-ydpi="96">
   <defs
@@ -62,16 +62,16 @@
      id="layer1">
     <text
        xml:space="preserve"
-       style="font-size:4.23333px;line-height:1.25;font-family:'Good Times';-inkscape-font-specification:'Good Times';letter-spacing:0px;fill:#ffffff;stroke-width:0.264583"
-       x="1.0562168"
+       style="font-size:4.23333px;line-height:1.25;font-family:'Good Times';-inkscape-font-specification:'Good Times';fill:#ffffff;stroke-width:0.264583"
+       x="2.6013832"
        y="4.1782975"
        id="text1474"
        inkscape:export-xdpi="96"
        inkscape:export-ydpi="96"><tspan
          sodipodi:role="line"
          id="tspan1472"
-         x="1.0562168"
+         x="2.6013832"
          y="4.1782975"
-         style="font-size:4.23333px;fill:#ffffff;stroke-width:0.264583">Room reverb</tspan></text>
+         style="font-size:4.23333px;fill:#ffffff;stroke-width:0.264583">infinity</tspan></text>
   </g>
 </svg>

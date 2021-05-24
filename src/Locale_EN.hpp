@@ -144,6 +144,9 @@
 #define BOOPS_LABEL_WOW "Wow"
 #define BOOPS_LABEL_FLUTTER "Flutter"
 #define BOOPS_LABEL_ROOMSIZE "Room size"
-
+#define BOOPS_LABEL_REPLACE "Replace"
+#define BOOPS_LABEL_BRIGHTNESS "Brightness"
+#define BOOPS_LABEL_DETUNE "Detune"
+#define BOOPS_LABEL_BIGNESS "Bigness"
 
 #endif

@@ -143,6 +143,10 @@
 #define BOOPS_LABEL_WOW "Jaulen"
 #define BOOPS_LABEL_FLUTTER "Flattern"
 #define BOOPS_LABEL_ROOMSIZE "Raumgröße"
+#define BOOPS_LABEL_REPLACE "Ersatz"
+#define BOOPS_LABEL_BRIGHTNESS "Helligkeit"
+#define BOOPS_LABEL_DETUNE "Verstimmung"
+#define BOOPS_LABEL_BIGNESS "Größe"
 
 
 #endif
