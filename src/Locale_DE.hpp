@@ -147,6 +147,9 @@
 #define BOOPS_LABEL_BRIGHTNESS "Helligkeit"
 #define BOOPS_LABEL_DETUNE "Verstimmung"
 #define BOOPS_LABEL_BIGNESS "Größe"
+#define BOOPS_LABEL_FILTER "Filter"
+#define BOOPS_LABEL_DAMP "Dämpfung"
+#define BOOPS_LABEL_ALLPASS "Allpass"
 
 
 #endif

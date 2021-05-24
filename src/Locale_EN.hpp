@@ -148,5 +148,8 @@
 #define BOOPS_LABEL_BRIGHTNESS "Brightness"
 #define BOOPS_LABEL_DETUNE "Detune"
 #define BOOPS_LABEL_BIGNESS "Bigness"
+#define BOOPS_LABEL_FILTER "Filter"
+#define BOOPS_LABEL_DAMP "Damp"
+#define BOOPS_LABEL_ALLPASS "Allpass"
 
 #endif

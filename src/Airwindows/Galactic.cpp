@@ -326,5 +326,5 @@ float Galactic::getParameter (size_t index)
 
 void Galactic::setParameter (size_t index, float value)
 {
-        Galactic::params[index] = value;
+        params[index] = value;
 }

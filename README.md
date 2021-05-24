@@ -292,6 +292,12 @@ and bigness. Replace and bigness control the size of the reverb itself, whereas 
 filter, and detune a frequency shift.
 
 
+#### Infinity reverb
+
+You can get it even bigger! The extreme and spacy Infinity2 reverb from the Airwindows project.This reverb is controlled
+by the parameters filter, size, damp, allpass, and feedback.
+
+
 #### Delay
 
 Delays the input signal by range * delay steps. Optional feedback.
@@ -426,13 +432,13 @@ But do not change or delete any definition symbol!
 * New effects:
   * Room reverb
   * Galactic reverb
+  * Infinity reverb
 
 
 ## TODO
 
 * Pattern preview in pattern file chooser
 * Implement effects
-  * Extreme Reverb
   * Pitch (?)
   * Tape start (?)
 * Latency ? (Pitch, Tape start)
@@ -451,4 +457,4 @@ But do not change or delete any definition symbol!
 
 * inc/oops44100.wav by WIM https://freesound.org/people/WIM/sounds/9020/ (CC-BY-3.0)
 * ACE Room reverb from the Ardour project (https://github.com/Ardour/ardour) by Fredrik Kilander, Robin Gareus, Will Panther, and Damien Zammit.
-* Galactic reverb from the Airwindows project (https://github.com/airwindows/airwindows) by Chris Johnson.
+* Galactic and Infinity2 reverbs from the Airwindows project (https://github.com/airwindows/airwindows) by Chris Johnson.
