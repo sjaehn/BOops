@@ -1,13 +1,6 @@
 /* B.Oops
  * Glitch effect sequencer LV2 plugin
  *
- * FxReverb
- * Reverb effect based on a-reverb <https://github.com/Ardour/ardour/tree/master/libs/plugins/a-reverb.lv2>
- *
- * Copyright (C) 2003-2004 Fredrik Kilander <fk@dsv.su.se>
- * Copyright (C) 2008-2016 Robin Gareus <robin@gareus.org>
- * Copyright (C) 2012 Will Panther <pantherb@setbfree.org>
- * Copyright (C) 2016 Damien Zammit <damien@zamaudio.com>
  * Copyright (C) 2020 - 2021 by Sven Jähnichen
  *
  * This program is free software; you can redistribute it and/or modify
