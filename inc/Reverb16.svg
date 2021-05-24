@@ -62,7 +62,7 @@
      id="layer1">
     <text
        xml:space="preserve"
-       style="font-size:4.23333px;line-height:1.25;font-family:'Good Times';-inkscape-font-specification:'Good Times';fill:#ffffff;stroke-width:0.264583"
+       style="font-size:4.23333px;line-height:1.25;font-family:'Good Times';-inkscape-font-specification:'Good Times';fill:#ffffff;stroke-width:0.264583;letter-spacing:-0.15875px"
        x="2.6013832"
        y="4.1782975"
        id="text1474"
@@ -72,6 +72,6 @@
          id="tspan1472"
          x="2.6013832"
          y="4.1782975"
-         style="font-size:4.23333px;fill:#ffffff;stroke-width:0.264583">Reverb</tspan></text>
+         style="font-size:4.23333px;fill:#ffffff;stroke-width:0.264583;">Room reverb</tspan></text>
   </g>
 </svg>

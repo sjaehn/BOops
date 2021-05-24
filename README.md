@@ -280,9 +280,9 @@ Balances the input signal to the left (balance < 0.0) or the right (balance > 0.
 Stereo widening of the input signal.
 
 
-#### Reverb
+#### Room reverb
 
-Simple one parameter reverb.
+Simple one parameter room reverb.
 
 
 #### Delay
@@ -441,3 +441,4 @@ But do not change or delete any definition symbol!
 ## Acknowledgments
 
 * inc/oops44100.wav by WIM https://freesound.org/people/WIM/sounds/9020/ (CC-BY-3.0)
+* ACE Room reverb from the Ardour project (https://github.com/Ardour/ardour) by Fredrik Kilander, Robin Gareus, Will Panther, and Damien Zammit.
