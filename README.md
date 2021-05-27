@@ -288,8 +288,9 @@ Simple one parameter room reverb.
 #### Galactic reverb
 
 Really big reverb from the Airwindows project. The reverb is controlled by the parameters replace, brightness, detune,
-and bigness. Replace and bigness control the size of the reverb itself, whereas brightness controls an internal lowpass
-filter, and detune a frequency shift.
+and bigness. Replace stands for the amount of incoming audio signals that should replace the already circulating audio.
+Brigtness controls the brigness of the signal by a lowpass filter. Detune shifts the frequency and bigness means the
+size of the reverb buffer.
 
 
 #### Infinity reverb
@@ -456,5 +457,6 @@ But do not change or delete any definition symbol!
 ## Acknowledgments
 
 * inc/oops44100.wav by WIM https://freesound.org/people/WIM/sounds/9020/ (CC-BY-3.0)
-* ACE Room reverb from the Ardour project (https://github.com/Ardour/ardour) by Fredrik Kilander, Robin Gareus, Will Panther, and Damien Zammit.
-* Galactic and Infinity2 reverbs from the Airwindows project (https://github.com/airwindows/airwindows) by Chris Johnson.
+* ACE Room reverb from the Ardour project (https://github.com/Ardour/ardour) by Fredrik Kilander, Robin Gareus, Will Panther, and Damien Zammit (GPL2).
+* Galactic and Infinity2 reverbs from the Airwindows project (https://github.com/airwindows/airwindows) by Chris Johnson
+(MIT license).
