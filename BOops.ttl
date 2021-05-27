@@ -225,7 +225,7 @@
 		lv2:scalePoint [ rdfs:label "Ring modulator"; rdf:value 24 ] ;
 		lv2:scalePoint [ rdfs:label "Oops"; rdf:value 25 ] ;
 		lv2:scalePoint [ rdfs:label "Wah"; rdf:value 26 ] ;
-		lv2:scalePoint [ rdfs:label "Room reverb"; rdf:value 27 ] ;
+		lv2:scalePoint [ rdfs:label "Reverb"; rdf:value 27 ] ;
 		lv2:scalePoint [ rdfs:label "Galactic reverb"; rdf:value 28 ] ;
 		lv2:scalePoint [ rdfs:label "Infinity reverb"; rdf:value 29 ] ;
                 lv2:default 0 ;
@@ -417,7 +417,7 @@
 		lv2:scalePoint [ rdfs:label "Ring modulator"; rdf:value 24 ] ;
 		lv2:scalePoint [ rdfs:label "Oops"; rdf:value 25 ] ;
 		lv2:scalePoint [ rdfs:label "Wah"; rdf:value 26 ] ;
-		lv2:scalePoint [ rdfs:label "Room reverb"; rdf:value 27 ] ;
+		lv2:scalePoint [ rdfs:label "Reverb"; rdf:value 27 ] ;
 		lv2:scalePoint [ rdfs:label "Galactic reverb"; rdf:value 28 ] ;
 		lv2:scalePoint [ rdfs:label "Infinity reverb"; rdf:value 29 ] ;
                 lv2:default 0 ;
@@ -609,7 +609,7 @@
 		lv2:scalePoint [ rdfs:label "Ring modulator"; rdf:value 24 ] ;
 		lv2:scalePoint [ rdfs:label "Oops"; rdf:value 25 ] ;
 		lv2:scalePoint [ rdfs:label "Wah"; rdf:value 26 ] ;
-		lv2:scalePoint [ rdfs:label "Room reverb"; rdf:value 27 ] ;
+		lv2:scalePoint [ rdfs:label "Reverb"; rdf:value 27 ] ;
 		lv2:scalePoint [ rdfs:label "Galactic reverb"; rdf:value 28 ] ;
 		lv2:scalePoint [ rdfs:label "Infinity reverb"; rdf:value 29 ] ;
                 lv2:default 0 ;
@@ -801,7 +801,7 @@
 		lv2:scalePoint [ rdfs:label "Ring modulator"; rdf:value 24 ] ;
 		lv2:scalePoint [ rdfs:label "Oops"; rdf:value 25 ] ;
 		lv2:scalePoint [ rdfs:label "Wah"; rdf:value 26 ] ;
-		lv2:scalePoint [ rdfs:label "Room reverb"; rdf:value 27 ] ;
+		lv2:scalePoint [ rdfs:label "Reverb"; rdf:value 27 ] ;
 		lv2:scalePoint [ rdfs:label "Galactic reverb"; rdf:value 28 ] ;
 		lv2:scalePoint [ rdfs:label "Infinity reverb"; rdf:value 29 ] ;
                 lv2:default 0 ;
@@ -993,7 +993,7 @@
 		lv2:scalePoint [ rdfs:label "Ring modulator"; rdf:value 24 ] ;
 		lv2:scalePoint [ rdfs:label "Oops"; rdf:value 25 ] ;
 		lv2:scalePoint [ rdfs:label "Wah"; rdf:value 26 ] ;
-		lv2:scalePoint [ rdfs:label "Room reverb"; rdf:value 27 ] ;
+		lv2:scalePoint [ rdfs:label "Reverb"; rdf:value 27 ] ;
 		lv2:scalePoint [ rdfs:label "Galactic reverb"; rdf:value 28 ] ;
 		lv2:scalePoint [ rdfs:label "Infinity reverb"; rdf:value 29 ] ;
                 lv2:default 0 ;
@@ -1185,7 +1185,7 @@
 		lv2:scalePoint [ rdfs:label "Ring modulator"; rdf:value 24 ] ;
 		lv2:scalePoint [ rdfs:label "Oops"; rdf:value 25 ] ;
 		lv2:scalePoint [ rdfs:label "Wah"; rdf:value 26 ] ;
-		lv2:scalePoint [ rdfs:label "Room reverb"; rdf:value 27 ] ;
+		lv2:scalePoint [ rdfs:label "Reverb"; rdf:value 27 ] ;
 		lv2:scalePoint [ rdfs:label "Galactic reverb"; rdf:value 28 ] ;
 		lv2:scalePoint [ rdfs:label "Infinity reverb"; rdf:value 29 ] ;
                 lv2:default 0 ;
@@ -1377,7 +1377,7 @@
 		lv2:scalePoint [ rdfs:label "Ring modulator"; rdf:value 24 ] ;
 		lv2:scalePoint [ rdfs:label "Oops"; rdf:value 25 ] ;
 		lv2:scalePoint [ rdfs:label "Wah"; rdf:value 26 ] ;
-		lv2:scalePoint [ rdfs:label "Room reverb"; rdf:value 27 ] ;
+		lv2:scalePoint [ rdfs:label "Reverb"; rdf:value 27 ] ;
 		lv2:scalePoint [ rdfs:label "Galactic reverb"; rdf:value 28 ] ;
 		lv2:scalePoint [ rdfs:label "Infinity reverb"; rdf:value 29 ] ;
                 lv2:default 0 ;
@@ -1569,7 +1569,7 @@
 		lv2:scalePoint [ rdfs:label "Ring modulator"; rdf:value 24 ] ;
 		lv2:scalePoint [ rdfs:label "Oops"; rdf:value 25 ] ;
 		lv2:scalePoint [ rdfs:label "Wah"; rdf:value 26 ] ;
-		lv2:scalePoint [ rdfs:label "Room reverb"; rdf:value 27 ] ;
+		lv2:scalePoint [ rdfs:label "Reverb"; rdf:value 27 ] ;
 		lv2:scalePoint [ rdfs:label "Galactic reverb"; rdf:value 28 ] ;
 		lv2:scalePoint [ rdfs:label "Infinity reverb"; rdf:value 29 ] ;
                 lv2:default 0 ;
@@ -1761,7 +1761,7 @@
 		lv2:scalePoint [ rdfs:label "Ring modulator"; rdf:value 24 ] ;
 		lv2:scalePoint [ rdfs:label "Oops"; rdf:value 25 ] ;
 		lv2:scalePoint [ rdfs:label "Wah"; rdf:value 26 ] ;
-		lv2:scalePoint [ rdfs:label "Room reverb"; rdf:value 27 ] ;
+		lv2:scalePoint [ rdfs:label "Reverb"; rdf:value 27 ] ;
 		lv2:scalePoint [ rdfs:label "Galactic reverb"; rdf:value 28 ] ;
 		lv2:scalePoint [ rdfs:label "Infinity reverb"; rdf:value 29 ] ;
                 lv2:default 0 ;
@@ -1953,7 +1953,7 @@
 		lv2:scalePoint [ rdfs:label "Ring modulator"; rdf:value 24 ] ;
 		lv2:scalePoint [ rdfs:label "Oops"; rdf:value 25 ] ;
 		lv2:scalePoint [ rdfs:label "Wah"; rdf:value 26 ] ;
-		lv2:scalePoint [ rdfs:label "Room reverb"; rdf:value 27 ] ;
+		lv2:scalePoint [ rdfs:label "Reverb"; rdf:value 27 ] ;
 		lv2:scalePoint [ rdfs:label "Galactic reverb"; rdf:value 28 ] ;
 		lv2:scalePoint [ rdfs:label "Infinity reverb"; rdf:value 29 ] ;
                 lv2:default 0 ;
@@ -2145,7 +2145,7 @@
 		lv2:scalePoint [ rdfs:label "Ring modulator"; rdf:value 24 ] ;
 		lv2:scalePoint [ rdfs:label "Oops"; rdf:value 25 ] ;
 		lv2:scalePoint [ rdfs:label "Wah"; rdf:value 26 ] ;
-		lv2:scalePoint [ rdfs:label "Room reverb"; rdf:value 27 ] ;
+		lv2:scalePoint [ rdfs:label "Reverb"; rdf:value 27 ] ;
 		lv2:scalePoint [ rdfs:label "Galactic reverb"; rdf:value 28 ] ;
 		lv2:scalePoint [ rdfs:label "Infinity reverb"; rdf:value 29 ] ;
                 lv2:default 0 ;
@@ -2337,7 +2337,7 @@
 		lv2:scalePoint [ rdfs:label "Ring modulator"; rdf:value 24 ] ;
 		lv2:scalePoint [ rdfs:label "Oops"; rdf:value 25 ] ;
 		lv2:scalePoint [ rdfs:label "Wah"; rdf:value 26 ] ;
-		lv2:scalePoint [ rdfs:label "Room reverb"; rdf:value 27 ] ;
+		lv2:scalePoint [ rdfs:label "Reverb"; rdf:value 27 ] ;
 		lv2:scalePoint [ rdfs:label "Galactic reverb"; rdf:value 28 ] ;
 		lv2:scalePoint [ rdfs:label "Infinity reverb"; rdf:value 29 ] ;
                 lv2:default 0 ;

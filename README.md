@@ -280,9 +280,9 @@ Balances the input signal to the left (balance < 0.0) or the right (balance > 0.
 Stereo widening of the input signal.
 
 
-#### Room reverb
+#### Reverb
 
-Simple one parameter room reverb.
+Simple one parameter reverb, simply set the room size.
 
 
 #### Galactic reverb
@@ -431,7 +431,7 @@ But do not change or delete any definition symbol!
 
 * Faster
 * New effects:
-  * Room reverb
+  * Reverb
   * Galactic reverb
   * Infinity reverb
 
@@ -457,6 +457,6 @@ But do not change or delete any definition symbol!
 ## Acknowledgments
 
 * inc/oops44100.wav by WIM https://freesound.org/people/WIM/sounds/9020/ (CC-BY-3.0)
-* ACE Room reverb from the Ardour project (https://github.com/Ardour/ardour) by Fredrik Kilander, Robin Gareus, Will Panther, and Damien Zammit (GPL2).
+* ACE reverb from the Ardour project (https://github.com/Ardour/ardour) by Fredrik Kilander, Robin Gareus, Will Panther, and Damien Zammit (GPL2).
 * Galactic and Infinity2 reverbs from the Airwindows project (https://github.com/airwindows/airwindows) by Chris Johnson
 (MIT license).

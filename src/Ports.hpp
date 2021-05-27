@@ -146,7 +146,7 @@ enum BOopsWaveformIndex
 { \
 	{1, "Surprise box"}, \
 	{2, "Amp"}, {3, "Balance"}, {4, "Width"}, /*{5, "Pitch (TODO)"}, */ \
-	{27, "Room reverb"}, {28, "Galactic reverb"}, {29, "Infinity reverb"}, {6, "Delay"}, {7, "Reverse"}, \
+	{27, "Reverb"}, {28, "Galactic reverb"}, {29, "Infinity reverb"}, {6, "Delay"}, {7, "Reverse"}, \
 	{8, "Chop"}, {21, "Stutter"}, {9, "Jumble"}, \
 	{10, "Tape stop"}, /*{11, "Tape start (TODO)"}, */{12, "Tape speed"}, {14, "Wow & flutter"}, \
 	{13, "Scratch"}, {19, "Noise"}, {20, "Crackles"}, \
