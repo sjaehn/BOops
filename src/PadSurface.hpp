@@ -63,6 +63,7 @@ public:
                 		cairo_text_extents_t ext = focusText.getFont ()->getTextExtents (cr, textline);
                 		if (ext.width > blockwidth) blockwidth = ext.width;
                 	}
+                        cairo_destroy (cr);
                 	focusText.resize (blockwidth + 2 * focusText.getXOffset (), blockheight + 2 * focusText.getYOffset ());
                 	focusText.resize();
 
