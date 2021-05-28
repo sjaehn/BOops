@@ -55,6 +55,8 @@
 #include "OptionGalactic.hpp"
 #include "OptionInfinity.hpp"
 
+#define PASS_DOUBLE [] (double x) {return x;}
+
 inline double floorfrac (const double value) {return value - floor (value);}
 inline double floormod (const double numer, const double denom) {return numer - floor(numer / denom) * denom;}
 
@@ -165,9 +167,9 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 
 	padParamContainer (1120, 170, 100, 288, "widget"),
 	padGateLabel (00, 90, 100, 20, "ctlabel", BOOPS_LABEL_PROBABILITY),
-	padGateDial (20, 30, 60, 60, "dial", 1.0, 0.0, 1.0, 0.0, "%1.2f"),
+	padGateDial (20, 30, 60, 60, "dial", 1.0, 0.0, 1.0, 0.0, "%1.2f", "", PASS_DOUBLE, PASS_DOUBLE, PASS_DOUBLE, PASS_DOUBLE, [] () {return BOOPS_LABEL_PROBABILITY_TOOLTIP;}),
 	padMixLabel (20, 180, 60, 20, "ctlabel", BOOPS_LABEL_MIX),
-	padMixDial (20, 120, 60, 60, "dial", 1.0, 0.0, 1.0, 0.0, "%1.2f")
+	padMixDial (20, 120, 60, 60, "dial", 1.0, 0.0, 1.0, 0.0, "%1.2f", "", PASS_DOUBLE, PASS_DOUBLE, PASS_DOUBLE, PASS_DOUBLE, [] () {return BOOPS_LABEL_MIX_TOOLTIP;})
 {
 	// Init slots
 	for (int i = 0; i < NR_SLOTS; ++i)
@@ -208,10 +210,10 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 		slotParams[i].decayLabel = BWidgets::Label (190, 60, 20, 20, "ctlabel", BOOPS_LABEL_ADSR_D);
 		slotParams[i].sustainLabel = BWidgets::Label (190, 90, 20, 20, "ctlabel", BOOPS_LABEL_ADSR_S);
 		slotParams[i].releaseLabel = BWidgets::Label (190, 120, 20, 20, "ctlabel", BOOPS_LABEL_ADSR_R);
-		slotParams[i].attackSlider = HSlider (210, 30, 60, 20, "slider", 0.1, 0.0, 1.0, 0.0, "%1.2f", [] (double x) {return x;}, [] (double x) {return x;}, [] (double x) {return pow (x, 1.0 / 2.0);}, [] (double x) {return pow (x, 2.0);});
-		slotParams[i].decaySlider = HSlider (210, 60, 60, 20, "slider", 0.1, 0.0, 1.0, 0.0, "%1.2f", [] (double x) {return x;}, [] (double x) {return x;}, [] (double x) {return pow (x, 1.0 / 2.0);}, [] (double x) {return pow (x, 2.0);});
+		slotParams[i].attackSlider = HSlider (210, 30, 60, 20, "slider", 0.1, 0.0, 1.0, 0.0, "%1.2f", PASS_DOUBLE, PASS_DOUBLE, [] (double x) {return pow (x, 1.0 / 2.0);}, [] (double x) {return pow (x, 2.0);});
+		slotParams[i].decaySlider = HSlider (210, 60, 60, 20, "slider", 0.1, 0.0, 1.0, 0.0, "%1.2f", PASS_DOUBLE, PASS_DOUBLE, [] (double x) {return pow (x, 1.0 / 2.0);}, [] (double x) {return pow (x, 2.0);});
 		slotParams[i].sustainSlider = HSlider (210, 90, 60, 20, "slider", 1.0, 0.0, 1.0, 0.0, "%1.2f");
-		slotParams[i].releaseSlider = HSlider (210, 120, 60, 20, "slider", 0.1, 0.0, 1.0, 0.0, "%1.2f", [] (double x) {return x;}, [] (double x) {return x;}, [] (double x) {return pow (x, 1.0 / 2.0);}, [] (double x) {return pow (x, 2.0);});
+		slotParams[i].releaseSlider = HSlider (210, 120, 60, 20, "slider", 0.1, 0.0, 1.0, 0.0, "%1.2f", PASS_DOUBLE, PASS_DOUBLE, [] (double x) {return pow (x, 1.0 / 2.0);}, [] (double x) {return pow (x, 2.0);});
 		slotParams[i].adsrDisplay = CurveChart (10, 30, 170, 110, "slider");
 		slotParams[i].panLabel = BWidgets::Label (280, 110, 60, 20, "ctlabel", BOOPS_LABEL_PAN);
 		slotParams[i].panDial = Dial (280, 40, 60, 60, "dial", 0.0, -1.0, 1.0, 0.0, "%1.2f");
@@ -304,6 +306,8 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 	sampleNameLabel.hide();
 	sampleAmpLabel.hide();
 	sampleAmpDial.hide();
+	Dial& s = sampleAmpDial;
+	sampleAmpDial.setFocusText ([&s] () {return BUtilities::to_string (s.getValue(), "%1.2f");});
 	onMidiListBox.hide();
 	transportGateButton.hide ();
 	transportGatePiano.setKeysToggleable (true);
@@ -3608,6 +3612,21 @@ void BOopsGUI::drawPad (cairo_t* cr, const int row, const int step)
 	color.applyBrightness (pd.mix - 1.0);
 	if (p0 <= int (cursor) && (p0 + ps > int (cursor))) color.applyBrightness (0.75);
 	drawButton (cr, xr + 1, yr + 1, wr - 2, hr - 2, color);
+
+	// Draw label
+	if ((pd.mix != 0.0) && (pd.gate != 1.0))
+	{
+		const double br = sqrt (pow (color.getRed(), 2.0) + pow (color.getBlue(), 2.0) + pow (color.getGreen(), 2.0));
+		BColors::Color tc = (br < 0.707 ? *txColors.getColor(BColors::NORMAL) : BColors::black);
+		cairo_set_source_rgba (cr, CAIRO_RGBA (tc));
+		std::string label = std::to_string (int (pd.gate * 100.0)) + " %";
+		cairo_select_font_face (cr, smLabelFont.getFontFamily ().c_str (), smLabelFont.getFontSlant (), smLabelFont.getFontWeight ());
+		cairo_set_font_size (cr, smLabelFont.getFontSize ());
+		cairo_text_extents_t ext;
+		cairo_text_extents (cr, label.c_str(), &ext);
+		cairo_move_to (cr, xr + 0.5 * wr - 0.5 * ext.width - ext.x_bearing, yr + 0.5 * hr - 0.5 * ext.height - ext.y_bearing);
+		cairo_show_text (cr, label.c_str ());
+	}
 }
 
 

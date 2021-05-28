@@ -172,8 +172,12 @@ parameters to which B.Oops shall respond or you can use MIDI learning. Don't for
 #### Pattern
 
 The pattern matrix is located in the center of user interface. Each line of the pattern is linked to an effect slot in the
-left of the user interface. In the default drawing mode, the pattern is also connected with the pad properties in the right
-of the user interface.
+left of the user interface. The color of the pads represents the effect of the respective slot. The brightness represents
+the pad mix property value. The pad probability property value is shown in the middle of the respective pad (only if not
+100 %).
+
+In the default drawing mode, the pattern is also connected with the pad properties toolbox in
+the right of the user interface.
 
 
 ##### Drawing mode
@@ -215,17 +219,20 @@ scale the waveform.
 
 #### Pad properties
 
-The pad properties (relevant for the pattern drawing mode) are shown on the left of the user interface.
+The pad properties toolbox (relevant for the pattern drawing mode) is shown on the right side of the user interface.
+Properties from the toolbox will be set to the pattern upon drawing new pads.
 
 
 ##### Probability (Gate)
 
-Set the probability for pads to be played or not.
+Set the probability for pads to be played or not. Upon drawing a new pad, probability values being not 1.0 are shown on
+the pad.
 
 
 ##### Mix
 
-Dry / wet mixing value of an effect pad.
+Dry / wet mixing value of an effect pad. Upon drawing a new pad, the mix value is represented on the pad by the
+brightness.
 
 
 #### Slot properties
@@ -435,6 +442,7 @@ But do not change or delete any definition symbol!
   * Galactic reverb
   * Infinity reverb
 * Tooltips for buttons
+* Show probability values on pads
 
 
 ## TODO

@@ -78,7 +78,9 @@
 #define BOOPS_LABEL_MIDI "MIDI"
 #define BOOPS_LABEL_MENU "Menu"
 #define BOOPS_LABEL_PROBABILITY "Wahrscheinlichk."
+#define BOOPS_LABEL_PROBABILITY_TOOLTIP ""
 #define BOOPS_LABEL_MIX "Mix"
+#define BOOPS_LABEL_MIX_TOOLTIP ""
 #define BOOPS_LABEL_GETTING_STARTED "Erste Schritte\n" \
         " \n" \
         "1) Füge einen Effekt durch Anklicken des [+]-Symbol unterhalb von \"Fx\" ein.\n" \

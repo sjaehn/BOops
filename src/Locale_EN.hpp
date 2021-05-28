@@ -78,7 +78,9 @@
 #define BOOPS_LABEL_MIDI "MIDI"
 #define BOOPS_LABEL_MENU "Menu"
 #define BOOPS_LABEL_PROBABILITY "Probability"
+#define BOOPS_LABEL_PROBABILITY_TOOLTIP "" /*"Probability\n \nSet the probability\nfor pads to be played\nor not.\nThis will be applied\nwhen you draw new pads."*/
 #define BOOPS_LABEL_MIX "Mix"
+#define BOOPS_LABEL_MIX_TOOLTIP "" /*"Mix\n \nDry / wet mixing value of an\neffect pad.This will be applied\nwhen you draw new pads."*/
 #define BOOPS_LABEL_GETTING_STARTED "Getting started\n" \
         " \n" \
         "1) Add an effect by clicking on the [+] symbol below \"Fx\".\n" \
