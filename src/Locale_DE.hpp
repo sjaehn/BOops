@@ -78,9 +78,22 @@
 #define BOOPS_LABEL_MIDI "MIDI"
 #define BOOPS_LABEL_MENU "Menu"
 #define BOOPS_LABEL_PROBABILITY "Wahrscheinlichk."
-#define BOOPS_LABEL_PROBABILITY_TOOLTIP ""
+#define BOOPS_LABEL_PROBABILITY_TOOLTIP  \
+        "Wahrscheinlichkeit\n" \
+        " \n" \
+        "Wahrscheinlichkeit für ein\n" \
+        "Pad gespielt oder nicht\n" \
+        "gespielt zu werden.\n" \
+        "Dies findet erst beim Setzen\n" \
+        "eines neuen Pads Anwendung."
 #define BOOPS_LABEL_MIX "Mix"
-#define BOOPS_LABEL_MIX_TOOLTIP ""
+#define BOOPS_LABEL_MIX_TOOLTIP \
+        "Mix\n" \
+        " \n" \
+        "Dry/wet-Mixwert eines\n" \
+        "Effektpads.\n"  \
+        "Dies findet erst beim Setzen\n" \
+        "eines neuen Pads Anwendung."
 #define BOOPS_LABEL_GETTING_STARTED "Erste Schritte\n" \
         " \n" \
         "1) Füge einen Effekt durch Anklicken des [+]-Symbol unterhalb von \"Fx\" ein.\n" \

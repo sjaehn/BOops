@@ -131,6 +131,7 @@ public:
 	virtual void setFocusText (std::function<std::string()> fn)
 	{
 		focusText_ = fn;
+		focusLabel_.setText (focusText_());
 	}
 
 	virtual void update () override
@@ -225,12 +226,13 @@ public:
 			{
 				BUtilities::Point pos = event->getPosition();
 				//if (getParent()) getParent()->raiseToTop();
-				raiseToTop();
+				//raiseToTop();
 
 				// Resize
 	                        cairo_surface_t* surface = widgetSurface_;
 	                	cairo_t* cr = cairo_create (surface);
-	                        focusLabel_.resize (400,100);	// Maximize size first to omit breaks
+				focusLabel_.setText (focusText_());
+	                        focusLabel_.resize (400,200);	// Maximize size first to omit breaks
 	                	std::vector<std::string> textblock = focusLabel_.getTextBlock ();
 	                	double blockheight = focusLabel_.getTextBlockHeight (textblock);
 	                	double blockwidth = 0.0;

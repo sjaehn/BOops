@@ -442,6 +442,7 @@ But do not change or delete any definition symbol!
   * Galactic reverb
   * Infinity reverb
 * Tooltips for buttons
+* Tooltips for pads property toolbox
 * Show probability values on pads
 
 

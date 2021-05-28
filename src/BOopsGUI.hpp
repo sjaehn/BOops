@@ -376,7 +376,7 @@ private:
 	BWidgets::ImageIcon gettingstartedContainer;
 	BWidgets::Text gettingstartedText;
 
-	BWidgets::Widget padParamContainer;
+	//BWidgets::Widget padParamContainer;
 	BWidgets::Label padGateLabel;
 	Dial padGateDial;
 	BWidgets::Label padMixLabel;

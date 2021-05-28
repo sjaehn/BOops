@@ -165,11 +165,11 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 	gettingstartedContainer (20, 478, 1200, 150, "widget", pluginPath + "inc/None_bg.png"),
 	gettingstartedText (20, 30, 1160, 110, "lflabel",BOOPS_LABEL_GETTING_STARTED),
 
-	padParamContainer (1120, 170, 100, 288, "widget"),
-	padGateLabel (00, 90, 100, 20, "ctlabel", BOOPS_LABEL_PROBABILITY),
-	padGateDial (20, 30, 60, 60, "dial", 1.0, 0.0, 1.0, 0.0, "%1.2f", "", PASS_DOUBLE, PASS_DOUBLE, PASS_DOUBLE, PASS_DOUBLE, [] () {return BOOPS_LABEL_PROBABILITY_TOOLTIP;}),
-	padMixLabel (20, 180, 60, 20, "ctlabel", BOOPS_LABEL_MIX),
-	padMixDial (20, 120, 60, 60, "dial", 1.0, 0.0, 1.0, 0.0, "%1.2f", "", PASS_DOUBLE, PASS_DOUBLE, PASS_DOUBLE, PASS_DOUBLE, [] () {return BOOPS_LABEL_MIX_TOOLTIP;})
+	//padParamContainer (1120, 170, 100, 288, "widget"),
+	padGateLabel (1120, 260, 100, 20, "ctlabel", BOOPS_LABEL_PROBABILITY),
+	padGateDial (1140, 200, 60, 60, "dial", 1.0, 0.0, 1.0, 0.0, "%1.2f", "", PASS_DOUBLE, PASS_DOUBLE, PASS_DOUBLE, PASS_DOUBLE, [] () {return BOOPS_LABEL_PROBABILITY_TOOLTIP;}),
+	padMixLabel (1140, 350, 60, 20, "ctlabel", BOOPS_LABEL_MIX),
+	padMixDial (1140, 290, 60, 60, "dial", 1.0, 0.0, 1.0, 0.0, "%1.2f", "", PASS_DOUBLE, PASS_DOUBLE, PASS_DOUBLE, PASS_DOUBLE, [] () {return BOOPS_LABEL_MIX_TOOLTIP;})
 {
 	// Init slots
 	for (int i = 0; i < NR_SLOTS; ++i)
@@ -451,12 +451,7 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 		for (BWidgets::ValueWidget& o : s.options) s.container.add (o);
 	}
 
-	padParamContainer.add (padGateLabel);
-	padParamContainer.add (padGateDial);
-	padParamContainer.add (padMixLabel);
-	padParamContainer.add (padMixDial);
-
-	mContainer.add (padParamContainer);
+	//mContainer.add (padParamContainer);
 	for (SlotParam& s : slotParams) mContainer.add (s.container);
 	mContainer.add (gettingstartedContainer);
 	mContainer.add (editContainer);
@@ -464,6 +459,12 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 	mContainer.add (slotsContainer);
 	mContainer.add (padSurface);
 	mContainer.add (monitor);
+
+	mContainer.add (padGateLabel);
+	mContainer.add (padGateDial);
+	mContainer.add (padMixLabel);
+	mContainer.add (padMixDial);
+
 	mContainer.add (transportGateContainer);
 	mContainer.add (settingsContainer);
 	mContainer.add (helpButton);
@@ -952,11 +953,11 @@ void BOopsGUI::resize ()
 	RESIZE (gettingstartedContainer, 20, 478, 1200, 150, sz);
 	RESIZE (gettingstartedText, 20, 30, 1160, 110, sz);
 
-	RESIZE (padParamContainer, 1120, 170, 100, 288, sz);
-	RESIZE (padGateLabel, 0, 90, 100, 20, sz);
-	RESIZE (padGateDial, 20, 30, 60, 60, sz);
-	RESIZE (padMixLabel, 20, 180, 60, 20, sz);
-	RESIZE (padMixDial, 20, 120, 60, 60, sz);
+	//RESIZE (padParamContainer, 1120, 170, 100, 288, sz);
+	RESIZE (padGateLabel, 1120, 260, 100, 20, sz);
+	RESIZE (padGateDial, 1140, 200, 60, 60, sz);
+	RESIZE (padMixLabel, 1140, 350, 60, 20, sz);
+	RESIZE (padMixDial, 1140, 290, 60, 60, sz);
 
 	RESIZE (slotsContainer, 20, 170, 260, 288, sz);
 
@@ -1119,7 +1120,7 @@ void BOopsGUI::applyTheme (BStyles::Theme& theme)
 		if (s.optionWidget) s.optionWidget->applyTheme (theme);
 	};
 
-	padParamContainer.applyTheme (theme);
+	//padParamContainer.applyTheme (theme);
 	padGateLabel.applyTheme (theme);
 	padGateDial.applyTheme (theme);
 	padMixLabel.applyTheme (theme);
