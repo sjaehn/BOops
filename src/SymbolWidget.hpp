@@ -27,8 +27,6 @@
 #include "drawSymbol.hpp"
 #include <cmath>
 
-const std::string symboltxt[9] = {"", "Insert", "Delete", "Move forward", "Move backward", "Up", "Down", "Play", "MIDI"};
-
 class SymbolWidget : public BWidgets::Widget, public BWidgets::Focusable
 {
 protected:

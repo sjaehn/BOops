@@ -434,6 +434,7 @@ But do not change or delete any definition symbol!
   * Reverb
   * Galactic reverb
   * Infinity reverb
+* Tooltips for buttons
 
 
 ## TODO

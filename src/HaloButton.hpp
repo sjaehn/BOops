@@ -34,7 +34,7 @@ public:
 		ValueWidget (x, y, width, height, name, 0.0),
 		Focusable (std::chrono::milliseconds (BWIDGETS_DEFAULT_FOCUS_IN_MS),
 			   std::chrono::milliseconds (BWIDGETS_DEFAULT_FOCUS_OUT_MS)),
-			   focusLabel_ (0, 0, 40, 20, name_ + BWIDGETS_DEFAULT_FOCUS_NAME, focusText)
+		focusLabel_ (0, 0, 40, 20, name_ + BWIDGETS_DEFAULT_FOCUS_NAME, focusText)
    	{
    		focusLabel_.setStacking (BWidgets::STACKING_OVERSIZE);
    		focusLabel_.resize ();

@@ -25,6 +25,12 @@
 #include "BWidgets/BColors.hpp"
 #include <cmath>
 
+#ifdef LOCALEFILE
+#include LOCALEFILE
+#else
+#include "Locale_EN.hpp"
+#endif
+
 enum SymbolIndex
 {
         NOSYMBOL        = -1,
@@ -36,6 +42,19 @@ enum SymbolIndex
         DOWNSYMBOL      = 5,
         PLAYSYMBOL      = 6,
         MIDISYMBOL      = 7
+};
+
+const std::string symboltxt[9] =
+{
+        "",
+        BOOPS_LABEL_ADD,
+        BOOPS_LABEL_DELETE,
+        BOOPS_LABEL_MOVE_FORWARD,
+        BOOPS_LABEL_MOVE_BACKWARD,
+        BOOPS_LABEL_MOVE_UP,
+        BOOPS_LABEL_MOVE_DOWN,
+        BOOPS_LABEL_PLAY,
+        BOOPS_LABEL_MIDI
 };
 
 void drawSymbol (cairo_t* cr, const double x0, const double y0, const double w, const double h, const BColors::Color& color, SymbolIndex symbol = NOSYMBOL)

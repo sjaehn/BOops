@@ -33,7 +33,9 @@ public:
 		button (0, 0, height, height, name + "/icon", buttonfilename),
 		icon (height, 0, width - height, height, name + "/icon", iconfilename)
 	{
+		button.setFocusable (false);
 		add (button);
+		icon.setFocusable (false);
 		icon.setClickable (false);
 		add (icon);
 	}
@@ -99,10 +101,39 @@ public:
 		icon.resize (getWidth() - getHeight(), getHeight());
 	}
 
+	virtual void setSymbol (const SymbolIndex sym) override {}
+
 	void loadImage (BColors::State state, const std::string& filename)
 	{
 		icon.loadImage (state, filename);
 		icon.update();
+	}
+
+	virtual void onFocusIn (BEvents::FocusEvent* event) override
+	{
+		if (event && event->getWidget())
+		{
+			BUtilities::Point pos = event->getPosition();
+
+			if
+			(
+				(pos.x >= button.getPosition().x) &&
+				(pos.x <= button.getPosition().x + button.getWidth()) &&
+				(pos.y >= button.getPosition().y) &&
+				(pos.y <= button.getPosition().y + button.getHeight())
+			)
+			{
+				raiseToTop();
+				focusLabel_.raiseToTop();
+				focusLabel_.setText (BOOPS_LABEL_MENU);
+				focusLabel_.resize();
+				focusLabel_.moveTo (pos.x - 0.5 * focusLabel_.getWidth(), pos.y - focusLabel_.getHeight());
+				focusLabel_.show();
+			}
+
+			else focusLabel_.hide();
+		}
+		Widget::onFocusIn (event);
 	}
 
 	BWidgets::ImageIcon button;
