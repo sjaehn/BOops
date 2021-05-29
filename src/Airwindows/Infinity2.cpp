@@ -29,6 +29,7 @@
 
 
 #include "Infinity2.hpp"
+#include <cstdlib>
 
 Infinity2::Infinity2 () : Infinity2 (48000, 1.0f, 0.05f, 0.0f, 1.0f, 1.0f, 1.0f) {}
 
