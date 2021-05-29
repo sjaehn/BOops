@@ -97,28 +97,29 @@ void Infinity2::process (const float* input1, const float* input2, float* output
         biquadC[1] = 0.5;
 
 	double K = tan(M_PI * biquadA[0]); //lowpass
-	double norm = 1.0 / (1.0 + K / biquadA[1] + K * K);
-	biquadA[2] = K * K * norm;
+        double KK = K * K;
+	double norm = 1.0 / (1.0 + K / biquadA[1] + KK);
+	biquadA[2] = KK * norm;
 	biquadA[3] = 2.0 * biquadA[2];
 	biquadA[4] = biquadA[2];
-	biquadA[5] = 2.0 * (K * K - 1.0) * norm;
-	biquadA[6] = (1.0 - K / biquadA[1] + K * K) * norm;
+	biquadA[5] = 2.0 * (KK - 1.0) * norm;
+	biquadA[6] = (1.0 - K / biquadA[1] + KK) * norm;
 
-	K = tan(M_PI * biquadA[0]);
-	norm = 1.0 / (1.0 + K / biquadB[1] + K * K);
-	biquadB[2] = K * K * norm;
+	//K = tan(M_PI * biquadB[0]);
+	norm = 1.0 / (1.0 + K / biquadB[1] + KK);
+	biquadB[2] = KK * norm;
 	biquadB[3] = 2.0 * biquadB[2];
 	biquadB[4] = biquadB[2];
-	biquadB[5] = 2.0 * (K * K - 1.0) * norm;
-	biquadB[6] = (1.0 - K / biquadB[1] + K * K) * norm;
+	biquadB[5] = 2.0 * (KK - 1.0) * norm;
+	biquadB[6] = (1.0 - K / biquadB[1] + KK) * norm;
 
-	K = tan(M_PI * biquadC[0]);
-	norm = 1.0 / (1.0 + K / biquadC[1] + K * K);
-	biquadC[2] = K * K * norm;
+	//K = tan(M_PI * biquadC[0]);
+	norm = 1.0 / (1.0 + K / biquadC[1] + KK);
+	biquadC[2] = KK * norm;
 	biquadC[3] = 2.0 * biquadC[2];
 	biquadC[4] = biquadC[2];
-	biquadC[5] = 2.0 * (K * K - 1.0) * norm;
-	biquadC[6] = (1.0 - K / biquadC[1] + K * K) * norm;
+	biquadC[5] = 2.0 * (KK - 1.0) * norm;
+	biquadC[6] = (1.0 - K / biquadC[1] + KK) * norm;
 
 	delayA = 79*size;
 	delayB = 73*size;
