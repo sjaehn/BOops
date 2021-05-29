@@ -2996,7 +2996,7 @@ void BOopsGUI::edit3ChangedCallback(BEvents::Event* event)
 		}
 	}
 
-	// RESET ... REDO
+	// LOAD ... SAVE
 	switch (widgetNr)
 	{
 		case EDIT_LOAD:
