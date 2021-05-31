@@ -1197,56 +1197,33 @@ void BOopsGUI::onCloseRequest (BEvents::WidgetEvent* event)
 			// Load pattern
 			else if (patternChooser->getButtonText() == BOOPS_LABEL_LOAD)
 			{
-				const std::string path = patternChooser->getPath() + BUTILITIES_PATH_SLASH + patternChooser->getFileName();
-				std::ifstream file (path);
-				if (file.good())
+				if (patternChooser->isValid())
 				{
-					// Store pattern
+					// Store last pattern
 					if (wheelScrolled)
 					{
 						patterns[pageAct].store ();
 						wheelScrolled = false;
 					}
 
-					// Load file
-					std::string text = "";
-					std::string line;
-					while (getline (file, line)) text += line;
-
-					// Check header
-					size_t pos = text.find ("appliesTo:");
-					const std::string uri = BOOPS_URI;
-					if (pos != std::string::npos)
+					// Copy pattern pad by pad (to keep the history)
+					Pattern& p = *patternChooser;
+					for (int r = 0; r < NR_SLOTS; ++r)
 					{
-						pos = text.find ("<", pos + 1);
-						if (pos != std::string::npos)
+						for (int s = 0; s < NR_STEPS; ++s)
 						{
-							if (text.substr (pos + 1, uri.size()) == uri)
-							{
-								pos += uri.size() + 1;
-								if (text.substr (pos, 1) == ">")
-								{
-									// Parse file
-									pos += 1;
-									patterns[pageAct].fromString (text.substr (pos), std::array<std::string, 5> {"sl", "st", "gt", "sz", "mx"});
-
-									// Send to DSP & draw
-									for (int r = 0; r < NR_SLOTS; ++r) sendSlot (pageAct, r);
-									drawPad ();
-								}
-								else std::cerr << "BOoops.lv2#GUI: Failed to load " << path << " . Not identied as " BOOPS_URI "pattern.\n";
-							}
-							else std::cerr << "BOoops.lv2#GUI: Failed to load " << path << " . Not identied as " BOOPS_URI "pattern.\n";
+							patterns[pageAct].setPad (r, s, p.getPad (r, s));
 						}
-						else std::cerr << "BOoops.lv2#GUI: Failed to load " << path << " . Not identied as " BOOPS_URI "pattern.\n";
-					}
-					else std::cerr << "BOoops.lv2#GUI: Failed to load " << path << " . Not identied as " BOOPS_URI "pattern.\n";
 
-					// Close file
-					if (file.is_open()) file.close();
+						sendSlot (pageAct, r);
+					}
+
+					patterns[pageAct].store ();
+					drawPad ();
 				}
 
-				else std::cerr << "BOoops.lv2#GUI: Failed to load " << path << " .\n";
+				else  std::cerr << "BOoops.lv2#GUI: Failed to load " << patternChooser->getFileName() << " .\n";
+
 			}
 		}
 
@@ -3002,7 +2979,7 @@ void BOopsGUI::edit3ChangedCallback(BEvents::Event* event)
 		case EDIT_LOAD:
 		{
 			if (ui->patternChooser) delete ui->patternChooser;
-			ui->patternChooser = new BWidgets::FileChooser
+			ui->patternChooser = new PatternChooser
 			(
 				200, 140, 640, 400, "filechooser", ".",
 				std::vector<BWidgets::FileFilter>
@@ -3030,7 +3007,7 @@ void BOopsGUI::edit3ChangedCallback(BEvents::Event* event)
 		case EDIT_SAVE:
 		{
 			if (ui->patternChooser) delete ui->patternChooser;
-			ui->patternChooser = new BWidgets::FileChooser
+			ui->patternChooser = new PatternChooser
 			(
 				200, 140, 640, 400, "filechooser", ".",
 				std::vector<BWidgets::FileFilter>

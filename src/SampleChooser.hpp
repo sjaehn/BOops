@@ -57,7 +57,7 @@ public:
 	SampleChooser& operator= (const SampleChooser& that);
 	virtual Widget* clone () const override;
 
-	virtual void setFileName (const std::string& filename);
+	virtual void setFileName (const std::string& filename) override;
 	void setStart (const int64_t start);
 	int64_t getStart() const;
 	void setEnd (const int64_t end);

@@ -65,6 +65,7 @@
 #include "SampleChooser.hpp"
 #include "HLine.hpp"
 #include "SymbolWidget.hpp"
+#include "PatternChooser.hpp"
 
 #ifdef LOCALEFILE
 #include LOCALEFILE
@@ -346,7 +347,7 @@ private:
 	std::array<HaloToggleButton, EDIT_RESET> edit1Buttons;
 	std::array<HaloButton, EDIT_LOAD - EDIT_RESET> edit2Buttons;
 	std::array<HaloButton, MAXEDIT - EDIT_LOAD> edit3Buttons;
-	BWidgets::FileChooser* patternChooser;
+	PatternChooser* patternChooser;
 
 	struct SlotParam
 	{

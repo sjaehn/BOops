@@ -65,6 +65,8 @@ DSP_INCL = \
 
 GUI_CXX_INCL = \
 	src/SampleChooser.cpp \
+	src/PatternChooser.cpp \
+	src/Pattern.cpp \
 	src/ShapeWidget.cpp \
 	src/SelectWidget.cpp \
 	src/ValueSelect.cpp \
