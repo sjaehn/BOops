@@ -22,7 +22,7 @@
 #define FXREVERB_HPP_
 
 #include "Fx.hpp"
-#include "ACEReverb.hpp"
+#include "ACE/ACEReverb.hpp"
 
 #define FX_REVERB_SIZE 0
 #define FX_REVERB_SIZERAND 1
