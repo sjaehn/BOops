@@ -389,6 +389,12 @@ Lo-Fi effect. Reduces the sample rate.
 Choose between five different distortion methods. Set drive and level limit to achieve distortion.
 
 
+#### Waveshaper
+
+A waveshaper replaces an input signal (X axis of the shape) by a signal from the shape (Y axis). Fine tuning using
+input gain (drive) and ouput gain.
+
+
 #### Filter
 
 Set lower limit (high pass) and higher limit (low pass) of the  filter range. The roll off parameter is responsible for
@@ -447,6 +453,7 @@ But do not change or delete any definition symbol!
   * Galactic reverb
   * Infinity reverb
   * Tremolo
+  * Waveshaper
 * Tooltips for buttons
 * Tooltips for pads property toolbox
 * Show probability values on pads

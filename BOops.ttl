@@ -42,7 +42,7 @@
 	rdfs:comment "Glitch effect sequencer LV2 plugin." ;
   	doap:maintainer <http://www.jahnichen.de/sjaehn#me> ;
   	doap:license <http://usefulinc.com/doap/licenses/gpl> ;
-	lv2:microVersion 4 ;
+	lv2:microVersion 5 ;
 	lv2:minorVersion 5 ;
 	lv2:optionalFeature lv2:hardRTCapable , state:threadSafeRestore ;
 	lv2:extensionData state:interface , work:interface ;
@@ -228,10 +228,10 @@
 		lv2:scalePoint [ rdfs:label "Reverb"; rdf:value 27 ] ;
 		lv2:scalePoint [ rdfs:label "Galactic reverb"; rdf:value 28 ] ;
 		lv2:scalePoint [ rdfs:label "Infinity reverb"; rdf:value 29 ] ;
-		lv2:scalePoint [ rdfs:label "Tremolo"; rdf:value 30 ] ;
+		lv2:scalePoint [ rdfs:label "Waveshaper"; rdf:value 31 ] ;
 		lv2:default 0 ;
 		lv2:minimum 0 ;
-		lv2:maximum 30 ;
+		lv2:maximum 31 ;
         ] , [
                 a lv2:InputPort , lv2:ControlPort ;
                 lv2:index 17 ;
@@ -421,10 +421,10 @@
 		lv2:scalePoint [ rdfs:label "Reverb"; rdf:value 27 ] ;
 		lv2:scalePoint [ rdfs:label "Galactic reverb"; rdf:value 28 ] ;
 		lv2:scalePoint [ rdfs:label "Infinity reverb"; rdf:value 29 ] ;
-		lv2:scalePoint [ rdfs:label "Tremolo"; rdf:value 30 ] ;
+		lv2:scalePoint [ rdfs:label "Waveshaper"; rdf:value 31 ] ;
 		lv2:default 0 ;
 		lv2:minimum 0 ;
-		lv2:maximum 30 ;
+		lv2:maximum 31 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
 	        lv2:index 37 ;
@@ -614,10 +614,10 @@
 		lv2:scalePoint [ rdfs:label "Reverb"; rdf:value 27 ] ;
 		lv2:scalePoint [ rdfs:label "Galactic reverb"; rdf:value 28 ] ;
 		lv2:scalePoint [ rdfs:label "Infinity reverb"; rdf:value 29 ] ;
-		lv2:scalePoint [ rdfs:label "Tremolo"; rdf:value 30 ] ;
+		lv2:scalePoint [ rdfs:label "Waveshaper"; rdf:value 31 ] ;
 		lv2:default 0 ;
 		lv2:minimum 0 ;
-		lv2:maximum 30 ;
+		lv2:maximum 31 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
 	        lv2:index 57 ;
@@ -807,10 +807,10 @@
 		lv2:scalePoint [ rdfs:label "Reverb"; rdf:value 27 ] ;
 		lv2:scalePoint [ rdfs:label "Galactic reverb"; rdf:value 28 ] ;
 		lv2:scalePoint [ rdfs:label "Infinity reverb"; rdf:value 29 ] ;
-		lv2:scalePoint [ rdfs:label "Tremolo"; rdf:value 30 ] ;
+		lv2:scalePoint [ rdfs:label "Waveshaper"; rdf:value 31 ] ;
 		lv2:default 0 ;
 		lv2:minimum 0 ;
-		lv2:maximum 30 ;
+		lv2:maximum 31 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
 	        lv2:index 77 ;
@@ -1000,10 +1000,10 @@
 		lv2:scalePoint [ rdfs:label "Reverb"; rdf:value 27 ] ;
 		lv2:scalePoint [ rdfs:label "Galactic reverb"; rdf:value 28 ] ;
 		lv2:scalePoint [ rdfs:label "Infinity reverb"; rdf:value 29 ] ;
-		lv2:scalePoint [ rdfs:label "Tremolo"; rdf:value 30 ] ;
+		lv2:scalePoint [ rdfs:label "Waveshaper"; rdf:value 31 ] ;
 		lv2:default 0 ;
 		lv2:minimum 0 ;
-		lv2:maximum 30 ;
+		lv2:maximum 31 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
 	        lv2:index 97 ;
@@ -1193,10 +1193,10 @@
 		lv2:scalePoint [ rdfs:label "Reverb"; rdf:value 27 ] ;
 		lv2:scalePoint [ rdfs:label "Galactic reverb"; rdf:value 28 ] ;
 		lv2:scalePoint [ rdfs:label "Infinity reverb"; rdf:value 29 ] ;
-		lv2:scalePoint [ rdfs:label "Tremolo"; rdf:value 30 ] ;
+		lv2:scalePoint [ rdfs:label "Waveshaper"; rdf:value 31 ] ;
 		lv2:default 0 ;
 		lv2:minimum 0 ;
-		lv2:maximum 30 ;
+		lv2:maximum 31 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
 	        lv2:index 117 ;
@@ -1386,10 +1386,10 @@
 		lv2:scalePoint [ rdfs:label "Reverb"; rdf:value 27 ] ;
 		lv2:scalePoint [ rdfs:label "Galactic reverb"; rdf:value 28 ] ;
 		lv2:scalePoint [ rdfs:label "Infinity reverb"; rdf:value 29 ] ;
-		lv2:scalePoint [ rdfs:label "Tremolo"; rdf:value 30 ] ;
+		lv2:scalePoint [ rdfs:label "Waveshaper"; rdf:value 31 ] ;
 		lv2:default 0 ;
 		lv2:minimum 0 ;
-		lv2:maximum 30 ;
+		lv2:maximum 31 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
 	        lv2:index 137 ;
@@ -1579,10 +1579,10 @@
 		lv2:scalePoint [ rdfs:label "Reverb"; rdf:value 27 ] ;
 		lv2:scalePoint [ rdfs:label "Galactic reverb"; rdf:value 28 ] ;
 		lv2:scalePoint [ rdfs:label "Infinity reverb"; rdf:value 29 ] ;
-		lv2:scalePoint [ rdfs:label "Tremolo"; rdf:value 30 ] ;
+		lv2:scalePoint [ rdfs:label "Waveshaper"; rdf:value 31 ] ;
 		lv2:default 0 ;
 		lv2:minimum 0 ;
-		lv2:maximum 30 ;
+		lv2:maximum 31 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
 	        lv2:index 157 ;
@@ -1772,10 +1772,10 @@
 		lv2:scalePoint [ rdfs:label "Reverb"; rdf:value 27 ] ;
 		lv2:scalePoint [ rdfs:label "Galactic reverb"; rdf:value 28 ] ;
 		lv2:scalePoint [ rdfs:label "Infinity reverb"; rdf:value 29 ] ;
-		lv2:scalePoint [ rdfs:label "Tremolo"; rdf:value 30 ] ;
+		lv2:scalePoint [ rdfs:label "Waveshaper"; rdf:value 31 ] ;
 		lv2:default 0 ;
 		lv2:minimum 0 ;
-		lv2:maximum 30 ;
+		lv2:maximum 31 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
 	        lv2:index 177 ;
@@ -1965,10 +1965,10 @@
 		lv2:scalePoint [ rdfs:label "Reverb"; rdf:value 27 ] ;
 		lv2:scalePoint [ rdfs:label "Galactic reverb"; rdf:value 28 ] ;
 		lv2:scalePoint [ rdfs:label "Infinity reverb"; rdf:value 29 ] ;
-		lv2:scalePoint [ rdfs:label "Tremolo"; rdf:value 30 ] ;
+		lv2:scalePoint [ rdfs:label "Waveshaper"; rdf:value 31 ] ;
 		lv2:default 0 ;
 		lv2:minimum 0 ;
-		lv2:maximum 30 ;
+		lv2:maximum 31 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
 	        lv2:index 197 ;
@@ -2158,10 +2158,10 @@
 		lv2:scalePoint [ rdfs:label "Reverb"; rdf:value 27 ] ;
 		lv2:scalePoint [ rdfs:label "Galactic reverb"; rdf:value 28 ] ;
 		lv2:scalePoint [ rdfs:label "Infinity reverb"; rdf:value 29 ] ;
-		lv2:scalePoint [ rdfs:label "Tremolo"; rdf:value 30 ] ;
+		lv2:scalePoint [ rdfs:label "Waveshaper"; rdf:value 31 ] ;
 		lv2:default 0 ;
 		lv2:minimum 0 ;
-		lv2:maximum 30 ;
+		lv2:maximum 31 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
 	        lv2:index 217 ;
@@ -2351,10 +2351,10 @@
 		lv2:scalePoint [ rdfs:label "Reverb"; rdf:value 27 ] ;
 		lv2:scalePoint [ rdfs:label "Galactic reverb"; rdf:value 28 ] ;
 		lv2:scalePoint [ rdfs:label "Infinity reverb"; rdf:value 29 ] ;
-		lv2:scalePoint [ rdfs:label "Tremolo"; rdf:value 30 ] ;
+		lv2:scalePoint [ rdfs:label "Waveshaper"; rdf:value 31 ] ;
 		lv2:default 0 ;
 		lv2:minimum 0 ;
-		lv2:maximum 30 ;
+		lv2:maximum 31 ;
 	] , [
 	        a lv2:InputPort , lv2:ControlPort ;
 	        lv2:index 237 ;

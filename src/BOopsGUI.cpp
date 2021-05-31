@@ -55,6 +55,7 @@
 #include "OptionGalactic.hpp"
 #include "OptionInfinity.hpp"
 #include "OptionTremolo.hpp"
+#include "OptionWaveshaper.hpp"
 
 #define PASS_DOUBLE [] (double x) {return x;}
 
@@ -2043,8 +2044,8 @@ void BOopsGUI::setOptionWidget (const int slot)
 					break;
 
 		case FX_WAH:		slotParams[slot].optionWidget = new OptionWah (430, 20, 720, 130, "widget", pluginPath);
-					if (slotParams[slot].optionWidget) ((OptionWah*)slotParams[slot].optionWidget)->setShape (slotParams[slot].shape);
-					break;
+							if (slotParams[slot].optionWidget) ((OptionWah*)slotParams[slot].optionWidget)->setShape (slotParams[slot].shape);
+							break;
 
 		case FX_REVERB:		slotParams[slot].optionWidget = new OptionReverb (430, 20, 80, 130, "widget");
 					break;
@@ -2057,6 +2058,10 @@ void BOopsGUI::setOptionWidget (const int slot)
 
 		case FX_TREMOLO:	slotParams[slot].optionWidget = new OptionTremolo (430, 20, 160, 130, "widget");
 					break;
+
+		case FX_WAVESHAPER:	slotParams[slot].optionWidget = new OptionWaveshaper (430, 20, 480, 130, "widget", pluginPath);
+							if (slotParams[slot].optionWidget) ((OptionWah*)slotParams[slot].optionWidget)->setShape (slotParams[slot].shape);
+							break;
 
 		default:		slotParams[slot].optionWidget = new OptionWidget (0, 0, 0, 0, "widget");
 	}

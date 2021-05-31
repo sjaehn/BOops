@@ -115,7 +115,8 @@ enum BOopsEffectsIndex
 	FX_GALACTIC	= 28,
 	FX_INFINITY	= 29,
 	FX_TREMOLO	= 30,
-	NR_FX		= 31,
+	FX_WAVESHAPER	= 31,
+	NR_FX		= 32,
 	FX_INVALID	= 255
 };
 
@@ -151,7 +152,7 @@ enum BOopsWaveformIndex
 	{30, "Tremolo"}, {8, "Chop"}, {21, "Stutter"}, {9, "Jumble"}, \
 	{10, "Tape stop"}, /*{11, "Tape start (TODO)"}, */{12, "Tape speed"}, {14, "Wow & flutter"}, \
 	{13, "Scratch"}, {19, "Noise"}, {20, "Crackles"}, \
-	{15, "Crush"}, {16, "Decimate"}, {17, "Distortion"}, {18, "Filter"}, \
+	{15, "Crush"}, {16, "Decimate"}, {17, "Distortion"}, {31, "Waveshaper"}, {18, "Filter"}, \
 	{22, "Flanger"}, {23, "Phaser"}, {24, "Ring modulator"}, {26, "Wah"}, \
 	{25, "Oops"} \
 }
@@ -188,7 +189,8 @@ enum BOopsWaveformIndex
 	"inc/Delay_bg.png", \
 	"inc/Delay_bg.png", \
 	"inc/Delay_bg.png", \
-	"inc/Chop_bg.png" \
+	"inc/Chop_bg.png", \
+	"inc/Distortion_bg.png" \
 }
 
 #endif /* PORTS_HPP_ */

@@ -173,6 +173,6 @@
 #define BOOPS_LABEL_FILTER "Filter"
 #define BOOPS_LABEL_DAMP "Dämpfung"
 #define BOOPS_LABEL_ALLPASS "Allpass"
-
+#define BOOPS_LABEL_GAIN "Verstärkung"
 
 #endif
