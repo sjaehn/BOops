@@ -4,7 +4,7 @@ Description: Glitch effect sequencer LV2 plugin
 Key features:
 * Multi-effect plugin controlled by step sequencer patterns
 * Apply glitch effects in live or on a sample track
-* 27 effects
+* 28 effects
 * Up to 12 effect slots, freely select effects and effect order
 * Random effects: 3 different ways of randomization
 * Autoplay, host controlled, or MIDI controlled playback
@@ -316,6 +316,11 @@ Delays the input signal by range * delay steps. Optional feedback.
 Reverse playback.
 
 
+#### Tremolo
+
+Amp modulation effect defined by its rate (in Hz) and its depth.
+
+
 #### Chop
 
 Chops each step (or a block of steps defined by the reach parameter) into a number of segments (Nr chops). Each segment can
@@ -441,6 +446,7 @@ But do not change or delete any definition symbol!
   * Reverb
   * Galactic reverb
   * Infinity reverb
+  * Tremolo
 * Tooltips for buttons
 * Tooltips for pads property toolbox
 * Show probability values on pads

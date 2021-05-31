@@ -59,7 +59,8 @@ const std::array<const std::array<const float, NR_PARAMS>, NR_FX> fxDefaultValue
 	{{STDPARAMS, 0.28855, 0.0, 0.6667, 0.0, 0.3333, 0.0, 0.375, 0, 0, 0, 0, 0}},		// FX_WAH
 	{{STDPARAMS, 0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0}},			// FX_REVERB
 	{{STDPARAMS, 0.5, 0.0, 0.5, 0.0, 0.5, 0.0, 0.5, 0, 0, 0, 0, 0}},			// FX_GALACTIC
-	{{STDPARAMS, 1.0, 0.0, 0.5, 0.0, 0.0, 0.0, 1.0, 0, 1.0, 0, 0, 0}}			// FX_INFINITY
+	{{STDPARAMS, 1.0, 0.0, 0.5, 0.0, 0.0, 0.0, 1.0, 0, 1.0, 0, 0, 0}},			// FX_INFINITY
+	{{STDPARAMS, 0.473684211, 0.0, 0.5, 0.0, 0.0, 0.0, 0.0, 0, 0.0, 0, 0, 0}}	// FX_TREMOLO
 
 }};
 
@@ -94,7 +95,8 @@ const std::array<const std::string, NR_FX> fxIconFileNames =
 		"Wah",
 		"Reverb",
 		"Galactic",
-		"Infinity"
+		"Infinity",
+		"Tremolo"
 }};
 
 

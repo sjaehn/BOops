@@ -114,7 +114,8 @@ enum BOopsEffectsIndex
 	FX_REVERB	= 27,
 	FX_GALACTIC	= 28,
 	FX_INFINITY	= 29,
-	NR_FX		= 30,
+	FX_TREMOLO	= 30,
+	NR_FX		= 31,
 	FX_INVALID	= 255
 };
 
@@ -147,7 +148,7 @@ enum BOopsWaveformIndex
 	{1, "Surprise box"}, \
 	{2, "Amp"}, {3, "Balance"}, {4, "Width"}, /*{5, "Pitch (TODO)"}, */ \
 	{27, "Reverb"}, {28, "Galactic reverb"}, {29, "Infinity reverb"}, {6, "Delay"}, {7, "Reverse"}, \
-	{8, "Chop"}, {21, "Stutter"}, {9, "Jumble"}, \
+	{30, "Tremolo"}, {8, "Chop"}, {21, "Stutter"}, {9, "Jumble"}, \
 	{10, "Tape stop"}, /*{11, "Tape start (TODO)"}, */{12, "Tape speed"}, {14, "Wow & flutter"}, \
 	{13, "Scratch"}, {19, "Noise"}, {20, "Crackles"}, \
 	{15, "Crush"}, {16, "Decimate"}, {17, "Distortion"}, {18, "Filter"}, \
@@ -186,7 +187,8 @@ enum BOopsWaveformIndex
 	"inc/Flanger_bg.png", \
 	"inc/Delay_bg.png", \
 	"inc/Delay_bg.png", \
-	"inc/Delay_bg.png" \
+	"inc/Delay_bg.png", \
+	"inc/Chop_bg.png" \
 }
 
 #endif /* PORTS_HPP_ */

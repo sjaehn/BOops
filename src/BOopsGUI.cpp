@@ -54,6 +54,7 @@
 #include "OptionReverb.hpp"
 #include "OptionGalactic.hpp"
 #include "OptionInfinity.hpp"
+#include "OptionTremolo.hpp"
 
 #define PASS_DOUBLE [] (double x) {return x;}
 
@@ -2052,6 +2053,9 @@ void BOopsGUI::setOptionWidget (const int slot)
 					break;
 
 		case FX_INFINITY:	slotParams[slot].optionWidget = new OptionInfinity (430, 20, 400, 130, "widget");
+					break;
+
+		case FX_TREMOLO:	slotParams[slot].optionWidget = new OptionTremolo (430, 20, 160, 130, "widget");
 					break;
 
 		default:		slotParams[slot].optionWidget = new OptionWidget (0, 0, 0, 0, "widget");
