@@ -171,6 +171,16 @@ public:
 		shapeWidget.setValueEnabled (true);
 	}
 
+	virtual Shape<SHAPE_MAXNODES> getDefaultShape () const
+	{
+		Shape<SHAPE_MAXNODES> sh = Shape<SHAPE_MAXNODES> ();
+		sh.appendNode (Node (END_NODE, {0, 0}, {0, 0}, {0,0}));
+		sh.appendNode (Node (POINT_NODE, {1, 1}, {0, 0}, {0,0}));
+		sh.appendNode (Node (END_NODE, {1, 0}, {0, 0}, {0,0}));
+		sh.validateShape ();
+		return sh;
+	}
+
 	virtual Shape<SHAPE_MAXNODES> getShape() const override {return Shape<SHAPE_MAXNODES>(shapeWidget);}
 
 	virtual void applyTheme (BStyles::Theme& theme) override {applyTheme (theme, name_);}

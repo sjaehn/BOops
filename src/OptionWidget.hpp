@@ -109,6 +109,13 @@ public:
 
 	virtual void setShape (const Shape<SHAPE_MAXNODES>& shape) {}
 
+	virtual Shape<SHAPE_MAXNODES> getDefaultShape () const
+	{
+		Shape<SHAPE_MAXNODES> sh = Shape<SHAPE_MAXNODES> ();
+		sh.setDefaultShape();
+		return sh;
+	}
+
 	virtual Shape<SHAPE_MAXNODES> getShape() const {return Shape<SHAPE_MAXNODES>();}
 
 	virtual void zoom (const double f)

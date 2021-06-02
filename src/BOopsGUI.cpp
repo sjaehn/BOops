@@ -2281,6 +2281,7 @@ void BOopsGUI::valueChangedCallback(BEvents::Event* event)
 											ui->controllerWidgets[SLOTS + slot * (SLOTS_PARAMS + NR_PARAMS) + SLOTS_PARAMS + i]->setValue
 											(fxDefaultValues[fxnr][i]);
 										}
+										if (ui->slotParams[slot].optionWidget) ui->slotParams[slot].shape = ui->slotParams[slot].optionWidget->getDefaultShape(); 
 									}
 									else ui->slots[slot].effectsListbox.setValue (fxnr);
 
