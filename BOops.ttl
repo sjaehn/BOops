@@ -228,6 +228,7 @@
 		lv2:scalePoint [ rdfs:label "Reverb"; rdf:value 27 ] ;
 		lv2:scalePoint [ rdfs:label "Galactic reverb"; rdf:value 28 ] ;
 		lv2:scalePoint [ rdfs:label "Infinity reverb"; rdf:value 29 ] ;
+		lv2:scalePoint [ rdfs:label "Tremolo"; rdf:value 30 ] ;
 		lv2:scalePoint [ rdfs:label "Waveshaper"; rdf:value 31 ] ;
 		lv2:default 0 ;
 		lv2:minimum 0 ;
@@ -421,6 +422,7 @@
 		lv2:scalePoint [ rdfs:label "Reverb"; rdf:value 27 ] ;
 		lv2:scalePoint [ rdfs:label "Galactic reverb"; rdf:value 28 ] ;
 		lv2:scalePoint [ rdfs:label "Infinity reverb"; rdf:value 29 ] ;
+		lv2:scalePoint [ rdfs:label "Tremolo"; rdf:value 30 ] ;
 		lv2:scalePoint [ rdfs:label "Waveshaper"; rdf:value 31 ] ;
 		lv2:default 0 ;
 		lv2:minimum 0 ;
@@ -614,6 +616,7 @@
 		lv2:scalePoint [ rdfs:label "Reverb"; rdf:value 27 ] ;
 		lv2:scalePoint [ rdfs:label "Galactic reverb"; rdf:value 28 ] ;
 		lv2:scalePoint [ rdfs:label "Infinity reverb"; rdf:value 29 ] ;
+		lv2:scalePoint [ rdfs:label "Tremolo"; rdf:value 30 ] ;
 		lv2:scalePoint [ rdfs:label "Waveshaper"; rdf:value 31 ] ;
 		lv2:default 0 ;
 		lv2:minimum 0 ;
@@ -807,6 +810,7 @@
 		lv2:scalePoint [ rdfs:label "Reverb"; rdf:value 27 ] ;
 		lv2:scalePoint [ rdfs:label "Galactic reverb"; rdf:value 28 ] ;
 		lv2:scalePoint [ rdfs:label "Infinity reverb"; rdf:value 29 ] ;
+		lv2:scalePoint [ rdfs:label "Tremolo"; rdf:value 30 ] ;
 		lv2:scalePoint [ rdfs:label "Waveshaper"; rdf:value 31 ] ;
 		lv2:default 0 ;
 		lv2:minimum 0 ;
@@ -1000,6 +1004,7 @@
 		lv2:scalePoint [ rdfs:label "Reverb"; rdf:value 27 ] ;
 		lv2:scalePoint [ rdfs:label "Galactic reverb"; rdf:value 28 ] ;
 		lv2:scalePoint [ rdfs:label "Infinity reverb"; rdf:value 29 ] ;
+		lv2:scalePoint [ rdfs:label "Tremolo"; rdf:value 30 ] ;
 		lv2:scalePoint [ rdfs:label "Waveshaper"; rdf:value 31 ] ;
 		lv2:default 0 ;
 		lv2:minimum 0 ;
@@ -1193,6 +1198,7 @@
 		lv2:scalePoint [ rdfs:label "Reverb"; rdf:value 27 ] ;
 		lv2:scalePoint [ rdfs:label "Galactic reverb"; rdf:value 28 ] ;
 		lv2:scalePoint [ rdfs:label "Infinity reverb"; rdf:value 29 ] ;
+		lv2:scalePoint [ rdfs:label "Tremolo"; rdf:value 30 ] ;
 		lv2:scalePoint [ rdfs:label "Waveshaper"; rdf:value 31 ] ;
 		lv2:default 0 ;
 		lv2:minimum 0 ;
@@ -1386,6 +1392,7 @@
 		lv2:scalePoint [ rdfs:label "Reverb"; rdf:value 27 ] ;
 		lv2:scalePoint [ rdfs:label "Galactic reverb"; rdf:value 28 ] ;
 		lv2:scalePoint [ rdfs:label "Infinity reverb"; rdf:value 29 ] ;
+		lv2:scalePoint [ rdfs:label "Tremolo"; rdf:value 30 ] ;
 		lv2:scalePoint [ rdfs:label "Waveshaper"; rdf:value 31 ] ;
 		lv2:default 0 ;
 		lv2:minimum 0 ;
@@ -1579,6 +1586,7 @@
 		lv2:scalePoint [ rdfs:label "Reverb"; rdf:value 27 ] ;
 		lv2:scalePoint [ rdfs:label "Galactic reverb"; rdf:value 28 ] ;
 		lv2:scalePoint [ rdfs:label "Infinity reverb"; rdf:value 29 ] ;
+		lv2:scalePoint [ rdfs:label "Tremolo"; rdf:value 30 ] ;
 		lv2:scalePoint [ rdfs:label "Waveshaper"; rdf:value 31 ] ;
 		lv2:default 0 ;
 		lv2:minimum 0 ;
@@ -1772,6 +1780,7 @@
 		lv2:scalePoint [ rdfs:label "Reverb"; rdf:value 27 ] ;
 		lv2:scalePoint [ rdfs:label "Galactic reverb"; rdf:value 28 ] ;
 		lv2:scalePoint [ rdfs:label "Infinity reverb"; rdf:value 29 ] ;
+		lv2:scalePoint [ rdfs:label "Tremolo"; rdf:value 30 ] ;
 		lv2:scalePoint [ rdfs:label "Waveshaper"; rdf:value 31 ] ;
 		lv2:default 0 ;
 		lv2:minimum 0 ;
@@ -1965,6 +1974,7 @@
 		lv2:scalePoint [ rdfs:label "Reverb"; rdf:value 27 ] ;
 		lv2:scalePoint [ rdfs:label "Galactic reverb"; rdf:value 28 ] ;
 		lv2:scalePoint [ rdfs:label "Infinity reverb"; rdf:value 29 ] ;
+		lv2:scalePoint [ rdfs:label "Tremolo"; rdf:value 30 ] ;
 		lv2:scalePoint [ rdfs:label "Waveshaper"; rdf:value 31 ] ;
 		lv2:default 0 ;
 		lv2:minimum 0 ;
@@ -2158,6 +2168,7 @@
 		lv2:scalePoint [ rdfs:label "Reverb"; rdf:value 27 ] ;
 		lv2:scalePoint [ rdfs:label "Galactic reverb"; rdf:value 28 ] ;
 		lv2:scalePoint [ rdfs:label "Infinity reverb"; rdf:value 29 ] ;
+		lv2:scalePoint [ rdfs:label "Tremolo"; rdf:value 30 ] ;
 		lv2:scalePoint [ rdfs:label "Waveshaper"; rdf:value 31 ] ;
 		lv2:default 0 ;
 		lv2:minimum 0 ;
@@ -2351,6 +2362,7 @@
 		lv2:scalePoint [ rdfs:label "Reverb"; rdf:value 27 ] ;
 		lv2:scalePoint [ rdfs:label "Galactic reverb"; rdf:value 28 ] ;
 		lv2:scalePoint [ rdfs:label "Infinity reverb"; rdf:value 29 ] ;
+		lv2:scalePoint [ rdfs:label "Tremolo"; rdf:value 30 ] ;
 		lv2:scalePoint [ rdfs:label "Waveshaper"; rdf:value 31 ] ;
 		lv2:default 0 ;
 		lv2:minimum 0 ;
