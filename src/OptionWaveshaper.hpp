@@ -33,38 +33,38 @@ public:
 	OptionWaveshaper (const double x, const double y, const double width, const double height, const std::string& name, const std::string& pluginPath) :
 		OptionWidget (x, y, width, height, name),
 		driveLabel (10, 90, 60, 20, "ctlabel", BOOPS_LABEL_DRIVE),
-		gainLabel (410, 90, 60, 20, "ctlabel", BOOPS_LABEL_GAIN),
-		shapeWidget (85, 10, 310, 85, "pad0"),
-		toolboxIcon (86, 100, 308, 20, "widget", pluginPath + "inc/shape_tb.png"),
+		gainLabel (330, 90, 60, 20, "ctlabel", BOOPS_LABEL_GAIN),
+		shapeWidget (90, 0, 130, 130, "pad0"),
+		toolboxIcon (240, 10, 75, 110, "widget", pluginPath + "inc/shape_v_tb.png"),
 		shapeToolButtons
 		{
-			HaloToggleButton (83.5, 100, 20, 20, "widget", BOOPS_LABEL_SELECT),
-			HaloToggleButton (106, 100, 20, 20, "widget", BOOPS_LABEL_POINT_NODE),
-			HaloToggleButton (128.5, 100, 20, 20, "widget", BOOPS_LABEL_AUTO_BEZIER_NODE),
-			HaloToggleButton (151, 100, 20, 20, "widget", BOOPS_LABEL_SYMMETRIC_BEZIER_NODE),
-			HaloToggleButton (173.5, 100, 20, 20, "widget", BOOPS_LABEL_ASYMMETRIC_BEZIER_NODE)
+			HaloToggleButton (240, 10, 20, 20, "widget", BOOPS_LABEL_SELECT),
+			HaloToggleButton (240, 32.5, 20, 20, "widget", BOOPS_LABEL_POINT_NODE),
+			HaloToggleButton (240, 55, 20, 20, "widget", BOOPS_LABEL_AUTO_BEZIER_NODE),
+			HaloToggleButton (240, 77.5, 20, 20, "widget", BOOPS_LABEL_SYMMETRIC_BEZIER_NODE),
+			HaloToggleButton (240, 100, 20, 20, "widget", BOOPS_LABEL_ASYMMETRIC_BEZIER_NODE)
 		},
 		editToolButtons
 		{
-			HaloButton (203.5, 100, 20, 20, "widget", BOOPS_LABEL_CUT),
-			HaloButton (226, 100, 20, 20, "widget", BOOPS_LABEL_COPY),
-			HaloButton (248.5, 100, 20, 20, "widget", BOOPS_LABEL_PASTE)
+			HaloButton (267.5, 10, 20, 20, "widget", BOOPS_LABEL_CUT),
+			HaloButton (267.5, 32.5, 20, 20, "widget", BOOPS_LABEL_COPY),
+			HaloButton (267.5, 55, 20, 20, "widget", BOOPS_LABEL_PASTE)
 		},
 		historyToolButtons
 		{
-			HaloButton (278.5, 100, 20, 20, "widget", BOOPS_LABEL_RESET),
-			HaloButton (301, 100, 20, 20, "widget", BOOPS_LABEL_UNDO),
-			HaloButton (323.5, 100, 20, 20, "widget", BOOPS_LABEL_REDO)
+			HaloButton (295, 10, 20, 20, "widget", BOOPS_LABEL_RESET),
+			HaloButton (295, 32.5, 20, 20, "widget", BOOPS_LABEL_UNDO),
+			HaloButton (295, 55, 20, 20, "widget", BOOPS_LABEL_REDO)
 		},
-		gridShowButton (353.5, 100, 20, 20, "widget", BOOPS_LABEL_SHOW_GRID),
-		gridSnapButton (376, 100, 20, 20, "widget", BOOPS_LABEL_SNAP_TO_GRID),
+		gridShowButton (267.5, 77.5, 20, 20, "widget", BOOPS_LABEL_SHOW_GRID),
+		gridSnapButton (267.5, 100, 20, 20, "widget", BOOPS_LABEL_SNAP_TO_GRID),
 		clipboard()
 	{
 		try
 		{
 			options[0] = new DialRange (10, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.1f", BOOPS_LABEL_DB, [] (double x) {return -30.0 + 100.0 * x;}, [] (double x) {return (LIMIT (x, -30.0, 70.0) + 30.0) / 100.0;});
 			options[1] = new BWidgets::ValueWidget (0, 0, 0, 0, "widget", 0.0);
-			options[2] = new DialRange (410, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.1f", BOOPS_LABEL_DB, [] (double x) {return -70.0 + 100.0 * x;}, [] (double x) {return (LIMIT (x, -70.0, 30.0) + 70.0) / 100.0;});
+			options[2] = new DialRange (330, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.1f", BOOPS_LABEL_DB, [] (double x) {return -70.0 + 100.0 * x;}, [] (double x) {return (LIMIT (x, -70.0, 30.0) + 70.0) / 100.0;});
 			options[3] = new BWidgets::ValueWidget (0, 0, 0, 0, "widget", 0.0);
 		}
 		catch (std::bad_alloc& ba) {throw ba;}
@@ -75,6 +75,7 @@ public:
 			((DialRange*)options[i])->range.setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, rangeChangedCallback);
 			options[i + 1]->setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, valueChangedCallback);
 		}
+
 		shapeWidget.setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, shapeChangedCallback);
 		for (HaloToggleButton& s: shapeToolButtons) s.setCallbackFunction (BEvents::EventType::BUTTON_PRESS_EVENT, shapeToolClickedCallback);
 		for (HaloButton& e: editToolButtons) e.setCallbackFunction (BEvents::EventType::BUTTON_PRESS_EVENT, editToolClickedCallback);
@@ -82,6 +83,7 @@ public:
 		gridShowButton.setCallbackFunction (BEvents::EventType::BUTTON_PRESS_EVENT, gridToolClickedCallback);
 		gridSnapButton.setCallbackFunction (BEvents::EventType::BUTTON_PRESS_EVENT, gridToolClickedCallback);
 
+		gridSnapButton.setValue (1.0);
 		shapeWidget.setMergeable (BEvents::POINTER_DRAG_EVENT, false);
 		shapeWidget.setTool (ToolType::POINT_NODE_TOOL);
 		shapeWidget.setDefaultShape ();

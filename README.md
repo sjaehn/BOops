@@ -470,7 +470,7 @@ But do not change or delete any definition symbol!
 
 ## TODO
 
-* Waveshaper: quadradic, log display option (db)
+* Waveshaper: log display option (db)
 * Implement effects
   * Pitch (?)
   * Tape start (?)
