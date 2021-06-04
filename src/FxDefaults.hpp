@@ -62,7 +62,7 @@ const std::array<const std::array<const float, NR_PARAMS>, NR_FX> fxDefaultValue
 	{{STDPARAMS, 1.0, 0.0, 0.5, 0.0, 0.0, 0.0, 1.0, 0, 1.0, 0, 0, 0}},			// FX_INFINITY
 	{{STDPARAMS, 0.473684211, 0.0, 0.5, 0.0, 0.0, 0.0, 0.0, 0, 0.0, 0, 0, 0}},	// FX_TREMOLO
 	{{STDPARAMS, 0.5, 0, 0.5, 0.0, 0.0, 0.0, 0, 0.0, 0, 0, 0, 0}},				// FX_WAVESHAPER
-	{{STDPARAMS, 0.5, 0.0, 0.5, 0.0, 0.0, 0.0, 0, 0.0, 0, 0, 0, 0}}				// FX_TESLACOIL
+	{{1.0, 0.1, 0.1, 1.0, 0.1, 0.0, 0.75, 0.75, 0.0, 0.5, 0.0, 0.0, 0.0, 0, 0.0, 0, 0, 0, 0}}	// FX_TESLACOIL
 
 }};
 
