@@ -91,6 +91,7 @@ public:
 		gridShowButton.setCallbackFunction (BEvents::EventType::BUTTON_PRESS_EVENT, gridToolClickedCallback);
 		gridSnapButton.setCallbackFunction (BEvents::EventType::BUTTON_PRESS_EVENT, gridToolClickedCallback);
 
+		gridSnapButton.setValue (1.0);
 		shapeWidget.setMergeable (BEvents::POINTER_DRAG_EVENT, false);
 		shapeWidget.setTool (ToolType::POINT_NODE_TOOL);
 		shapeWidget.setDefaultShape ();
