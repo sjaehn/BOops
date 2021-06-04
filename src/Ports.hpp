@@ -116,7 +116,8 @@ enum BOopsEffectsIndex
 	FX_INFINITY	= 29,
 	FX_TREMOLO	= 30,
 	FX_WAVESHAPER	= 31,
-	NR_FX		= 32,
+	FX_TESLACOIL	= 32,
+	NR_FX		= 33,
 	FX_INVALID	= 255
 };
 
@@ -154,7 +155,7 @@ enum BOopsWaveformIndex
 	{13, "Scratch"}, {19, "Noise"}, {20, "Crackles"}, \
 	{15, "Crush"}, {16, "Decimate"}, {17, "Distortion"}, {31, "Waveshaper"}, {18, "Filter"}, \
 	{22, "Flanger"}, {23, "Phaser"}, {24, "Ring modulator"}, {26, "Wah"}, \
-	{25, "Oops"} \
+	{32, "Tesla coil"}, {25, "Oops"} \
 }
 
 #define BOOPSFXBGNAMES \
@@ -190,7 +191,8 @@ enum BOopsWaveformIndex
 	"inc/Delay_bg.png", \
 	"inc/Delay_bg.png", \
 	"inc/Chop_bg.png", \
-	"inc/Distortion_bg.png" \
+	"inc/Distortion_bg.png", \
+	"inc/TeslaCoil_bg.png" \
 }
 
 #endif /* PORTS_HPP_ */

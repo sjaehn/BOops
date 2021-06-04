@@ -4,7 +4,7 @@ Description: Glitch effect sequencer LV2 plugin
 Key features:
 * Multi-effect plugin controlled by step sequencer patterns
 * Apply glitch effects in live or on a sample track
-* 28 effects
+* 30 effects
 * Up to 12 effect slots, freely select effects and effect order
 * Random effects: 3 different ways of randomization
 * Autoplay, host controlled, or MIDI controlled playback
@@ -427,6 +427,13 @@ Draw a shape and set the depth and the reach (in number of steps) to control a b
 Set the filter with center frequency, bandwidth, and roll off.
 
 
+#### Tesla coil (experimental)
+
+Simple simulation of a singing big Tesla coil. This feature produces spark-like noises if the input signal exceeds the
+threshold voltage. Tesla coils produce an extremely distorted sound. Set drive for the amplification of the input sigal
+and level for the level of the output signal.
+
+
 #### Oops
 
 This is the most important one. Don't run B.Oops without some oops!
@@ -454,6 +461,7 @@ But do not change or delete any definition symbol!
   * Infinity reverb
   * Tremolo
   * Waveshaper
+  * Tesla coil (experimental)
 * Tooltips for buttons
 * Tooltips for pads property toolbox
 * Show probability values on pads
@@ -462,6 +470,7 @@ But do not change or delete any definition symbol!
 
 ## TODO
 
+* Waveshaper: quadradic, log display option (db)
 * Implement effects
   * Pitch (?)
   * Tape start (?)

@@ -56,6 +56,7 @@
 #include "OptionInfinity.hpp"
 #include "OptionTremolo.hpp"
 #include "OptionWaveshaper.hpp"
+#include "OptionTeslaCoil.hpp"
 
 #define PASS_DOUBLE [] (double x) {return x;}
 
@@ -2061,6 +2062,9 @@ void BOopsGUI::setOptionWidget (const int slot)
 
 		case FX_WAVESHAPER:	slotParams[slot].optionWidget = new OptionWaveshaper (430, 20, 480, 130, "widget", pluginPath);
 							if (slotParams[slot].optionWidget) ((OptionWah*)slotParams[slot].optionWidget)->setShape (slotParams[slot].shape);
+							break;
+
+		case FX_TESLACOIL:	slotParams[slot].optionWidget = new OptionTeslaCoil (430, 20, 160, 130, "widget");
 							break;
 
 		default:		slotParams[slot].optionWidget = new OptionWidget (0, 0, 0, 0, "widget");

@@ -429,7 +429,8 @@ private:
 		{{{0.2, 0.90, 0.0, 1.0}, {1.0, 1.0, 0.25, 1.0}, {0.1, 0.1, 0.1, 1.0}, {0.0, 0.0, 0.0, 0.0}}},		// FX_GALACTIC
 		{{{0.0, 1.0, 0.0, 1.0}, {1.0, 1.0, 0.25, 1.0}, {0.1, 0.1, 0.1, 1.0}, {0.0, 0.0, 0.0, 0.0}}},		// FX_INFINITY
 		{{{0.0, 0.9, 0.5, 1.0}, {1.0, 1.0, 0.25, 1.0}, {0.1, 0.1, 0.1, 1.0}, {0.0, 0.0, 0.0, 0.0}}},		// FX_TREMOLO
-		{{{0.98, 0.2, 0.0, 1.0}, {1.0, 1.0, 0.25, 1.0}, {0.1, 0.1, 0.1, 1.0}, {0.0, 0.0, 0.0, 0.0}}}		// FX_WAVESHAPER
+		{{{0.98, 0.2, 0.0, 1.0}, {1.0, 1.0, 0.25, 1.0}, {0.1, 0.1, 0.1, 1.0}, {0.0, 0.0, 0.0, 0.0}}},		// FX_WAVESHAPER
+		{{{0.7, 0.6, 1.0, 1.0}, {1.0, 1.0, 0.25, 1.0}, {0.1, 0.1, 0.1, 1.0}, {0.0, 0.0, 0.0, 0.0}}}			// FX_TESLACOIL
 	}};
 
 	std::array<std::string, NR_FX> fxBgFilenames = {BOOPSFXBGNAMES};
@@ -704,7 +705,10 @@ private:
 		{"pad30/focus",		{{"uses", STYLEPTR (&focusStyles)}}},
 		{"pad31",		{{"uses", STYLEPTR (&padStyles)},
 					 {"fgcolors", STYLEPTR (&padColors[31])}}},
-		{"pad31/focus",		{{"uses", STYLEPTR (&focusStyles)}}}
+		{"pad31/focus",		{{"uses", STYLEPTR (&focusStyles)}}},
+		{"pad32",		{{"uses", STYLEPTR (&padStyles)},
+					 {"fgcolors", STYLEPTR (&padColors[32])}}},
+		{"pad32/focus",		{{"uses", STYLEPTR (&focusStyles)}}}
 	});
 };
 

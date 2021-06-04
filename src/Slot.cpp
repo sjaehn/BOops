@@ -53,6 +53,7 @@
 #include "FxInfinity.hpp"
 #include "FxTremolo.hpp"
 #include "FxWaveshaper.hpp"
+#include "FxTeslaCoil.hpp"
 
 Slot::Slot () : Slot (nullptr, FX_INVALID, nullptr, nullptr, 0, 0.0f, 0.0) {}
 
@@ -225,6 +226,9 @@ Fx* Slot::newFx (const BOopsEffectsIndex effect)
 					break;
 
 		case FX_WAVESHAPER:	fx = new FxWaveshaper (&buffer, params, pads, &shape);
+					break;
+
+		case FX_TESLACOIL:	fx = new FxTestlaCoil (&buffer, params, pads);
 					break;
 
 		case FX_INVALID:	fx = nullptr;
