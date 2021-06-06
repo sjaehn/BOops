@@ -34,6 +34,7 @@ public:
 
 	ButterworthFilter (const int order) :
 		order (order),
+		o2 (order / 2),
 		f1 (1)
 	{
 		coeff0.fill (0);
@@ -46,7 +47,7 @@ public:
 	{
 		output = input;
 
-		for (int i = 0; i < int (order / 2); ++i)
+		for (int i = 0; i < o2; ++i)
 		{
 			buffer0[i] = buffer1[i] * coeff1[i] + buffer2[i] * coeff2[i] + output;
 			output = (buffer0[i] + buffer1[i] * f1 + buffer2[i]) * coeff0[i];
@@ -69,6 +70,7 @@ public:
 
 protected:
 	int order;
+	int o2;
 	std::array <float, BUTTERWORTH_MAXORDER / 2> coeff0;
 	std::array <float, BUTTERWORTH_MAXORDER / 2> coeff1;
 	std::array <float, BUTTERWORTH_MAXORDER / 2> coeff2;

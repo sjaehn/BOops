@@ -103,8 +103,8 @@ struct Stereo
 	{
 		return
 		{
-			(f <= 0.0f ? left : (1.0f - f) * left),
-			(f < 0.0f ? (f + 1.0f) * right : right)
+			(1.0f - f * (f > 0.0f)) * left,
+			(f * (f < 0.0f) + 1.0f) * right
 		};
 	}
 

@@ -1272,19 +1272,13 @@ void BOops::play (uint32_t start, uint32_t end)
 
 	for (uint32_t i = start; i < end; ++i)
 	{
-
 		Position& p = positions[0];
-		p.fader =
-		(
-			sizePosition() > 1 ?
-			p.fader - 1.0 / (FADINGTIME * p.transport.rate) :
-			p.fader + 1.0 / (FADINGTIME * p.transport.rate)
-		);
+		p.fader = p.fader + (1.0 - 2.0 * (sizePosition() > 1)) / (FADINGTIME * p.transport.rate);
 		p.fader = LIMIT (p.fader, 0.0, 1.0);
 
 		// Interpolate position within the loop
 		double relpos = getPositionFromFrames (p.transport, i - p.refFrame);	// Position relative to reference frame
-		double pos = floorfrac (p.sequence + relpos);				// 0..1 position sequence
+		double pos = floorfrac (p.sequence + relpos);							// 0..1 position sequence
 
 		// Input
 		Stereo input = (globalControllers[SOURCE] == SOURCE_SAMPLE) ? getSample (p, pos) : Stereo (audioInput1[i], audioInput2[i]);

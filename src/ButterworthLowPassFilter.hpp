@@ -34,10 +34,15 @@ public:
 
 	void set (const double rate, const double cutoff, const int order)
 	{
+
+		this->order = order;
+		o2 = order / 2;
+		f1 = 2;
+
 		const double a = tan (M_PI * cutoff / rate);
 		const double a2 = a * a;
 
-		for (int i = 0; i < int (order / 2); ++i)
+		for (int i = 0; i < o2; ++i)
 		{
 			const double r = sin (M_PI * (2.0 * double (i) + 1.0) / (2.0 * double (order)));
 			const double s = a2 + 2.0 * a * r + 1.0;
@@ -45,9 +50,6 @@ public:
 			coeff1[i] = 2.0 * (1.0 - a2) / s;
 			coeff2[i] = -(a2 - 2.0 * a * r + 1.0) / s;
 		}
-
-		this->order = order;
-		f1 = 2;
 	}
 
 };

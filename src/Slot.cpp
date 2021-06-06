@@ -142,99 +142,99 @@ Fx* Slot::newFx (const BOopsEffectsIndex effect)
 	switch (effect)
 	{
 		case FX_SURPRISE:	fx = new FxSurprise (&buffer, params, pads, plugin);
-					break;
+							break;
 
 		case FX_AMP:		fx = new FxAmp (&buffer, params, pads);
-					break;
+							break;
 
 		case FX_BALANCE:	fx = new FxBalance (&buffer, params, pads);
-					break;
+							break;
 
 		case FX_WIDTH:		fx = new FxWidth (&buffer, params, pads);
-					break;
+							break;
 
 		case FX_DELAY:		fx = new FxDelay (&buffer, params, pads, &framesPerStep, &size);
-					break;
+							break;
 
 		case FX_REVERSER:	fx = new FxReverser (&buffer, params, pads, &framesPerStep);
-					break;
+							break;
 
 		case FX_CHOPPER:	fx = new FxChopper (&buffer, params, pads);
-					break;
+							break;
 
 		case FX_JUMBLER:	fx = new FxJumbler (&buffer, params, pads, &framesPerStep, &size);
-					break;
+							break;
 
 		case FX_TAPE_STOP:	fx = new FxTapeStop (&buffer, params, pads, &framesPerStep);
-					break;
+							break;
 
 		case FX_TAPE_SPEED:	fx = new FxTapeSpeed (&buffer, params, pads, &framesPerStep);
-					break;
+							break;
 
 		case FX_SCRATCH:	fx = new FxScratch (&buffer, params, pads, &framesPerStep, &shape);
-					break;
+							break;
 
 		case FX_WOWFLUTTER:	fx = new FxWowFlutter (&buffer, params, pads, &framesPerStep);
-					break;
+							break;
 
 		case FX_BITCRUSH:	fx = new FxBitcrush (&buffer, params, pads);
-					break;
+							break;
 
 		case FX_DECIMATE:	fx = new FxDecimate (&buffer, params, pads);
-					break;
+							break;
 
 		case FX_DISTORTION:	fx = new FxDistortion (&buffer, params, pads);
-					break;
+							break;
 
 		case FX_FILTER:		fx = new FxFilter (&buffer, params, pads, plugin ? plugin->host.rate : 48000);
-					break;
+							break;
 
 		case FX_NOISE:		fx = new FxNoise (&buffer, params, pads);
-					break;
+							break;
 
 		case FX_CRACKLES:	fx = new FxCrackles (&buffer, params, pads, &framesPerStep, plugin ? plugin->host.rate : 48000);
-					break;
+							break;
 
 		case FX_STUTTER:	fx = new FxStutter (&buffer, params, pads, &framesPerStep);
-					break;
+							break;
 
 		case FX_FLANGER:	fx = new FxFlanger (&buffer, params, pads, &framesPerStep, plugin ? plugin->host.rate : 48000);
-					break;
+							break;
 
 		case FX_PHASER:		fx = new FxPhaser (&buffer, params, pads, &framesPerStep, plugin ? plugin->host.rate : 48000);
-					break;
+							break;
 
 		case FX_RINGMOD:	fx = new FxRingModulator (&buffer, params, pads, &framesPerStep, plugin ? plugin->host.rate : 48000);
-					break;
+							break;
 
 		case FX_OOPS:		fx = new FxOops (&buffer, params, pads, &framesPerStep, plugin ? plugin->host.rate : 48000, plugin ? plugin->pluginPath : nullptr);
-					break;
+							break;
 
 		case FX_WAH:		fx = new FxWah (&buffer, params, pads, plugin ? plugin->host.rate : 48000, &shape);
-					break;
+							break;
 
 		case FX_REVERB:		fx = new FxReverb (&buffer, params, pads, plugin ? plugin->host.rate : 48000);
-					break;
+							break;
 
 		case FX_GALACTIC:	fx = new FxGalactic (&buffer, params, pads, plugin ? plugin->host.rate : 48000);
-					break;
+							break;
 
 		case FX_INFINITY:	fx = new FxInfinity (&buffer, params, pads, plugin ? plugin->host.rate : 48000);
-					break;
+							break;
 
 		case FX_TREMOLO:	fx = new FxTremolo (&buffer, params, pads, &framesPerStep, plugin ? plugin->host.rate : 48000);
-					break;
+							break;
 
 		case FX_WAVESHAPER:	fx = new FxWaveshaper (&buffer, params, pads, &shape);
-					break;
+							break;
 
 		case FX_TESLACOIL:	fx = new FxTestlaCoil (&buffer, params, pads);
-					break;
+							break;
 
 		case FX_INVALID:	fx = nullptr;
-					break;
+							break;
 
-		default: 		fx = new Fx (&buffer, params, pads);
+		default: 			fx = new Fx (&buffer, params, pads);
 	}
 
 	return fx;
@@ -243,10 +243,9 @@ Fx* Slot::newFx (const BOopsEffectsIndex effect)
 Stereo Slot::play (const double position)
 {
 	if ((!fx) || (!buffer)) return Stereo();
-	if (!isPadSet(position)) return (*buffer).front();
+	if ((!isPadSet(position)) || (!params[SLOTS_PLAY])) return (*buffer).front();
 
 	const int index = startPos[int(position)];
-	if (!params[SLOTS_PLAY]) return (*buffer).front();
 
 	// Get effect
 	const double relpos = position - double (index);
