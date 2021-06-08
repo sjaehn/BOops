@@ -35,6 +35,7 @@ ShapeWidget::ShapeWidget (const double x, const double y, const double width, co
 		minorXSteps (1), majorXSteps (1),
 		loLimit (-1000000), hiLimit (1000000), hardLoLimit (false), hardHiLimit (false),
 		gridVisible (true), gridSnap (true),
+		func ([] (double x) {return x;}),
 		prefix (""), unit (""),
 		fgColors (BColors::reds), bgColors (BColors::darks), lbfont (BWIDGETS_DEFAULT_FONT),
 		focusText (0, 0, 400, 80, name + "/focus", "<CLICK>: Set, select, or remove node.\n<DRAG>: Drag selected node or handle or drag grid pattern.\n<SCROLL>: Resize grid pattern.\n<SHIFT><SCROLL>: Resize input / output signal monitor.")
@@ -102,6 +103,12 @@ void ShapeWidget::setMajorXSteps (double stepSize)
 		majorXSteps = stepSize;
 		update ();
 	}
+}
+
+void ShapeWidget::setYValueFunction (std::function<double (double x)> func)
+{
+	this->func = func;
+	update();
 }
 
 void ShapeWidget::setPrefix (std::string text)
@@ -774,7 +781,7 @@ void ShapeWidget::draw (const BUtilities::RectArea& area)
 			cairo_move_to (cr, x0, y0 + h - h * (yp - ymin) / (ymax - ymin));
 			cairo_line_to (cr, x0 + 0.02 * w, y0 + h - h * (yp - ymin) / (ymax - ymin));
 
-			std::string label = prefix + BUtilities::to_string (yp, nrformat) + ((unit != "") ? (" " + unit) : "");
+			std::string label = prefix + BUtilities::to_string (func (yp), nrformat) + ((unit != "") ? (" " + unit) : "");
 			cairo_text_extents (cr, label.c_str(), &ext);
 			cairo_move_to (cr, x0 + 0.025 * w - ext.x_bearing, y0 + h - h * (yp - ymin) / (ymax - ymin) - ext.height / 2 - ext.y_bearing);
 			cairo_set_source_rgba (cr, CAIRO_RGBA (lineColor));

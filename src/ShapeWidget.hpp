@@ -21,6 +21,7 @@
 #ifndef SHAPEWIDGET_HPP_
 #define SHAPEWIDGET_HPP_
 
+#include <functional>
 #include "Definitions.hpp"
 #include "StaticArrayList.hpp"
 #include "BWidgets/ValueWidget.hpp"
@@ -54,6 +55,7 @@ public:
 	void setScaleParameters (double anchorYPos, double anchorValue, double ratio);
 	void setMinorXSteps (double stepSize);
 	void setMajorXSteps (double stepSize);
+	void setYValueFunction (std::function<double (double x)> func);
 	void setPrefix (std::string text);
 	void setUnit (std::string text);
 	void setLowerLimit (double value, bool hard = false);
@@ -107,6 +109,7 @@ protected:
 	bool hardLoLimit, hardHiLimit;	// TODO, not in use yet
 	bool gridVisible;
 	bool gridSnap;
+	std::function<double (double x)> func;
 	std::string prefix;
 	std::string unit;
 	BColors::ColorSet fgColors;

@@ -3,7 +3,7 @@
    inkscape:export-ydpi="96"
    inkscape:export-xdpi="96"
    inkscape:export-filename="/home/sven/dev/c/BOops/inc/shape_v_tb.png"
-   sodipodi:docname="shape_v_tb1.svg"
+   sodipodi:docname="shape_v_tb.svg"
    inkscape:version="1.1 (ce6663b3b7, 2021-05-25)"
    id="svg109"
    version="1.1"
@@ -143,7 +143,7 @@
      units="px"
      showgrid="true"
      inkscape:document-rotation="0"
-     inkscape:current-layer="g941"
+     inkscape:current-layer="g981"
      inkscape:document-units="px"
      inkscape:cy="51.799682"
      inkscape:cx="72.873741"
@@ -689,7 +689,7 @@
         <g
            style="display:inline"
            id="g1237-5"
-           transform="matrix(0.66666569,0,0,0.66165563,-185.21288,-95.969996)">
+           transform="matrix(0.66666569,0,0,0.66165563,-175.70552,-103.83694)">
           <circle
              r="0.26458287"
              cy="157.76044"

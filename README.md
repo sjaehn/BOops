@@ -464,22 +464,11 @@ But do not change or delete any definition symbol!
 ## What's new
 
 * Faster
-* New effects:
-  * Reverb
-  * Galactic reverb
-  * Infinity reverb
-  * Tremolo
-  * Waveshaper
-  * Tesla coil (experimental)
-* Tooltips for buttons
-* Tooltips for pads property toolbox
-* Show probability values on pads
-* Pattern preview in pattern file chooser
+* Waveshaper: log display option (db)
 
 
 ## TODO
 
-* Waveshaper: log display option (db)
 * Implement effects
   * Pitch (?)
   * Tape start (?)

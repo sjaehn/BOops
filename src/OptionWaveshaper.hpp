@@ -25,6 +25,11 @@
 #include "BWidgets/Label.hpp"
 #include "DialRange.hpp"
 #include "ShapeWidget.hpp"
+#include "BWidgets/PopupListBox.hpp"
+
+#ifndef CO2DB
+#define CO2DB(x) (20.0 * log10 (x))
+#endif
 
 class OptionWaveshaper : public OptionWidget
 {
@@ -36,6 +41,7 @@ public:
 		gainLabel (330, 90, 60, 20, "ctlabel", BOOPS_LABEL_GAIN),
 		shapeWidget (90, 0, 130, 130, "pad0"),
 		toolboxIcon (240, 10, 75, 110, "widget", pluginPath + "inc/shape_v_tb.png"),
+
 		shapeToolButtons
 		{
 			HaloToggleButton (240, 10, 20, 20, "widget", BOOPS_LABEL_SELECT),
@@ -57,7 +63,7 @@ public:
 			HaloButton (295, 55, 20, 20, "widget", BOOPS_LABEL_REDO)
 		},
 		gridShowButton (267.5, 77.5, 20, 20, "widget", BOOPS_LABEL_SHOW_GRID),
-		gridSnapButton (267.5, 100, 20, 20, "widget", BOOPS_LABEL_SNAP_TO_GRID),
+		gridSnapButton (295, 77.5, 20, 20, "widget", BOOPS_LABEL_SNAP_TO_GRID),
 		clipboard()
 	{
 		try
@@ -66,6 +72,7 @@ public:
 			options[1] = new BWidgets::ValueWidget (0, 0, 0, 0, "widget", 0.0);
 			options[2] = new DialRange (330, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.1f", BOOPS_LABEL_DB, [] (double x) {return -70.0 + 100.0 * x;}, [] (double x) {return (LIMIT (x, -70.0, 30.0) + 70.0) / 100.0;});
 			options[3] = new BWidgets::ValueWidget (0, 0, 0, 0, "widget", 0.0);
+			options[4] = new BWidgets::PopupListBox (267.5, 100, 47.5, 20, 0, -60, 47.5, 60, "menu", BItems::ItemList ({{0, "V"}, {1, "dB"}}));
 		}
 		catch (std::bad_alloc& ba) {throw ba;}
 
@@ -75,6 +82,7 @@ public:
 			((DialRange*)options[i])->range.setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, rangeChangedCallback);
 			options[i + 1]->setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, valueChangedCallback);
 		}
+		options[4]->setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, valueChangedCallback);
 
 		shapeWidget.setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, shapeChangedCallback);
 		for (HaloToggleButton& s: shapeToolButtons) s.setCallbackFunction (BEvents::EventType::BUTTON_PRESS_EVENT, shapeToolClickedCallback);
@@ -102,7 +110,7 @@ public:
 		for (HaloToggleButton& s : shapeToolButtons) add (s);
 		for (HaloButton& e : editToolButtons) add (e);
 		for (HaloButton& h : historyToolButtons) add (h);
-		for (int i = 0; i < 4; ++i) add (*options[i]);
+		for (int i = 0; i < 5; ++i) add (*options[i]);
 		add (shapeWidget);
 	}
 
@@ -219,6 +227,13 @@ public:
 				((DialRange*)p->getWidget(i))->range.setValue (((BWidgets::ValueWidget*)widget)->getValue());
 				break;
 			}
+		}
+
+		if (widget == p->getWidget (4))
+		{
+			const double value = ((BEvents::ValueChangedEvent*)event)->getValue();
+			if (value == 0) ((OptionWaveshaper*)p)->shapeWidget.setYValueFunction ([] (double x) {return x;});
+			else ((OptionWaveshaper*)p)->shapeWidget.setYValueFunction ([] (double x) {return -90.0 + x * 120.0;});
 		}
 
 		// Forward all changed options to ui
