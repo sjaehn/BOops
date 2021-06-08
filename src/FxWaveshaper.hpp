@@ -67,8 +67,10 @@ public:
 
 		float l = fabsf (s0.left * drive);
 		float r = fabsf (s0.right * drive);
-		const float lf = (l <= 1.0f ? shape->getMapValue (l) : shape->getMapValue (1.0) * (100.0f * l - 99.0) + 100.0f * shape->getMapValue (0.99) * (1.0f - l));
-		const float rf = (r <= 1.0f ? shape->getMapValue (r) : shape->getMapValue (1.0) * (100.0f * r - 99.0) + 100.0f * shape->getMapValue (0.99) * (1.0f - r));
+		l = LIMIT (l, 0.0f, 1.0f);
+		r = LIMIT (r, 0.0f, 1.0f);
+		const float lf = shape->getMapValue (l);
+		const float rf = shape->getMapValue (r);
 		const Stereo s1 = Stereo (SGN (s0.left) * lf * gain, SGN (s0.right) * rf * gain);
 
 		return mix (s0, s1, position, size, mixf);
