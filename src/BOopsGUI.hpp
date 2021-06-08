@@ -289,6 +289,7 @@ private:
 
 	BWidgets::Widget transportGateContainer;
 	BWidgets::Label transportGateLabel;
+	BWidgets::Text transportGateText;
 	BWidgets::HPianoRoll transportGatePiano;
 	BWidgets::TextButton transportGateOkButton;
 	BWidgets::TextButton transportGateCancelButton;

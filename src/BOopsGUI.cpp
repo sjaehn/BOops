@@ -116,11 +116,12 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 			     {8, "8 " BOOPS_LABEL_STEPS}, {9, "9 " BOOPS_LABEL_STEPS}, {12, "12 " BOOPS_LABEL_STEPS}, {16, "16 " BOOPS_LABEL_STEPS},
 			     {18, "18 " BOOPS_LABEL_STEPS}, {24, "24 " BOOPS_LABEL_STEPS}, {32, "32 " BOOPS_LABEL_STEPS}}), 16),
 
-	transportGateContainer (420, 130, 600, 110, "screen"),
-	transportGateLabel (210, 10, 180, 20, "ctlabel", BOOPS_LABEL_SELECT_KEYS),
-	transportGatePiano (10, 40, 580, 30, "widget", 0, NR_PIANO_KEYS - 1),
-	transportGateOkButton (320, 80, 40, 20, "menu/button", BOOPS_LABEL_OK),
-	transportGateCancelButton (240, 80, 60, 20, "menu/button", BOOPS_LABEL_CANCEL),
+	transportGateContainer (420, 130, 600, 170, "screen"),
+	transportGateLabel (150, 10, 300, 20, "ctlabel", BOOPS_LABEL_SELECT_KEYS),
+	transportGateText (10, 30, 580, 60, "lflabel", BOOPS_LABEL_PROGRESSION_KEYS_TOOLTIP),
+	transportGatePiano (10, 100, 580, 30, "widget", 0, NR_PIANO_KEYS - 1),
+	transportGateOkButton (320, 140, 40, 20, "menu/button", BOOPS_LABEL_OK),
+	transportGateCancelButton (240, 140, 60, 20, "menu/button", BOOPS_LABEL_CANCEL),
 	transportGateKeys (NR_PIANO_KEYS, false),
 
 	slotsContainer (20, 170, 260, 288, "widget"),
@@ -399,6 +400,7 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 	settingsContainer.add (stepsListBox);
 
 	transportGateContainer.add (transportGateLabel);
+	transportGateContainer.add (transportGateText);
 	transportGateContainer.add (transportGatePiano);
 	transportGateContainer.add (transportGateOkButton);
 	transportGateContainer.add (transportGateCancelButton);
@@ -905,11 +907,12 @@ void BOopsGUI::resize ()
 	stepsListBox.moveListBox(BUtilities::Point (0, 20 * sz));
 	stepsListBox.resizeListBoxItems(BUtilities::Point (90 * sz, 20 * sz));
 
-	RESIZE (transportGateContainer, 420, 130, 600, 110, sz);
-	RESIZE (transportGateLabel, 210, 10, 180, 20, sz);
-	RESIZE (transportGatePiano, 10, 40, 580, 30, sz);
-	RESIZE (transportGateOkButton, 320, 80, 40, 20, sz);
-	RESIZE (transportGateCancelButton, 240, 80, 60, 20, sz);
+	RESIZE (transportGateContainer, 420, 130, 600, 170, sz);
+	RESIZE (transportGateLabel, 150, 10, 300, 20, sz);
+	RESIZE (transportGateText, 10, 30, 580, 60, sz);
+	RESIZE (transportGatePiano, 10, 100, 580, 30, sz);
+	RESIZE (transportGateOkButton, 320, 140, 40, 20, sz);
+	RESIZE (transportGateCancelButton, 240, 140, 60, 20, sz);
 
 	RESIZE (pageWidget, 288, 136, 824, 30, sz);
 	updatePageContainer();
@@ -1044,6 +1047,7 @@ void BOopsGUI::applyTheme (BStyles::Theme& theme)
 
 	transportGateContainer.applyTheme (theme);
 	transportGateLabel.applyTheme (theme);
+	transportGateText.applyTheme (theme);
 	transportGatePiano.applyTheme (theme);
 	transportGateOkButton.applyTheme (theme);
 	transportGateCancelButton.applyTheme (theme);

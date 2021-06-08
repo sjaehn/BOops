@@ -117,10 +117,19 @@ shorter than the sequencer loop.
 
 ##### Mode
 
-Choose between autoplay and host controlled playback.
+Choose between autoplay, host controlled progression, and MIDI controlled progression. The progression is shown in the
+sequencer pattern by a white vertical bar.
 
 You can manually change the beats per minute (bpm) and beats per bar (bpBar) in the autoplay mode. These values as well as
-the time or beat/bar position data are automatically used in the host controlled mode.  
+the time or beat/bar position data are automatically detected (host provided) in the host controlled mode and in the MIDI
+controlled mode.
+
+The MIDI controlled progression is triggered by pressing a MIDI NOTE_ON signal (e. g., a piano key). You can define the
+key(s) which may trigger the progression by clicking on the piano symbol in the global settings line (shows up in the
+MIDI controlled mode). You can also define how the sequencer should handle the trigger signal: restart, or restart and
+synchronize with the host-provided beat pattern, or continue progression.
+
+There is also an option to select patterns by MIDI signal. See below.
 
 
 ##### Pattern size

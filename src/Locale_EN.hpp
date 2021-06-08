@@ -50,7 +50,10 @@
 #define BOOPS_LABEL_BEATS "Beats"
 #define BOOPS_LABEL_BARS "Bars"
 #define BOOPS_LABEL_STEPS "Steps"
-#define BOOPS_LABEL_SELECT_KEYS "Select keys"
+#define BOOPS_LABEL_SELECT_KEYS "Progression control: Select keys"
+#define BOOPS_LABEL_PROGRESSION_KEYS_TOOLTIP \
+        "This option is intended for the control of the pattern progression (white vertical bar).\n" \
+        "For MIDI-controlled pattern selection click on the piano keys symbol of the respective pattern tab."
 #define BOOPS_LABEL_HELP "Help"
 #define BOOPS_LABEL_TUTORIAL "Introduction"
 #define BOOPS_LABEL_ROW "Row"
