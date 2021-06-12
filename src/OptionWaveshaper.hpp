@@ -368,9 +368,12 @@ public:
 		// Action
 		switch (widgetNr)
 		{
-			case 0:		p->shapeWidget.reset();
+			case 0:		p->shapeWidget.unselect();
+						p->shapeWidget.reset();
 						p->shapeWidget.insertNode(1, Node (POINT_NODE, {1, 1}, {0, 0}, {0,0}));
 						p->shapeWidget.validateShape();
+						p->shapeWidget.resetSnapshots();
+						p->shapeWidget.pushToSnapshots();
 						break;
 
 			case 1:		p->shapeWidget.undo();
