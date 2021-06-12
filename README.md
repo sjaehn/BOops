@@ -465,6 +465,7 @@ But do not change or delete any definition symbol!
 
 * Faster
 * Waveshaper: log display option (db)
+* Bigfixes
 
 
 ## TODO

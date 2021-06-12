@@ -369,13 +369,15 @@ public:
 		switch (widgetNr)
 		{
 			case 0:		p->shapeWidget.reset();
-					break;
+						p->shapeWidget.insertNode(1, Node (POINT_NODE, {1, 1}, {0, 0}, {0,0}));
+						p->shapeWidget.validateShape();
+						break;
 
 			case 1:		p->shapeWidget.undo();
-					break;
+						break;
 
 			case 2:		p->shapeWidget.redo();
-					break;
+						break;
 
 			default:	break;
 		}

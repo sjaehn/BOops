@@ -599,7 +599,7 @@ void BOops::run (uint32_t n_samples)
 							slots[slot].shape.appendNode (node);
 						}
 						slots[slot].shape.validateShape();
-						scheduleNotifyShape[slot] = true;
+						//scheduleNotifyShape[slot] = true;
 						scheduleStateChanged = true;
 					}
 				}
