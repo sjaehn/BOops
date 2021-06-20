@@ -107,7 +107,17 @@ protected:
 
 	Stereo getSample (const double frame)
 	{
-		return BUtilities::mix<Stereo> ((**buffer)[frame], (**buffer)[frame + 1], fmod (frame, 1.0));
+		const float x = fmodf (frame, 1.0);
+		if (x == 0.0f) return (**buffer)[frame];
+		if (frame < 1.0) return BUtilities::mix<Stereo> ((**buffer)[frame], (**buffer)[frame + 1], x);
+		
+		// 4-point, 3rd-order Hermite (x-form)
+		const int f = frame;
+		Stereo c0 = (**buffer)[f];
+		Stereo c1 = ((**buffer)[f + 1] - (**buffer)[f - 1]) * 0.5;
+		Stereo c2 = (**buffer)[f - 1] - (**buffer)[f] * 2.5 + (**buffer)[f + 1] * 2.0 - (**buffer)[f + 2] * 0.5;
+		Stereo c3 = ((**buffer)[f + 2] - (**buffer)[f - 1]) * 0.5 + ((**buffer)[f] - (**buffer)[f + 1]) * 1.5;
+		return ((c3 * x + c2) * x + c1) * x + c0;
 	}
 
 	Stereo pan (const Stereo s0, const Stereo s1) const {return panf * s1 + unpanf * s0;}

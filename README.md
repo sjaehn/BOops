@@ -463,7 +463,8 @@ But do not change or delete any definition symbol!
 
 ## What's new
 
-* Tesla coil: Sample rate-independency 
+* Tesla coil: Sample rate-independency
+* Non-linear sample interpolation
 
 
 ## TODO
