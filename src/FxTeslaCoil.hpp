@@ -41,8 +41,9 @@ class FxTestlaCoil : public Fx
 public:
 	FxTestlaCoil () = delete;
 
-	FxTestlaCoil (RingBuffer<Stereo>** buffer, float* params, Pad* pads) :
+	FxTestlaCoil (RingBuffer<Stereo>** buffer, float* params, Pad* pads, const double rate) :
 		Fx (buffer, params, pads),
+		samplerate (rate),
 		drive (0.0f),
 		level (0.0f),
 		lsign (0.0f),
@@ -109,7 +110,7 @@ public:
 		if (lpow > 0)
 		{
 			s1.left = lpow * (sinf (2.0f * M_PI * lt) /* + 0.25f * bidist (rnd) */);
-			lt += 0.125f * (1 + 0.25f * bidist (rnd));
+			lt += (6000.0 / samplerate) * (1 + 0.25f * bidist (rnd));
 			lpow *= 0.875f;
 			if (lpow < 0.0001f) lpow = 0.0f;
 		}
@@ -117,7 +118,7 @@ public:
 		if (rpow > 0)
 		{
 			s1.right = rpow * (sinf (2.0f * M_PI * rt) /* + 0.25f * bidist (rnd) */);
-			rt += 0.125f * (1 + 0.25f * bidist (rnd));
+			rt += (6000.0 / samplerate) * (1 + 0.25f * bidist (rnd));
 			rpow *= 0.875f;
 			if (rpow < 0.0001f) rpow = 0.0f;
 		}
@@ -126,6 +127,7 @@ public:
 	}
 
 protected:
+	double samplerate;
 	float drive;
 	float level;
 	float lsign;

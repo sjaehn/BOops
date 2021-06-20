@@ -228,7 +228,7 @@ Fx* Slot::newFx (const BOopsEffectsIndex effect)
 		case FX_WAVESHAPER:	fx = new FxWaveshaper (&buffer, params, pads, &shape);
 							break;
 
-		case FX_TESLACOIL:	fx = new FxTestlaCoil (&buffer, params, pads);
+		case FX_TESLACOIL:	fx = new FxTestlaCoil (&buffer, params, pads, plugin ? plugin->host.rate : 48000);
 							break;
 
 		case FX_INVALID:	fx = nullptr;

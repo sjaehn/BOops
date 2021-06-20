@@ -463,9 +463,7 @@ But do not change or delete any definition symbol!
 
 ## What's new
 
-* Faster
-* Waveshaper: log display option (db)
-* Bugfixes
+* Tesla coil: Sample rate-independency 
 
 
 ## TODO
