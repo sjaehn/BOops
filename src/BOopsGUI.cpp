@@ -2607,6 +2607,7 @@ void BOopsGUI::effectChangedCallback(BEvents::Event* event)
 	BWidgets::ListBox* widget = (BWidgets::ListBox*) event->getWidget ();
 	if (!widget) return;
 	float value = widget->getValue();
+	if (value < 0) return;
 	BOopsGUI* ui = (BOopsGUI*) widget->getMainWindow();
 	if (!ui) return;
 

@@ -147,15 +147,16 @@ enum BOopsWaveformIndex
 
 #define BOOPSFXNAMES \
 { \
-	{1, "Surprise box"}, \
-	{2, "Amp"}, {3, "Balance"}, {4, "Width"}, /*{5, "Pitch (TODO)"}, */ \
-	{27, "Reverb"}, {28, "Galactic reverb"}, {29, "Infinity reverb"}, {6, "Delay"}, {7, "Reverse"}, \
-	{30, "Tremolo"}, {8, "Chop"}, {21, "Stutter"}, {9, "Jumble"}, \
-	{10, "Tape stop"}, /*{11, "Tape start (TODO)"}, */{12, "Tape speed"}, {14, "Wow & flutter"}, \
-	{13, "Scratch"}, {19, "Noise"}, {20, "Crackles"}, \
-	{15, "Crush"}, {16, "Decimate"}, {17, "Distortion"}, {31, "Waveshaper"}, {18, "Filter"}, \
-	{22, "Flanger"}, {23, "Phaser"}, {24, "Ring modulator"}, {26, "Wah"}, \
-	{32, "Tesla coil"}, {25, "Oops"} \
+	{-1, "Basic"}, {2, "  Amp"}, {3, "  Balance"}, {4, "  Width"}, /*{5, "Pitch (TODO)"}, */ \
+	{-1, "Temporal"}, {27, "  Reverb"}, {28, "  Galactic reverb"}, {29, "  Infinity reverb"}, {6, "  Delay"}, {7, "  Reverse"}, \
+	{-1, "Pattern"}, {30, "  Tremolo"}, {8, "  Chop"}, {21, "  Stutter"}, {9, "  Jumble"}, \
+	{-1, "Tape"}, {10, "  Tape stop"}, /*{11, "Tape start (TODO)"}, */{12, "  Tape speed"}, {14, "  Wow & flutter"}, \
+	{-1, "Vinyl"}, {13, "  Scratch"}, {19, "  Noise"}, {20, "  Crackles"}, \
+	{-1, "Distortion"}, {15, "  Crush"}, {16, "  Decimate"}, {17, "  Distortion"}, {31, "  Waveshaper"}, \
+	{-1, "Filter"}, {18, "  Filter"}, \
+	{-1, "Modulators"}, {22, "  Flanger"}, {23, "  Phaser"}, {24, "  Ring modulator"}, {26, "  Wah"}, \
+	{-1, "SFX"}, {32, "  Tesla coil"}, {25, "  Oops"}, \
+	{-1, "Random"}, {1, "  Surprise box"} \
 }
 
 #define BOOPSFXBGNAMES \

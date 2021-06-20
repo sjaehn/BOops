@@ -465,6 +465,7 @@ But do not change or delete any definition symbol!
 
 * Tesla coil: Sample rate-independency
 * Non-linear sample interpolation
+* Sort / organize effects
 
 
 ## TODO
