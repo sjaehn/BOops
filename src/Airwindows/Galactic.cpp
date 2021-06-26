@@ -264,7 +264,7 @@ void Galactic::process (const float* input1, const float* input2, float* output1
 				lastRefR[3] = (lastRefR[2] + inputSampleR)/2; //three quarters
 				lastRefR[4] = inputSampleR; //full
 			}
-			if (cycleEnd == 3) {
+			else if (cycleEnd == 3) {
 				lastRefL[0] = lastRefL[3]; //start from previous last
 				lastRefL[2] = (lastRefL[0]+lastRefL[0]+inputSampleL)/3; //third
 				lastRefL[1] = (lastRefL[0]+inputSampleL+inputSampleL)/3; //two thirds
@@ -274,13 +274,17 @@ void Galactic::process (const float* input1, const float* input2, float* output1
 				lastRefR[1] = (lastRefR[0]+inputSampleR+inputSampleR)/3; //two thirds
 				lastRefR[3] = inputSampleR; //full
 			}
-			if (cycleEnd == 2) {
+			else if (cycleEnd == 2) {
 				lastRefL[0] = lastRefL[2]; //start from previous last
 				lastRefL[1] = (lastRefL[0] + inputSampleL)/2; //half
 				lastRefL[2] = inputSampleL; //full
 				lastRefR[0] = lastRefR[2]; //start from previous last
 				lastRefR[1] = (lastRefR[0] + inputSampleR)/2; //half
 				lastRefR[2] = inputSampleR; //full
+			}
+			else if (cycleEnd == 1) {
+				lastRefL[0] = inputSampleL;
+				lastRefR[0] = inputSampleR;
 			}
 			cycle = 0; //reset
 		} else {
