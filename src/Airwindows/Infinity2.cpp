@@ -85,14 +85,14 @@ Infinity2::Infinity2 (const double rate, const float filter, const float size, c
 
 void Infinity2::process (const float* input1, const float* input2, float* output1, float* output2, int32_t sampleFrames)
 {
-        const double filter = params[0];
-        const double size = (pow(params[1],2)*99.0)+1.0;
-	const double damping = pow(params[2],2)*0.5;
+	const double filter = params[0];
+	const double size = (params[1] * params[1] * 99.0) + 1.0;
+	const double damping = params[2] * params[2] * 0.5;
 	const double rawPass = params[3];
 	const double feedback = 1.0-(pow(1.0-params[4],4));
 	const double wet = params[5];
 
-	biquadC[0] = biquadB[0] = biquadA[0] = ((pow(filter,2)*9900.0)+100.0) / samplerate;
+	biquadC[0] = biquadB[0] = biquadA[0] = ((filter * filter * 9900.0) + 100.0) / samplerate;
 	biquadA[1] = 0.618033988749894848204586;
 	biquadB[1] = (filter*0.5)+0.118033988749894848204586;
         biquadC[1] = 0.5;
@@ -365,10 +365,10 @@ void Infinity2::process (const float* input1, const float* input2, float* output
 		//begin 32 bit stereo floating point dither
 		int expon; frexpf((float)inputSampleL, &expon);
 		fpdL ^= fpdL << 13; fpdL ^= fpdL >> 17; fpdL ^= fpdL << 5;
-		inputSampleL += ((double(fpdL)-uint32_t(0x7fffffff)) * 5.5e-36l * pow(2,expon+62));
+		inputSampleL += ((double(fpdL)-uint32_t(0x7fffffff)) * 5.5e-36l * (1 << (expon+62)));
 		frexpf((float)inputSampleR, &expon);
 		fpdR ^= fpdR << 13; fpdR ^= fpdR >> 17; fpdR ^= fpdR << 5;
-		inputSampleR += ((double(fpdR)-uint32_t(0x7fffffff)) * 5.5e-36l * pow(2,expon+62));
+		inputSampleR += ((double(fpdR)-uint32_t(0x7fffffff)) * 5.5e-36l * (1 << (expon+62)));
 		//end 32 bit stereo floating point dither
 
 		*output1 = inputSampleL;

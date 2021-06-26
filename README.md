@@ -464,6 +464,7 @@ But do not change or delete any definition symbol!
 ## What's new
 
 * Tesla coil: Sample rate-independency
+* Speed up Airwindows Fx
 * Non-linear sample interpolation
 * Sort / organize effects
 

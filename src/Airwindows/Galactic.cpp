@@ -108,10 +108,12 @@ void Galactic::process (const float* input1, const float* input2, float* output1
 
 	double regen = 0.0625+((1.0-params[0])*0.0625);
 	double attenuate = (1.0 - (regen / 0.125))*1.333;
-	double lowpass = pow(1.00001-(1.0-params[1]),2.0)/sqrt(overallscale);
-	double drift = pow(params[3],2)*0.001;
+	const double p1 = 1.00001 - (1.0 - params[1]);
+	double lowpass = p1 * p1 / sqrt (overallscale);
+	double drift = params[3] * params[3] * 0.001;
 	double size = (params[3]*1.77)+0.1;
-	double wet = 1.0-(pow(1.0-params[4],3));
+	const double p4 = 1.0 - params[4];
+	double wet = 1.0 - p4 * p4 * p4;
 
 	delayI = 3407.0*size;
 	delayJ = 1823.0*size;
@@ -307,10 +309,10 @@ void Galactic::process (const float* input1, const float* input2, float* output1
 		//begin 32 bit stereo floating point dither
 		int expon; frexpf((float)inputSampleL, &expon);
 		fpdL ^= fpdL << 13; fpdL ^= fpdL >> 17; fpdL ^= fpdL << 5;
-		inputSampleL += ((double(fpdL)-uint32_t(0x7fffffff)) * 5.5e-36l * pow(2,expon+62));
+		inputSampleL += ((double(fpdL)-uint32_t(0x7fffffff)) * 5.5e-36l * (1 << (expon+62)));
 		frexpf((float)inputSampleR, &expon);
 		fpdR ^= fpdR << 13; fpdR ^= fpdR >> 17; fpdR ^= fpdR << 5;
-		inputSampleR += ((double(fpdR)-uint32_t(0x7fffffff)) * 5.5e-36l * pow(2,expon+62));
+		inputSampleR += ((double(fpdR)-uint32_t(0x7fffffff)) * 5.5e-36l * (1 << (expon+62)));
 		//end 32 bit stereo floating point dither
 
 		*output1 = inputSampleL;
