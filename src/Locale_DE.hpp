@@ -59,6 +59,7 @@
 #define BOOPS_LABEL_ROW "Reihe"
 #define BOOPS_LABEL_STEP "Schritt"
 #define BOOPS_LABEL_SIZE "Größe"
+#define BOOPS_LABEL_CLICK_TO_EDIT "Anklicken zum Bearbeiten"
 #define BOOPS_LABEL_ALL_FILES "Alle Dateien"
 #define BOOPS_LABEL_AUDIO_FILES "Audiodateien"
 #define BOOPS_LABEL_OPEN "Öffnen"

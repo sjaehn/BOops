@@ -163,7 +163,7 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 	midiOkButton (280, 90, 60, 20, "menu/button", BOOPS_LABEL_OK),
 
 	monitor (0, 0, 800, 288, "monitor"),
-	padSurface (310, 170, 800, 288, "padsurface"),
+	padSurface (310, 170, 800, 288, "widget"),
 	editContainer (538, 466, 364, 24, "widget"),
 	patternChooser (nullptr),
 
@@ -238,8 +238,8 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 	shapeEditor.slot = 0;
 	shapeEditor.container = BWidgets::Widget (0, 0, 800, 160, "screen");
 	shapeEditor.shapeWidget = ShapeWidget (0, 10, 800, 110, "pad0");
-	shapeEditor.cancelButton = BWidgets::TextButton (610, 130, 80, 20, "menu/button", "Cancel");
-	shapeEditor.okButton = BWidgets::TextButton (710, 130, 80, 20, "menu/button", "OK");
+	shapeEditor.cancelButton = BWidgets::TextButton (610, 130, 80, 20, "menu/button", BOOPS_LABEL_CANCEL);
+	shapeEditor.okButton = BWidgets::TextButton (710, 130, 80, 20, "menu/button", BOOPS_LABEL_OK);
 	shapeEditor.toolboxIcon = BWidgets::ImageIcon (246, 130, 308, 20, "widget", pluginPath + "inc/shape_tb.png");
 	shapeEditor.shapeToolButtons = 
 	{
@@ -1012,8 +1012,6 @@ void BOopsGUI::resize ()
 		RESIZE (t.midiSymbol, 60, 10, 20, 20, sz);
 		for (int j = 0; j < 4; ++j) RESIZE (t.symbols[j], 68 - j * 10, 2, 8, 8, sz);
 	}
-
-
 
 	RESIZE (midiBox, 390, 170, 510, 120, sz);
 	RESIZE (midiText, 20, 10, 450, 20, sz);
@@ -3777,16 +3775,24 @@ void BOopsGUI::padsFocusedCallback (BEvents::Event* event)
 
 	if ((row >= 0) && (row < NR_SLOTS) && (step >= 0) && (step < maxstep))
 	{
-		const Pad pd = ui->patterns[ui->pageAct].getPad (row, ui->getPadOrigin (ui->pageAct, row, step));
+		if (ui->shapes[ui->pageAct][row] == Shape<SHAPE_MAXNODES>())
+		{
+			const Pad pd = ui->patterns[ui->pageAct].getPad (row, ui->getPadOrigin (ui->pageAct, row, step));
 
-		ui->padSurface.focusText.setText
-		(
-			BOOPS_LABEL_ROW ": " + std::to_string (row + 1) + "\n" +
-			BOOPS_LABEL_STEP ": " + std::to_string (step + 1) + "\n" +
-			BOOPS_LABEL_SIZE ": " + BUtilities::to_string (pd.size, "%1.0f \n") +
-			BOOPS_LABEL_PROBABILITY ": " + BUtilities::to_string (pd.gate, "%1.2f \n") +
-			BOOPS_LABEL_MIX ": " + BUtilities::to_string (pd.mix, "%1.2f")
-		);
+			ui->padSurface.focusText.setText
+			(
+				BOOPS_LABEL_ROW ": " + std::to_string (row + 1) + "\n" +
+				BOOPS_LABEL_STEP ": " + std::to_string (step + 1) + "\n" +
+				BOOPS_LABEL_SIZE ": " + BUtilities::to_string (pd.size, "%1.0f \n") +
+				BOOPS_LABEL_PROBABILITY ": " + BUtilities::to_string (pd.gate, "%1.2f \n") +
+				BOOPS_LABEL_MIX ": " + BUtilities::to_string (pd.mix, "%1.2f")
+			);
+		}
+
+		else
+		{
+			ui->padSurface.focusText.setText (BOOPS_LABEL_CLICK_TO_EDIT);
+		}
 	}
 }
 

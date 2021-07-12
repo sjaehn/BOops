@@ -469,7 +469,6 @@ But do not change or delete any definition symbol!
 ## TODO
 
 * Slot shapes
-  * Hover text
   * Fade in/out if slot containing shape moved
   * Save & resore
   * Optimize buffer size
