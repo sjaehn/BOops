@@ -162,7 +162,7 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 	midiCancelButton (170, 90, 60, 20, "menu/button", BOOPS_LABEL_CANCEL),
 	midiOkButton (280, 90, 60, 20, "menu/button", BOOPS_LABEL_OK),
 
-	monitor (310, 170, 800, 288, "monitor"),
+	monitor (0, 0, 800, 288, "monitor"),
 	padSurface (310, 170, 800, 288, "padsurface"),
 	editContainer (538, 466, 364, 24, "widget"),
 	patternChooser (nullptr),
@@ -508,6 +508,7 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 	for (Slot& s : slots) slotsContainer.add (s.container);
 	mContainer.add (slotsContainer);
 
+	padSurface.add (monitor);
 	shapeEditor.container.add (shapeEditor.shapeWidget);
 	shapeEditor.container.add (shapeEditor.cancelButton);
 	shapeEditor.container.add (shapeEditor.okButton);
@@ -518,9 +519,7 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 	shapeEditor.container.add (shapeEditor.gridShowButton);
 	shapeEditor.container.add (shapeEditor.gridSnapButton);
 	padSurface.add (shapeEditor.container);
-
 	mContainer.add (padSurface);
-	mContainer.add (monitor);
 
 	mContainer.add (padGateLabel);
 	mContainer.add (padGateDial);
@@ -1047,7 +1046,7 @@ void BOopsGUI::resize ()
 	RESIZE (shapeEditor.gridShowButton, 513.5, 130, 20, 20, sz);
 	RESIZE (shapeEditor.gridSnapButton, 536, 130, 20, 20, sz);
 
-	RESIZE (monitor, 310, 170, 800, 288, sz);
+	RESIZE (monitor, 0, 0, 800, 288, sz);
 	RESIZE (padSurface, 310, 170, 800, 288, sz);
 	RESIZE (editContainer, 538, 466, 364, 24, sz);
 
