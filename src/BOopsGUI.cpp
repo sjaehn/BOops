@@ -174,7 +174,9 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 	padGateLabel (1120, 260, 100, 20, "ctlabel", BOOPS_LABEL_PROBABILITY),
 	padGateDial (1140, 200, 60, 60, "dial", 1.0, 0.0, 1.0, 0.0, "%1.2f", "", PASS_DOUBLE, PASS_DOUBLE, PASS_DOUBLE, PASS_DOUBLE, [] () {return BOOPS_LABEL_PROBABILITY_TOOLTIP;}),
 	padMixLabel (1140, 350, 60, 20, "ctlabel", BOOPS_LABEL_MIX),
-	padMixDial (1140, 290, 60, 60, "dial", 1.0, 0.0, 1.0, 0.0, "%1.2f", "", PASS_DOUBLE, PASS_DOUBLE, PASS_DOUBLE, PASS_DOUBLE, [] () {return BOOPS_LABEL_MIX_TOOLTIP;})
+	padMixDial (1140, 290, 60, 60, "dial", 1.0, 0.0, 1.0, 0.0, "%1.2f", "", PASS_DOUBLE, PASS_DOUBLE, PASS_DOUBLE, PASS_DOUBLE, [] () {return BOOPS_LABEL_MIX_TOOLTIP;}),
+	padControlScreen (1120, 170, 100, 288, "screen"),
+	adsrScreen (30, 508, 270, 110, "screen")
 {
 	// Init slots
 	for (int i = 0; i < NR_SLOTS; ++i)
@@ -359,6 +361,8 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 	transportGatePiano.setKeysToggleable (true);
 	transportGateContainer.hide();
 	shapeEditor.container.hide();
+	padControlScreen.hide();
+	adsrScreen.hide();
 
 	for (Pattern& p : patterns) p.clear ();
 	padSurface.setDraggable (true);
@@ -525,12 +529,14 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 	mContainer.add (padGateDial);
 	mContainer.add (padMixLabel);
 	mContainer.add (padMixDial);
+	mContainer.add (padControlScreen);
 
 	mContainer.add (transportGateContainer);
 	mContainer.add (settingsContainer);
 	mContainer.add (helpButton);
 	mContainer.add (ytButton);
 	mContainer.add (messageLabel);
+	mContainer.add (adsrScreen);
 
 	mContainer.add (midiBox);
 	midiBox.add (midiText);
@@ -1058,6 +1064,8 @@ void BOopsGUI::resize ()
 	RESIZE (padGateDial, 1140, 200, 60, 60, sz);
 	RESIZE (padMixLabel, 1140, 350, 60, 20, sz);
 	RESIZE (padMixDial, 1140, 290, 60, 60, sz);
+	RESIZE (padControlScreen, 1120, 170, 100, 288, sz);
+	RESIZE (adsrScreen, 30, 508, 270, 110, sz);
 
 	RESIZE (slotsContainer, 20, 170, 290, 288, sz);
 
@@ -1239,6 +1247,8 @@ void BOopsGUI::applyTheme (BStyles::Theme& theme)
 	padGateDial.applyTheme (theme);
 	padMixLabel.applyTheme (theme);
 	padMixDial.applyTheme (theme);
+	padControlScreen.applyTheme (theme);
+	adsrScreen.applyTheme (theme);
 }
 
 void BOopsGUI::onConfigureRequest (BEvents::ExposeEvent* event)
@@ -2122,6 +2132,17 @@ void BOopsGUI::gotoSlot (const int slot)
 		else slotParams[i].container.hide();
 	}
 
+	if (shapes[pageAct][slot] == Shape<SHAPE_MAXNODES>()) 
+	{
+		padControlScreen.hide();
+		adsrScreen.hide();
+	}
+	else 
+	{
+		padControlScreen.show();
+		adsrScreen.show();
+	}
+
 	drawPad();
 	sendEditorSlot();
 }
@@ -2759,9 +2780,10 @@ void BOopsGUI::shapeEditorButtonClickedCallback(BEvents::Event* event)
 			ui->shapeEditor.okButton.setValue (0);
 			ui->shapes[ui->shapeEditor.page][ui->shapeEditor.slot] = ui->shapeEditor.shapeWidget;
 			ui->shapes[ui->shapeEditor.page][ui->shapeEditor.slot].validateShape();
-			if (ui->shapeEditor.page == ui->pageAct) ui->drawPad (ui->shapeEditor.slot);
 			ui->shapeEditor.container.hide();
+			ui->gotoSlot (ui->shapeEditor.slot);
 			ui->sendSlot (ui->shapeEditor.page, ui->shapeEditor.slot);
+			if (ui->shapeEditor.page == ui->pageAct) ui->drawPad (ui->shapeEditor.slot);
 		}
 	}
 }
@@ -3125,6 +3147,7 @@ void BOopsGUI::shapepatternClickedCallback(BEvents::Event* event)
 		}
 
 		ui->gotoSlot (slot);
+		ui->drawPad (slot);
 		ui->sendSlot (ui->pageAct, slot);
 	}
 }

@@ -393,6 +393,8 @@ private:
 	Dial padGateDial;
 	BWidgets::Label padMixLabel;
 	Dial padMixDial;
+	BWidgets::Widget padControlScreen;
+	BWidgets::Widget adsrScreen;
 
 	struct ShapeEditor
 	{
