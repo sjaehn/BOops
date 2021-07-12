@@ -52,14 +52,9 @@ public:
 		filter = ButterworthBandPassFilter (rate, low, high, order);
 	}
 
-	virtual Stereo play (const double position, const double size, const double mixf) override
+	virtual Stereo process (const double position, const double size) override
 	{
-		const Stereo s0 = (**buffer).front();
-		if (!playing) return s0;
-
-		Stereo s1 = s0;
-		s1 = filter.push (s1);
-		return mix (s0, s1, position, size, mixf);
+		return filter.push ((**buffer).front());
 	}
 
 protected:

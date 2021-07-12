@@ -78,14 +78,35 @@ public:
 		infinity.setParameter (4, feedback);
 	}
 
-	virtual Stereo play (const double position, const double size, const double mixf) override
+	virtual Stereo process (const double position, const double size) override
 	{
 		const Stereo s0 = (**buffer).front();
-
 		Stereo s1 = Stereo();
 		infinity.process (&s0.left, &s0.right, &s1.left, &s1.right, 1);
-		if (!playing) return s0;
+		return s1;
+	}
+
+	virtual Stereo playPad (const double position, const double size, const double mixf) override
+	{
+		const Stereo s0 = (**buffer).front();
+		const Stereo s1 = process (position, size);
+		if ((!playing) || (!slotShape)) return s0;
+
 		return mix (s0, s1, position, size, mixf);
+	}
+
+	virtual Stereo playShape (const double position, const double size, const double mixf) override
+	{
+		const Stereo s0 = (**buffer).front();
+		const Stereo s1 = process (position, size);
+		if (!slotShape) return s0;
+
+		double mx = slotShape->getMapValue (position / size);
+		mx = LIMIT (mx, 0.0, 1.0);
+		if (shapePaused && (mx >= 0.0001)) init (position);
+		shapePaused = (mx < 0.0001);
+
+		return BUtilities::mix<Stereo> (s0, pan (s0, s1), mx * mixf);
 	}
 
 protected:

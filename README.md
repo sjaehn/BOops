@@ -463,14 +463,20 @@ But do not change or delete any definition symbol!
 
 ## What's new
 
-* Tesla coil: Sample rate-independency
-* Speed up Airwindows Fx
-* Non-linear sample interpolation
-* Sort / organize effects
+* Slot shapes
 
 
 ## TODO
 
+* Slot shapes
+  * Resize
+  * Hide ADSR, pad controls
+  * Hover text
+  * Fade in/out if slot containing shape moved
+  * Save & resore
+  * Optimize buffer size
+  * Documentation
+* Remove redundant DSP GUI communication
 * Implement effects
   * Pitch (?)
   * Tape start (?)

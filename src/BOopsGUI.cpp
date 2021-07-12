@@ -74,6 +74,7 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 	pageMax (0),
 	pageOffset (0),
 	patterns {},
+	shapes {},
 	clipBoard (),
 	cursor (0), wheelScrolled (false), padPressed (false), deleteMode (false),
 	actSlot (-1), dragOrigin {-1, -1},
@@ -124,7 +125,7 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 	transportGateCancelButton (240, 140, 60, 20, "menu/button", BOOPS_LABEL_CANCEL),
 	transportGateKeys (NR_PIANO_KEYS, false),
 
-	slotsContainer (20, 170, 260, 288, "widget"),
+	slotsContainer (20, 170, 290, 288, "widget"),
 	insLine (nullptr),
 
 	pageWidget (288, 136, 824, 30, "widget", 0.0),
@@ -161,8 +162,8 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 	midiCancelButton (170, 90, 60, 20, "menu/button", BOOPS_LABEL_CANCEL),
 	midiOkButton (280, 90, 60, 20, "menu/button", BOOPS_LABEL_OK),
 
-	monitor (290, 170, 820, 288, "monitor"),
-	padSurface (290, 170, 820, 288, "padsurface"),
+	monitor (310, 170, 800, 288, "monitor"),
+	padSurface (310, 170, 800, 288, "padsurface"),
 	editContainer (538, 466, 364, 24, "widget"),
 	patternChooser (nullptr),
 
@@ -178,20 +179,21 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 	// Init slots
 	for (int i = 0; i < NR_SLOTS; ++i)
 	{
-		slots[i].container = BWidgets::ValueWidget (0, i * 24, 260, 24, "padSurface", FX_NONE);
+		slots[i].container = BWidgets::ValueWidget (0, i * 24, 290, 24, "padSurface", FX_NONE);
 		slots[i].addPad = PadButton (0, 0, 20, 24, "pad0", ADDSYMBOL);
 		slots[i].delPad = PadButton (20, 0, 20, 24, "pad0", CLOSESYMBOL);
 		slots[i].upPad = PadButton (40, 0, 20, 24, "pad0", UPSYMBOL);
 		slots[i].downPad = PadButton (60, 0, 20, 24, "pad0", DOWNSYMBOL);
 		slots[i].effectPad = IconPadButton (80, 0, 160, 24, "pad0", pluginPath + "inc/Menu.png", "");
 		slots[i].effectsListbox = BWidgets::ListBox (80, 24, 160, 160, "menu/listbox", BItems::ItemList (BOOPSFXNAMES));
+		slots[i].shapePad = PadButton (270, 0, 20, 24, "pad0", PATTERNSYMBOL);
 		slots[i].playPad = PadToggleButton (240, 0, 20, 24, "pad0", PLAYSYMBOL);
 	}
 
 	// Init tabs
 	for (int i = 0; i < NR_PAGES; ++i)
 	{
-		tabs[i].container = BWidgets::Widget (i * 80, 0, 78, 30, "tab");
+		tabs[i].container = BWidgets::Widget (i * 80, 0, 80, 30, "tab");
 		tabs[i].icon = BWidgets::ImageIcon (0, 8, 40, 20, "widget", pluginPath + "inc/page" + std::to_string (i + 1) + ".png");
 		tabs[i].playSymbol = SymbolWidget (40, 12, 20, 16, "symbol", PLAYSYMBOL);
 		tabs[i].midiSymbol = SymbolWidget (60, 10, 20, 20, "symbol", MIDISYMBOL);
@@ -228,6 +230,37 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 		slotParams[i].shape.setDefaultShape();
 		slotParams[i].optionWidget = nullptr;
 	}
+
+	// Init shapeEditor
+	shapeEditor.page = 0;
+	shapeEditor.slot = 0;
+	shapeEditor.container = BWidgets::Widget (0, 0, 800, 160, "screen");
+	shapeEditor.shapeWidget = ShapeWidget (0, 10, 800, 110, "pad0");
+	shapeEditor.cancelButton = BWidgets::TextButton (610, 130, 80, 20, "menu/button", "Cancel");
+	shapeEditor.okButton = BWidgets::TextButton (710, 130, 80, 20, "menu/button", "OK");
+	shapeEditor.toolboxIcon = BWidgets::ImageIcon (246, 130, 308, 20, "widget", pluginPath + "inc/shape_tb.png");
+	shapeEditor.shapeToolButtons = 
+	{
+		HaloToggleButton (243.5, 130, 20, 20, "widget", BOOPS_LABEL_SELECT),
+		HaloToggleButton (266, 130, 20, 20, "widget", BOOPS_LABEL_POINT_NODE),
+		HaloToggleButton (288.5, 130, 20, 20, "widget", BOOPS_LABEL_AUTO_BEZIER_NODE),
+		HaloToggleButton (311, 130, 20, 20, "widget", BOOPS_LABEL_SYMMETRIC_BEZIER_NODE),
+		HaloToggleButton (333.5, 130, 20, 20, "widget", BOOPS_LABEL_ASYMMETRIC_BEZIER_NODE)
+	};
+	shapeEditor.editToolButtons =
+	{
+		HaloButton (363.5, 130, 20, 20, "widget", BOOPS_LABEL_CUT),
+		HaloButton (386, 130, 20, 20, "widget", BOOPS_LABEL_COPY),
+		HaloButton (408.5, 130, 20, 20, "widget", BOOPS_LABEL_PASTE)
+	};
+	shapeEditor.historyToolButtons = 
+	{
+		HaloButton (448.5, 130, 20, 20, "widget", BOOPS_LABEL_RESET),
+		HaloButton (461, 130, 20, 20, "widget", BOOPS_LABEL_UNDO),
+		HaloButton (483.5, 130, 20, 20, "widget", BOOPS_LABEL_REDO)
+	};
+	shapeEditor.gridShowButton = HaloToggleButton (513.5, 130, 20, 20, "widget", BOOPS_LABEL_SHOW_GRID);
+	shapeEditor.gridSnapButton = HaloToggleButton (536, 130, 20, 20, "widget", BOOPS_LABEL_SNAP_TO_GRID);
 
 	// Link controllerWidgets
 	controllerWidgets[PLAY] = (BWidgets::ValueWidget*) &playButton;
@@ -280,6 +313,7 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 		s.effectPad.setCallbackFunction (BEvents::POINTER_DRAG_EVENT, effectDraggedCallback);
 		s.effectPad.setCallbackFunction (BEvents::BUTTON_RELEASE_EVENT, effectReleasedCallback);
 		s.effectsListbox.setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, effectChangedCallback);
+		s.shapePad.setCallbackFunction (BEvents::BUTTON_CLICK_EVENT, shapepatternClickedCallback);
 	}
 
 	pageWidget.setCallbackFunction(BEvents::VALUE_CHANGED_EVENT, valueChangedCallback);
@@ -300,6 +334,14 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 	midiOkButton.setCallbackFunction(BEvents::VALUE_CHANGED_EVENT, midiButtonClickedCallback);
 	midiStatusListBox.setCallbackFunction(BEvents::VALUE_CHANGED_EVENT, midiStatusChangedCallback);
 
+	shapeEditor.cancelButton.setCallbackFunction(BEvents::VALUE_CHANGED_EVENT, shapeEditorButtonClickedCallback);
+	shapeEditor.okButton.setCallbackFunction(BEvents::VALUE_CHANGED_EVENT, shapeEditorButtonClickedCallback);
+	for (HaloToggleButton& s : shapeEditor.shapeToolButtons) s.setCallbackFunction(BEvents::BUTTON_PRESS_EVENT, shapeEditorControlsClickedCallback);
+	for (HaloButton& e : shapeEditor.editToolButtons) e.setCallbackFunction(BEvents::BUTTON_PRESS_EVENT, shapeEditorControlsClickedCallback);
+	for (HaloButton& h : shapeEditor.historyToolButtons) h.setCallbackFunction(BEvents::BUTTON_PRESS_EVENT, shapeEditorControlsClickedCallback);
+	shapeEditor.gridShowButton.setCallbackFunction(BEvents::BUTTON_PRESS_EVENT, shapeEditorControlsClickedCallback);
+	shapeEditor.gridSnapButton.setCallbackFunction(BEvents::BUTTON_PRESS_EVENT, shapeEditorControlsClickedCallback);
+
 	for (HaloToggleButton& e1 : edit1Buttons) e1.setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, edit1ChangedCallback);
 	for (HaloButton& e2 : edit2Buttons) e2.setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, edit2ChangedCallback);
 	for (HaloButton& e3 : edit3Buttons) e3.setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, edit3ChangedCallback);
@@ -316,6 +358,7 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 	transportGateButton.hide ();
 	transportGatePiano.setKeysToggleable (true);
 	transportGateContainer.hide();
+	shapeEditor.container.hide();
 
 	for (Pattern& p : patterns) p.clear ();
 	padSurface.setDraggable (true);
@@ -332,6 +375,7 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 	slots[0].upPad.hide();
 	slots[0].downPad.hide();
 	slots[0].effectPad.hide();
+	slots[0].shapePad.hide();
 	slots[0].playPad.hide();
 	for (Slot& s : slots)
 	{
@@ -412,6 +456,7 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 		s.container.add (s.upPad);
 		s.container.add (s.downPad);
 		s.container.add (s.effectPad);
+		s.container.add (s.shapePad);
 		s.container.add (s.playPad);
 		s.container.add (s.effectsListbox);
 	}
@@ -462,6 +507,18 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 	mContainer.add (editContainer);
 	for (Slot& s : slots) slotsContainer.add (s.container);
 	mContainer.add (slotsContainer);
+
+	shapeEditor.container.add (shapeEditor.shapeWidget);
+	shapeEditor.container.add (shapeEditor.cancelButton);
+	shapeEditor.container.add (shapeEditor.okButton);
+	shapeEditor.container.add (shapeEditor.toolboxIcon);
+	for (HaloToggleButton& s : shapeEditor.shapeToolButtons) shapeEditor.container.add (s);
+	for (HaloButton& e : shapeEditor.editToolButtons) shapeEditor.container.add (e);
+	for (HaloButton& h : shapeEditor.historyToolButtons) shapeEditor.container.add (h);
+	shapeEditor.container.add (shapeEditor.gridShowButton);
+	shapeEditor.container.add (shapeEditor.gridSnapButton);
+	padSurface.add (shapeEditor.container);
+
 	mContainer.add (padSurface);
 	mContainer.add (monitor);
 
@@ -569,13 +626,14 @@ void BOopsGUI::port_event(uint32_t port, uint32_t buffer_size,
 			// Slot pattern notification
 			else if (obj->body.otype == urids.bOops_slotEvent)
 			{
-				LV2_Atom *oPg = NULL, *oSl = NULL, *oPd = NULL;
+				LV2_Atom *oPg = NULL, *oSl = NULL, *oPd = NULL, *oSh = NULL;
 				int page = 0;
 				int slot = -1;
 				lv2_atom_object_get(obj,
 						    urids.bOops_pageID, &oPg,
 						    urids.bOops_slot, &oSl,
 						    urids.bOops_pads, &oPd,
+							urids.bOops_shapeData, &oSh,
 						    NULL);
 
 				if (oPg && (oPg->type == urids.atom_Int)) page = LIMIT (((LV2_Atom_Int*)oPg)->body, 0, NR_PAGES -1);
@@ -603,9 +661,35 @@ void BOopsGUI::port_event(uint32_t port, uint32_t buffer_size,
 						if (page == pageAct) drawPad (slot);
 					}
 				}
+
+				if (oSh && (oSh->type == urids.atom_Vector) && (slot >= 0))
+				{
+					const LV2_Atom_Vector* vec = (const LV2_Atom_Vector*) oSh;
+					if (vec->body.child_type == urids.atom_Float)
+					{
+						Shape<SHAPE_MAXNODES> shape = Shape<SHAPE_MAXNODES>();
+						const uint32_t vecSize = (uint32_t) ((oSh->size - sizeof(LV2_Atom_Vector_Body)) / (7 * sizeof (float)));
+						float* data = (float*) (&vec->body + 1);
+						for (unsigned int i = 0; (i < vecSize) && (i < SHAPE_MAXNODES); ++i)
+						{
+							Node node;
+							node.nodeType = NodeType (int (data[i * 7]));
+							node.point.x = data[i * 7 + 1];
+							node.point.y = data[i * 7 + 2];
+							node.handle1.x = data[i * 7 + 3];
+							node.handle1.y = data[i * 7 + 4];
+							node.handle2.x = data[i * 7 + 5];
+							node.handle2.y = data[i * 7 + 6];
+							shape.appendNode (node);
+						}
+						if (shape != Shape<SHAPE_MAXNODES>()) shape.validateShape();
+						shapes[page][slot] = shape;
+						if (page == pageAct) drawPad (slot);
+					}
+				}
 			}
 
-			// Slot shape notification
+			// Param shape notification
 			else if (obj->body.otype == urids.bOops_shapeEvent)
 			{
 				LV2_Atom *oSl = NULL, *oSh = NULL;
@@ -952,8 +1036,8 @@ void BOopsGUI::resize ()
 	RESIZE (midiCancelButton, 170, 90, 60, 20, sz);
 	RESIZE (midiOkButton, 280, 90, 60, 20, sz);
 
-	RESIZE (monitor, 290, 170, 820, 288, sz);
-	RESIZE (padSurface, 290, 170, 820, 288, sz);
+	RESIZE (monitor, 310, 170, 800, 288, sz);
+	RESIZE (padSurface, 310, 170, 800, 288, sz);
 	RESIZE (editContainer, 538, 466, 364, 24, sz);
 
 	RESIZE (gettingstartedContainer, 20, 478, 1200, 150, sz);
@@ -965,17 +1049,18 @@ void BOopsGUI::resize ()
 	RESIZE (padMixLabel, 1140, 350, 60, 20, sz);
 	RESIZE (padMixDial, 1140, 290, 60, 60, sz);
 
-	RESIZE (slotsContainer, 20, 170, 260, 288, sz);
+	RESIZE (slotsContainer, 20, 170, 290, 288, sz);
 
 	for (int i = 0; i < NR_SLOTS; ++i)
 	{
-		RESIZE (slots[i].container, 0, i * 24, 260, 24, sz);
+		RESIZE (slots[i].container, 0, i * 24, 290, 24, sz);
 		RESIZE (slots[i].addPad, 0, 0, 20, 24, sz);
 		RESIZE (slots[i].delPad, 20, 0, 20, 24, sz);
 		RESIZE (slots[i].upPad, 40, 0, 20, 24, sz);
 		RESIZE (slots[i].downPad , 60, 0, 20, 24, sz);
 		RESIZE (slots[i].effectPad, 80, 0, 160, 24, sz);
 		RESIZE (slots[i].effectsListbox, 80, 24, 160, 160, sz);
+		RESIZE (slots[i].shapePad, 270, 0, 20, 24, sz);
 		RESIZE (slots[i].playPad, 240, 0, 20, 24, sz);
 	}
 
@@ -1063,6 +1148,7 @@ void BOopsGUI::applyTheme (BStyles::Theme& theme)
 		s.downPad.applyTheme (theme);
 		s.effectPad.applyTheme (theme);
 		s.effectsListbox.applyTheme (theme);
+		s.shapePad.applyTheme (theme);
 		s.playPad.applyTheme (theme);
 	};
 
@@ -1126,6 +1212,17 @@ void BOopsGUI::applyTheme (BStyles::Theme& theme)
 		for (BWidgets::ValueWidget& o : s.options) o.applyTheme (theme);
 		if (s.optionWidget) s.optionWidget->applyTheme (theme);
 	};
+
+	shapeEditor.container.applyTheme (theme);
+	shapeEditor.shapeWidget.applyTheme (theme);
+	shapeEditor.cancelButton.applyTheme (theme);
+	shapeEditor.okButton.applyTheme (theme);
+	shapeEditor.toolboxIcon.applyTheme (theme);
+	for (HaloToggleButton& s : shapeEditor.shapeToolButtons) s.applyTheme (theme);
+	for (HaloButton& e : shapeEditor.editToolButtons) e.applyTheme (theme);
+	for (HaloButton& h : shapeEditor.historyToolButtons) h.applyTheme (theme);
+	shapeEditor.gridShowButton.applyTheme (theme);
+	shapeEditor.gridSnapButton.applyTheme (theme);
 
 	//padParamContainer.applyTheme (theme);
 	padGateLabel.applyTheme (theme);
@@ -1270,7 +1367,7 @@ void BOopsGUI::sendSlot (const int page, const int slot)
 {
 	Pad pads[NR_STEPS];
 	for (int i = 0; i < NR_STEPS; ++i) pads[i] = patterns[page].getPad (slot, i);
-	uint8_t obj_buf[1024];
+	uint8_t obj_buf[3072];
 	lv2_atom_forge_set_buffer(&forge, obj_buf, sizeof(obj_buf));
 
 	LV2_Atom_Forge_Frame frame;
@@ -1281,6 +1378,23 @@ void BOopsGUI::sendSlot (const int page, const int slot)
 	lv2_atom_forge_int(&forge, slot);
 	lv2_atom_forge_key(&forge, urids.bOops_pads);
 	lv2_atom_forge_vector(&forge, sizeof(float), urids.atom_Float, NR_STEPS * sizeof(Pad) / sizeof(float), (void*) pads);
+
+	float nodes[SHAPE_MAXNODES][7];
+	for (unsigned int i = 0; i < shapes[page][slot].size(); ++i)
+	{
+		Node n = shapes[page][slot].getNode (i);
+		nodes[i][0] = n.nodeType;
+		nodes[i][1] = n.point.x;
+		nodes[i][2] = n.point.y;
+		nodes[i][3] = n.handle1.x;
+		nodes[i][4] = n.handle1.y;
+		nodes[i][5] = n.handle2.x;
+		nodes[i][6] = n.handle2.y;
+	}
+
+	lv2_atom_forge_key (&forge, urids.bOops_shapeData);
+	lv2_atom_forge_vector(&forge, sizeof(float), urids.atom_Float, 7 * shapes[page][slot].size(), nodes);
+
 	lv2_atom_forge_pop(&forge, &frame);
 	write_function(controller, CONTROL, lv2_atom_total_size(msg), urids.atom_eventTransfer, msg);
 }
@@ -1527,10 +1641,11 @@ void BOopsGUI::gotoPage (const int page)
 	pageAct = LIMIT (page, 0, pageMax);
 	for (int i = 0; i < NR_PAGES; ++i)
 	{
-		if (i == page) tabs[i].container.rename ("activetab");
+		if (i == pageAct) tabs[i].container.rename ("activetab");
 		else tabs[i].container.rename ("tab");
 		tabs[i].container.applyTheme (theme);
 	}
+
 	drawPad();
 	updatePageContainer();
 	sendEditorPage();
@@ -1549,6 +1664,7 @@ void BOopsGUI::insertPage (const int page)
 	for (int i = pageMax; i > page; --i)
 	{
 		patterns[i] = patterns[i - 1];
+		for (int j = 0; j < NR_SLOTS; ++j) shapes[i][j] = shapes[i - 1][j];
 		for (int j = 0; j < NR_SLOTS; ++j) sendSlot (i, j);
 		if (i == pageAct) drawPad();
 		for (BWidgets::ValueWidget& m : tabs[i].midiWidgets) m.setValue (m.getValue());
@@ -1556,6 +1672,7 @@ void BOopsGUI::insertPage (const int page)
 
 	// Init new page
 	patterns[page].clear();
+	for (int j = 0; j < NR_SLOTS; ++j) shapes[page][j] = Shape<SHAPE_MAXNODES>();
 	for (int j = 0; j < NR_SLOTS; ++j) sendSlot (page, j);
 	if (page == pageAct) drawPad();
 	tabs[page].midiWidgets[PAGE_CONTROLS_STATUS].setValue (0);
@@ -1574,6 +1691,7 @@ void BOopsGUI::deletePage (const int page)
 	for (int i = page; i < pageMax; ++i)
 	{
 		patterns[i] = patterns[i + 1];
+		for (int j = 0; j < NR_SLOTS; ++j) shapes[i][j] = shapes[i + 1][j];
 		for (int j = 0; j < NR_SLOTS; ++j) sendSlot (i, j);
 		if (i == pageAct) drawPad ();
 		for (int j = 0; j < NR_MIDI_CTRLS; ++j)
@@ -1600,6 +1718,12 @@ void BOopsGUI::swapPage (const int page1, const int page2)
 	p = patterns[page1];
 	patterns[page1] = patterns[page2];
 	patterns[page2] = p;
+	for (int j = 0; j < NR_SLOTS; ++j)
+	{
+		Shape<SHAPE_MAXNODES> s = shapes[page1][j];
+		shapes[page1][j] = shapes[page2][j];
+		shapes[page2][j] = s;
+	}
 	for (int j = 0; j < NR_SLOTS; ++j) sendSlot (page1, j);
 	for (int j = 0; j < NR_SLOTS; ++j) sendSlot (page2, j);
 
@@ -1645,7 +1769,7 @@ void BOopsGUI::updatePageContainer()
 
 	pageBackSymbol.moveTo (0, 0);
 	pageBackSymbol.resize (10 * sz, 30 * sz);
-	pageForwardSymbol.moveTo (x0 + 800 * sz, 0);
+	pageForwardSymbol.moveTo (x0 + 780 * sz, 0);
 	pageForwardSymbol.resize (10 * sz, 30 * sz);
 }
 
@@ -1670,6 +1794,8 @@ void BOopsGUI::clearSlot (int slot)
 		for (int j = 0; j < NR_STEPS; ++j) p.setPad (slot, j, Pad());
 	}
 
+	for (int i = 0; i < NR_PAGES; ++i) shapes[i][slot] = Shape<SHAPE_MAXNODES>(); 
+
 	slotParams[slot].shape.setDefaultShape();
 	sendShape (slot);
 	if (slotParams[slot].optionWidget) slotParams[slot].optionWidget->setShape (slotParams[slot].shape);
@@ -1690,6 +1816,8 @@ void BOopsGUI::copySlot (int dest, int source)
 	{
 		for (int j = 0; j < NR_STEPS; ++j) p.setPad (dest, j, p.getPad (source, j));
 	}
+
+	for (int i = 0; i < NR_PAGES; ++i) shapes[i][dest] = shapes[i][source];
 
 	slotParams[dest].shape = slotParams[source].shape;
 	sendShape (dest);
@@ -1721,6 +1849,7 @@ void BOopsGUI::insertSlot (int slot, const BOopsEffectsIndex effect)
 	{
 		for (int j = 0; j < NR_STEPS; ++j) p.setPad (slot, j, Pad());
 	}
+	for (int i = 0; i < NR_PAGES; ++i) shapes[i][slot] = Shape<SHAPE_MAXNODES>();
 	slotParams[slot].shape.setDefaultShape();
 	sendShape (slot);
 	if (slotParams[slot].optionWidget) slotParams[slot].optionWidget->setShape (slotParams[slot].shape);
@@ -1769,6 +1898,14 @@ void BOopsGUI::swapSlots (int slot1, int slot2)
 		}
 	}
 
+	// Swap shapes
+	for (int i = 0; i < NR_PAGES; ++i) 
+	{
+		Shape<SHAPE_MAXNODES> s = shapes[i][slot1];
+		shapes[i][slot1] = shapes[i][slot2];
+		shapes[i][slot2] = s;
+	}
+
 	// Swap slots
 	for (int j = 0; j < SLOTS_PARAMS + NR_PARAMS; ++j)
 	{
@@ -1777,7 +1914,7 @@ void BOopsGUI::swapSlots (int slot1, int slot2)
 		controllerWidgets[SLOTS + slot2 * (SLOTS_PARAMS + NR_PARAMS) + j]->setValue (slot1Value);
 	}
 
-	// Swap shapes
+	// Swap param shapes
 	Shape<SHAPE_MAXNODES> slot1Shape = slotParams[slot1].shape;
 	slotParams[slot1].shape = slotParams[slot2].shape;
 	slotParams[slot2].shape = slot1Shape;
@@ -1824,12 +1961,16 @@ void BOopsGUI::moveSlot (int source, int target)
 			for (int j = 0; j < NR_STEPS; ++j) sourcePads[i][j] = patterns[i].getPad (source, j);
 		}
 
+		// TODO shapes
+		std::array<Shape<SHAPE_MAXNODES>, NR_PAGES> sourceShapes;
+		for (int i = 0; i < NR_PAGES; ++i) sourceShapes[i] = shapes[i][source];
+
 		// Params
 		std::array<double, SLOTS_PARAMS + NR_PARAMS> sourceParams;
 		for (int i = 0; i < SLOTS_PARAMS + NR_PARAMS; ++i) sourceParams[i] = controllerWidgets[SLOTS + source * (SLOTS_PARAMS + NR_PARAMS) + i]->getValue();
 
-		// Shape
-		Shape<SHAPE_MAXNODES> sourceShape = slotParams[source].shape;
+		// Param shape
+		Shape<SHAPE_MAXNODES> sourceParamShape = slotParams[source].shape;
 
 		// Move section
 		for (int i = source; i != target - offs; i += inc)
@@ -1840,6 +1981,9 @@ void BOopsGUI::moveSlot (int source, int target)
 				for (int j = 0; j < NR_STEPS; ++j) p.setPad (i, j, p.getPad (i + inc, j));
 			}
 
+			// TODO Move shapes
+			for (int j = 0; j < NR_PAGES; ++j) shapes[j][i] = shapes[j][i + inc];
+
 			// Move params
 			for (int j = 0; j < SLOTS_PARAMS + NR_PARAMS; ++j)
 			{
@@ -1847,7 +1991,7 @@ void BOopsGUI::moveSlot (int source, int target)
 				controllerWidgets[SLOTS + i * (SLOTS_PARAMS + NR_PARAMS) + j]->setValue (param);
 			}
 
-			// Move shapes
+			// Move param shapes
 			slotParams[i].shape = slotParams[i + inc].shape;
 			sendShape (i);
 			if (slotParams[i].optionWidget) slotParams[i].optionWidget->setShape (slotParams[i].shape);
@@ -1858,8 +2002,9 @@ void BOopsGUI::moveSlot (int source, int target)
 		{
 			for (int j = 0; j < NR_STEPS; ++j) patterns[i].setPad (target - offs, j, sourcePads[i][j]);
 		}
+		for (int i = 0; i < NR_PAGES; ++i) shapes[i][target - offs] = sourceShapes[i];
 		for (int j = 0; j < SLOTS_PARAMS + NR_PARAMS; ++j) controllerWidgets[SLOTS + (target - offs) * (SLOTS_PARAMS + NR_PARAMS) + j]->setValue (sourceParams[j]);
-		slotParams[target - offs].shape = sourceShape;
+		slotParams[target - offs].shape = sourceParamShape;
 		sendShape (target - offs);
 		if (slotParams[target - offs].optionWidget) slotParams[target - offs].optionWidget->setShape (slotParams[target - offs].shape);
 
@@ -1925,6 +2070,7 @@ void BOopsGUI::updateSlot (const int slot)
 
 		slots[slot].delPad.show();
 		slots[slot].effectPad.show();
+		slots[slot].shapePad.show();
 		slots[slot].playPad.show();
 	}
 	else
@@ -1934,12 +2080,13 @@ void BOopsGUI::updateSlot (const int slot)
 		slots[slot].delPad.hide();
 		slots[slot].effectPad.hide();
 		slots[slot].effectsListbox.hide();
+		slots[slot].shapePad.hide();
 		slots[slot].playPad.hide();
 	}
 
 	if (slot <= slotSize)
 	{
-		RESIZE (slots[slot].container, 0, slot * 24, 260, 24, sz);
+		RESIZE (slots[slot].container, 0, slot * 24, 290, 24, sz);
 		slots[slot].container.show();
 	}
 	else slots[slot].container.hide();
@@ -2267,6 +2414,7 @@ void BOopsGUI::valueChangedCallback(BEvents::Event* event)
 									ui->slots[slot].upPad.rename (padstr);
 									ui->slots[slot].downPad.rename (padstr);
 									ui->slots[slot].effectPad.rename (padstr);
+									ui->slots[slot].shapePad.rename (padstr);
 									ui->slots[slot].playPad.rename (padstr);
 									ui->slotParams[slot].adsrDisplay.rename (padstr);
 									ui->slotParams[slot].attackSlider.rename (padstr);
@@ -2576,6 +2724,168 @@ void BOopsGUI::midiStatusChangedCallback(BEvents::Event* event)
 	nlb.setValue (nr);
 }
 
+void BOopsGUI::shapeEditorButtonClickedCallback(BEvents::Event* event)
+{
+	if (!event) return;
+	BWidgets::ValueWidget* widget = (BWidgets::ValueWidget*) event->getWidget ();
+	if (!widget) return;
+	float value = widget->getValue();
+	BOopsGUI* ui = (BOopsGUI*) widget->getMainWindow();
+	if (!ui) return;
+
+	if (widget == &ui->shapeEditor.cancelButton)
+	{
+		if (value == 1)
+		{
+			ui->shapeEditor.cancelButton.setValue (0);
+			ui->shapeEditor.container.hide();
+		}
+	}
+
+	else if (widget == &ui->shapeEditor.okButton)
+	{
+		if (value == 1)
+		{
+			ui->shapeEditor.okButton.setValue (0);
+			ui->shapes[ui->shapeEditor.page][ui->shapeEditor.slot] = ui->shapeEditor.shapeWidget;
+			ui->shapes[ui->shapeEditor.page][ui->shapeEditor.slot].validateShape();
+			if (ui->shapeEditor.page == ui->pageAct) ui->drawPad (ui->shapeEditor.slot);
+			ui->shapeEditor.container.hide();
+			ui->sendSlot (ui->shapeEditor.page, ui->shapeEditor.slot);
+		}
+	}
+}
+
+void BOopsGUI::shapeEditorControlsClickedCallback(BEvents::Event* event)
+{
+	if (!event) return;
+	BWidgets::ValueWidget* widget = (BWidgets::ValueWidget*) event->getWidget ();
+	if (!widget) return;
+	float value = widget->getValue();
+	BOopsGUI* ui = (BOopsGUI*) widget->getMainWindow();
+	if (!ui) return;
+
+	// ShapeToolButtons
+	int widgetNr = -1;
+	for (unsigned int i = 0; i < ui->shapeEditor.shapeToolButtons.size(); ++i)
+	{
+		if (widget == &ui->shapeEditor.shapeToolButtons[i])
+		{
+			widgetNr = i;
+			break;
+		}
+	}
+
+	if (widgetNr >= 0)
+	{
+		ui->shapeEditor.shapeWidget.setTool (value != 0 ? ToolType (widgetNr + 1) : NO_TOOL);
+		// Allow only one button pressed
+		for (unsigned int i = 0; i < ui->shapeEditor.shapeToolButtons.size(); ++i)
+		{
+			if (i != widgetNr) ui->shapeEditor.shapeToolButtons[i].setValue (0.0);
+		}
+		return;
+	}
+
+	// EditToolButtons
+	widgetNr = -1;
+	for (unsigned int i = 0; i < ui->shapeEditor.editToolButtons.size(); ++i)
+	{
+		if (widget == &ui->shapeEditor.editToolButtons[i])
+		{
+			widgetNr = i;
+			break;
+		}
+	}
+
+	if (widgetNr >= 0) 
+	{
+		if (value != 0.0)
+		{
+			switch (widgetNr)
+			{
+				case 0:		// Cut
+					ui->shapeEditor.clipboard = ui->shapeEditor.shapeWidget.cutSelection();
+					break;
+
+				case 1:		// Copy
+					ui->shapeEditor.clipboard = ui->shapeEditor.shapeWidget.copySelection();
+					break;
+
+				case 2:		// Paste
+					ui->shapeEditor.shapeWidget.pasteSelection (ui->shapeEditor.clipboard);
+					break;
+
+				default:	
+					break;
+			}
+		}
+
+		return;
+	}
+
+	// HistoryToolButtons
+	widgetNr = -1;
+	for (unsigned int i = 0; i < ui->shapeEditor.historyToolButtons.size(); ++i)
+	{
+		if (widget == &ui->shapeEditor.historyToolButtons[i])
+		{
+			widgetNr = i;
+			break;
+		}
+	}
+
+	if (widgetNr >= 0) 
+	{
+		if (value != 0.0)
+		{
+			switch (widgetNr)
+			{
+				case 0:		
+					ui->shapeEditor.shapeWidget.reset();
+					break;
+
+				case 1:		
+					ui->shapeEditor.shapeWidget.undo();
+					break;
+
+				case 2:		
+					ui->shapeEditor.shapeWidget.redo();
+					break;
+
+				default:
+					break;
+			}
+		}
+
+		return;
+	}
+
+	// GridToolButtons
+	if (widget == &ui->shapeEditor.gridShowButton)
+	{
+		if (value) ui->shapeEditor.shapeWidget.showGrid();
+		else ui->shapeEditor.shapeWidget.hideGrid();
+		ui->shapeEditor.shapeWidget.setSnap (false);
+		ui->shapeEditor.gridSnapButton.setValue (0.0);
+	}
+
+	else if (widget == &ui->shapeEditor.gridSnapButton)
+	{
+		if (value)
+			{
+				ui->shapeEditor.shapeWidget.showGrid();
+				ui->shapeEditor.shapeWidget.setSnap (true);
+			}
+			else
+			{
+				ui->shapeEditor.shapeWidget.hideGrid();
+				ui->shapeEditor.shapeWidget.setSnap (false);
+			}
+			ui->shapeEditor.gridShowButton.setValue (0.0);
+	}
+}
+
 void BOopsGUI::playStopBypassChangedCallback(BEvents::Event* event)
 {
 	if (!event) return;
@@ -2767,6 +3077,45 @@ void BOopsGUI::menuClickedCallback(BEvents::Event* event)
 		else ui->slots[slot].effectsListbox.show();
 
 		ui->gotoSlot (slot);
+	}
+}
+
+void BOopsGUI::shapepatternClickedCallback(BEvents::Event* event)
+{
+	if (!event) return;
+	PadButton* widget = (PadButton*) event->getWidget ();
+	if (!widget) return;
+	BOopsGUI* ui = (BOopsGUI*) widget->getMainWindow();
+	if (!ui) return;
+
+	int slot = -1;
+
+	// Identify slot
+	for (int i = 0; i < NR_SLOTS; ++i)
+	{
+		if (widget == &ui->slots[i].shapePad)
+		{
+			slot = i;
+			break;
+		}
+	}
+
+	// Show / hide menu
+	if (slot >= 0)
+	{
+		if (ui->shapes[ui->pageAct][slot] == Shape<SHAPE_MAXNODES>()) 
+		{
+			ui->shapes[ui->pageAct][slot].setDefaultShape();
+			ui->slots[slot].shapePad.setSymbol (SHAPESYMBOL);
+		}
+		else 
+		{
+			ui->shapes[ui->pageAct][slot] = Shape<SHAPE_MAXNODES>();
+			ui->slots[slot].shapePad.setSymbol (PATTERNSYMBOL);
+		}
+
+		ui->gotoSlot (slot);
+		ui->sendSlot (ui->pageAct, slot);
 	}
 }
 
@@ -3100,102 +3449,131 @@ void BOopsGUI::padsPressedCallback (BEvents::Event* event)
 				// Left button
 				if (pointerEvent->getButton() == BDevices::LEFT_BUTTON)
 				{
-					// Check if edit mode
-					int editNr = -1;
-					for (int i = 0; i < EDIT_RESET; ++i)
+					// Check if shape
+					if (ui->shapes[ui->pageAct][row] != Shape<SHAPE_MAXNODES>())
 					{
-						if (ui->edit1Buttons[i].getValue() != 0.0)
-						{
-							editNr = i;
-							break;
-						}
+						ui->shapeEditor.page = ui->pageAct;
+						ui->shapeEditor.slot = row;
+						ui->shapeEditor.gridSnapButton.setValue (1.0);
+						ui->shapeEditor.shapeWidget.setMergeable (BEvents::POINTER_DRAG_EVENT, false);
+						ui->shapeEditor.shapeWidget.setTool (ToolType::POINT_NODE_TOOL);
+						ui->shapeEditor.shapeWidget.setValueEnabled (false);
+						ui->shapeEditor.shapeWidget.clearShape();
+						ui->shapeEditor.shapeWidget.Shape<SHAPE_MAXNODES>::operator= (ui->shapes[ui->pageAct][row]);
+						ui->shapeEditor.shapeWidget.validateShape();
+						ui->shapeEditor.shapeWidget.pushToSnapshots();
+						ui->shapeEditor.shapeWidget.setValueEnabled (true);
+						ui->shapeEditor.shapeWidget.setScaleParameters (0.05, 0.0, 1.1);
+						ui->shapeEditor.shapeWidget.setMajorXSteps (1.0);
+						ui->shapeEditor.shapeWidget.setMinorXSteps (1.0/16.0);
+						ui->shapeEditor.shapeWidget.setLowerLimit (0.0);
+						ui->shapeEditor.shapeWidget.setHigherLimit (1.0);
+						ui->shapeEditor.container.moveTo (0, LIMIT (row * 24 * ui->sz, 0, 128 * ui->sz));
+						ui->shapeEditor.shapeWidget.rename (ui->slots[row].effectPad.getName());
+						ui->shapeEditor.shapeWidget.applyTheme (ui->theme);
+						ui->shapeEditor.shapeToolButtons[1].setValue (1.0);
+						ui->shapeEditor.container.show();
 					}
 
-					// Edit
-					if (editNr >= 0)
+					// Check if edit mode
+					else
 					{
-						if ((editNr == EDIT_CUT) || (editNr == EDIT_COPY) || (editNr == EDIT_XFLIP) || (editNr == EDIT_YFLIP))
+						int editNr = -1;
+						for (int i = 0; i < EDIT_RESET; ++i)
 						{
-							if (ui->clipBoard.ready)
+							if (ui->edit1Buttons[i].getValue() != 0.0)
 							{
-								ui->clipBoard.origin = std::make_pair (row, step);
-								ui->clipBoard.extends = std::make_pair (0, 0);
-								ui->clipBoard.ready = false;
-								ui->drawPad (row, step);
-							}
-
-							else
-							{
-								std::pair<int, int> newExtends = std::make_pair (row - ui->clipBoard.origin.first, step - ui->clipBoard.origin.second);
-								if (newExtends != ui->clipBoard.extends)
-								{
-									ui->clipBoard.extends = newExtends;
-									ui->drawPad ();
-								}
+								editNr = i;
+								break;
 							}
 						}
 
-						else if (editNr == EDIT_PASTE)
+						// Edit
+						if (editNr >= 0)
 						{
-							if (!ui->clipBoard.data.empty ())
+							if ((editNr == EDIT_CUT) || (editNr == EDIT_COPY) || (editNr == EDIT_XFLIP) || (editNr == EDIT_YFLIP))
 							{
-								for (int r = 0; r < int (ui->clipBoard.data.size ()); ++r)
+								if (ui->clipBoard.ready)
 								{
-									for (int s = 0; s < int (ui->clipBoard.data[r].size ()); ++s)
+									ui->clipBoard.origin = std::make_pair (row, step);
+									ui->clipBoard.extends = std::make_pair (0, 0);
+									ui->clipBoard.ready = false;
+									ui->drawPad (row, step);
+								}
+
+								else
+								{
+									std::pair<int, int> newExtends = std::make_pair (row - ui->clipBoard.origin.first, step - ui->clipBoard.origin.second);
+									if (newExtends != ui->clipBoard.extends)
 									{
-										if
-										(
-											(row + r >= 0) &&
-											(row + r < maxstep) &&
-											(step + s >= 0) &&
-											(step + s < maxstep)
-										)
+										ui->clipBoard.extends = newExtends;
+										ui->drawPad ();
+									}
+								}
+							}
+
+							else if (editNr == EDIT_PASTE)
+							{
+								if (!ui->clipBoard.data.empty ())
+								{
+									for (int r = 0; r < int (ui->clipBoard.data.size ()); ++r)
+									{
+										for (int s = 0; s < int (ui->clipBoard.data[r].size ()); ++s)
 										{
-											ui->patterns[ui->pageAct].setPad (row + r, step + s, ui->clipBoard.data.at(r).at(s));
-											ui->sendPad (ui->pageAct, row + r, step + s);
-											ui->drawPad (row + r, step + s);
+											if
+											(
+												(row + r >= 0) &&
+												(row + r < maxstep) &&
+												(step + s >= 0) &&
+												(step + s < maxstep)
+											)
+											{
+												ui->patterns[ui->pageAct].setPad (row + r, step + s, ui->clipBoard.data.at(r).at(s));
+												ui->sendPad (ui->pageAct, row + r, step + s);
+												ui->drawPad (row + r, step + s);
+											}
 										}
 									}
 								}
 							}
+
 						}
 
-					}
-
-					// Set (or unset) pad
-					else
-					{
-						if ((ui->dragOrigin.x < 0) || (ui->dragOrigin.y < 0))
+						// Set (or unset) pad
+						else
 						{
-							ui->dragOrigin.x = int ((pointerEvent->getOrigin ().x - widget->getXOffset()) / (width / double (maxstep)));
-							ui->dragOrigin.y = int (pointerEvent->getOrigin ().y - widget->getYOffset()) / (height / double (NR_SLOTS));
+							if ((ui->dragOrigin.x < 0) || (ui->dragOrigin.y < 0))
+							{
+								ui->dragOrigin.x = int ((pointerEvent->getOrigin ().x - widget->getXOffset()) / (width / double (maxstep)));
+								ui->dragOrigin.y = int (pointerEvent->getOrigin ().y - widget->getYOffset()) / (height / double (NR_SLOTS));
+							}
+							int s = (ui->dragOrigin.x < step ? ui->dragOrigin.x : step);
+							int size = 1 + LIMIT (abs (step - ui->dragOrigin.x), 0, NR_STEPS);
+
+							if (row != ui->dragOrigin.y)
+							{
+								ui->dragOrigin.x = step;
+								ui->dragOrigin.y = row;
+								s = step;
+								size = 1;
+							}
+
+							const Pad oldPad = ui->patterns[ui->pageAct].getPad (row, s);
+
+							if (!ui->padPressed) ui->deleteMode =
+							(
+								(oldPad.gate == float (ui->padGateDial.getValue())) &&
+								(oldPad.mix == float (ui->padMixDial.getValue()))
+							);
+							Pad newPad = (ui->deleteMode ? Pad () : Pad (ui->padGateDial.getValue(), size, ui->padMixDial.getValue()));
+							if (newPad != oldPad) ui->setPad (ui->pageAct, row, s, newPad);
 						}
-						int s = (ui->dragOrigin.x < step ? ui->dragOrigin.x : step);
-						int size = 1 + LIMIT (abs (step - ui->dragOrigin.x), 0, NR_STEPS);
 
-						if (row != ui->dragOrigin.y)
-						{
-							ui->dragOrigin.x = step;
-							ui->dragOrigin.y = row;
-							s = step;
-							size = 1;
-						}
-
-						const Pad oldPad = ui->patterns[ui->pageAct].getPad (row, s);
-
-						if (!ui->padPressed) ui->deleteMode =
-						(
-							(oldPad.gate == float (ui->padGateDial.getValue())) &&
-							(oldPad.mix == float (ui->padMixDial.getValue()))
-						);
-						Pad newPad = (ui->deleteMode ? Pad () : Pad (ui->padGateDial.getValue(), size, ui->padMixDial.getValue()));
-						if (newPad != oldPad) ui->setPad (ui->pageAct, row, s, newPad);
+						ui->padPressed = true;
 					}
-
-					ui->padPressed = true;
 				}
 
-				else if (pointerEvent->getButton() == BDevices::RIGHT_BUTTON)
+				else if ((pointerEvent->getButton() == BDevices::RIGHT_BUTTON) && (ui->shapes[ui->pageAct][row] == Shape<SHAPE_MAXNODES>()))
 				{
 					ui->padGateDial.setValue (ui->patterns[ui->pageAct].getPad (row, step).gate);
 					ui->padMixDial.setValue (ui->patterns[ui->pageAct].getPad (row, step).mix);
@@ -3203,7 +3581,12 @@ void BOopsGUI::padsPressedCallback (BEvents::Event* event)
 			}
 		}
 
-		else if ((event->getEventType () == BEvents::BUTTON_RELEASE_EVENT) && (pointerEvent->getButton() == BDevices::LEFT_BUTTON))
+		else if 
+		(
+			(event->getEventType () == BEvents::BUTTON_RELEASE_EVENT) && 
+			(pointerEvent->getButton() == BDevices::LEFT_BUTTON) &&
+			(ui->shapes[ui->pageAct][row] == Shape<SHAPE_MAXNODES>())
+		)
 		{
 			ui->dragOrigin.x = -1;
 			ui->dragOrigin.y = -1;
@@ -3535,9 +3918,13 @@ void BOopsGUI::drawPad ()
 	int maxstep = controllerWidgets[STEPS]->getValue ();
 	for (int row = 0; row < NR_SLOTS; ++row)
 	{
-		for (int step = 0; step < maxstep; step += (patterns[pageAct].getPad (row, step).size > 1 ? patterns[pageAct].getPad (row, step).size : 1))
+		if (shapes[pageAct][row] != Shape<SHAPE_MAXNODES>()) drawPad (cr, row, 0);
+		else
 		{
-			drawPad (cr, row, step);
+			for (int step = 0; step < maxstep; step += (patterns[pageAct].getPad (row, step).size > 1 ? patterns[pageAct].getPad (row, step).size : 1))
+			{
+				drawPad (cr, row, step);
+			}
 		}
 	}
 	cairo_destroy (cr);
@@ -3549,9 +3936,13 @@ void BOopsGUI::drawPad (const int slot)
 	cairo_surface_t* surface = padSurface.getDrawingSurface();
 	cairo_t* cr = cairo_create (surface);
 	int maxstep = controllerWidgets[STEPS]->getValue ();
-	for (int step = 0; step < maxstep; step += (patterns[pageAct].getPad (slot, step).size > 1 ? patterns[pageAct].getPad (slot, step).size : 1))
+	if (shapes[pageAct][slot] != Shape<SHAPE_MAXNODES>()) drawPad (cr, slot, 0);
+	else
 	{
-		drawPad (cr, slot, step);
+		for (int step = 0; step < maxstep; step += (patterns[pageAct].getPad (slot, step).size > 1 ? patterns[pageAct].getPad (slot, step).size : 1))
+		{
+			drawPad (cr, slot, step);
+		}
 	}
 	cairo_destroy (cr);
 	padSurface.update();
@@ -3569,11 +3960,13 @@ void BOopsGUI::drawPad (const int row, const int step)
 void BOopsGUI::drawPad (cairo_t* cr, const int row, const int step)
 {
 	int maxstep = controllerWidgets[STEPS]->getValue ();
-	if ((!cr) || (cairo_status (cr) != CAIRO_STATUS_SUCCESS) || (row < 0) || (row >= NR_SLOTS) || (step < 0) || (step >= maxstep)) return;
+	if ((!cr) || (cairo_status (cr) != CAIRO_STATUS_SUCCESS) || (row < 0) || (row >= NR_SLOTS)) return;
+	slots[row].shapePad.setSymbol (shapes[pageAct][row] == Shape<SHAPE_MAXNODES>() ? PATTERNSYMBOL : SHAPESYMBOL);
+	if ((step < 0) || (step >= maxstep)) return;
 
 	// Get origin and size of pad data
-	const int p0 = getPadOrigin (pageAct, row, step);
-	const Pad pd = patterns[pageAct].getPad (row, p0);
+	const int p0 = (shapes[pageAct][row] == Shape<SHAPE_MAXNODES>() ? getPadOrigin (pageAct, row, step) : 0);
+	const Pad pd = (shapes[pageAct][row] == Shape<SHAPE_MAXNODES>() ? patterns[pageAct].getPad (row, p0) : Pad (0, maxstep - p0, 0));
 	const int ps = LIMIT (pd.size, 1.0, maxstep - p0);
 
 	// Get size of drawing area
@@ -3611,14 +4004,15 @@ void BOopsGUI::drawPad (cairo_t* cr, const int row, const int step)
 	// Draw pad
 	const int fxnr = LIMIT (slots[row].container.getValue(), FX_NONE, NR_FX - 1);
 	BColors::Color color = *padColors[fxnr].getColor(BColors::NORMAL);
-	color.applyBrightness (pd.mix - 1.0);
-	if (p0 <= int (cursor) && (p0 + ps > int (cursor))) color.applyBrightness (0.75);
-	drawButton (cr, xr + 1, yr + 1, wr - 2, hr - 2, color);
+	BColors::Color pc = color;
+	pc.applyBrightness (pd.mix - 1.0);
+	if (p0 <= int (cursor) && (p0 + ps > int (cursor)) && (shapes[pageAct][row] == Shape<SHAPE_MAXNODES>())) pc.applyBrightness (0.75);
+	drawButton (cr, xr + 1, yr + 1, wr - 2, hr - 2, pc);
 
 	// Draw label
 	if ((pd.mix != 0.0) && (pd.gate != 1.0))
 	{
-		const double br = sqrt (pow (color.getRed(), 2.0) + pow (color.getBlue(), 2.0) + pow (color.getGreen(), 2.0));
+		const double br = sqrt (pow (pc.getRed(), 2.0) + pow (pc.getBlue(), 2.0) + pow (pc.getGreen(), 2.0));
 		BColors::Color tc = (br < 0.707 ? *txColors.getColor(BColors::NORMAL) : BColors::black);
 		cairo_set_source_rgba (cr, CAIRO_RGBA (tc));
 		std::string label = std::to_string (int (pd.gate * 100.0)) + " %";
@@ -3628,6 +4022,30 @@ void BOopsGUI::drawPad (cairo_t* cr, const int row, const int step)
 		cairo_text_extents (cr, label.c_str(), &ext);
 		cairo_move_to (cr, xr + 0.5 * wr - 0.5 * ext.width - ext.x_bearing, yr + 0.5 * hr - 0.5 * ext.height - ext.y_bearing);
 		cairo_show_text (cr, label.c_str ());
+	}
+
+	// Draw shape
+	if ((shapes[pageAct][row] != Shape<SHAPE_MAXNODES>()) && (wr > 4.0))
+	{
+		cairo_move_to (cr, xr + 2.0, yr + hr - 2.0 - LIMIT (shapes[pageAct][row].getMapValue (0.0), 0.0, 1.0) * (hr - 4.0));
+		for (int i = 0; i <= wr - 4; ++i)
+		{
+			cairo_line_to (cr, xr + 2.0 + i, yr + hr - 2.0 - LIMIT (shapes[pageAct][row].getMapValue (double(i)/ (wr - 4.0)), 0.0, 1.0) * (hr - 4.0));
+		}
+		cairo_set_line_width (cr, 2.0);
+		cairo_set_source_rgba (cr, CAIRO_RGBA (color));
+		cairo_stroke_preserve (cr);
+
+		cairo_move_to (cr, xr + wr - 2.0, yr + hr - 2.0);
+		cairo_move_to (cr, xr + 2.0, yr + hr - 2.0);
+		cairo_close_path (cr);
+		cairo_set_line_width (cr, 0.0);
+		cairo_pattern_t* pat = cairo_pattern_create_linear (0, yr + hr - 2.0, 0, yr + 2.0);
+		cairo_pattern_add_color_stop_rgba (pat, 0, color.getRed (), color.getGreen (), color.getBlue (), 0.25);
+		cairo_pattern_add_color_stop_rgba (pat, 1, color.getRed (), color.getGreen (), color.getBlue (), 0.75 * color.getAlpha ());
+		cairo_set_source (cr, pat);
+		cairo_fill (cr);
+		cairo_pattern_destroy (pat);
 	}
 }
 

@@ -53,15 +53,11 @@ public:
 		reach = 1.0 + LIMIT (32.0 * params [SLOTS_OPTPARAMS + FX_SCRATCH_REACH], 0, 31);
 	}
 
-	virtual Stereo play (const double position, const double size, const double mixf) override
+	virtual Stereo process (const double position, const double size) override
 	{
-		const Stereo s0 = (**buffer).front();
-		if (!playing) return s0;
-
 		const double f = shape->getMapValue (fmod (position / reach, 1.0));
 		const double frame = framesPerStep * range * (-LIMIT (f, -1.0, 0.0));
-		Stereo s1 = getSample (frame);
-		return mix (s0, s1, position, size, mixf);
+		return getSample (frame);
 	}
 
 protected:

@@ -43,16 +43,12 @@ public:
 		width =pow (2 * LIMIT (params[SLOTS_OPTPARAMS + FX_WIDTH_WIDTH] + r * params[SLOTS_OPTPARAMS + FX_WIDTH_WIDTHRAND], 0.0, 1.0), 6.64385619);
 	}
 
-	virtual Stereo play (const double position, const double size, const double mixf) override
+	virtual Stereo process (const double position, const double size) override
 	{
 		const Stereo s0 = (**buffer).front();
-		if (!playing) return s0;
-
 		const float m = (s0.left + s0.right) / 2;
 		const float x = (s0.left - s0.right) * width / 2;
-
-		Stereo s1 = Stereo {m + x, m - x};
-		return mix (s0, s1, position, size, mixf);
+		return Stereo {m + x, m - x};
 	}
 
 protected:

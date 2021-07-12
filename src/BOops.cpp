@@ -101,7 +101,7 @@ BOops::BOops (double samplerate, const char* bundle_path, const LV2_Feature* con
 	slots.fill (Slot (this, FX_NONE, nullptr, nullptr, 16, 1.0f, 0.25 * samplerate));
 
 	// Init pages
-	pages.fill ({{0, 0, 0, 0}, std::array<std::array<Pad, NR_STEPS>, NR_SLOTS>()});
+	pages.fill ({{0, 0, 0, 0}, std::array<std::array<Pad, NR_STEPS>, NR_SLOTS>(), std::array<Shape<SHAPE_MAXNODES>, NR_SLOTS>()});
 }
 
 BOops::~BOops ()
@@ -468,16 +468,17 @@ void BOops::run (uint32_t n_samples)
 				}
 			}
 
-			// Process slot pads data
+			// Process slot pads or shape data
 			else if (obj->body.otype == urids.bOops_slotEvent)
 			{
-				LV2_Atom *oPg = NULL, *oSl = NULL, *oPd = NULL;
+				LV2_Atom *oPg = NULL, *oSl = NULL, *oPd = NULL, *oSh = NULL;
 				int pg = 0;
 				int slot = -1;
 				lv2_atom_object_get (obj,
 					 	     urids.bOops_pageID, &oPg,
 					 	     urids.bOops_slot, &oSl,
 						     urids.bOops_pads, &oPd,
+							 urids.bOops_shapeData, &oSh,
 						     NULL);
 
 				// Page nr notification
@@ -505,6 +506,37 @@ void BOops::run (uint32_t n_samples)
 						{
 							for (unsigned int i = 0; (i < size) && (i < NR_STEPS); ++i) slots[slot].setPad (i, pad[i]);
 						}
+
+						scheduleStateChanged = true;
+					}
+				}
+
+				// Shape notification
+				if (oSh && (oSh->type == urids.atom_Vector) && (slot >= 0))
+				{
+					const LV2_Atom_Vector* vec = (const LV2_Atom_Vector*) oSh;
+					if (vec->body.child_type == urids.atom_Float)
+					{
+						Shape<SHAPE_MAXNODES> shape = Shape<SHAPE_MAXNODES>();
+						const uint32_t vecSize = (uint32_t) ((oSh->size - sizeof(LV2_Atom_Vector_Body)) / (7 * sizeof (float)));
+						float* data = (float*) (&vec->body + 1);
+						for (unsigned int i = 0; (i < vecSize) && (i < SHAPE_MAXNODES); ++i)
+						{
+							Node node;
+							node.nodeType = NodeType (int (data[i * 7]));
+							node.point.x = data[i * 7 + 1];
+							node.point.y = data[i * 7 + 2];
+							node.handle1.x = data[i * 7 + 3];
+							node.handle1.y = data[i * 7 + 4];
+							node.handle2.x = data[i * 7 + 5];
+							node.handle2.y = data[i * 7 + 6];
+							shape.appendNode (node);
+						}
+						if (shape != Shape<SHAPE_MAXNODES>()) shape.validateShape();
+						pages[pg].shapes[slot] = shape;
+						if (pg == pageNr) slots[slot].setSlotShape (shape);
+
+						fprintf (stderr, "Shape %i %i %li\n", pg, slot, pages[pg].shapes[slot].size());
 
 						scheduleStateChanged = true;
 					}
@@ -561,7 +593,7 @@ void BOops::run (uint32_t n_samples)
 				}
 			}
 
-			// Process slot shape data
+			// Process param shape data
 			else if (obj->body.otype == urids.bOops_shapeEvent)
 			{
 				LV2_Atom *oSl = NULL, *oSh = NULL;
@@ -948,6 +980,7 @@ void BOops::notifyAllSlotsToGui ()
 			LV2_Atom_Forge_Frame frame;
 			lv2_atom_forge_frame_time(&forge, 0);
 			forgePads (&forge, &frame, page, slot, NR_STEPS);
+			forgeShapeData (&forge, &frame, &pages[page].shapes[slot]);
 			lv2_atom_forge_pop(&forge, &frame);
 		}
 	}
@@ -1147,6 +1180,18 @@ LV2_Atom_Forge_Ref BOops::forgeTransportGateKeys (LV2_Atom_Forge* forge, LV2_Ato
 
 LV2_Atom_Forge_Ref BOops::forgeShape (LV2_Atom_Forge* forge, LV2_Atom_Forge_Frame* frame, const int slot, const Shape<SHAPE_MAXNODES>* shape)
 {
+	const LV2_Atom_Forge_Ref msg = lv2_atom_forge_object (forge, frame, 0, urids.bOops_shapeEvent);
+	if (msg)
+	{
+		lv2_atom_forge_key(forge, urids.bOops_slot);
+		lv2_atom_forge_int(forge, slot);
+		forgeShapeData (forge, frame, shape);
+	}
+	return msg;
+}
+
+LV2_Atom_Forge_Ref BOops::forgeShapeData (LV2_Atom_Forge* forge, LV2_Atom_Forge_Frame* frame, const Shape<SHAPE_MAXNODES>* shape)
+{
 	float nodes[SHAPE_MAXNODES][7];
 	for (unsigned int i = 0; i < shape->size(); ++i)
 	{
@@ -1160,15 +1205,8 @@ LV2_Atom_Forge_Ref BOops::forgeShape (LV2_Atom_Forge* forge, LV2_Atom_Forge_Fram
 		nodes[i][6] = n.handle2.y;
 	}
 
-	const LV2_Atom_Forge_Ref msg = lv2_atom_forge_object (forge, frame, 0, urids.bOops_shapeEvent);
-	if (msg)
-	{
-		lv2_atom_forge_key(forge, urids.bOops_slot);
-		lv2_atom_forge_int(forge, slot);
-		lv2_atom_forge_key(forge, urids.bOops_shapeData);
-		lv2_atom_forge_vector(forge, sizeof(float), urids.atom_Float, 7 * shape->size(), nodes);
-	}
-	return msg;
+	lv2_atom_forge_key(forge, urids.bOops_shapeData);
+	return lv2_atom_forge_vector(forge, sizeof(float), urids.atom_Float, 7 * shape->size(), nodes);
 }
 
 LV2_Atom_Forge_Ref BOops::forgePads (LV2_Atom_Forge* forge, LV2_Atom_Forge_Frame* frame, const int page, const int slot, const size_t size)
@@ -1307,7 +1345,7 @@ void BOops::play (uint32_t start, uint32_t end)
 
 					// Old pad ended?
 					const int iStart = s.startPos[iStep];
-					if ((p.step < 0) || (s.startPos[p.step] != iStart))
+					if (((p.step < 0) || (s.startPos[p.step] != iStart)) && (!s.hasSlotShape()))
 					{
 						// Stop old pad
 						s.end ();
@@ -1346,6 +1384,7 @@ void BOops::play (uint32_t start, uint32_t end)
 			for (int i = 0; i < NR_SLOTS; ++i)
 			{
 				for (int j = 0; j < NR_STEPS; ++j) slots[i].setPad (j, pages[pageNr].pads[i][j]);
+				slots[i].setSlotShape (pages[pageNr].shapes[i]);
 			}
 		}
 	}

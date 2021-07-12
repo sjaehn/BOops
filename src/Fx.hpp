@@ -33,6 +33,7 @@
 #include "Pad.hpp"
 #include "Definitions.hpp"
 #include "Ports.hpp"
+#include "Shape.hpp"
 
 class Fx
 {
@@ -40,8 +41,8 @@ public:
 	Fx () = delete;
 
 	Fx (RingBuffer<Stereo>** buffer, float* params, Pad* pads) :
-		buffer (buffer), params (params), pads (pads),
-		playing (false), panf (), unpanf(),
+		buffer (buffer), params (params), pads (pads), slotShape (nullptr),
+		shapePaused (true), playing (false), panf (), unpanf(),
 		rnd (time (0)), unidist (0.0, 1.0), bidist (-1.0, 1.0)
 	{
 		if (!buffer) throw std::invalid_argument ("Fx initialized with buffer nullptr");
@@ -64,17 +65,42 @@ public:
 		unpanf = Stereo {1.0, 1.0} - panf;
 	}
 
-	virtual Stereo play (const double position, const double size, const double mixf)
+	virtual Stereo process (const double position, const double size)
 	{
 		return (**buffer).front();
 	}
 
+	virtual Stereo playPad (const double position, const double size, const double mixf)
+	{
+		const Stereo s0 = (**buffer).front();
+		if (!playing) return s0;
+
+		return mix (s0, process (position, size), position, size, mixf);
+	}
+
+	virtual Stereo playShape (const double position, const double size, const double mixf)
+	{
+		const Stereo s0 = (**buffer).front();
+		if (!slotShape) return s0;
+
+		double mx = slotShape->getMapValue (position / size);
+		mx = LIMIT (mx, 0.0, 1.0);
+		if (shapePaused && (mx >= 0.0001)) init (position);
+		shapePaused = (mx < 0.0001);
+		
+		return BUtilities::mix<Stereo> (s0, pan (s0, process (position, size)), mx * mixf);
+	}
+
 	virtual void end () {playing = false;}
+
+	void setSlotShape (Shape<SHAPE_MAXNODES>* source) {slotShape = source;}
 
 protected:
 	RingBuffer<Stereo>** buffer;
 	float* params;
 	Pad* pads;
+	Shape<SHAPE_MAXNODES>* slotShape;
+	bool shapePaused;
 	bool playing;
 	Stereo panf;
 	Stereo unpanf;

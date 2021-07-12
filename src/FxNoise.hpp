@@ -48,13 +48,9 @@ public:
 		amp = DB2CO (db);
 	}
 
-	virtual Stereo play (const double position, const double size, const double mixf) override
+	virtual Stereo process (const double position, const double size) override
 	{
-		const Stereo s0 = (**buffer).front();
-		if (!playing) return s0;
-
-		Stereo s1 = Stereo {unidist (rnd) * amp, unidist (rnd) * amp};
-		return mix (s0, s1, position, size, mixf);
+		return Stereo {unidist (rnd) * amp, unidist (rnd) * amp};
 	}
 
 protected:

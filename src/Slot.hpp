@@ -42,6 +42,9 @@ public:
 	Slot& operator= (const Slot& that);
 	void setPad (const int index, const Pad& pad);
 	Pad getPad (const int index) const {return pads[index];}
+	void setSlotShape (const Shape<SHAPE_MAXNODES>& source);
+	Shape<SHAPE_MAXNODES> getSlotShape () const {return slotShape;}
+	bool hasSlotShape () const {return shapeMode;}
 	Fx* newFx (const BOopsEffectsIndex effect);
 	int getStartPad (const int index) const;
 	bool isPadSet (const int index) const {return ((startPos[index] >= 0) && (startPos[index] + pads[startPos[index]].size > index));}
@@ -55,6 +58,8 @@ public:
 protected:
 	float adsr (const double position, const double size) const;
 	Pad pads[NR_STEPS];
+	Shape<SHAPE_MAXNODES> slotShape;
+	bool shapeMode;
 
 public:
 	int startPos[NR_STEPS];

@@ -66,6 +66,7 @@
 #include "HLine.hpp"
 #include "SymbolWidget.hpp"
 #include "PatternChooser.hpp"
+#include "ShapeWidget.hpp"
 
 #ifdef LOCALEFILE
 #include LOCALEFILE
@@ -169,6 +170,8 @@ private:
 	static void midiSymbolClickedCallback(BEvents::Event* event);
 	static void midiButtonClickedCallback(BEvents::Event* event);
 	static void midiStatusChangedCallback(BEvents::Event* event);
+	static void shapeEditorButtonClickedCallback(BEvents::Event* event);
+	static void shapeEditorControlsClickedCallback(BEvents::Event* event);
 	static void playStopBypassChangedCallback(BEvents::Event* event);
 	static void effectChangedCallback(BEvents::Event* event);
 	static void addClickedCallback(BEvents::Event* event);
@@ -176,6 +179,7 @@ private:
 	static void upClickedCallback(BEvents::Event* event);
 	static void downClickedCallback(BEvents::Event* event);
 	static void menuClickedCallback(BEvents::Event* event);
+	static void shapepatternClickedCallback(BEvents::Event* event);
 	static void effectDraggedCallback(BEvents::Event* event);
 	static void effectReleasedCallback(BEvents::Event* event);
 	static void edit1ChangedCallback(BEvents::Event* event);
@@ -229,6 +233,8 @@ private:
 
 	//Pads
 	std::array<Pattern, NR_PAGES> patterns;
+	std::array<std::array<Shape<SHAPE_MAXNODES>, NR_SLOTS>, NR_PAGES> shapes;
+
 
 	struct ClipBoard
 	{
@@ -308,6 +314,7 @@ private:
 		PadButton downPad;
 		IconPadButton effectPad;
 		BWidgets::ListBox effectsListbox;
+		PadButton shapePad;
 		PadToggleButton playPad;
 	};
 
@@ -387,6 +394,25 @@ private:
 	BWidgets::Label padMixLabel;
 	Dial padMixDial;
 
+	struct ShapeEditor
+	{
+		int page;
+		int slot;
+		BWidgets::Widget container;
+		ShapeWidget shapeWidget;
+		BWidgets::TextButton cancelButton;
+		BWidgets::TextButton okButton;
+		BWidgets::ImageIcon toolboxIcon;
+		std::array<HaloToggleButton, 5> shapeToolButtons;
+		std::array<HaloButton, 3> editToolButtons;
+		std::array<HaloButton, 3> historyToolButtons;
+		HaloToggleButton gridShowButton;
+		HaloToggleButton gridSnapButton;
+		std::vector<Node> clipboard;
+	};
+
+	ShapeEditor shapeEditor;
+
 	// Definition of styles
 	BColors::ColorSet fgColors = {{{1.0, 1.0, 1.0, 1.0}, {1.0, 1.0, 1.0, 1.0}, {0.1, 0.1, 0.1, 1.0}, {0.0, 0.0, 0.0, 0.0}}};
 	BColors::ColorSet txColors = {{{1.0, 1.0, 1.0, 1.0}, {1.0, 1.0, 1.0, 1.0}, {0.1, 0.1, 0.1, 1.0}, {0.0, 0.0, 0.0, 0.0}}};
@@ -449,7 +475,7 @@ private:
 	BStyles::Fill tabBg = BStyles::Fill (BColors::Color (1.0, 1.0, 1.0, 0.25));
 	BStyles::Fill activeTabBg = BStyles::Fill (BColors::Color (1.0, 1.0, 1.0, 0.75));
 	BStyles::Fill menuBg = BStyles::Fill (BColors::Color (0.0, 0.0, 0.05, 1.0));
-	BStyles::Fill screenBg = BStyles::Fill (BColors::Color (0.0, 0.0, 0.0, 0.8));
+	BStyles::Fill screenBg = BStyles::Fill (BColors::Color (0.0, 0.0, 0.0, 0.9));
 	BStyles::Fill boxBg = BStyles::Fill (BColors::Color (0.0, 0.0, 0.0, 0.9));
 	BStyles::Font ctLabelFont = BStyles::Font ("Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL, 12.0,
 						   BStyles::TEXT_ALIGN_CENTER, BStyles::TEXT_VALIGN_MIDDLE);
@@ -523,7 +549,9 @@ private:
   					 		 {"font", STYLEPTR (&smLabelFont)}}},
 		{"button", 				{{"background", STYLEPTR (&BStyles::blackFill)},
 					 		 {"border", STYLEPTR (&border)},
-				 	 		 {"bgcolors", STYLEPTR (&buttonBgColors)}}},
+				 	 		 {"bgcolors", STYLEPTR (&buttonBgColors)},
+					 	 	 {"textcolors", STYLEPTR (&fgColors)},
+					 	 	 {"font", STYLEPTR (&ctLabelFont)}}},
 		{"dial", 				{{"uses", STYLEPTR (&defaultStyles)},
 					 		 {"fgcolors", STYLEPTR (&fgColors)},
 					 	 	 {"bgcolors", STYLEPTR (&bgColors)},

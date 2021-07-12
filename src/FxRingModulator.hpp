@@ -55,33 +55,30 @@ public:
 		framesPerStep = *framesPerStepPtr;
 	}
 
-	virtual Stereo play (const double position, const double size, const double mixf) override
+	virtual Stereo process (const double position, const double size) override
 	{
 		const Stereo s0 = (**buffer).front();
-		if (!playing) return s0;
-
 		float f = 0.0f;
 		double t = position * framesPerStep / rate;
 		switch (env)
 		{
-			case SINE_WAVE:		f = sin (2.0 * M_PI * t * freq);
-						break;
+			case SINE_WAVE:			f = sin (2.0 * M_PI * t * freq);
+									break;
 
-			case TRIANGLE_WAVE:	f = (fmod (t * freq, 1.0) < 0.5 ? 4.0 * fmod (t * freq, 1.0) - 1.0 : 3.0 - 4.0 * fmod (t * freq, 1.0));
-						break;
+			case TRIANGLE_WAVE:		f = (fmod (t * freq, 1.0) < 0.5 ? 4.0 * fmod (t * freq, 1.0) - 1.0 : 3.0 - 4.0 * fmod (t * freq, 1.0));
+									break;
 
-			case SQUARE_WAVE:	f = (fmod (t * freq, 1.0) < 0.5 ? 1.0 : -1.0);
-						break;
+			case SQUARE_WAVE:		f = (fmod (t * freq, 1.0) < 0.5 ? 1.0 : -1.0);
+									break;
 
-			case SAW_WAVE:		f = 2.0 * fmod (t * freq, 1.0) - 1.0;
-						break;
+			case SAW_WAVE:			f = 2.0 * fmod (t * freq, 1.0) - 1.0;
+									break;
 
 			case REVERSE_SAW_WAVE:	f = 1.0 - 2.0 * fmod (t * freq, 1.0);
-						break;
+									break;
 		};
 
-		const Stereo s1 = BUtilities::mix<Stereo> (s0, s0 * f, ratio);
-		return mix (s0, s1, position, size, mixf);
+		return BUtilities::mix<Stereo> (s0, s0 * f, ratio);
 	}
 
 protected:

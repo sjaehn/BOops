@@ -60,11 +60,9 @@ public:
 		level = DB2CO (-70.0 + 100.0 * LIMIT (params[SLOTS_OPTPARAMS + FX_DISTORTION_LEVEL] + r2 * params[SLOTS_OPTPARAMS + FX_DISTORTION_LEVELRAND], 0.0, 1.0));
 	}
 
-	virtual Stereo play (const double position, const double size, const double mixf) override
+	virtual Stereo process (const double position, const double size) override
 	{
 		const Stereo s0 = (**buffer).front();
-		if (!playing) return s0;
-
 		double l = s0.left * drive / level;
 		double r = s0.right * drive / level;
 		switch (method)
@@ -117,7 +115,7 @@ public:
 				break;
 		}
 
-		return mix (s0, {float (l), float (r)}, position, size, mixf);
+		return Stereo (l, r);
 	}
 
 protected:

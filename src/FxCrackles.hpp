@@ -74,13 +74,12 @@ public:
 		crackles.clear();
 	}
 
-	virtual Stereo play (const double position, const double size, const double mixf) override
+	virtual Stereo process (const double position, const double size) override
 	{
 		double t = double (c) / samplerate;
 		++c;
 
 		const Stereo s0 = (**buffer).front();
-		if (!playing) return s0;
 
 		// Randomly generate new crackles
 		const double r = unidist (rnd);
@@ -105,7 +104,7 @@ public:
 			else ++iit;
 		}
 
-		return mix (s0, s1, position, size, mixf);
+		return s1;
 	}
 
 protected:

@@ -42,8 +42,8 @@
 	rdfs:comment "Glitch effect sequencer LV2 plugin." ;
   	doap:maintainer <http://www.jahnichen.de/sjaehn#me> ;
   	doap:license <http://usefulinc.com/doap/licenses/gpl> ;
-	lv2:microVersion 4 ;
-	lv2:minorVersion 6 ;
+	lv2:microVersion 0 ;
+	lv2:minorVersion 7 ;
 	lv2:optionalFeature lv2:hardRTCapable , state:threadSafeRestore ;
 	lv2:extensionData state:interface , work:interface ;
   	lv2:requiredFeature urid:map , work:schedule ;
@@ -55,7 +55,7 @@
 		atom:supports time:Position ;
 		atom:supports midi:MidiEvent ;
 		lv2:designation lv2:control ;
-		rsz:minimumSize 262144;
+		rsz:minimumSize 524288;
 		lv2:index 0 ;
 		lv2:symbol "control" ;
 		lv2:name "Control" ;
@@ -66,7 +66,7 @@
 		lv2:index 1 ;
 		lv2:symbol "notify" ;
 		lv2:name "Notify" ;
-		rsz:minimumSize 262144;
+		rsz:minimumSize 524288;
 	] , [
 		a lv2:AudioPort , lv2:InputPort ;
 		lv2:index 2 ;

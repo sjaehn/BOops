@@ -82,13 +82,12 @@ public:
 		framesPerStep = *framesPerStepPtr;
 	}
 
-	virtual Stereo play (const double position, const double size, const double mixf) override
+	virtual Stereo process (const double position, const double size) override
 	{
 		const Stereo s0 = (**buffer).front();
-		if (!playing) return s0;
-
 		const double delayL = minDelta + (0.5 - 0.5 * cos (modRate * position * framesPerStep / samplerate)) * modDelta;
 		const double delayR = minDelta + (0.5 - 0.5 * cos (modPhase + modRate * position * framesPerStep / samplerate)) * modDelta;
+		
 		for (int i = 0; i < steps; ++i)
 		{
 			lFilters[i].setDelay (delayL);
@@ -102,8 +101,7 @@ public:
 			s1.right = rFilters[i].process (s1.right);
 		}
 		lastSample = s1;
-
-		return mix (s0, s1, position, size, mixf);
+		return s1;
 	}
 
 protected:

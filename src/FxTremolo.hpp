@@ -51,15 +51,11 @@ public:
 		framesPerStep = *framesPerStepPtr;
 	}
 
-	virtual Stereo play (const double position, const double size, const double mixf) override
+	virtual Stereo process (const double position, const double size) override
 	{
 		const Stereo s0 = (**buffer).front();
-		if (!playing) return s0;
-
 		const float sf = sinf (2.0f * M_PI * freq * position * framesPerStep / samplerate);
-		const Stereo s1 = s0 * (1.0f - depth * 0.5f * (sf + 1.0f));
-
-		return mix (s0, s1, position, size, mixf);
+		return s0 * (1.0f - depth * 0.5f * (sf + 1.0f));
 	}
 
 protected:

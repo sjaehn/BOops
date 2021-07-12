@@ -52,11 +52,9 @@ public:
 		reach = 1.0 + LIMIT (32.0 * params [SLOTS_OPTPARAMS + FX_CHOPPER_REACH], 0, 31);
 	}
 
-	virtual Stereo play (const double position, const double size, const double mixf) override
+	virtual Stereo process (const double position, const double size) override
 	{
 		const Stereo s0 = (**buffer).front();
-		if (!playing) return s0;
-
 		const int p = nr * fmod (position / reach, 1.0);
 		const double frac = double (nr) * fmod (position / reach, 1.0) - double (p);
 		const int step = p % nr;
@@ -76,7 +74,7 @@ public:
 			s1.mix (sn, 0.5 - (1.0 - frac) / smoothing);
 		}
 
-		return mix (s0, s1, position, size, mixf);
+		return s1;
 	}
 
 protected:

@@ -58,7 +58,7 @@
 Slot::Slot () : Slot (nullptr, FX_INVALID, nullptr, nullptr, 0, 0.0f, 0.0) {}
 
 Slot::Slot (BOops* plugin, const BOopsEffectsIndex effect, float* params, Pad* pads, const size_t size, const float mixf, const double framesPerStep) :
-	plugin (plugin), effect (FX_INVALID), fx (nullptr),
+	plugin (plugin), effect (FX_INVALID), slotShape(), shapeMode (false), fx (nullptr),
 	size (size), mixf (mixf), framesPerStep (framesPerStep), buffer (nullptr), shape ()
 {
 	std::fill (startPos, startPos + NR_STEPS, -1);
@@ -237,19 +237,35 @@ Fx* Slot::newFx (const BOopsEffectsIndex effect)
 		default: 			fx = new Fx (&buffer, params, pads);
 	}
 
+	if (fx) fx->setSlotShape (shapeMode ? &slotShape : nullptr);
+
 	return fx;
+}
+
+void Slot::setSlotShape (const Shape<SHAPE_MAXNODES>& source) 
+{
+	slotShape = source;
+	shapeMode = (slotShape != Shape<SHAPE_MAXNODES>());
+	if (fx) fx->setSlotShape (shapeMode ? &slotShape : nullptr);
 }
 
 Stereo Slot::play (const double position)
 {
 	if ((!fx) || (!buffer)) return Stereo();
-	if ((!isPadSet(position)) || (!params[SLOTS_PLAY])) return (*buffer).front();
+	if (!params[SLOTS_PLAY]) return (*buffer).front();
+
+	if (shapeMode)
+	{
+		const Stereo s0 = (*buffer).front();
+		const Stereo s1 = fx->playShape (position, size, mixf);
+		return BUtilities::mix<Stereo> (s0, s1, mixf);
+	}
+
+	if (!isPadSet(position)) return (*buffer).front();
 
 	const int index = startPos[int(position)];
-
-	// Get effect
 	const double relpos = position - double (index);
 	const Stereo s0 = (*buffer).front();
-	const Stereo s1 = fx->play (relpos, pads[index].size, pads[index].mix);
+	const Stereo s1 = fx->playPad (relpos, pads[index].size, pads[index].mix);
 	return BUtilities::mix<Stereo> (s0, s1, mixf);
 }

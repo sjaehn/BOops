@@ -47,11 +47,9 @@ public:
 		f = pow (2, bit - 1);
 	}
 
-	virtual Stereo play (const double position, const double size, const double mixf) override
+	virtual Stereo process (const double position, const double size) override
 	{
 		const Stereo s0 = (**buffer).front();
-		if (!playing) return s0;
-
 		const float l1 = LIMIT (s0.left + limit, 0, 2.0 * limit) / (2.0 * limit);
 		const float l2 = round (l1 * f);
 		const float l3 = (l2 - 0.5 * f) * 2.0 * limit / f;
@@ -59,7 +57,7 @@ public:
 		const float r2 = round (r1 * f);
 		const float r3 = (r2 - 0.5 * f) * 2.0 * limit / f;
 
-		return mix (s0, Stereo (l3, r3), position, size, mixf);
+		return Stereo (l3, r3);
 	}
 
 protected:

@@ -43,12 +43,9 @@ public:
 		amp = LIMIT (2.0 * (params[SLOTS_OPTPARAMS + FX_AMP_AMP] + r * params[SLOTS_OPTPARAMS + FX_AMP_AMPRAND]), 0.0, 2.0);
 	}
 
-	virtual Stereo play (const double position, const double size, const double mixf) override
+	virtual Stereo process (const double position, const double size) override
 	{
-		const Stereo s0 = (**buffer).front();
-		if (!playing) return s0;
-
-		return mix (s0, s0 * amp, position, size, mixf);
+		return (**buffer).front() * amp;
 	}
 
 protected:

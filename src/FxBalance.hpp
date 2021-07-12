@@ -45,18 +45,14 @@ public:
 		balance = LIMIT (2.0 * (params[SLOTS_OPTPARAMS + FX_BALANCE_BALANCE] + r * params[SLOTS_OPTPARAMS + FX_BALANCE_BALANCERAND]) - 1.0, -1.0, 1.0);
 	}
 
-	virtual Stereo play (const double position, const double size, const double mixf) override
+	virtual Stereo process (const double position, const double size) override
 	{
 		const Stereo s0 = (**buffer).front();
-		if (!playing) return s0;
-
-		const Stereo s1 = Stereo
+		return Stereo
 		{
 			(balance < 0.0f ? s0.left + (0.0f - balance) * s0.right : (1.0f - balance) * s0.left),
 			(balance < 0.0f ? (balance + 1.0f) * s0.right : s0.right + balance * s0.left)
 		};
-
-		return mix (s0, s1, position, size, mixf);
 	}
 
 protected:

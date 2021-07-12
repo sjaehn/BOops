@@ -48,11 +48,8 @@ public:
 		framesPerStutter = framesPerStep / double (stutters);
 	}
 
-	virtual Stereo play (const double position, const double size, const double mixf) override
+	virtual Stereo process (const double position, const double size) override
 	{
-		const Stereo s0 = (**buffer).front();
-		if (!playing) return s0;
-
 		const long nr = position * double (stutters);
 		const double frac = fmod (position, 1.0 / double (stutters));
 		const double frame = nr * framesPerStutter;
@@ -61,18 +58,18 @@ public:
 		if (frac < 0.5 * smoothing)
 		{
 			const double f2 = (nr > 0 ? (nr - 1) * framesPerStutter : nr * framesPerStutter);
-			Stereo s2 = getSample (f2);
+			const Stereo s2 = getSample (f2);
 			s1.mix (s2, 0.5 - frac / smoothing);
 		}
 
 		else if (frac > 1.0 - 0.5 * smoothing)
 		{
 			const double f2 = (nr + 1) * framesPerStutter;
-			Stereo s2 = getSample (f2);
+			const Stereo s2 = getSample (f2);
 			s1.mix (s2, 0.5 - (1.0 - frac) / smoothing);
 		}
 
-		return mix (s0, s1, position, size, mixf);
+		return s1;
 	}
 
 protected:

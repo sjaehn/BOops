@@ -67,11 +67,9 @@ public:
 		unit = LIMIT (params[SLOTS_OPTPARAMS + FX_WAVESHAPER_UNIT], 0, 1);
 	}
 
-	virtual Stereo play (const double position, const double size, const double mixf) override
+	virtual Stereo process (const double position, const double size) override
 	{
 		const Stereo s0 = (**buffer).front();
-		if (!playing) return s0;
-
 		float l;
 		float r;
 		float lf;
@@ -97,8 +95,7 @@ public:
 			rf = DB2CO (-90.0f + shape->getMapValue (r) * 120.0f);
 		}
 
-		const Stereo s1 = Stereo (SGN (s0.left) * lf * gain, SGN (s0.right) * rf * gain);
-		return mix (s0, s1, position, size, mixf);
+		return Stereo (SGN (s0.left) * lf * gain, SGN (s0.right) * rf * gain);
 	}
 
 protected:

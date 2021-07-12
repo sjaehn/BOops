@@ -47,10 +47,9 @@ public:
 		count = 0;
 	}
 
-	virtual Stereo play (const double position, const double size, const double mixf) override
+	virtual Stereo process (const double position, const double size) override
 	{
 		const Stereo s0 = (**buffer).front();
-		if (!playing) return s0;
 
 		if (count + 1.0 >= 1.0 / decimate)
 		{
@@ -67,7 +66,7 @@ public:
 			stack += s0;
 		}
 
-		return mix (s0, live, position, size, mixf);
+		return live;
 	}
 
 protected:

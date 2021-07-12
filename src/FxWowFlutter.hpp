@@ -60,11 +60,8 @@ public:
 		framesPerStep = *framesPerStepPtr;
 	}
 
-	virtual Stereo play (const double position, const double padsize, const double mixf) override
+	virtual Stereo process (const double position, const double size) override
 	{
-		const Stereo s0 = (**buffer).front();
-		if (!playing) return s0;
-
 		const double wow = (0.5 - 0.5 * cos (2 * M_PI * position * wowRate)) * wowDepth;
 		const double flutter = (0.5 - 0.5 * cos (2 * M_PI * position * flutterRate)) * flutterDepth;
 		const double fade =
@@ -72,14 +69,13 @@ public:
 			position < 0.5 ?
 			0.5 - 0.5 * cos (2 * M_PI * position) :
 			(
-				position > padsize - 0.5 ?
-				0.5 - 0.5 * cos (2 * M_PI * (padsize - position)) :
+				position > size - 0.5 ?
+				0.5 - 0.5 * cos (2 * M_PI * (size - position)) :
 				1.0
 			)
 		);
 		const double frame = framesPerStep * fade * (wow + flutter);
-		Stereo s1 = getSample (frame);
-		return mix (s0, s1, position, padsize, mixf);
+		return getSample (frame);
 	}
 
 protected:

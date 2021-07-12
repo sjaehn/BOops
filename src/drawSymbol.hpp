@@ -41,10 +41,12 @@ enum SymbolIndex
         UPSYMBOL        = 4,
         DOWNSYMBOL      = 5,
         PLAYSYMBOL      = 6,
-        MIDISYMBOL      = 7
+        MIDISYMBOL      = 7,
+        SHAPESYMBOL     = 8,
+        PATTERNSYMBOL   = 9,
 };
 
-const std::string symboltxt[9] =
+const std::string symboltxt[11] =
 {
         "",
         BOOPS_LABEL_ADD,
@@ -54,7 +56,9 @@ const std::string symboltxt[9] =
         BOOPS_LABEL_MOVE_UP,
         BOOPS_LABEL_MOVE_DOWN,
         BOOPS_LABEL_PLAY,
-        BOOPS_LABEL_MIDI
+        BOOPS_LABEL_MIDI,
+        BOOPS_LABEL_SHAPE_PATTERN, 
+        BOOPS_LABEL_SHAPE_PATTERN
 };
 
 void drawSymbol (cairo_t* cr, const double x0, const double y0, const double w, const double h, const BColors::Color& color, SymbolIndex symbol = NOSYMBOL)
@@ -130,6 +134,41 @@ void drawSymbol (cairo_t* cr, const double x0, const double y0, const double w, 
                                                 cairo_rectangle (cr, x0 + 0.5 * w - 0.2 * ext + i * 0.25 * ext, y0 + 0.5 * h - 0.45 * ext, 0.15 * ext, 0.6 * ext);
                                                 cairo_fill (cr);
                                         }
+                                        break;
+
+                case SHAPESYMBOL:       cairo_set_line_width (cr, 2.0);
+                                        cairo_move_to (cr, x0 + 0.5 * w - 0.5 * ext, y0 + 0.5 * h + 0.3 * ext);
+                                        cairo_line_to (cr, x0 + 0.5 * w - 0.4 * ext, y0 + 0.5 * h + 0.5 * ext);
+                                        cairo_line_to (cr, x0 + 0.5 * w - 0.2 * ext, y0 + 0.5 * h + 0.5 * ext);
+                                        cairo_line_to (cr, x0 + 0.5 * w - 0.1 * ext, y0 + 0.5 * h + 0.3 * ext);
+                                        cairo_line_to (cr, x0 + 0.5 * w + 0.0 * ext, y0 + 0.5 * h - 0.1 * ext);
+                                        cairo_line_to (cr, x0 + 0.5 * w + 0.1 * ext, y0 + 0.5 * h - 0.3 * ext);
+                                        cairo_line_to (cr, x0 + 0.5 * w + 0.2 * ext, y0 + 0.5 * h - 0.5 * ext);
+                                        cairo_line_to (cr, x0 + 0.5 * w + 0.4 * ext, y0 + 0.5 * h - 0.5 * ext);
+                                        cairo_line_to (cr, x0 + 0.5 * w + 0.5 * ext, y0 + 0.5 * h - 0.3 * ext);
+                                        cairo_stroke (cr);
+                                        break;
+
+                case PATTERNSYMBOL:     cairo_set_line_width (cr, 0.0);
+                                        cairo_rectangle (cr, x0 + 0.5 * w - 0.5 * ext, y0 + 0.5 * h - 0.5 * ext, 0.2 * w, 0.1 * h);
+                                        cairo_fill (cr);
+                                        cairo_rectangle (cr, x0 + 0.5 * w - 0.1 * ext, y0 + 0.5 * h - 0.5 * ext, 0.2 * w, 0.1 * h);
+                                        cairo_fill (cr);
+                                        cairo_rectangle (cr, x0 + 0.5 * w + 0.3 * ext, y0 + 0.5 * h - 0.5 * ext, 0.2 * w, 0.1 * h);
+                                        cairo_fill (cr);
+                                        cairo_rectangle (cr, x0 + 0.5 * w - 0.3 * ext, y0 + 0.5 * h - 0.3 * ext, 0.4 * w, 0.1 * h);
+                                        cairo_fill (cr);
+                                        cairo_rectangle (cr, x0 + 0.5 * w - 0.5 * ext, y0 + 0.5 * h - 0.1 * ext, 0.2 * w, 0.1 * h);
+                                        cairo_fill (cr);
+                                        cairo_rectangle (cr, x0 + 0.5 * w - 0.3 * ext, y0 + 0.5 * h + 0.1 * ext, 0.4 * w, 0.1 * h);
+                                        cairo_fill (cr);
+                                        cairo_rectangle (cr, x0 + 0.5 * w - 0.5 * ext, y0 + 0.5 * h + 0.3 * ext, 0.2 * w, 0.1 * h);
+                                        cairo_fill (cr);
+                                        cairo_rectangle (cr, x0 + 0.5 * w - 0.1 * ext, y0 + 0.5 * h + 0.3 * ext, 0.2 * w, 0.1 * h);
+                                        cairo_fill (cr);
+                                        cairo_rectangle (cr, x0 + 0.5 * w + 0.3 * ext, y0 + 0.5 * h + 0.3 * ext, 0.2 * w, 0.1 * h);
+                                        cairo_fill (cr);
+                                        break;
 
                 default:                break;
         }

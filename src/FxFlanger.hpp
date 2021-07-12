@@ -69,17 +69,39 @@ public:
 		framesPerStep = *framesPerStepPtr;
 	}
 
-	virtual Stereo play (const double position, const double size, const double mixf) override
+	virtual Stereo process (const double position, const double size) override
 	{
-		const Stereo s0 = (**buffer).front();
-		if (!playing) return s0;
-
 		const double delayL = minDelay + (0.5 - 0.5 * cos (freq * position * framesPerStep / samplerate)) * modDelay;
 		const double delayR = minDelay + (0.5 - 0.5 * cos (phase + freq * position * framesPerStep / samplerate)) * modDelay;
 		const long frameL = (delayL * samplerate);
 		const long frameR = (delayR * samplerate);
-		Stereo s1 = Stereo ((**buffer)[frameL].left, (**buffer)[frameR].right);
+		return Stereo ((**buffer)[frameL].left, (**buffer)[frameR].right);
+	}
+
+	virtual Stereo playPad (const double position, const double size, const double mixf) override
+	{
+		const Stereo s0 = (**buffer).front();
+		if (!playing) return s0;
+
+		Stereo s1 = process (position, size);
 		s1 = mix (s0, s1, position, size, mixf);
+		Stereo s2 = s1;
+		(**buffer).front() = s2.mix (s0, 1.0f - feedback);
+		return s1;
+	}
+
+	virtual Stereo playShape (const double position, const double size, const double mixf) override
+	{
+		const Stereo s0 = (**buffer).front();
+		if (!slotShape) return s0;
+
+		double mx = slotShape->getMapValue (position / size);
+		mx = LIMIT (mx, 0.0, 1.0);
+		if (shapePaused && (mx >= 0.0001)) init (position);
+		shapePaused = (mx < 0.0001);
+
+		Stereo s1 = process (position, size);
+		s1 = BUtilities::mix<Stereo> (s0, pan (s0, s1), mx * mixf);
 		Stereo s2 = s1;
 		(**buffer).front() = s2.mix (s0, 1.0f - feedback);
 		return s1;

@@ -54,14 +54,9 @@ public:
 		framesPerStep = *framesPerStepPtr;
 	}
 
-	virtual Stereo play (const double position, const double size, const double mixf) override
+	virtual Stereo process (const double position, const double size) override
 	{
-		const Stereo s0 = (**buffer).front();
-		if (!playing) return s0;
-
-		const double frame = (log (exp (order * position) + exp (order * reach) - 1) / order - reach) * framesPerStep;
-		Stereo s1 = getSample (frame);
-		return mix (s0, s1, position, size, mixf);
+		return getSample ((log (exp (order * position) + exp (order * reach) - 1) / order - reach) * framesPerStep);
 	}
 
 protected:

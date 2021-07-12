@@ -73,13 +73,31 @@ public:
 		}
 	}
 
-	virtual Stereo play (const double position, const double size, const double mixf) override
+	virtual Stereo playPad (const double position, const double size, const double mixf) override
 	{
 		if (playing && pads && plugin)
 		{
 			for (int i = 0; i < FX_SURPRISE_NR; ++i)
 			{
 				if (slots[i] >= 0) plugin->slots[slots[i]].mixf = (i == act ? adsr (position, size) : 0);
+			}
+		}
+
+		return (**buffer).front();
+	}
+
+	virtual Stereo playShape (const double position, const double size, const double mixf) override
+	{
+		if (playing && slotShape && plugin)
+		{
+			double mx = slotShape->getMapValue (position / size);
+			mx = LIMIT (mx, 0.0, 1.0);
+			if (shapePaused && (mx >= 0.0001)) init (position);
+			shapePaused = (mx < 0.0001);
+
+			for (int i = 0; i < FX_SURPRISE_NR; ++i)
+			{
+				if (slots[i] >= 0) plugin->slots[slots[i]].mixf = (i == act ? mx : 0);
 			}
 		}
 

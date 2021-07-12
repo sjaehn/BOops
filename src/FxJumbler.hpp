@@ -71,14 +71,9 @@ public:
 		}
 	}
 
-	virtual Stereo play (const double position, const double padsize, const double mixf) override
+	virtual Stereo process (const double position, const double size) override
 	{
-		const Stereo s0 = (**buffer).front();
-		if (!playing) return s0;
-
-		const long frame = framesPerStep * delay;
-		const Stereo s1 = (**buffer)[frame];
-		return mix (s0, s1, position, padsize, mixf);
+		return (**buffer)[long (framesPerStep * delay)];
 	}
 
 protected:

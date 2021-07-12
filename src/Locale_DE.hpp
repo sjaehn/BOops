@@ -79,6 +79,7 @@
 #define BOOPS_LABEL_MOVE_UP "Nach oben"
 #define BOOPS_LABEL_MOVE_DOWN "Nach unten"
 #define BOOPS_LABEL_MIDI "MIDI"
+#define BOOPS_LABEL_SHAPE_PATTERN "Shape / Pattern"
 #define BOOPS_LABEL_MENU "Menu"
 #define BOOPS_LABEL_PROBABILITY "Wahrscheinlichk."
 #define BOOPS_LABEL_PROBABILITY_TOOLTIP  \

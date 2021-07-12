@@ -73,11 +73,9 @@ public:
 		offset = (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_OOPSOFFSET] + r1 * params[SLOTS_OPTPARAMS + FX_OOPSOFFSETRAND], 0.0, 1.0) : 0.0);
 	}
 
-	virtual Stereo play (const double position, const double size, const double mixf) override
+	virtual Stereo process (const double position, const double size) override
 	{
 		const Stereo s0 = (**buffer).front();
-		if (!playing) return s0;
-
 		Stereo s1 = Stereo (0, 0);
 		if (position > offset)
 		{
@@ -85,7 +83,7 @@ public:
 			s1 = Stereo (oops.get (frame, 0, samplerate), oops.get (frame, 0, samplerate));
 		}
 
-		return mix (s0, s0 + s1 * amp, position, size, mixf);
+		return s0 + s1 * amp;
 	}
 
 protected:

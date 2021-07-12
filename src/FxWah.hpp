@@ -70,19 +70,15 @@ public:
 		filter = ButterworthBandPassFilter (rate, f * (1.0 - 0.5 * width), f * (1.0 + 0.5 * width), order);
 	}
 
-	virtual Stereo play (const double position, const double size, const double mixf) override
+	virtual Stereo process (const double position, const double size) override
 	{
 		const Stereo s0 = (**buffer).front();
-		if (!playing) return s0;
-
 		const float m = shape->getMapValue (fmod (position / reach, 1.0));
 		const float f = cFreq * (1.0f + depth * m);
 		const float fmin = LIMIT (f * (1.0f - width), 0.0f, 20000.0f);
 		const float fmax = LIMIT (f * (1.0f + width), 0.0f, 20000.0f);
 		filter.set (rate, fmin, fmax, order);
-		const Stereo s1 = filter.push (s0);
-
-		return mix (s0, s1, position, size, mixf);
+		return filter.push (s0);
 	}
 
 protected:
