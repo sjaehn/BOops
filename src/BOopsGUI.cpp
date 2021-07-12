@@ -1036,6 +1036,17 @@ void BOopsGUI::resize ()
 	RESIZE (midiCancelButton, 170, 90, 60, 20, sz);
 	RESIZE (midiOkButton, 280, 90, 60, 20, sz);
 
+	RESIZE (shapeEditor.container, 0, LIMIT (shapeEditor.slot * 24, 0, 128), 800, 160, sz);
+	RESIZE (shapeEditor.shapeWidget, 0, 10, 800, 110, sz);
+	RESIZE (shapeEditor.cancelButton, 610, 130, 80, 20, sz);
+	RESIZE (shapeEditor.okButton, 710, 130, 80, 20, sz);
+	RESIZE (shapeEditor.toolboxIcon, 246, 130, 308, 20, sz);
+	for (unsigned int i = 0; i < shapeEditor.shapeToolButtons.size(); ++i) RESIZE (shapeEditor.shapeToolButtons[i], 243.5 + i * 22.5, 130, 20, 20, sz);
+	for (unsigned int i = 0; i < shapeEditor.editToolButtons.size(); ++i) RESIZE (shapeEditor.editToolButtons[i], 363.5 + i * 22.5, 130, 20, 20, sz);
+	for (unsigned int i = 0; i < shapeEditor.historyToolButtons.size(); ++i) RESIZE (shapeEditor.historyToolButtons[i], 448.5 + i * 22.5, 130, 20, 20, sz);
+	RESIZE (shapeEditor.gridShowButton, 513.5, 130, 20, 20, sz);
+	RESIZE (shapeEditor.gridSnapButton, 536, 130, 20, 20, sz);
+
 	RESIZE (monitor, 310, 170, 800, 288, sz);
 	RESIZE (padSurface, 310, 170, 800, 288, sz);
 	RESIZE (editContainer, 538, 466, 364, 24, sz);
