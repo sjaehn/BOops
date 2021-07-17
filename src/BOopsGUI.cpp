@@ -1812,13 +1812,13 @@ void BOopsGUI::clearSlot (int slot)
 		for (int j = 0; j < NR_STEPS; ++j) p.setPad (slot, j, Pad());
 	}
 
-	for (int i = 0; i < NR_PAGES; ++i) shapes[i][slot] = Shape<SHAPE_MAXNODES>(); 
+	for (int i = 0; i < pageMax; ++i) shapes[i][slot] = Shape<SHAPE_MAXNODES>(); 
 
 	slotParams[slot].shape.setDefaultShape();
 	sendShape (slot);
 	if (slotParams[slot].optionWidget) slotParams[slot].optionWidget->setShape (slotParams[slot].shape);
 
-	for (int i = 0; i < NR_PAGES; ++i) sendSlot (i, slot);
+	for (int i = 0; i <= pageMax; ++i) sendSlot (i, slot);
 	drawPad (slot);
 }
 
@@ -1835,13 +1835,13 @@ void BOopsGUI::copySlot (int dest, int source)
 		for (int j = 0; j < NR_STEPS; ++j) p.setPad (dest, j, p.getPad (source, j));
 	}
 
-	for (int i = 0; i < NR_PAGES; ++i) shapes[i][dest] = shapes[i][source];
+	for (int i = 0; i <= pageMax; ++i) shapes[i][dest] = shapes[i][source];
 
 	slotParams[dest].shape = slotParams[source].shape;
 	sendShape (dest);
 	if (slotParams[dest].optionWidget) slotParams[dest].optionWidget->setShape (slotParams[dest].shape);
 
-	for (int i = 0; i < NR_PAGES; ++i) sendSlot (i, dest);
+	for (int i = 0; i <= pageMax; ++i) sendSlot (i, dest);
 	drawPad (dest);
 }
 
@@ -1867,14 +1867,14 @@ void BOopsGUI::insertSlot (int slot, const BOopsEffectsIndex effect)
 	{
 		for (int j = 0; j < NR_STEPS; ++j) p.setPad (slot, j, Pad());
 	}
-	for (int i = 0; i < NR_PAGES; ++i) shapes[i][slot] = Shape<SHAPE_MAXNODES>();
+	for (int i = 0; i <= pageMax; ++i) shapes[i][slot] = Shape<SHAPE_MAXNODES>();
 	slotParams[slot].shape.setDefaultShape();
 	sendShape (slot);
 	if (slotParams[slot].optionWidget) slotParams[slot].optionWidget->setShape (slotParams[slot].shape);
 
 	for (Pattern& p : patterns) p.store();
 	//updateSlots();
-	for (int i = 0; i < NR_PAGES; ++i) sendSlot (i, slot);
+	for (int i = 0; i <= pageMax; ++i) sendSlot (i, slot);
 	drawPad (slot);
 }
 
@@ -1917,7 +1917,7 @@ void BOopsGUI::swapSlots (int slot1, int slot2)
 	}
 
 	// Swap shapes
-	for (int i = 0; i < NR_PAGES; ++i) 
+	for (int i = 0; i <= pageMax; ++i) 
 	{
 		Shape<SHAPE_MAXNODES> s = shapes[i][slot1];
 		shapes[i][slot1] = shapes[i][slot2];
@@ -1943,10 +1943,10 @@ void BOopsGUI::swapSlots (int slot1, int slot2)
 
 	patterns[pageAct].store();
 	updateSlot (slot1);
-	for (int i = 0; i < NR_PAGES; ++i) sendSlot (i, slot1);
+	for (int i = 0; i <= pageMax; ++i) sendSlot (i, slot1);
 	drawPad (slot1);
 	updateSlot (slot2);
-	for (int i = 0; i < NR_PAGES; ++i) sendSlot (i, slot2);
+	for (int i = 0; i <= pageMax; ++i) sendSlot (i, slot2);
 	drawPad (slot2);
 }
 
@@ -1973,15 +1973,15 @@ void BOopsGUI::moveSlot (int source, int target)
 		// Buffer source
 		// Pads
 		std::array<std::array<Pad, NR_STEPS>, NR_PAGES> sourcePads;
-		for (int i = 0; i < NR_PAGES; ++i)
+		for (int i = 0; i <= pageMax; ++i)
 		{
 
 			for (int j = 0; j < NR_STEPS; ++j) sourcePads[i][j] = patterns[i].getPad (source, j);
 		}
 
-		// TODO shapes
+		// Shapes
 		std::array<Shape<SHAPE_MAXNODES>, NR_PAGES> sourceShapes;
-		for (int i = 0; i < NR_PAGES; ++i) sourceShapes[i] = shapes[i][source];
+		for (int i = 0; i <= pageMax; ++i) sourceShapes[i] = shapes[i][source];
 
 		// Params
 		std::array<double, SLOTS_PARAMS + NR_PARAMS> sourceParams;
@@ -1994,13 +1994,13 @@ void BOopsGUI::moveSlot (int source, int target)
 		for (int i = source; i != target - offs; i += inc)
 		{
 			// Move pads
-			for (Pattern& p : patterns)
+			for (int pg = 0; pg <= pageMax; ++ pg)
 			{
-				for (int j = 0; j < NR_STEPS; ++j) p.setPad (i, j, p.getPad (i + inc, j));
+				for (int j = 0; j < NR_STEPS; ++j) patterns[pg].setPad (i, j, patterns[pg].getPad (i + inc, j));
 			}
 
 			// TODO Move shapes
-			for (int j = 0; j < NR_PAGES; ++j) shapes[j][i] = shapes[j][i + inc];
+			for (int j = 0; j <= pageMax; ++j) shapes[j][i] = shapes[j][i + inc];
 
 			// Move params
 			for (int j = 0; j < SLOTS_PARAMS + NR_PARAMS; ++j)
@@ -2016,7 +2016,7 @@ void BOopsGUI::moveSlot (int source, int target)
 		}
 
 		// Write target
-		for (int i = 0; i < NR_PAGES; ++i)
+		for (int i = 0; i <= pageMax; ++i)
 		{
 			for (int j = 0; j < NR_STEPS; ++j) patterns[i].setPad (target - offs, j, sourcePads[i][j]);
 		}
@@ -2031,7 +2031,7 @@ void BOopsGUI::moveSlot (int source, int target)
 		for (int i = source; i != target + inc - offs; i += inc)
 		{
 			updateSlot (i);
-			for (int j = 0; j < NR_PAGES; ++j) sendSlot (j, i);
+			for (int j = 0; j <= pageMax; ++j) sendSlot (j, i);
 			drawPad (i);
 		}
 		gotoSlot (target - offs);

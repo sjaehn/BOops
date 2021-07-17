@@ -536,8 +536,6 @@ void BOops::run (uint32_t n_samples)
 						pages[pg].shapes[slot] = shape;
 						if (pg == pageNr) slots[slot].setSlotShape (shape);
 
-						fprintf (stderr, "Shape %i %i %li\n", pg, slot, pages[pg].shapes[slot].size());
-
 						scheduleStateChanged = true;
 					}
 				}
@@ -973,7 +971,7 @@ void BOops::resizeSteps ()
 
 void BOops::notifyAllSlotsToGui ()
 {
-	for (unsigned int page = 0; page < NR_PAGES; ++page)
+	for (unsigned int page = 0; page <= pageMax; ++page)
 	{
 		for (unsigned int slot = 0; slot < NR_SLOTS; ++slot)
 		{
