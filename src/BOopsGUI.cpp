@@ -2413,7 +2413,8 @@ void BOopsGUI::valueChangedCallback(BEvents::Event* event)
 			case AUTOPLAY_BPB:	value = floor (value);
 						break;
 
-			case STEPS:		ui->drawPad();
+			case STEPS:	ui->shapeEditor.shapeWidget.setMinorXSteps (1.0/value);	
+						ui->drawPad();
 						break;
 
 			default:		if (controllerNr >= SLOTS)
@@ -3496,7 +3497,7 @@ void BOopsGUI::padsPressedCallback (BEvents::Event* event)
 						ui->shapeEditor.shapeWidget.setValueEnabled (true);
 						ui->shapeEditor.shapeWidget.setScaleParameters (0.05, 0.0, 1.1);
 						ui->shapeEditor.shapeWidget.setMajorXSteps (1.0);
-						ui->shapeEditor.shapeWidget.setMinorXSteps (1.0/16.0);
+						ui->shapeEditor.shapeWidget.setMinorXSteps (1.0/maxstep);
 						ui->shapeEditor.shapeWidget.setLowerLimit (0.0);
 						ui->shapeEditor.shapeWidget.setHigherLimit (1.0);
 						ui->shapeEditor.container.moveTo (0, LIMIT (row * 24 * ui->sz, 0, 128 * ui->sz));
