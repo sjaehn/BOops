@@ -470,7 +470,6 @@ But do not change or delete any definition symbol!
 
 * Slot shapes
   * Fade in/out if slot containing shape moved
-  * Save & resore
   * Optimize buffer size
   * Documentation
 * Remove redundant DSP GUI communication

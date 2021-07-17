@@ -1525,8 +1525,50 @@ LV2_State_Status BOops::state_save (LV2_State_Store_Function store, LV2_State_Ha
 
 	// Store shapes
 	{
-		char shapesDataString[0x10010] = "Shape data:\n";
+		char shapesDataString[0x110000] = "";
 
+		// Slot shapes
+		for (int pageNr = 0; pageNr <= pageMax; ++pageNr)
+		{
+			strcat (shapesDataString, "\nShape data slots page ");
+			char pageString[16];
+			snprintf (pageString, 12, "%d", pageNr);
+			strcat (shapesDataString, pageString);
+			strcat (shapesDataString, ":\n");
+			for (int slotNr = 0; slotNr < NR_SLOTS; ++slotNr)
+			{
+				if (pages[pageNr].shapes[slotNr] != Shape<SHAPE_MAXNODES>())
+				{
+					for (unsigned int nodeNr = 0; nodeNr < pages[pageNr].shapes[slotNr].size(); ++nodeNr)
+					{
+						char valueString[160];
+						Node node = pages[pageNr].shapes[slotNr].getNode (nodeNr);
+						snprintf
+						(
+							valueString,
+							126,
+							"slo:%d; typ:%d; ptx:%f; pty:%f; h1x:%f; h1y:%f; h2x:%f; h2y:%f",
+							slotNr,
+							int (node.nodeType),
+							node.point.x,
+							node.point.y,
+							node.handle1.x,
+							node.handle1.y,
+							node.handle2.x,
+							node.handle2.y
+						);
+						if ((slotNr < NR_SLOTS - 1) || (nodeNr < pages[pageNr].shapes[slotNr].size ())) strcat (valueString, ";\n");
+						else strcat(valueString, "\n");
+						strcat (shapesDataString, valueString);
+					}
+				}
+			}
+			strcat(shapesDataString, "\n");
+		}
+
+
+		// Param shapes
+		strcat (shapesDataString, "\nShape data param:\n");
 		for (int slotNr = 0; slotNr < NR_SLOTS; ++slotNr)
 		{
 			if (!slots[slotNr].shape.isDefault())
@@ -1912,97 +1954,166 @@ LV2_State_Status BOops::state_restore (LV2_State_Retrieve_Function retrieve, LV2
 	const void* shapesData = retrieve(handle, urids.bOops_shapeData, &size, &type, &valflags);
 	if (shapesData && (type == urids.atom_String))
 	{
-		Shape<SHAPE_MAXNODES> shapes[NR_SLOTS];
-		for (int sl = 0; sl < NR_SLOTS; ++sl) shapes[sl].clearShape();
+		std::array<Shape<SHAPE_MAXNODES>, NR_SLOTS> paramShapes;
+		std::array<std::array<Shape<SHAPE_MAXNODES>, NR_SLOTS>, NR_PAGES> pageShapes;
+		for (int sl = 0; sl < NR_SLOTS; ++sl) paramShapes[sl].clearShape();
+		for (int pg = 0; pg < NR_PAGES; ++pg)
+		{
+			for (int sl = 0; sl < NR_SLOTS; ++sl) pageShapes[pg][sl].clearShape();
+		}
 
 		// Parse retrieved data
 		std::string shapesDataString = (char*) shapesData;
 		const std::string keywords[8] = {"slo:", "typ:", "ptx:", "pty:", "h1x:", "h1y:", "h2x:", "h2y:"};
-		while (!shapesDataString.empty())
+
+		size_t startPos = shapesDataString.find ("Shape data");
+		while (startPos != std::string::npos)
 		{
-			// Look for next "slo:"
-			size_t strPos = shapesDataString.find ("slo:");
-			size_t nextPos = 0;
-			if (strPos == std::string::npos) break;	// No "shp:" found => end
-			if (strPos + 4 > shapesDataString.length()) break;	// Nothing more after id => end
-			shapesDataString.erase (0, strPos + 4);
+			shapesDataString.erase (0, startPos + 10);
 
-			int sl;
-			try {sl = BUtilities::stof (shapesDataString, &nextPos);}
-			catch  (const std::exception& e)
-			{
-				fprintf (stderr, "BOops.lv2: Restore shape state incomplete. Can't parse shape number from \"%s...\"", shapesDataString.substr (0, 63).c_str());
-				break;
-			}
+			size_t nextPos = shapesDataString.find ("Shape data");
+			std::string s = shapesDataString.substr (0, nextPos);
 
-			if (nextPos > 0) shapesDataString.erase (0, nextPos);
-			if ((sl < 0) || (sl >= NR_SLOTS))
-			{
-				fprintf (stderr, "BOops.lv2: Restore shape state incomplete. Invalid matrix data block loaded for shape %i.\n", sl);
-				break;
-			}
 
-			// Look for shape data
-			Node node = {NodeType::POINT_NODE, {0, 0}, {0, 0}, {0, 0}};
-			bool isTypeDef = false;
-			for (int i = 1; i < 8; ++i)
+			bool pageMode = false;
+			int pageNr = 0;
+
+			// Check for slots page or param mode
+			size_t slotspagePos = s.find ("slots page");
+			if ((slotspagePos != std::string::npos) && (slotspagePos < 10))
 			{
-				strPos = shapesDataString.find (keywords[i]);
-				if (strPos == std::string::npos) continue;	// Keyword not found => next keyword
-				if (strPos + 4 >= shapesDataString.length())	// Nothing more after keyword => end
-				{
-					shapesDataString ="";
-					break;
-				}
-				if (strPos > 0) shapesDataString.erase (0, strPos + 4);
-				float val;
-				try {val = BUtilities::stof (shapesDataString, &nextPos);}
+				pageMode = true;
+				s.erase (0, slotspagePos + 10);
+
+				// Parse page number
+				size_t np;
+				try {pageNr = BUtilities::stof (s, &np);}
 				catch  (const std::exception& e)
 				{
-					fprintf (stderr, "BOops.lv2: Restore shape state incomplete. Can't parse %s from \"%s...\"",
-							 keywords[i].substr(0,3).c_str(), shapesDataString.substr (0, 63).c_str());
+					fprintf (stderr, "BOops.lv2: Restore shape state incomplete. Can't parse page number from \"%s...\"", s.substr (0, 63).c_str());
 					break;
 				}
 
-				if (nextPos > 0) shapesDataString.erase (0, nextPos);
-				switch (i)
+				if (np > 0) s.erase (0, np);
+				if ((pageNr < 0) || (pageNr >= NR_PAGES))
 				{
-					case 1: node.nodeType = (NodeType)((int)val);
-						isTypeDef = true;
+					fprintf (stderr, "BOops.lv2: Restore shape state incomplete. Invalid matrix data block loaded for page %i.\n", pageNr);
+					break;
+				}
+
+			}
+
+			// Parse shape data block
+			while (!s.empty())
+			{
+				// Look for next "slo:"
+				size_t sPos = s.find ("slo:");
+				size_t nextSPos = 0;
+				if (sPos == std::string::npos) break;	// No "shp:" found => end
+				if (sPos + 4 > s.length()) break;		// Nothing more after id => end
+				s.erase (0, sPos + 4);
+
+				int sl;
+				try {sl = BUtilities::stof (s, &nextSPos);}
+				catch  (const std::exception& e)
+				{
+					fprintf (stderr, "BOops.lv2: Restore shape state incomplete. Can't parse shape number from \"%s...\"", s.substr (0, 63).c_str());
+					break;
+				}
+
+				if (nextSPos > 0) s.erase (0, nextSPos);
+				if ((sl < 0) || (sl >= NR_SLOTS))
+				{
+					fprintf (stderr, "BOops.lv2: Restore shape state incomplete. Invalid matrix data block loaded for shape %i.\n", sl);
+					break;
+				}
+
+				// Look for shape data
+				Node node = {NodeType::POINT_NODE, {0, 0}, {0, 0}, {0, 0}};
+				bool isTypeDef = false;
+				for (int i = 1; i < 8; ++i)
+				{
+					sPos = s.find (keywords[i]);
+					if (sPos == std::string::npos) continue;	// Keyword not found => next keyword
+					if (sPos + 4 >= s.length())	// Nothing more after keyword => end
+					{
+						s ="";
 						break;
-					case 2: node.point.x = val;
+					}
+					if (sPos > 0) s.erase (0, sPos + 4);
+					float val;
+					try {val = BUtilities::stof (s, &nextSPos);}
+					catch  (const std::exception& e)
+					{
+						fprintf (stderr, "BOops.lv2: Restore shape state incomplete. Can't parse %s from \"%s...\"",
+								keywords[i].substr(0,3).c_str(), s.substr (0, 63).c_str());
 						break;
-					case 3:	node.point.y = val;
-						break;
-					case 4:	node.handle1.x = val;
-						break;
-					case 5:	node.handle1.y = val;
-						break;
-					case 6:	node.handle2.x = val;
-						break;
-					case 7:	node.handle2.y = val;
-						break;
-					default:break;
+					}
+
+					if (nextSPos > 0) s.erase (0, nextSPos);
+					switch (i)
+					{
+						case 1: node.nodeType = (NodeType)((int)val);
+							isTypeDef = true;
+							break;
+						case 2: node.point.x = val;
+							break;
+						case 3:	node.point.y = val;
+							break;
+						case 4:	node.handle1.x = val;
+							break;
+						case 5:	node.handle1.y = val;
+							break;
+						case 6:	node.handle2.x = val;
+							break;
+						case 7:	node.handle2.y = val;
+							break;
+						default:break;
+					}
+				}
+
+				// Set data
+				if (isTypeDef) 
+				{
+					if (pageMode) pageShapes[pageNr][sl].appendNode (node);
+					else paramShapes[sl].appendNode (node);
 				}
 			}
 
-			// Set data
-			if (isTypeDef) shapes[sl].appendNode (node);
+			startPos = nextPos;
 		}
 
 		// Validate all shapes
 		for (int sl = 0; sl < NR_SLOTS; ++sl)
 		{
-			if (shapes[sl].size () < 2) shapes[sl].setDefaultShape ();
-			else if (!shapes[sl].validateShape ()) slots[sl].shape.setDefaultShape ();
+			if (paramShapes[sl].size () < 2) paramShapes[sl].setDefaultShape ();
+			else if (!paramShapes[sl].validateShape ()) paramShapes[sl].setDefaultShape ();
+		}
+
+		for (int pg = 0; pg < NR_PAGES; ++pg)
+		{
+			for (int sl = 0; sl < NR_SLOTS; ++sl)
+			{
+				if (pageShapes[pg][sl] != Shape<SHAPE_MAXNODES>())
+				{
+					if (!pageShapes[pg][sl].validateShape ()) pageShapes[pg][sl].setDefaultShape ();
+				}
+			}
 		}
 
 		// Install new shape
 		for (int sl = 0; sl < NR_SLOTS; ++sl)
 		{
-			slots[sl].shape = shapes[sl];
+			slots[sl].shape = paramShapes[sl];
 			scheduleNotifyShape[sl] = true;
 		}
+
+		for (int pg = 0; pg < NR_PAGES; ++pg)
+		{
+			for (int sl = 0; sl < NR_SLOTS; ++sl) pages[pg].shapes[sl] = pageShapes[pg][sl];
+		}
+
+		scheduleNotifyAllSlots = true;
 	}
 
 	return LV2_STATE_SUCCESS;
