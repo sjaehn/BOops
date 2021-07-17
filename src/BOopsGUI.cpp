@@ -1874,7 +1874,7 @@ void BOopsGUI::insertSlot (int slot, const BOopsEffectsIndex effect)
 
 	for (Pattern& p : patterns) p.store();
 	//updateSlots();
-	for (int i = 0; i < NR_PAGES; ++i) sendSlot (pageAct, slot);
+	for (int i = 0; i < NR_PAGES; ++i) sendSlot (i, slot);
 	drawPad (slot);
 }
 
@@ -1943,10 +1943,10 @@ void BOopsGUI::swapSlots (int slot1, int slot2)
 
 	patterns[pageAct].store();
 	updateSlot (slot1);
-	for (int i = 0; i < NR_PAGES; ++i) sendSlot (pageAct, slot1);
+	for (int i = 0; i < NR_PAGES; ++i) sendSlot (i, slot1);
 	drawPad (slot1);
 	updateSlot (slot2);
-	for (int i = 0; i < NR_PAGES; ++i) sendSlot (pageAct, slot2);
+	for (int i = 0; i < NR_PAGES; ++i) sendSlot (i, slot2);
 	drawPad (slot2);
 }
 
@@ -2443,7 +2443,7 @@ void BOopsGUI::valueChangedCallback(BEvents::Event* event)
 									ui->slots[slot].upPad.rename (padstr);
 									ui->slots[slot].downPad.rename (padstr);
 									ui->slots[slot].effectPad.rename (padstr);
-									ui->slots[slot].shapePad.rename (padstr);
+									//ui->slots[slot].shapePad.rename (padstr);
 									ui->slots[slot].playPad.rename (padstr);
 									ui->slotParams[slot].adsrDisplay.rename (padstr);
 									ui->slotParams[slot].attackSlider.rename (padstr);
@@ -4080,8 +4080,8 @@ void BOopsGUI::drawPad (cairo_t* cr, const int row, const int step)
 		cairo_close_path (cr);
 		cairo_set_line_width (cr, 0.0);
 		cairo_pattern_t* pat = cairo_pattern_create_linear (0, yr + hr - 2.0, 0, yr + 2.0);
-		cairo_pattern_add_color_stop_rgba (pat, 0, color.getRed (), color.getGreen (), color.getBlue (), 0.25);
-		cairo_pattern_add_color_stop_rgba (pat, 1, color.getRed (), color.getGreen (), color.getBlue (), 0.75 * color.getAlpha ());
+		cairo_pattern_add_color_stop_rgba (pat, 0, color.getRed (), color.getGreen (), color.getBlue (), 0.1);
+		cairo_pattern_add_color_stop_rgba (pat, 1, color.getRed (), color.getGreen (), color.getBlue (), 0.6 * color.getAlpha ());
 		cairo_set_source (cr, pat);
 		cairo_fill (cr);
 		cairo_pattern_destroy (pat);
