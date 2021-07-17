@@ -181,20 +181,29 @@ parameters to which B.Oops shall respond or you can use MIDI learning. Don't for
 #### Pattern
 
 The pattern matrix is located in the center of user interface. Each line of the pattern is linked to an effect slot in the
-left of the user interface. The color of the pads represents the effect of the respective slot. The brightness represents
-the pad mix property value. The pad probability property value is shown in the middle of the respective pad (only if not
-100 %).
+left of the user interface. And each line harbors either a sequencer pattern or a shape. You can switch between the two
+modes by clicking the respective button on the left of the pattern.
+
+The color of the pads (or the shape) represents the effect of the respective slot. In the pattern mode, the brightness 
+represents the pad mix property value. The pad probability property value is shown in the middle of the respective pad 
+(only if not 100 %). In the shape mode, the y coordinates represent the mix values.
 
 In the default drawing mode, the pattern is also connected with the pad properties toolbox in
 the right of the user interface.
 
 
-##### Drawing mode
+##### Pattern drawing mode
 
 You are in the drawing mode if none of the cut, copy, x-flip, y-flip, or paste symbols is selected. Left-click on a pad to
 set the pad and apply properties from the right of the user interface. If you click again, you will un-set this pad.
 Dragging results in linked pads. And right-clicking results in copying the properties of the respective pad to the pad
 properties in the right of the user interface. Directly change the pad mix property by mouse wheel scrolling.
+
+
+##### Shape drawing mode
+
+Once switched to the shape mode by clicking on the respective symbol on the left of the pattern, you can edit a shape by
+clicking on the shape-harboring pad.
 
 
 ##### Cut, copy or flip mode
@@ -470,8 +479,9 @@ But do not change or delete any definition symbol!
 
 * Slot shapes
   * Fade in/out if slot containing shape moved
+  * Include shapes in pattern cut / copy / paste
+  * Include shapes in pattern save / load
   * Optimize buffer size
-  * Documentation
 * Remove redundant DSP GUI communication
 * Implement effects
   * Pitch (?)
