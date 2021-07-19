@@ -137,15 +137,15 @@ void drawSymbol (cairo_t* cr, const double x0, const double y0, const double w, 
                                         break;
 
                 case SHAPESYMBOL:       cairo_set_line_width (cr, 2.0);
-                                        cairo_move_to (cr, x0 + 0.5 * w - 0.5 * ext, y0 + 0.5 * h + 0.3 * ext);
-                                        cairo_line_to (cr, x0 + 0.5 * w - 0.4 * ext, y0 + 0.5 * h + 0.5 * ext);
-                                        cairo_line_to (cr, x0 + 0.5 * w - 0.2 * ext, y0 + 0.5 * h + 0.5 * ext);
-                                        cairo_line_to (cr, x0 + 0.5 * w - 0.1 * ext, y0 + 0.5 * h + 0.3 * ext);
-                                        cairo_line_to (cr, x0 + 0.5 * w + 0.0 * ext, y0 + 0.5 * h - 0.1 * ext);
-                                        cairo_line_to (cr, x0 + 0.5 * w + 0.1 * ext, y0 + 0.5 * h - 0.3 * ext);
-                                        cairo_line_to (cr, x0 + 0.5 * w + 0.2 * ext, y0 + 0.5 * h - 0.5 * ext);
-                                        cairo_line_to (cr, x0 + 0.5 * w + 0.4 * ext, y0 + 0.5 * h - 0.5 * ext);
-                                        cairo_line_to (cr, x0 + 0.5 * w + 0.5 * ext, y0 + 0.5 * h - 0.3 * ext);
+                                        cairo_move_to (cr, x0 + 0.5 * w - 0.5 * ext, y0 + 0.5 * h + 0.15 * ext);
+                                        cairo_line_to (cr, x0 + 0.5 * w - 0.4 * ext, y0 + 0.5 * h + 0.25 * ext);
+                                        cairo_line_to (cr, x0 + 0.5 * w - 0.2 * ext, y0 + 0.5 * h + 0.25 * ext);
+                                        cairo_line_to (cr, x0 + 0.5 * w - 0.1 * ext, y0 + 0.5 * h + 0.15 * ext);
+                                        cairo_line_to (cr, x0 + 0.5 * w + 0.0 * ext, y0 + 0.5 * h - 0.05 * ext);
+                                        cairo_line_to (cr, x0 + 0.5 * w + 0.1 * ext, y0 + 0.5 * h - 0.15 * ext);
+                                        cairo_line_to (cr, x0 + 0.5 * w + 0.2 * ext, y0 + 0.5 * h - 0.25 * ext);
+                                        cairo_line_to (cr, x0 + 0.5 * w + 0.4 * ext, y0 + 0.5 * h - 0.25 * ext);
+                                        cairo_line_to (cr, x0 + 0.5 * w + 0.5 * ext, y0 + 0.5 * h - 0.15 * ext);
                                         cairo_stroke (cr);
                                         break;
 
@@ -162,9 +162,7 @@ void drawSymbol (cairo_t* cr, const double x0, const double y0, const double w, 
                                         cairo_fill (cr);
                                         cairo_rectangle (cr, x0 + 0.5 * w - 0.3 * ext, y0 + 0.5 * h + 0.1 * ext, 0.4 * w, 0.1 * h);
                                         cairo_fill (cr);
-                                        cairo_rectangle (cr, x0 + 0.5 * w - 0.5 * ext, y0 + 0.5 * h + 0.3 * ext, 0.2 * w, 0.1 * h);
-                                        cairo_fill (cr);
-                                        cairo_rectangle (cr, x0 + 0.5 * w - 0.1 * ext, y0 + 0.5 * h + 0.3 * ext, 0.2 * w, 0.1 * h);
+                                        cairo_rectangle (cr, x0 + 0.5 * w - 0.5 * ext, y0 + 0.5 * h + 0.3 * ext, 0.4 * w, 0.1 * h);
                                         cairo_fill (cr);
                                         cairo_rectangle (cr, x0 + 0.5 * w + 0.3 * ext, y0 + 0.5 * h + 0.3 * ext, 0.2 * w, 0.1 * h);
                                         cairo_fill (cr);

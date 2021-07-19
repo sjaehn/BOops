@@ -27,6 +27,7 @@
 #include "MessageDefinitions.hpp"
 #include "FxDefaults.hpp"
 #include "MidiDefs.hpp"
+#include "to_shapes.hpp"
 
 #include "OptionWidget.hpp"
 #include "OptionSurprise.hpp"
@@ -1305,11 +1306,34 @@ void BOopsGUI::onCloseRequest (BEvents::WidgetEvent* event)
 			// Save pattern
 			if (patternChooser->getButtonText() == BOOPS_LABEL_SAVE)
 			{
+				// Additional data
+				std::string ads = "";
+				for (int sl = 0; sl < NR_SLOTS; ++sl)
+				{
+					if (shapes[pageAct][sl] != Shape<SHAPE_MAXNODES>())
+					{
+						for (unsigned int n = 0; n < shapes[pageAct][sl].size(); ++n)
+						{
+							const Node node = shapes[pageAct][sl].getNode (n);
+							ads +=	"slo:" + std::to_string (sl) + "; " +
+									"typ:" + std::to_string (int (node.nodeType)) + "; " + 
+									"ptx:" + std::to_string (node.point.x) + "; " +
+									"pty:" + std::to_string (node.point.y) + "; " +
+									"h1x:" + std::to_string (node.handle1.x) + "; " +
+									"h1y:" + std::to_string (node.handle1.y) + "; " +
+									"h2x:" + std::to_string (node.handle2.x) + "; " +
+									"h2y:" + std::to_string (node.handle2.y) + ";\n";
+						}
+					}
+				}
+
+				// Write file
+				if (ads != "") ads = "\nAdditional data:\n" + ads;
 				const std::string path = patternChooser->getPath() + BUTILITIES_PATH_SLASH + patternChooser->getFileName();
 				std::ofstream file (path, std::ios::out | std::ios::trunc);
 				if (file.good())
 				{
-					file << "appliesTo: <" BOOPS_URI ">;\n" << patterns[pageAct].toString (std::array<std::string, 5> {"sl", "st", "gt", "sz", "mx"});
+					file << "appliesTo: <" BOOPS_URI ">;\n" << patterns[pageAct].toString (std::array<std::string, 5> {"sl", "st", "gt", "sz", "mx"}) << ads;
 					if (file.is_open()) file.close();
 				}
 
@@ -1336,10 +1360,20 @@ void BOopsGUI::onCloseRequest (BEvents::WidgetEvent* event)
 						{
 							patterns[pageAct].setPad (r, s, p.getPad (r, s));
 						}
-
-						sendSlot (pageAct, r);
 					}
 
+					// Additional data
+					const std::string ads = patternChooser->getAdditionalData();
+					to_shapes (ads, shapes[pageAct]);
+					for (int sl = 0; sl < NR_SLOTS; ++sl)
+					{
+						if (shapes[pageAct][sl] != Shape<SHAPE_MAXNODES>())
+						{
+							if (!shapes[pageAct][sl].validateShape ()) shapes[pageAct][sl].setDefaultShape ();
+						}
+					}
+
+					for (int r = 0; r < NR_SLOTS; ++r) sendSlot (pageAct, r);
 					patterns[pageAct].store ();
 					drawPad ();
 				}

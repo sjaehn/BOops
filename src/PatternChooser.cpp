@@ -45,7 +45,8 @@ PatternChooser::PatternChooser (const double x, const double y, const double wid
 	Pattern (),
 	patternDisplay (0, 0, 0, 0, name + "/textbox"),
 	noFileLabel (0, 0, 0, 0, name + "/label"),
-	patternValid (false)
+	patternValid (false),
+	additionalData ("")
 {
 	clear();
 
@@ -68,7 +69,8 @@ PatternChooser::PatternChooser (const PatternChooser& that) :
 	Pattern (that),
 	patternDisplay (that.patternDisplay), 
 	noFileLabel (that.noFileLabel),
-	patternValid (that.patternValid)
+	patternValid (that.patternValid),
+	additionalData (that.additionalData)
 {
 	add (patternDisplay);
 	add (noFileLabel);
@@ -82,6 +84,7 @@ PatternChooser& PatternChooser::operator= (const PatternChooser& that)
 	patternDisplay = that.patternDisplay;
 	noFileLabel = that.noFileLabel;
 	patternValid = that.patternValid;
+	additionalData = that.additionalData;
 	Pattern::operator= (that);
 	FileChooser::operator= (that);
 
@@ -94,6 +97,8 @@ PatternChooser& PatternChooser::operator= (const PatternChooser& that)
 BWidgets::Widget* PatternChooser::clone () const {return new PatternChooser (*this);}
 
 bool PatternChooser::isValid () const {return patternValid;}
+
+std::string PatternChooser::getAdditionalData() const {return additionalData;}
 
 void PatternChooser::setFileName (const std::string& filename)
 {
@@ -114,6 +119,7 @@ void PatternChooser::setFileName (const std::string& filename)
 
 			// Check header
 			size_t pos = text.find ("appliesTo:");
+			const size_t epos = text.find ("Additional data:");
 			const std::string uri = BOOPS_URI;
 			if (pos != std::string::npos)
 			{
@@ -127,12 +133,15 @@ void PatternChooser::setFileName (const std::string& filename)
 						{
 							// Parse file
 							pos += 1;
-							fromString (text.substr (pos), std::array<std::string, 5> {"sl", "st", "gt", "sz", "mx"});
+							fromString (text.substr (pos, epos - pos), std::array<std::string, 5> {"sl", "st", "gt", "sz", "mx"});
 							patternValid = true;
 						}
 					}
 				}
 			}
+
+			if (epos != std::string::npos) additionalData = text.substr (epos + 16);
+			else additionalData = "";
 
 			// Close file
 			if (file.is_open()) file.close();

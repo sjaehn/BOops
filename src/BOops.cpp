@@ -27,6 +27,7 @@
 #include "BUtilities/stof.hpp"
 #include "BUtilities/Path.hpp"
 #include "getURIs.hpp"
+#include "to_shapes.hpp"
 
 #ifndef SF_FORMAT_MP3
 #ifndef MINIMP3_IMPLEMENTATION
@@ -1976,7 +1977,7 @@ LV2_State_Status BOops::state_restore (LV2_State_Retrieve_Function retrieve, LV2
 			bool pageMode = false;
 			int pageNr = 0;
 
-			// Check for slots page or param mode
+			// Check for slots page
 			size_t slotspagePos = s.find ("slots page");
 			if ((slotspagePos != std::string::npos) && (slotspagePos < 10))
 			{
@@ -1999,119 +2000,34 @@ LV2_State_Status BOops::state_restore (LV2_State_Retrieve_Function retrieve, LV2
 					break;
 				}
 
+				to_shapes (s, pageShapes[pageNr]);
+				for (int pg = 0; pg < NR_PAGES; ++pg)
+				{
+					for (int sl = 0; sl < NR_SLOTS; ++sl)
+					{
+						if (pageShapes[pg][sl] != Shape<SHAPE_MAXNODES>())
+						{
+							if (!pageShapes[pg][sl].validateShape ()) pageShapes[pg][sl].setDefaultShape ();
+						}
+					}
+				}
+				scheduleNotifyAllSlots = true;
 			}
 
-			// Parse shape data block
-			while (!s.empty())
+			// Param shapes
+			else
 			{
-				// Look for next "slo:"
-				size_t sPos = s.find ("slo:");
-				size_t nextSPos = 0;
-				if (sPos == std::string::npos) break;	// No "shp:" found => end
-				if (sPos + 4 > s.length()) break;		// Nothing more after id => end
-				s.erase (0, sPos + 4);
-
-				int sl;
-				try {sl = BUtilities::stof (s, &nextSPos);}
-				catch  (const std::exception& e)
+				to_shapes (s, paramShapes);
+				for (int sl = 0; sl < NR_SLOTS; ++sl)
 				{
-					fprintf (stderr, "BOops.lv2: Restore shape state incomplete. Can't parse shape number from \"%s...\"", s.substr (0, 63).c_str());
-					break;
-				}
-
-				if (nextSPos > 0) s.erase (0, nextSPos);
-				if ((sl < 0) || (sl >= NR_SLOTS))
-				{
-					fprintf (stderr, "BOops.lv2: Restore shape state incomplete. Invalid matrix data block loaded for shape %i.\n", sl);
-					break;
-				}
-
-				// Look for shape data
-				Node node = {NodeType::POINT_NODE, {0, 0}, {0, 0}, {0, 0}};
-				bool isTypeDef = false;
-				for (int i = 1; i < 8; ++i)
-				{
-					sPos = s.find (keywords[i]);
-					if (sPos == std::string::npos) continue;	// Keyword not found => next keyword
-					if (sPos + 4 >= s.length())	// Nothing more after keyword => end
-					{
-						s ="";
-						break;
-					}
-					if (sPos > 0) s.erase (0, sPos + 4);
-					float val;
-					try {val = BUtilities::stof (s, &nextSPos);}
-					catch  (const std::exception& e)
-					{
-						fprintf (stderr, "BOops.lv2: Restore shape state incomplete. Can't parse %s from \"%s...\"",
-								keywords[i].substr(0,3).c_str(), s.substr (0, 63).c_str());
-						break;
-					}
-
-					if (nextSPos > 0) s.erase (0, nextSPos);
-					switch (i)
-					{
-						case 1: node.nodeType = (NodeType)((int)val);
-							isTypeDef = true;
-							break;
-						case 2: node.point.x = val;
-							break;
-						case 3:	node.point.y = val;
-							break;
-						case 4:	node.handle1.x = val;
-							break;
-						case 5:	node.handle1.y = val;
-							break;
-						case 6:	node.handle2.x = val;
-							break;
-						case 7:	node.handle2.y = val;
-							break;
-						default:break;
-					}
-				}
-
-				// Set data
-				if (isTypeDef) 
-				{
-					if (pageMode) pageShapes[pageNr][sl].appendNode (node);
-					else paramShapes[sl].appendNode (node);
+					if (paramShapes[sl].size () < 2) paramShapes[sl].setDefaultShape ();
+					else if (!paramShapes[sl].validateShape ()) paramShapes[sl].setDefaultShape ();
+					scheduleNotifyShape[sl] = true;
 				}
 			}
 
 			startPos = nextPos;
 		}
-
-		// Validate all shapes
-		for (int sl = 0; sl < NR_SLOTS; ++sl)
-		{
-			if (paramShapes[sl].size () < 2) paramShapes[sl].setDefaultShape ();
-			else if (!paramShapes[sl].validateShape ()) paramShapes[sl].setDefaultShape ();
-		}
-
-		for (int pg = 0; pg < NR_PAGES; ++pg)
-		{
-			for (int sl = 0; sl < NR_SLOTS; ++sl)
-			{
-				if (pageShapes[pg][sl] != Shape<SHAPE_MAXNODES>())
-				{
-					if (!pageShapes[pg][sl].validateShape ()) pageShapes[pg][sl].setDefaultShape ();
-				}
-			}
-		}
-
-		// Install new shape
-		for (int sl = 0; sl < NR_SLOTS; ++sl)
-		{
-			slots[sl].shape = paramShapes[sl];
-			scheduleNotifyShape[sl] = true;
-		}
-
-		for (int pg = 0; pg < NR_PAGES; ++pg)
-		{
-			for (int sl = 0; sl < NR_SLOTS; ++sl) pages[pg].shapes[sl] = pageShapes[pg][sl];
-		}
-
-		scheduleNotifyAllSlots = true;
 	}
 
 	return LV2_STATE_SUCCESS;

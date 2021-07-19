@@ -49,6 +49,7 @@ public:
 
 	virtual void setFileName (const std::string& filename) override;
 	bool isValid () const;
+	std::string getAdditionalData() const;
 
 	virtual void resize () override;
 	virtual void resize (const double width, const double height) override;
@@ -63,6 +64,7 @@ protected:
 	BWidgets::DrawingSurface patternDisplay;
 	BWidgets::Label noFileLabel;
 	bool patternValid;
+	std::string additionalData;
 
 	void drawPattern();
 	virtual std::function<void (BEvents::Event*)> getFileListBoxClickedCallback() override;

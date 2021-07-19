@@ -480,9 +480,7 @@ But do not change or delete any definition symbol!
 * Slot shapes
   * Fade in/out if slot containing shape moved
   * Include shapes in pattern cut / copy / paste
-  * Include shapes in pattern save / load
   * Optimize buffer size
-* Remove redundant DSP GUI communication
 * Implement effects
   * Pitch (?)
   * Tape start (?)
