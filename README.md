@@ -479,7 +479,7 @@ But do not change or delete any definition symbol!
 
 * Slot shapes
   * Fade in/out if slot containing shape moved
-  * Include shapes in pattern cut / copy / paste
+  * Include shapes in pattern undo / redo / reset
   * Optimize buffer size
 * Implement effects
   * Pitch (?)

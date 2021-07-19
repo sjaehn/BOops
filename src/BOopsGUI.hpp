@@ -239,6 +239,7 @@ private:
 	struct ClipBoard
 	{
 		std::vector<std::vector<Pad>> data;
+		std::vector<Shape<SHAPE_MAXNODES>> shapes;
 		std::pair<int, int> origin;
 		std::pair<int, int> extends;
 		bool ready = true;

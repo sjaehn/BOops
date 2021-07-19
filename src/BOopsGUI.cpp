@@ -3516,7 +3516,7 @@ void BOopsGUI::padsPressedCallback (BEvents::Event* event)
 				if (pointerEvent->getButton() == BDevices::LEFT_BUTTON)
 				{
 					// Check if shape
-					if (ui->shapes[ui->pageAct][row] != Shape<SHAPE_MAXNODES>())
+					if ((ui->shapes[ui->pageAct][row] != Shape<SHAPE_MAXNODES>()) && (event->getEventType() == BEvents::BUTTON_PRESS_EVENT))
 					{
 						ui->shapeEditor.page = ui->pageAct;
 						ui->shapeEditor.slot = row;
@@ -3582,23 +3582,20 @@ void BOopsGUI::padsPressedCallback (BEvents::Event* event)
 							{
 								if (!ui->clipBoard.data.empty ())
 								{
-									for (int r = 0; r < int (ui->clipBoard.data.size ()); ++r)
+									for (int r = 0; (r < int (ui->clipBoard.data.size ())) && (row + r < NR_SLOTS); ++r)
 									{
-										for (int s = 0; s < int (ui->clipBoard.data[r].size ()); ++s)
+										for (int s = 0; (s < int (ui->clipBoard.data[r].size ())) && (step + s < maxstep); ++s)
 										{
-											if
-											(
-												(row + r >= 0) &&
-												(row + r < maxstep) &&
-												(step + s >= 0) &&
-												(step + s < maxstep)
-											)
+											ui->patterns[ui->pageAct].setPad (row + r, step + s, ui->clipBoard.data.at(r).at(s));
+											if ((ui->clipBoard.origin.second == 0) && (s == 0) && (r < ui->clipBoard.shapes.size ())) 
 											{
-												ui->patterns[ui->pageAct].setPad (row + r, step + s, ui->clipBoard.data.at(r).at(s));
-												ui->sendPad (ui->pageAct, row + r, step + s);
-												ui->drawPad (row + r, step + s);
+												ui->shapes[ui->pageAct][row + r] = ui->clipBoard.shapes.at(r);
+												ui->shapes[ui->pageAct][row + r].validateShape();
 											}
 										}
+
+										ui->sendSlot (ui->pageAct, row + r);
+										ui->drawPad (row + r);
 									}
 								}
 							}
@@ -3695,6 +3692,7 @@ void BOopsGUI::padsPressedCallback (BEvents::Event* event)
 								ui->sendPad (ui->pageAct, r, clipSMax - ds);
 							}
 						}
+
 						ui->patterns[ui->pageAct].store ();
 						ui->drawPad();
 					}
@@ -3709,11 +3707,24 @@ void BOopsGUI::padsPressedCallback (BEvents::Event* event)
 
 								const Pad pd = ui->patterns[ui->pageAct].getPad (clipRMin + dr, s);
 								ui->patterns[ui->pageAct].setPad (clipRMin + dr, s, ui->patterns[ui->pageAct].getPad (clipRMax - dr, s));
-								ui->sendPad (ui->pageAct, clipRMin + dr, s);
 								ui->patterns[ui->pageAct].setPad (clipRMax - dr, s, pd);
-								ui->sendPad (ui->pageAct, clipRMax - dr, s);
 							}
+
+							if (clipSMin == 0)
+							{
+								const Shape<SHAPE_MAXNODES> s = ui->shapes[ui->pageAct][clipRMin + dr];
+								ui->shapes[ui->pageAct][clipRMin + dr] = ui->shapes[ui->pageAct][clipRMax - dr];
+								ui->shapes[ui->pageAct][clipRMin + dr].validateShape();
+								ui->shapes[ui->pageAct][clipRMax - dr] = s;
+								ui->shapes[ui->pageAct][clipRMax - dr].validateShape();
+							}
+
+							ui->sendSlot (ui->pageAct, clipRMin + dr);
+							ui->sendSlot (ui->pageAct, clipRMax - dr);
 						}
+
+						// TODO Shapes
+
 						ui->patterns[ui->pageAct].store ();
 						ui->drawPad();
 					}
@@ -3722,28 +3733,30 @@ void BOopsGUI::padsPressedCallback (BEvents::Event* event)
 					// Or store selected data in clipboard before deletion (CUT)
 					// Or store selected data anyway (COPY)
 					ui->clipBoard.data.clear ();
+					ui->clipBoard.shapes.clear();
 					for (int r = clipRMin; r <= clipRMax; ++r)
 					{
 						std::vector<Pad> padRow;
 						padRow.clear ();
 						for (int s = clipSMin; s <= clipSMax; ++s) padRow.push_back (ui->patterns[ui->pageAct].getPad (r, s));
 						ui->clipBoard.data.push_back (padRow);
+						ui->clipBoard.shapes.push_back (ui->shapes[ui->pageAct][r]);
 					}
 
 					// CUT
 					if (editNr == EDIT_CUT)
 					{
-						for (int s = clipSMin; s <= clipSMax; ++s)
+						for (int r = clipRMin; r <= clipRMax; ++r)
 						{
-							for (int r = clipRMin; r <= clipRMax; ++r)
+							for (int s = clipSMin; s <= clipSMax; ++s)
 							{
-								// Limit action to not empty pads
-								if (ui->patterns[ui->pageAct].getPad (r, s) != Pad())
-								{
-									ui->patterns[ui->pageAct].setPad (r, s,  Pad ());
-									ui->sendPad (ui->pageAct, r, s);
-								}
+								if (ui->patterns[ui->pageAct].getPad (r, s) != Pad()) ui->patterns[ui->pageAct].setPad (r, s,  Pad ());
 							}
+
+							if (clipSMin == 0) ui->shapes[ui->pageAct][r].clearShape();
+
+							ui->sendSlot (ui->pageAct, r);
+							ui->drawPad (r);
 						}
 						ui->patterns[ui->pageAct].store ();
 					}
