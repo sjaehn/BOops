@@ -3584,14 +3584,15 @@ void BOopsGUI::padsPressedCallback (BEvents::Event* event)
 								{
 									for (int r = 0; (r < int (ui->clipBoard.data.size ())) && (row + r < NR_SLOTS); ++r)
 									{
-										for (int s = 0; (s < int (ui->clipBoard.data[r].size ())) && (step + s < maxstep); ++s)
+										for (int s = 0; (s < int (ui->clipBoard.data[r].size ())) && (step + s < maxstep); )
 										{
-											ui->patterns[ui->pageAct].setPad (row + r, step + s, ui->clipBoard.data.at(r).at(s));
+											ui->setPad (ui->pageAct, row + r, step + s, ui->clipBoard.data.at(r).at(s));
 											if ((ui->clipBoard.origin.second == 0) && (s == 0) && (r < ui->clipBoard.shapes.size ())) 
 											{
 												ui->shapes[ui->pageAct][row + r] = ui->clipBoard.shapes.at(r);
 												ui->shapes[ui->pageAct][row + r].validateShape();
 											}
+											s += (ui->clipBoard.data.at(r).at(s).size > 1.0 ? ui->clipBoard.data.at(r).at(s).size : 1);
 										}
 
 										ui->sendSlot (ui->pageAct, row + r);
@@ -3682,15 +3683,26 @@ void BOopsGUI::padsPressedCallback (BEvents::Event* event)
 					{
 						for (int r = clipRMin; r <= clipRMax; ++r)
 						{
-							for (int ds = 0; ds < int ((clipSMax + 1 - clipSMin) / 2); ++ds)
-							{
+							std::array<Pad, NR_STEPS> pads;
+							for (int i = 0; i < NR_STEPS; ++i) pads[i] = ui->patterns[ui->pageAct].getPad (r, i);
 
-								const Pad pd = ui->patterns[ui->pageAct].getPad (r, clipSMin + ds);
-								ui->patterns[ui->pageAct].setPad (r, clipSMin + ds, ui->patterns[ui->pageAct].getPad (r, clipSMax - ds));
-								ui->sendPad (ui->pageAct, r, clipSMin + ds);
-								ui->patterns[ui->pageAct].setPad (r, clipSMax - ds, pd);
-								ui->sendPad (ui->pageAct, r, clipSMax - ds);
+							for (int ds = clipSMax - clipSMin; ds >= 0; --ds)
+							{
+								Pad pd = pads[clipSMin + ds];
+								int pos = clipSMax - ds;
+								if (pd.size > 1.0)
+								{
+									pos = pos - (pd.size - 1.0);
+									if (pos < 0)
+									{
+										pd.size += pos;
+										pos = 0;
+									}
+								}
+								ui->setPad (ui->pageAct, r, pos, pd);
 							}
+
+							ui->sendSlot (ui->pageAct, r);
 						}
 
 						ui->patterns[ui->pageAct].store ();
@@ -3700,14 +3712,23 @@ void BOopsGUI::padsPressedCallback (BEvents::Event* event)
 					// YFLIP
 					if (editNr == EDIT_YFLIP)
 					{
-						for (int dr = 0; dr <= int ((clipRMax + 1 - clipRMin) / 2); ++dr)
+						for (int dr = 0; dr < int ((clipRMax + 1 - clipRMin) / 2); ++dr)
 						{
-							for (int s = 0; s < clipSMax; ++s)
-							{
+							std::array<Pad, NR_STEPS> pads;
+							for (int i = 0; i < NR_STEPS; ++i) pads[i] = ui->patterns[ui->pageAct].getPad (clipRMin + dr, i);
 
-								const Pad pd = ui->patterns[ui->pageAct].getPad (clipRMin + dr, s);
-								ui->patterns[ui->pageAct].setPad (clipRMin + dr, s, ui->patterns[ui->pageAct].getPad (clipRMax - dr, s));
-								ui->patterns[ui->pageAct].setPad (clipRMax - dr, s, pd);
+							for (int s = clipSMin; s <= clipSMax; )
+							{
+								const Pad pd = ui->patterns[ui->pageAct].getPad (clipRMax - dr, s);
+								ui->setPad (ui->pageAct, clipRMin + dr, s, pd);
+								s += (pd.size > 1.0 ? pd.size : 1);
+							}
+
+							for (int s = clipSMin; s <= clipSMax; )
+							{
+								const Pad pd = pads[s];
+								ui->setPad (ui->pageAct, clipRMax - dr, s, pd);
+								s += (pd.size > 1.0 ? pd.size : 1);
 							}
 
 							if (clipSMin == 0)
@@ -3722,8 +3743,6 @@ void BOopsGUI::padsPressedCallback (BEvents::Event* event)
 							ui->sendSlot (ui->pageAct, clipRMin + dr);
 							ui->sendSlot (ui->pageAct, clipRMax - dr);
 						}
-
-						// TODO Shapes
 
 						ui->patterns[ui->pageAct].store ();
 						ui->drawPad();

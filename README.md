@@ -473,10 +473,15 @@ But do not change or delete any definition symbol!
 ## What's new
 
 * Slot shapes
+* Bugfixes
+  * Fix pattern Y flip glitches
+  * Correctly X flip merged pads
+  * Fix paste merged pads causing overlaps
 
 
 ## TODO
 
+* Remove redundant sendShape() calls if sendPad() called
 * Slot shapes
   * Fade in/out if slot containing shape moved
   * Include shapes in pattern undo / redo / reset
