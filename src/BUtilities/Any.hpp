@@ -73,6 +73,11 @@ public:
                 dataTypeHash = typeid (T).hash_code ();
         }
 
+        template <class T> bool test () const
+        {
+                return (dataptr && (typeid (T).hash_code () == dataTypeHash));
+        }
+
         template <class T> T get () const
         {
                 if ((!dataptr) || (typeid (T).hash_code () != dataTypeHash)) return T ();        // Return () better throw exception

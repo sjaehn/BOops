@@ -233,7 +233,6 @@ private:
 
 	//Pads
 	std::array<Pattern, NR_PAGES> patterns;
-	std::array<std::array<Shape<SHAPE_MAXNODES>, NR_SLOTS>, NR_PAGES> shapes;
 
 
 	struct ClipBoard

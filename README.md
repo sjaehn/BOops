@@ -484,7 +484,6 @@ But do not change or delete any definition symbol!
 * Remove redundant sendShape() calls if sendPad() called
 * Slot shapes
   * Fade in/out if slot containing shape moved
-  * Include shapes in pattern undo / redo / reset
   * Optimize buffer size
 * Implement effects
   * Pitch (?)

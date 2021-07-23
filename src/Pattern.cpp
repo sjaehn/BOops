@@ -54,40 +54,55 @@ void Pattern::setPad (const size_t row, const size_t step, const Pad& pad)
 {
 	size_t r = LIMIT (row, 0, NR_SLOTS);
 	size_t s = LIMIT (step, 0, NR_STEPS);
-	changes.oldMessage.push_back (PadMessage (r, s, pads[r][s]));
-	changes.newMessage.push_back (PadMessage (r, s, pad));
+	changes.oldMessage.push_back (Action (r, s, BUtilities::makeAny<Pad> (pads[r][s])));
+	changes.newMessage.push_back (Action (r, s, BUtilities::makeAny<Pad> (pad)));
 	pads[r][s] = pad;
 }
 
-std::vector<PadMessage> Pattern::undo ()
+Shape<SHAPE_MAXNODES> Pattern::getShape(const size_t row) const
 {
-	store ();
-
-	std::vector<PadMessage> padMessages = journal.undo ();
-	std::reverse (padMessages.begin (), padMessages.end ());
-	for (PadMessage const& p : padMessages)
-	{
-		size_t r = LIMIT (p.row, 0, NR_SLOTS);
-		size_t s = LIMIT (p.step, 0, NR_STEPS);
-		pads[r][s] = Pad (p);
-	}
-
-	return padMessages;
+        return shapes[LIMIT (row, 0, NR_SLOTS)];
 }
 
-std::vector<PadMessage> Pattern::redo ()
+void Pattern::setShape (const size_t row, const Shape<SHAPE_MAXNODES>& shape)
+{
+        size_t r = LIMIT (row, 0, NR_SLOTS);
+	changes.oldMessage.push_back (Action (r, 0, BUtilities::makeAny<Shape<SHAPE_MAXNODES>> (shapes[r])));
+	changes.newMessage.push_back (Action (r, 0, BUtilities::makeAny<Shape<SHAPE_MAXNODES>> (shape)));
+	shapes[r] = shape;
+}
+
+std::vector<Action> Pattern::undo ()
 {
 	store ();
 
-	std::vector<PadMessage> padMessages = journal.redo ();
-	for (PadMessage const& p : padMessages)
+	std::vector<Action> actions = journal.undo ();
+	std::reverse (actions.begin (), actions.end ());
+	for (Action const& a : actions)
 	{
-		size_t r = LIMIT (p.row, 0, NR_SLOTS);
-		size_t s = LIMIT (p.step, 0, NR_STEPS);
-		pads[r][s] = Pad (p);
+		size_t r = LIMIT (a.row, 0, NR_SLOTS);
+		size_t s = LIMIT (a.step, 0, NR_STEPS);
+		if (a.content.test<Pad>()) pads[r][s] = a.content.get<Pad>();
+                else if (a.content.test<Shape<SHAPE_MAXNODES>>()) shapes[r] = a.content.get<Shape<SHAPE_MAXNODES>>();
 	}
 
-	return padMessages;
+	return actions;
+}
+
+std::vector<Action> Pattern::redo ()
+{
+	store ();
+
+	std::vector<Action> actions = journal.redo ();
+	for (Action const& a : actions)
+	{
+		size_t r = LIMIT (a.row, 0, NR_SLOTS);
+		size_t s = LIMIT (a.step, 0, NR_STEPS);
+		if (a.content.test<Pad>()) pads[r][s] = a.content.get<Pad>();
+                else if (a.content.test<Shape<SHAPE_MAXNODES>>()) shapes[r] = a.content.get<Shape<SHAPE_MAXNODES>>();
+	}
+
+	return actions;
 }
 
 void Pattern::store ()

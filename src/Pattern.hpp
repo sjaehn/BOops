@@ -29,6 +29,22 @@
 #include "Ports.hpp"
 #include "PadMessage.hpp"
 #include "Journal.hpp"
+#include "Shape.hpp"
+#include "BUtilities/Any.hpp"
+
+struct Action
+{
+        Action () : row (-1), step (0), content () {}
+        Action (const int row, const int step, const BUtilities::Any& content) :
+                row (row),
+                step (step),
+                content (content)
+        {}
+
+        int row;
+        int step;
+        BUtilities::Any content;
+};
 
 
 class Pattern
@@ -37,18 +53,21 @@ public:
         void clear ();
         Pad getPad (const size_t row, const size_t step) const;
         void setPad (const size_t row, const size_t step, const Pad& pad);
-        std::vector<PadMessage> undo ();
-        std::vector<PadMessage> redo ();
+        Shape<SHAPE_MAXNODES> getShape(const size_t row) const;
+        void setShape (const size_t row, const Shape<SHAPE_MAXNODES>& shape);
+        std::vector<Action> undo ();
+        std::vector<Action> redo ();
         void store ();
         std::string toString (const std::array<std::string, 2 + sizeof (Pad) / sizeof (float)>& symbols) const;
         void fromString (const std::string& text, const std::array<std::string, 2 + sizeof (Pad) / sizeof (float)>& symbols);
 private:
-        Journal<std::vector<PadMessage>, MAXUNDO> journal;
+        Journal<std::vector<Action>, MAXUNDO> journal;
         std::array<std::array<Pad, NR_STEPS>, NR_SLOTS> pads;
+        std::array<Shape<SHAPE_MAXNODES>, NR_SLOTS> shapes;
         struct
         {
-                std::vector<PadMessage> oldMessage;
-                std::vector<PadMessage> newMessage;
+                std::vector<Action> oldMessage;
+                std::vector<Action> newMessage;
         } changes;
 };
 
