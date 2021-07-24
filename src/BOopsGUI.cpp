@@ -3358,6 +3358,8 @@ void BOopsGUI::edit2ChangedCallback(BEvents::Event* event)
 			for (int r = 0; r < NR_SLOTS; ++r)
 			{
 				for (int s = 0; s < NR_STEPS; ++s) ui->patterns[ui->pageAct].setPad (r, s, Pad ());
+				ui->slots[r].shapePad.setSymbol (PATTERNSYMBOL);
+				ui->patterns[ui->pageAct].setShape (r, Shape<SHAPE_MAXNODES>());
 				ui->sendSlot (ui->pageAct, r);
 			}
 
@@ -3373,8 +3375,8 @@ void BOopsGUI::edit2ChangedCallback(BEvents::Event* event)
 			{
 				size_t r = LIMIT (a.row, 0, NR_SLOTS);
 				size_t s = LIMIT (a.step, 0, NR_STEPS);
-				ui->sendPad (ui->pageAct, r, s);
 			}
+			for (int r = 0; r < NR_SLOTS; ++r) ui->sendSlot (ui->pageAct, r);
 			ui->drawPad ();
 		}
 		break;
@@ -3386,8 +3388,8 @@ void BOopsGUI::edit2ChangedCallback(BEvents::Event* event)
 			{
 				size_t r = LIMIT (a.row, 0, NR_SLOTS);
 				size_t s = LIMIT (a.step, 0, NR_STEPS);
-				ui->sendPad (ui->pageAct, r, s);
 			}
+			for (int r = 0; r < NR_SLOTS; ++r) ui->sendSlot (ui->pageAct, r);
 			ui->drawPad ();
 		}
 		break;
