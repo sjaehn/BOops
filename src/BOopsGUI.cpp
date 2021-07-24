@@ -58,6 +58,7 @@
 #include "OptionTremolo.hpp"
 #include "OptionWaveshaper.hpp"
 #include "OptionTeslaCoil.hpp"
+#include "OptionBanger.hpp"
 
 #define PASS_DOUBLE [] (double x) {return x;}
 
@@ -2286,7 +2287,10 @@ void BOopsGUI::setOptionWidget (const int slot)
 		case FX_TESLACOIL:	slotParams[slot].optionWidget = new OptionTeslaCoil (430, 20, 160, 130, "widget");
 							break;
 
-		default:		slotParams[slot].optionWidget = new OptionWidget (0, 0, 0, 0, "widget");
+		case FX_BANGER:		slotParams[slot].optionWidget = new OptionBanger (430, 20, 480, 130, "widget");
+							break;
+
+		default:			slotParams[slot].optionWidget = new OptionWidget (0, 0, 0, 0, "widget");
 	}
 
 	if (slotParams[slot].optionWidget) slotParams[slot].optionWidget->zoom (sz);

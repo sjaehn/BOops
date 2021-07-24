@@ -445,6 +445,14 @@ Draw a shape and set the depth and the reach (in number of steps) to control a b
 Set the filter with center frequency, bandwidth, and roll off.
 
 
+#### Banger
+
+The banger modulator effect is a dynamically distorted multi-bandpass filter effect based on B.Angr and thus Airwindows
+XRegion. Banger consists of four parameter instances of XRegion. Set the parameters "Gain" for pre-amplification, 
+"First" and "Last" to set the distortion & filter range and "Nuke" to change the number of poles for the XRegion engine. 
+Set the parameters speed and spin to swing between the instances. This one is really extreme!
+
+
 #### Tesla coil (experimental)
 
 Simple simulation of a singing big Tesla coil. This feature produces spark-like noises if the input signal exceeds the
@@ -473,6 +481,8 @@ But do not change or delete any definition symbol!
 ## What's new
 
 * Slot shapes
+* Fx
+  * Banger
 * Bugfixes
   * Fix pattern Y flip glitches
   * Correctly X flip merged pads
@@ -504,5 +514,5 @@ But do not change or delete any definition symbol!
 
 * inc/oops44100.wav by WIM https://freesound.org/people/WIM/sounds/9020/ (CC-BY-3.0)
 * ACE reverb from the Ardour project (https://github.com/Ardour/ardour) by Fredrik Kilander, Robin Gareus, Will Panther, and Damien Zammit (GPL2).
-* Galactic and Infinity2 reverbs from the Airwindows project (https://github.com/airwindows/airwindows) by Chris Johnson
+* Galactic and Infinity2 reverbs and XRegion from the Airwindows project (https://github.com/airwindows/airwindows) by Chris Johnson
 (MIT license).

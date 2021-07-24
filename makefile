@@ -61,7 +61,8 @@ DSP_INCL = \
 	src/BUtilities/stof.cpp \
 	src/Slot.cpp \
 	src/Airwindows/Galactic.cpp \
-	src/Airwindows/Infinity2.cpp
+	src/Airwindows/Infinity2.cpp \
+	src/Airwindows/XRegion.cpp
 
 GUI_CXX_INCL = \
 	src/SampleChooser.cpp \

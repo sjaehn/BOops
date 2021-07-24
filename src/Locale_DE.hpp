@@ -179,5 +179,9 @@
 #define BOOPS_LABEL_DAMP "Dämpfung"
 #define BOOPS_LABEL_ALLPASS "Allpass"
 #define BOOPS_LABEL_GAIN "Verstärkung"
+#define BOOPS_LABEL_FIRST "Erster"
+#define BOOPS_LABEL_LAST "Letzer"
+#define BOOPS_LABEL_NUKE "Nuke"
+#define BOOPS_LABEL_SPIN "Spin"
 
 #endif
