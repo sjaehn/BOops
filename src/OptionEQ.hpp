@@ -34,6 +34,7 @@ public:
 		Widget (x, y, width, height, name),
 		fgColors (BWIDGETS_DEFAULT_FGCOLORS),
 		bgColors (BWIDGETS_DEFAULT_BGCOLORS),
+		lbfont (BWIDGETS_DEFAULT_FONT),
 		gains {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},
 		freqs {30.0f, 80.0f, 300.0f, 1500.0f, 4000.0f, 15000.0f},
 		Qs {M_SQRT1_2, 1.0, M_SQRT1_2, 1.0, 1.0, 1.0}
@@ -57,23 +58,21 @@ public:
 		Widget::applyTheme (theme, name);
 
 		void* fgPtr = theme.getStyle(name, BWIDGETS_KEYWORD_FGCOLORS);
-		if (fgPtr)
-		{
-			fgColors = *((BColors::ColorSet*) fgPtr);
-			update ();
-		}
+		if (fgPtr) fgColors = *((BColors::ColorSet*) fgPtr);
 
 		void* bgPtr = theme.getStyle(name, BWIDGETS_KEYWORD_BGCOLORS);
-		if (bgPtr)
-		{
-			bgColors = *((BColors::ColorSet*) bgPtr);
-			update ();
-		}
+		if (bgPtr) bgColors = *((BColors::ColorSet*) bgPtr);
+
+		void* fontPtr = theme.getStyle(name, BWIDGETS_KEYWORD_FONT);
+		if (fontPtr) lbfont = *((BStyles::Font*) fontPtr);
+
+		if (fgPtr || bgPtr || fontPtr) update ();
 	}
 
 protected:
 	BColors::ColorSet fgColors;
 	BColors::ColorSet bgColors;
+	BStyles::Font lbfont;
 	float gains[6];
 	float freqs[6];
 	float Qs[6];
@@ -105,31 +104,61 @@ protected:
 				{
 					BColors::Color fg = *fgColors.getColor (getState ());
 					BColors::Color bg = *bgColors.getColor (getState ());
+					cairo_text_extents_t ext;
+					cairo_select_font_face (cr, lbfont.getFontFamily ().c_str (), lbfont.getFontSlant (), lbfont.getFontWeight ());
+					cairo_set_font_size (cr, 0.8 * lbfont.getFontSize ());
 
+					// Frame
 					cairo_set_line_width (cr, 2.0);
 					cairo_set_source_rgba (cr, CAIRO_RGBA (bg));
-					cairo_move_to (cr, x0 + 10, y0);
-					cairo_line_to (cr, x0 + 10, y0 + h - 20);
-					cairo_line_to (cr, x0 + w - 10, y0 + h - 20);
+					cairo_move_to (cr, x0 + 20, y0);
+					cairo_line_to (cr, x0 + 20, y0 + h - 20);
+					cairo_line_to (cr, x0 + w, y0 + h - 20);
 					cairo_stroke (cr);
 
+					// X steps
 					for (int i = 1; i <= 3; ++i)
 					{
 						for (int j = 2; j <= 10; ++j)
 						{
 							if (j == 10) cairo_set_line_width (cr, 1.0);
 							else cairo_set_line_width (cr, 0.5);
-							double f = j * pow (10, i);
-							double x = (w - 20.0) * log10 (f / 20.0) / 3.0;
-							cairo_move_to (cr, x0 + 10 + x, y0);
-							cairo_line_to (cr, x0 + 10 + x, y0 + h - 20);
+							const double f = j * pow (10, i);
+							const double x = (w - 20.0) * log10 (f / 20.0) / 3.0;
+							cairo_move_to (cr, x0 + 20 + x, y0);
+							cairo_line_to (cr, x0 + 20 + x, y0 + h - 20);
+							cairo_stroke (cr);
 						}
+
+						const int lval = pow (10, i + 1);
+						std::string label = (lval >= 1000 ? std::to_string (int (lval / 1000)) + " kHz" : std::to_string (lval) + " Hz");
+						cairo_text_extents (cr, label.c_str(), &ext);
+						const double x = (w - 20.0) * log10 (lval / 20.0) / 3.0;
+						cairo_move_to (cr, x0 + 20.0 + x - 0.5 * ext.width - ext.x_bearing, y0 + h - 10 - ext.height / 2 - ext.y_bearing);
+						cairo_show_text (cr, label.c_str ());
 					}
-					cairo_stroke (cr);
+
+					// Y Steps
+					cairo_set_line_width (cr, 1.0);
+					for (int g = -36; g <= 36; g += 12)
+					{
+						if (g == 0) cairo_set_line_width (cr, 1.0);
+						else cairo_set_line_width (cr, 0.5);
+						const double y = y0 + 0.5 * (h - 20.0) - (double (g) / 48.0f) * 0.5 * (h - 20.0);
+						cairo_move_to (cr, x0 + 20.0, y);
+						cairo_line_to (cr, x0 + w, y);
+						cairo_stroke (cr);
+
+						std::string label = std::to_string (g);
+						cairo_text_extents (cr, label.c_str(), &ext);
+						cairo_move_to (cr, x0 + 10.0 - 0.5 * ext.width - ext.x_bearing, y - ext.height / 2 - ext.y_bearing);
+						cairo_show_text (cr, label.c_str ());
+					}
 
 					cairo_set_source_rgba (cr, CAIRO_RGBA (fg));
 					cairo_set_line_width (cr, 2.0);
 
+					// Curve
 					for (double x = 0; x <= w - 20; ++x)
 					{
 						float f = 20.0 * pow (10.0, 3.0 * x / (w - 20.0));
@@ -138,14 +167,16 @@ protected:
 						{
 							g += filters[i].result (f);
 						}
-						if (x == 0) cairo_move_to (cr, x0 + 10.0 + x, y0 + 0.5 * (h - 20.0) - (g / 48.0f) * 0.5 * (h - 20.0));
-						cairo_line_to (cr, x0 + 10.0 + x, y0 + 0.5 * (h - 20.0) - (g / 48.0f) * 0.5 * (h - 20.0));
+						if (x == 0) cairo_move_to (cr, x0 + 20.0 + x, y0 + 0.5 * (h - 20.0) - (g / 48.0f) * 0.5 * (h - 20.0));
+						cairo_line_to (cr, x0 + 20.0 + x, y0 + 0.5 * (h - 20.0) - (g / 48.0f) * 0.5 * (h - 20.0));
 					}
 
 					cairo_stroke_preserve (cr);
+
+					// Area under the curve
 					cairo_set_line_width (cr, 0.0);
-					cairo_line_to (cr, x0 + w - 10, y0 + h - 20);
-					cairo_line_to (cr, x0 + 10, y0 + h - 20);
+					cairo_line_to (cr, x0 + w, y0 + h - 20);
+					cairo_line_to (cr, x0 + 20, y0 + h - 20);
 					cairo_close_path (cr);
 					cairo_pattern_t* pat = cairo_pattern_create_linear (0, y0 + h, 0, y0);
 					cairo_pattern_add_color_stop_rgba (pat, 0, fg.getRed (), fg.getGreen (), fg.getBlue (), 0);
@@ -170,7 +201,7 @@ public:
 		subLabel (0, 90, 80, 20, "ctlabel", BOOPS_LABEL_SUB),
 		boomLabel (80, 90, 80, 20, "ctlabel", BOOPS_LABEL_BOOM),
 		warmthLabel (160, 90, 80, 20, "ctlabel", BOOPS_LABEL_WARMTH),
-		eqDisplay (240, 20, 240, 90, "pad0"),
+		eqDisplay (240, 20, 240, 100, "pad0"),
 		clarityLabel (480, 90, 80, 20, "ctlabel", BOOPS_LABEL_CLARITY),
 		presenceLabel (560, 90, 80, 20, "ctlabel", BOOPS_LABEL_PRESENCE),
 		airLabel (640, 90, 80, 20, "ctlabel", BOOPS_LABEL_AIR)
