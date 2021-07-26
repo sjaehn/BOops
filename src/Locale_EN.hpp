@@ -183,5 +183,11 @@
 #define BOOPS_LABEL_LAST "Last"
 #define BOOPS_LABEL_NUKE "Nuke"
 #define BOOPS_LABEL_SPIN "Spin"
+#define BOOPS_LABEL_SUB "Sub"
+#define BOOPS_LABEL_BOOM "Boom"
+#define BOOPS_LABEL_WARMTH "Warmth"
+#define BOOPS_LABEL_CLARITY "Clarity"
+#define BOOPS_LABEL_PRESENCE "Presence"
+#define BOOPS_LABEL_AIR "Air"
 
 #endif

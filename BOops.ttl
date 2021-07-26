@@ -42,7 +42,7 @@
 	rdfs:comment "Glitch effect sequencer LV2 plugin." ;
   	doap:maintainer <http://www.jahnichen.de/sjaehn#me> ;
   	doap:license <http://usefulinc.com/doap/licenses/gpl> ;
-	lv2:microVersion 6 ;
+	lv2:microVersion 7 ;
 	lv2:minorVersion 7 ;
 	lv2:optionalFeature lv2:hardRTCapable , state:threadSafeRestore ;
 	lv2:extensionData state:interface , work:interface ;
@@ -232,6 +232,7 @@
 		lv2:scalePoint [ rdfs:label "Waveshaper"; rdf:value 31 ] ;
 		lv2:scalePoint [ rdfs:label "Tesla Coil"; rdf:value 32 ] ;
 		lv2:scalePoint [ rdfs:label "Banger"; rdf:value 33 ] ;
+		lv2:scalePoint [ rdfs:label "EQ"; rdf:value 34 ] ;
 		lv2:default 0 ;
 		lv2:minimum 0 ;
 		lv2:maximum 33 ;
@@ -428,6 +429,7 @@
 		lv2:scalePoint [ rdfs:label "Waveshaper"; rdf:value 31 ] ;
 		lv2:scalePoint [ rdfs:label "Tesla Coil"; rdf:value 32 ] ;
 		lv2:scalePoint [ rdfs:label "Banger"; rdf:value 33 ] ;
+		lv2:scalePoint [ rdfs:label "EQ"; rdf:value 34 ] ;
 		lv2:default 0 ;
 		lv2:minimum 0 ;
 		lv2:maximum 33 ;
@@ -624,6 +626,7 @@
 		lv2:scalePoint [ rdfs:label "Waveshaper"; rdf:value 31 ] ;
 		lv2:scalePoint [ rdfs:label "Tesla Coil"; rdf:value 32 ] ;
 		lv2:scalePoint [ rdfs:label "Banger"; rdf:value 33 ] ;
+		lv2:scalePoint [ rdfs:label "EQ"; rdf:value 34 ] ;
 		lv2:default 0 ;
 		lv2:minimum 0 ;
 		lv2:maximum 33 ;
@@ -820,6 +823,7 @@
 		lv2:scalePoint [ rdfs:label "Waveshaper"; rdf:value 31 ] ;
 		lv2:scalePoint [ rdfs:label "Tesla Coil"; rdf:value 32 ] ;
 		lv2:scalePoint [ rdfs:label "Banger"; rdf:value 33 ] ;
+		lv2:scalePoint [ rdfs:label "EQ"; rdf:value 34 ] ;
 		lv2:default 0 ;
 		lv2:minimum 0 ;
 		lv2:maximum 33 ;
@@ -1016,6 +1020,7 @@
 		lv2:scalePoint [ rdfs:label "Waveshaper"; rdf:value 31 ] ;
 		lv2:scalePoint [ rdfs:label "Tesla Coil"; rdf:value 32 ] ;
 		lv2:scalePoint [ rdfs:label "Banger"; rdf:value 33 ] ;
+		lv2:scalePoint [ rdfs:label "EQ"; rdf:value 34 ] ;
 		lv2:default 0 ;
 		lv2:minimum 0 ;
 		lv2:maximum 33 ;
@@ -1212,6 +1217,7 @@
 		lv2:scalePoint [ rdfs:label "Waveshaper"; rdf:value 31 ] ;
 		lv2:scalePoint [ rdfs:label "Tesla Coil"; rdf:value 32 ] ;
 		lv2:scalePoint [ rdfs:label "Banger"; rdf:value 33 ] ;
+		lv2:scalePoint [ rdfs:label "EQ"; rdf:value 34 ] ;
 		lv2:default 0 ;
 		lv2:minimum 0 ;
 		lv2:maximum 33 ;
@@ -1408,6 +1414,7 @@
 		lv2:scalePoint [ rdfs:label "Waveshaper"; rdf:value 31 ] ;
 		lv2:scalePoint [ rdfs:label "Tesla Coil"; rdf:value 32 ] ;
 		lv2:scalePoint [ rdfs:label "Banger"; rdf:value 33 ] ;
+		lv2:scalePoint [ rdfs:label "EQ"; rdf:value 34 ] ;
 		lv2:default 0 ;
 		lv2:minimum 0 ;
 		lv2:maximum 33 ;
@@ -1604,6 +1611,7 @@
 		lv2:scalePoint [ rdfs:label "Waveshaper"; rdf:value 31 ] ;
 		lv2:scalePoint [ rdfs:label "Tesla Coil"; rdf:value 32 ] ;
 		lv2:scalePoint [ rdfs:label "Banger"; rdf:value 33 ] ;
+		lv2:scalePoint [ rdfs:label "EQ"; rdf:value 34 ] ;
 		lv2:default 0 ;
 		lv2:minimum 0 ;
 		lv2:maximum 33 ;
@@ -1800,6 +1808,7 @@
 		lv2:scalePoint [ rdfs:label "Waveshaper"; rdf:value 31 ] ;
 		lv2:scalePoint [ rdfs:label "Tesla Coil"; rdf:value 32 ] ;
 		lv2:scalePoint [ rdfs:label "Banger"; rdf:value 33 ] ;
+		lv2:scalePoint [ rdfs:label "EQ"; rdf:value 34 ] ;
 		lv2:default 0 ;
 		lv2:minimum 0 ;
 		lv2:maximum 33 ;
@@ -1996,6 +2005,7 @@
 		lv2:scalePoint [ rdfs:label "Waveshaper"; rdf:value 31 ] ;
 		lv2:scalePoint [ rdfs:label "Tesla Coil"; rdf:value 32 ] ;
 		lv2:scalePoint [ rdfs:label "Banger"; rdf:value 33 ] ;
+		lv2:scalePoint [ rdfs:label "EQ"; rdf:value 34 ] ;
 		lv2:default 0 ;
 		lv2:minimum 0 ;
 		lv2:maximum 33 ;
@@ -2192,6 +2202,7 @@
 		lv2:scalePoint [ rdfs:label "Waveshaper"; rdf:value 31 ] ;
 		lv2:scalePoint [ rdfs:label "Tesla Coil"; rdf:value 32 ] ;
 		lv2:scalePoint [ rdfs:label "Banger"; rdf:value 33 ] ;
+		lv2:scalePoint [ rdfs:label "EQ"; rdf:value 34 ] ;
 		lv2:default 0 ;
 		lv2:minimum 0 ;
 		lv2:maximum 33 ;
@@ -2388,6 +2399,7 @@
 		lv2:scalePoint [ rdfs:label "Waveshaper"; rdf:value 31 ] ;
 		lv2:scalePoint [ rdfs:label "Tesla Coil"; rdf:value 32 ] ;
 		lv2:scalePoint [ rdfs:label "Banger"; rdf:value 33 ] ;
+		lv2:scalePoint [ rdfs:label "EQ"; rdf:value 34 ] ;
 		lv2:default 0 ;
 		lv2:minimum 0 ;
 		lv2:maximum 33 ;

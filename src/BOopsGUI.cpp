@@ -59,6 +59,7 @@
 #include "OptionWaveshaper.hpp"
 #include "OptionTeslaCoil.hpp"
 #include "OptionBanger.hpp"
+#include "OptionEQ.hpp"
 
 #define PASS_DOUBLE [] (double x) {return x;}
 
@@ -2288,6 +2289,9 @@ void BOopsGUI::setOptionWidget (const int slot)
 							break;
 
 		case FX_BANGER:		slotParams[slot].optionWidget = new OptionBanger (430, 20, 480, 130, "widget");
+							break;
+
+		case FX_EQ:			slotParams[slot].optionWidget = new OptionEQ (430, 20, 720, 130, "widget");
 							break;
 
 		default:			slotParams[slot].optionWidget = new OptionWidget (0, 0, 0, 0, "widget");

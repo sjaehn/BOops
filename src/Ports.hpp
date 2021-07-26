@@ -118,7 +118,8 @@ enum BOopsEffectsIndex
 	FX_WAVESHAPER	= 31,
 	FX_TESLACOIL	= 32,
 	FX_BANGER	= 33,
-	NR_FX		= 34,
+	FX_EQ		= 34,
+	NR_FX		= 35,
 	FX_INVALID	= 255
 };
 
@@ -154,7 +155,7 @@ enum BOopsWaveformIndex
 	{-1, "Tape"}, {10, "  Tape stop"}, /*{11, "Tape start (TODO)"}, */{12, "  Tape speed"}, {14, "  Wow & flutter"}, \
 	{-1, "Vinyl"}, {13, "  Scratch"}, {19, "  Noise"}, {20, "  Crackles"}, \
 	{-1, "Distortion"}, {15, "  Crush"}, {16, "  Decimate"}, {17, "  Distortion"}, {31, "  Waveshaper"}, \
-	{-1, "Filter"}, {18, "  Filter"}, \
+	{-1, "Filter"}, {18, "  Filter"}, {34, "  EQ"}, \
 	{-1, "Modulators"}, {22, "  Flanger"}, {23, "  Phaser"}, {24, "  Ring modulator"}, {26, "  Wah"}, {33, "  Banger"}, \
 	{-1, "SFX"}, {32, "  Tesla coil"}, {25, "  Oops"}, \
 	{-1, "Random"}, {1, "  Surprise box"} \
@@ -195,7 +196,8 @@ enum BOopsWaveformIndex
 	"inc/Chop_bg.png", \
 	"inc/Distortion_bg.png", \
 	"inc/TeslaCoil_bg.png", \
-	"inc/Flanger_bg.png" \
+	"inc/Flanger_bg.png", \
+	"inc/Distortion_bg.png" \
 }
 
 #endif /* PORTS_HPP_ */

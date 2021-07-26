@@ -64,6 +64,7 @@ const std::array<const std::array<const float, NR_PARAMS>, NR_FX> fxDefaultValue
 	{{STDPARAMS, 0.5, 0, 0.5, 0.0, 0.0, 0.0, 0, 0.0, 0, 0, 0, 0}},				// FX_WAVESHAPER
 	{{1.0, 0.1, 0.1, 1.0, 0.1, 0.0, 0.75, 0.75, 0.0, 0.5, 0.0, 0.0, 0.0, 0, 0.0, 0, 0, 0, 0}},	// FX_TESLACOIL
 	{{STDPARAMS, 0.75, 0.25, 0.333, 0.333, 0.667, 0.333, 0.75, 0.25, 0.5, 0.25, 0.5, 0.1}},	// FX_BANGER
+	{{STDPARAMS, 0.5, 0.0, 0.5, 0.0, 0.5, 0.0, 0.5, 0.0, 0.5, 0.0, 0.5, 0.0}}	// FX_EQ
 
 }};
 
@@ -102,7 +103,8 @@ const std::array<const std::string, NR_FX> fxIconFileNames =
 		"Tremolo",
 		"Waveshaper",
 		"TeslaCoil",
-		"Banger"
+		"Banger",
+		"EQ"
 }};
 
 

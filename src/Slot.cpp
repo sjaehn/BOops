@@ -55,6 +55,7 @@
 #include "FxWaveshaper.hpp"
 #include "FxTeslaCoil.hpp"
 #include "FxBanger.hpp"
+#include "FxEQ.hpp"
 
 Slot::Slot () : Slot (nullptr, FX_INVALID, nullptr, nullptr, 0, 0.0f, 0.0) {}
 
@@ -233,6 +234,9 @@ Fx* Slot::newFx (const BOopsEffectsIndex effect)
 							break;
 
 		case FX_BANGER:		fx = new FxBanger (&buffer, params, pads, plugin ? plugin->host.rate : 48000);
+							break;
+
+		case FX_EQ:			fx = new FxEQ (&buffer, params, pads, plugin ? plugin->host.rate : 48000);
 							break;
 
 		case FX_INVALID:	fx = nullptr;

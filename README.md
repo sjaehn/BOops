@@ -4,8 +4,9 @@ Description: Glitch effect sequencer LV2 plugin
 Key features:
 * Multi-effect plugin controlled by step sequencer patterns
 * Apply glitch effects in live or on a sample track
-* 30 effects
+* 32 effects
 * Up to 12 effect slots, freely select effects and effect order
+* Optionally use effect mixer shapes
 * Random effects: 3 different ways of randomization
 * Autoplay, host controlled, or MIDI controlled playback
 * Up to 16 patterns, MIDI controlled pattern change
@@ -419,6 +420,12 @@ Set lower limit (high pass) and higher limit (low pass) of the  filter range. Th
 the sharpness of the cut off.
 
 
+#### EQ
+
+Six band equalizer with the parameters sub (~30 Hz), boom (~80 Hz), warmth (~300 Hz), clarity (~1500 Hz), presence
+(~4000 Hz), and air (~15 kHz).
+
+
 #### Flanger
 
 Set the flanger modulation frequency by the modulation parameter and the flanger delay times by the delay (predelay) and
@@ -483,6 +490,7 @@ But do not change or delete any definition symbol!
 * Slot shapes
 * Fx
   * Banger
+  * EQ
 * Bugfixes
   * Fix pattern Y flip glitches
   * Correctly X flip merged pads
