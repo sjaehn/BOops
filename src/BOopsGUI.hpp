@@ -98,7 +98,8 @@ enum editIndex
 	EDIT_REDO	= 7,
 	EDIT_LOAD	= 8,
 	EDIT_SAVE	= 9,
-	MAXEDIT		= 10
+	EDIT_RANDOM	= 10,
+	MAXEDIT		= 11
 };
 
 enum PageControlsIndex
@@ -106,7 +107,7 @@ enum PageControlsIndex
 	PAGE_CONTROLS_STATUS	= 0,
 	PAGE_CONTROLS_CHANNEL	= 1,
 	PAGE_CONTROLS_MESSAGE	= 2,
-	PAGE_CONTROLS_VALUE	= 3,
+	PAGE_CONTROLS_VALUE		= 3,
 };
 
 const std::string editLabels[MAXEDIT] =
@@ -120,7 +121,8 @@ const std::string editLabels[MAXEDIT] =
 	BOOPS_LABEL_UNDO,
 	BOOPS_LABEL_REDO,
 	BOOPS_LABEL_LOAD,
-	BOOPS_LABEL_SAVE
+	BOOPS_LABEL_SAVE,
+	BOOPS_LABEL_RANDOM
 };
 
 class BOopsGUI : public BWidgets::Window
@@ -205,6 +207,7 @@ private:
 	void gotoSlot (const int slot);
 	void setOptionWidget (const int slot);
 	void loadOptions (const int slot);
+	void randomizePads ();
 	int getPadOrigin (const int page, const int slot, const int step) const;
 	void setPad (const int page, const int slot, const int step, const Pad pad);
 	void drawPad ();

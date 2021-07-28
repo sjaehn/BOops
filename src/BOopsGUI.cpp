@@ -20,6 +20,7 @@
 
 #include <limits.h>		// PATH_MAX
 #include <fstream>
+#include <random>
 #include "BOopsGUI.hpp"
 #include "BUtilities/to_string.hpp"
 #include "BUtilities/vsystem.hpp"
@@ -166,7 +167,7 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 
 	monitor (0, 0, 800, 288, "monitor"),
 	padSurface (310, 170, 800, 288, "widget"),
-	editContainer (538, 466, 364, 24, "widget"),
+	editContainer (523, 466, 394, 24, "widget"),
 	patternChooser (nullptr),
 
 	gettingstartedContainer (20, 478, 1200, 150, "widget", pluginPath + "inc/None_bg.png"),
@@ -1054,7 +1055,7 @@ void BOopsGUI::resize ()
 
 	RESIZE (monitor, 0, 0, 800, 288, sz);
 	RESIZE (padSurface, 310, 170, 800, 288, sz);
-	RESIZE (editContainer, 538, 466, 364, 24, sz);
+	RESIZE (editContainer, 523, 466, 394, 24, sz);
 
 	RESIZE (gettingstartedContainer, 20, 478, 1200, 150, sz);
 	RESIZE (gettingstartedText, 20, 30, 1160, 110, sz);
@@ -3417,7 +3418,7 @@ void BOopsGUI::edit3ChangedCallback(BEvents::Event* event)
 	BOopsGUI* ui = (BOopsGUI*) widget->getMainWindow();
 	if (!ui) return;
 
-	// Identify editButtons: LOAD .. SAVE
+	// Identify editButtons: LOAD .. RANDOM
 	int widgetNr = -1;
 	for (int i = 0; i < MAXEDIT - EDIT_LOAD; ++i)
 	{
@@ -3428,7 +3429,7 @@ void BOopsGUI::edit3ChangedCallback(BEvents::Event* event)
 		}
 	}
 
-	// LOAD ... SAVE
+	// LOAD ... RANDOM
 	switch (widgetNr)
 	{
 		case EDIT_LOAD:
@@ -3486,6 +3487,10 @@ void BOopsGUI::edit3ChangedCallback(BEvents::Event* event)
 				ui->mContainer.add (*ui->patternChooser);
 			}
 		}
+		break;
+
+		case EDIT_RANDOM:
+		ui->randomizePads ();
 		break;
 
 		default:	break;
@@ -3958,6 +3963,154 @@ void BOopsGUI::ytButtonClickedCallback (BEvents::Event* event)
 	char* argv[] = {cmd, param, NULL};
 	std::cerr << "BOops.lv2#GUI: Call " << YT_URL << " for tutorial video.\n";
 	if (BUtilities::vsystem (argv) == -1) std::cerr << "BOops.lv2#GUI: Couldn't fork.\n";
+}
+
+void BOopsGUI::randomizePads()
+{
+	unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+	std::minstd_rand rnd (seed);
+
+	for (int sl = 0; sl < NR_SLOTS; ++sl)
+	{
+		const int fxnr = slots[sl].container.getValue();
+		if ((fxnr == FX_NONE) || (fxnr == FX_INVALID)) break;
+
+		if (patterns[pageAct].getShape(sl) == Shape<SHAPE_MAXNODES>())
+		{
+			// Step by step
+			const int nrsteps = stepsListBox.getValue();
+			for (int st = 0; st < nrsteps; )
+			{
+				Pad pd = patterns[pageAct].getPad (sl, st);
+				if ((pd.gate != 0.0) && (pd.size != 0.0) && (pd.mix != 0.0))
+					{
+						// Action
+						std::uniform_int_distribution<int> adist (0, 3);
+						const int act = adist (rnd);
+
+						// Move
+						if (act == 1)
+						{
+							// Look for the end of the pad before
+							int opads = st;
+							for (int ost = st; ost >= 0; --ost)
+							{
+								Pad opd = patterns[pageAct].getPad (sl, ost);
+								if ((opd.gate != 0.0) && (opd.size != 0.0) && (opd.mix != 0.0)) 
+								{
+									opads = ost + opd.size;
+									break;
+								}
+								if (ost > 0) --opads;
+							}
+
+							// Count max pad size
+							int spads = st + 1 - opads;
+							for (int sst = st + 1; sst < nrsteps; ++sst)
+							{
+								Pad spd = patterns[pageAct].getPad (sl, sst);
+								if ((spd.gate != 0.0) && (spd.size != 0.0) && (spd.mix != 0.0)) break;
+								++spads;
+							}
+
+							// Change position
+							if (spads > pd.size)
+							{
+								std::uniform_int_distribution<int> sdist (0, spads - pd.size);
+								patterns[pageAct].setPad (sl, st, Pad());
+								patterns[pageAct].setPad (sl, opads + sdist (rnd), pd);
+
+								st = opads + sdist (rnd);
+								continue;
+							}
+						}
+
+						// Resize
+						else if (act == 2)
+						{
+							// Count max pad size
+							int spads = 1;
+							for (int sst = st + 1; sst < nrsteps; ++sst)
+							{
+								Pad spd = patterns[pageAct].getPad (sl, sst);
+								if ((spd.gate != 0.0) && (spd.size != 0.0) && (spd.mix != 0.0)) break;
+								++spads;
+							}
+
+							// Set pad size
+							std::uniform_int_distribution<int> sdist (0, spads);
+							Pad npd = pd;
+							npd.size = sdist (rnd);
+							patterns[pageAct].setPad (sl, st, npd);
+						}
+
+						// Delete
+						else if (act == 3)
+						{
+							Pad npd = Pad ();
+							patterns[pageAct].setPad (sl, st, npd); 
+						}
+
+						st += pd.size;
+					}
+					else ++st;
+			}
+
+			// Insert new pads?
+			std::uniform_int_distribution<int> ins (0, 1);
+			const int i = ins (rnd);
+			if (i)
+			{
+				// Count free pads
+				double fpads = nrsteps;
+				for (int st = 0; st < nrsteps; )
+				{
+					Pad pd = patterns[pageAct].getPad (sl, st);
+					if ((pd.gate != 0.0) && (pd.size != 0.0) && (pd.mix != 0.0))
+					{
+						fpads -= pd.size;
+						st += pd.size;
+					}
+					else ++st;
+				}
+
+				if (fpads > 0)
+				{
+					// Select a pad
+					std::uniform_int_distribution<int> pdist (0, fpads - 1);
+					int d = pdist (rnd);
+					int p = 0;
+					for (p = 0; (p < nrsteps) && (d > 0); )
+					{
+						Pad pd = patterns[pageAct].getPad (sl, p);
+						if ((pd.gate != 0.0) && (pd.size != 0.0) && (pd.mix != 0.0)) p += pd.size;
+						else ++p;
+						--d;
+					}
+
+					// Count max pad size
+					double spads = 1;
+					for (int st = p + 1; st < nrsteps; ++st)
+					{
+						Pad pd = patterns[pageAct].getPad (sl, st);
+						if ((pd.gate != 0.0) && (pd.size != 0.0) && (pd.mix != 0.0)) break;
+						++spads;
+					}
+
+					// Set pad size
+					std::uniform_int_distribution<int> sdist (0, spads);
+					const int s = sdist (rnd);
+					Pad pd = Pad (1.0, s, 1.0);
+					patterns[pageAct].setPad (sl, p, pd);
+					
+				}
+			}
+
+		sendSlot (pageAct, sl);
+		drawPad (sl);
+		}
+	}
+	patterns[pageAct].store();
 }
 
 int BOopsGUI::getPadOrigin (const int page, const int slot, const int step) const

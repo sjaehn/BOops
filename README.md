@@ -7,7 +7,7 @@ Key features:
 * 32 effects
 * Up to 12 effect slots, freely select effects and effect order
 * Optionally use effect mixer shapes
-* Random effects: 3 different ways of randomization
+* Random effects: 4 different ways of randomization
 * Autoplay, host controlled, or MIDI controlled playback
 * Up to 16 patterns, MIDI controlled pattern change
 
@@ -223,11 +223,13 @@ Once you selected the paste option, you can paste the clipboard pads by clicking
 No description required.
 
 
-##### Load and save
+##### Load, save and randomize
 
 In addition to the host-provided options to load and save the plugin state including its patterns (e. g., load/save project,
 load/save presets), B.Oops also allows to load and save patterns separately from and to pattern files ("*.boos.pat"). This
 feature can be used to import / export patterns to other plugin instances or to other projects.
+
+In addition, you can randomize the present pattern by clicking on the dice symbol.
 
 
 #### Waveform
