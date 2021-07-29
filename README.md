@@ -490,6 +490,7 @@ But do not change or delete any definition symbol!
 ## What's new
 
 * Slot shapes
+* Random patterns
 * Fx
   * Banger
   * EQ
@@ -502,9 +503,6 @@ But do not change or delete any definition symbol!
 ## TODO
 
 * Remove redundant sendShape() calls if sendPad() called
-* Slot shapes
-  * Fade in/out if slot containing shape moved
-  * Optimize buffer size
 * Implement effects
   * Pitch (?)
   * Tape start (?)
