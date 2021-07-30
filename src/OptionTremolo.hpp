@@ -32,7 +32,8 @@ public:
 	OptionTremolo (const double x, const double y, const double width, const double height, const std::string& name) :
 		OptionWidget (x, y, width, height, name),
 		rateLabel (10, 90, 60, 20, "ctlabel", BOOPS_LABEL_RATE),
-		depthLabel (80, 90, 80, 20, "ctlabel", BOOPS_LABEL_DEPTH)
+		depthLabel (80, 90, 80, 20, "ctlabel", BOOPS_LABEL_DEPTH),
+		shapeLabel (170, 90, 90, 20, "ctlabel", BOOPS_LABEL_SHAPE)
 	{
 		try
 		{
@@ -40,6 +41,7 @@ public:
 			options[1] = new BWidgets::ValueWidget (0, 0, 0, 0, "widget", 0.0);
 			options[2] = new DialRange (90, 20, 60, 60, "pad0", 0.5, 0.0, 1.0, 0.0, BIDIRECTIONAL, "%1.2f", "");
 			options[3] = new BWidgets::ValueWidget (0, 0, 0, 0, "widget", 0.0);
+			options[4] = new WaveformSelect (170, 20, 90, 60, "pad0", 0.0);
 		}
 		catch (std::bad_alloc& ba) {throw ba;}
 
@@ -49,30 +51,39 @@ public:
 		options[2]->setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, valueChangedCallback);
 		((DialRange*)options[2])->range.setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, rangeChangedCallback);
 		options[3]->setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, valueChangedCallback);
+		options[4]->setCallbackFunction (BEvents::VALUE_CHANGED_EVENT, valueChangedCallback);
 
 		add (rateLabel);
 		add (depthLabel);
+		add (shapeLabel);
 		add (*options[0]);
 		add (*options[1]);
 		add (*options[2]);
 		add (*options[3]);
+		add (*options[4]);
 	}
 
-	OptionTremolo (const OptionTremolo& that) : OptionWidget (that), rateLabel (that.rateLabel), depthLabel (that.depthLabel)
+	OptionTremolo (const OptionTremolo& that) : 
+		OptionWidget (that), rateLabel (that.rateLabel), depthLabel (that.depthLabel),
+		shapeLabel (that.shapeLabel)
 	{
 		add (rateLabel);
 		add (depthLabel);
+		add (shapeLabel);
 	}
 
 	OptionTremolo& operator= (const OptionTremolo& that)
 	{
 		release (&rateLabel);
 		release (&depthLabel);
+		release (&shapeLabel);
 		OptionWidget::operator= (that);
 		rateLabel = that.rateLabel;
 		depthLabel = that.depthLabel;
+		depthLabel = that.shapeLabel;
 		add (rateLabel);
 		add (depthLabel);
+		add (shapeLabel);
 
 		return *this;
 	}
@@ -86,6 +97,7 @@ public:
 		OptionWidget::applyTheme (theme, name);
 		rateLabel.applyTheme (theme);
 		depthLabel.applyTheme (theme);
+		shapeLabel.applyTheme (theme);
 	}
 
 	static void valueChangedCallback(BEvents::Event* event)
@@ -133,7 +145,7 @@ public:
 protected:
 	BWidgets::Label rateLabel;
 	BWidgets::Label depthLabel;
-
+	BWidgets::Label shapeLabel;
 
 };
 

@@ -189,5 +189,6 @@
 #define BOOPS_LABEL_CLARITY "Klarheit"
 #define BOOPS_LABEL_PRESENCE "Presenz"
 #define BOOPS_LABEL_AIR "Luft"
+#define BOOPS_LABEL_SHAPE "Form"
 
 #endif

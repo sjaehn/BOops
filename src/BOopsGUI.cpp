@@ -2279,7 +2279,7 @@ void BOopsGUI::setOptionWidget (const int slot)
 		case FX_INFINITY:	slotParams[slot].optionWidget = new OptionInfinity (430, 20, 400, 130, "widget");
 					break;
 
-		case FX_TREMOLO:	slotParams[slot].optionWidget = new OptionTremolo (430, 20, 160, 130, "widget");
+		case FX_TREMOLO:	slotParams[slot].optionWidget = new OptionTremolo (430, 20, 260, 130, "widget");
 					break;
 
 		case FX_WAVESHAPER:	slotParams[slot].optionWidget = new OptionWaveshaper (430, 20, 400, 130, "widget", pluginPath);

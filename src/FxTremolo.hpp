@@ -27,6 +27,7 @@
 #define FX_TREMOLO_RATERAND 1
 #define FX_TREMOLO_DEPTH 2
 #define FX_TREMOLO_DEPTHRAND 3
+#define FX_TREMOLO_ENV 4
 
 class FxTremolo : public Fx
 {
@@ -38,7 +39,9 @@ public:
 		samplerate (rate),
 		framesPerStepPtr (framesPerStep),
 		framesPerStep (24000),
-		freq (10.0), depth (0.5) {}
+		freq (10.0), depth (0.5),
+		env (SINE_WAVE),
+		eval (0.0f) {}
 
 	virtual void init (const double position) override
 	{
@@ -47,6 +50,7 @@ public:
 		freq = 1.0 + 19.0 * LIMIT (params[SLOTS_OPTPARAMS + FX_TREMOLO_RATE] + r1 * params[SLOTS_OPTPARAMS + FX_TREMOLO_RATERAND], 0.0, 1.0);
 		const double r2 = bidist (rnd);
 		depth = LIMIT (params[SLOTS_OPTPARAMS + FX_TREMOLO_DEPTH] + r2 * params[SLOTS_OPTPARAMS + FX_TREMOLO_DEPTHRAND], 0.0, 1.0);
+		env = BOopsWaveformIndex (LIMIT (int (round (params[SLOTS_OPTPARAMS + FX_RINGMOD_ENV] * 8)), 0, 4));
 
 		framesPerStep = *framesPerStepPtr;
 	}
@@ -54,8 +58,27 @@ public:
 	virtual Stereo process (const double position, const double size) override
 	{
 		const Stereo s0 = (**buffer).front();
-		const float sf = sinf (2.0f * M_PI * freq * position * framesPerStep / samplerate);
-		return s0 * (1.0f - depth * 0.5f * (sf + 1.0f));
+		float f = 0.0f;
+		double t = position * framesPerStep / samplerate;
+		switch (env)
+		{
+			case SINE_WAVE:			f = sin (2.0 * M_PI * t * freq);
+									break;
+
+			case TRIANGLE_WAVE:		f = (fmod (t * freq, 1.0) < 0.5 ? 4.0 * fmod (t * freq, 1.0) - 1.0 : 3.0 - 4.0 * fmod (t * freq, 1.0));
+									break;
+
+			case SQUARE_WAVE:		f = (fmod (t * freq, 1.0) < 0.5 ? 1.0 : -1.0);
+									break;
+
+			case SAW_WAVE:			f = 2.0 * fmod (t * freq, 1.0) - 1.0;
+									break;
+
+			case REVERSE_SAW_WAVE:	f = 1.0 - 2.0 * fmod (t * freq, 1.0);
+									break;
+		};
+		eval += LIMIT (f - eval, -1.0f / (0.005f * samplerate), 1.0f / (0.005f * samplerate));
+		return s0 * (1.0f - depth * 0.5f * (eval + 1.0f));
 	}
 
 protected:
@@ -64,6 +87,8 @@ protected:
 	double framesPerStep;
 	float freq;
 	float depth;
+	BOopsWaveformIndex env;
+	float eval;
 };
 
 #endif /* FXTREMOLO_HPP_ */
