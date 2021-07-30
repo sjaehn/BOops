@@ -4311,8 +4311,8 @@ void BOopsGUI::drawPad (cairo_t* cr, const int row, const int step)
 		cairo_set_source_rgba (cr, CAIRO_RGBA (color));
 		cairo_stroke_preserve (cr);
 
-		cairo_move_to (cr, xr + wr - 2.0, yr + hr - 2.0);
-		cairo_move_to (cr, xr + 2.0, yr + hr - 2.0);
+		cairo_line_to (cr, xr + wr - 2.0, yr + hr - 2.0);
+		cairo_line_to (cr, xr + 2.0, yr + hr - 2.0);
 		cairo_close_path (cr);
 		cairo_set_line_width (cr, 0.0);
 		cairo_pattern_t* pat = cairo_pattern_create_linear (0, yr + hr - 2.0, 0, yr + 2.0);
