@@ -49,11 +49,11 @@ public:
 		{
 			char samplepath[1024] = {0};
 			strncpy (samplepath, pluginpath, 988);
-			strcat (samplepath, "inc/oops44100.wav");
+			strcat (samplepath, "inc/Oops.wav");
 			try {oops = Sample (samplepath);}
 			catch (std::bad_alloc &ba)
 			{
-				fprintf (stderr, "BOops.lv2: Can't allocate enoug memory to open inc/oops44100.wav.\n");
+				fprintf (stderr, "BOops.lv2: Can't allocate enoug memory to open inc/Oops.wav.\n");
 			}
 			catch (std::invalid_argument &ia)
 			{

@@ -490,10 +490,12 @@ But do not change or delete any definition symbol!
 ## What's new
 
 * Slot shapes
-* Random patterns
+* Pattern randomization
 * Fx
-  * Banger
-  * EQ
+  * New Banger
+  * New EQ
+  * Tremolo: Waveform option
+  * Oops: New sample
 * Bugfixes
   * Fix pattern Y flip glitches
   * Correctly X flip merged pads
@@ -502,6 +504,7 @@ But do not change or delete any definition symbol!
 
 ## TODO
 
+* More presets
 * Remove redundant sendShape() calls if sendPad() called
 * Implement effects
   * Pitch (?)
@@ -520,7 +523,6 @@ But do not change or delete any definition symbol!
 
 ## Acknowledgments
 
-* inc/oops44100.wav by WIM https://freesound.org/people/WIM/sounds/9020/ (CC-BY-3.0)
 * ACE reverb from the Ardour project (https://github.com/Ardour/ardour) by Fredrik Kilander, Robin Gareus, Will Panther, and Damien Zammit (GPL2).
 * Galactic and Infinity2 reverbs and XRegion from the Airwindows project (https://github.com/airwindows/airwindows) by Chris Johnson
 (MIT license).
