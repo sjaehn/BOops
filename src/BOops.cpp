@@ -2009,6 +2009,7 @@ LV2_State_Status BOops::state_restore (LV2_State_Retrieve_Function retrieve, LV2
 						{
 							if (!pageShapes[pg][sl].validateShape ()) pageShapes[pg][sl].setDefaultShape ();
 						}
+						pages[pg].shapes[sl] = pageShapes[pg][sl];
 					}
 				}
 				scheduleNotifyAllSlots = true;
@@ -2021,7 +2022,11 @@ LV2_State_Status BOops::state_restore (LV2_State_Retrieve_Function retrieve, LV2
 				for (int sl = 0; sl < NR_SLOTS; ++sl)
 				{
 					if (paramShapes[sl].size () < 2) paramShapes[sl].setDefaultShape ();
-					else if (!paramShapes[sl].validateShape ()) paramShapes[sl].setDefaultShape ();
+					else 
+					{
+						if (!paramShapes[sl].validateShape ()) paramShapes[sl].setDefaultShape ();
+					}
+					slots[sl].shape = paramShapes[sl];
 					scheduleNotifyShape[sl] = true;
 				}
 			}
