@@ -50,9 +50,8 @@ make
 sudo make install
 ```
 
-**Optional:** Standard `make` and `make install` parameters are supported. Compiling using `make CPPFLAGS+=-O3`
-is recommended to improve the plugin performance. Alternatively, you may build a debugging version using
-`make CPPFLAGS+=-g`. For installation into an alternative directory (e.g., /usr/lib/lv2/), change the
+**Optional:** Standard `make` and `make install` parameters are supported. You may build a debugging version 
+using `make CPPFLAGS+=-g`. For installation into an alternative directory (e.g., /usr/lib/lv2/), change the
 variable `PREFIX` while installing: `sudo make install PREFIX=/usr`. If you want to freely choose the
 install target directory, change the variable `LV2DIR` (e.g., `make install LV2DIR=~/.lv2`).
 
@@ -496,6 +495,7 @@ But do not change or delete any definition symbol!
   * New EQ
   * Tremolo: Waveform option
   * Oops: New sample
+* Default optimization flags `-O3 -ffast-math` for compiling DSP
 * Bugfixes
   * Fix pattern Y flip glitches
   * Correctly X flip merged pads
