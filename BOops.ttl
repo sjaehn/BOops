@@ -2653,3 +2653,9 @@
 	lv2:appliesTo <https://www.jahnichen.de/plugins/lv2/BOops> ;
 	rdfs:label "Through the intestine" ;
 	rdfs:seeAlso <BOops_Through_the_intestine.ttl> .
+
+<https://www.jahnichen.de/plugins/lv2/BOops#Raising_voltage>
+	a pset:Preset ;
+	lv2:appliesTo <https://www.jahnichen.de/plugins/lv2/BOops> ;
+	rdfs:label "Raising voltage" ;
+	rdfs:seeAlso <BOops_Raising_voltage.ttl> .

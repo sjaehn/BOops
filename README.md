@@ -496,6 +496,7 @@ But do not change or delete any definition symbol!
   * Tremolo: Waveform option
   * Oops: New sample
 * Default optimization flags `-O3 -ffast-math` for compiling DSP
+* New presets
 * Bugfixes
   * Fix pattern Y flip glitches
   * Correctly X flip merged pads
