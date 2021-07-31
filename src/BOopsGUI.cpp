@@ -4256,6 +4256,7 @@ void BOopsGUI::drawPad (cairo_t* cr, const int row, const int step)
 	const double yr = round (y);
 	const double wr = round (x + w) - xr;
 	const double hr = round (y + h) - yr;
+	const int ic = cursor;
 
 	// Draw background
 	// Odd or even?
@@ -4281,11 +4282,11 @@ void BOopsGUI::drawPad (cairo_t* cr, const int row, const int step)
 	BColors::Color color = *padColors[fxnr].getColor(BColors::NORMAL);
 	BColors::Color pc = color;
 	pc.applyBrightness (pd.mix - 1.0);
-	if (p0 <= int (cursor) && (p0 + ps > int (cursor)) && (sh == Shape<SHAPE_MAXNODES>())) pc.applyBrightness (0.75);
+	if ((p0 <= ic) && (p0 + ps > ic) && (sh == Shape<SHAPE_MAXNODES>())) pc.applyBrightness (0.75);
 	drawButton (cr, xr + 1, yr + 1, wr - 2, hr - 2, pc);
 
 	// Draw label
-	if ((pd.mix != 0.0) && (pd.gate != 1.0))
+	if ((pd.mix != 0.0) && (pd.gate != 1.0) && (sh == Shape<SHAPE_MAXNODES>()))
 	{
 		const double br = sqrt (pow (pc.getRed(), 2.0) + pow (pc.getBlue(), 2.0) + pow (pc.getGreen(), 2.0));
 		BColors::Color tc = (br < 0.707 ? *txColors.getColor(BColors::NORMAL) : BColors::black);
@@ -4320,6 +4321,9 @@ void BOopsGUI::drawPad (cairo_t* cr, const int row, const int step)
 		cairo_pattern_add_color_stop_rgba (pat, 1, color.getRed (), color.getGreen (), color.getBlue (), 0.6 * color.getAlpha ());
 		cairo_set_source (cr, pat);
 		cairo_fill (cr);
+
+		if (ic >= 0) drawButton (cr, ic * w1 + 1, yr + 1, w1 - 2, hr - 2, {1.0, 1.0, 1.0, 0.75});
+		
 		cairo_pattern_destroy (pat);
 	}
 }
