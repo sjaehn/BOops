@@ -1724,7 +1724,6 @@ void BOopsGUI::insertPage (const int page)
 	for (int i = pageMax; i > page; --i)
 	{
 		patterns[i] = patterns[i - 1];
-		for (int j = 0; j < NR_SLOTS; ++j) patterns[i].setShape (j, patterns[i - 1].getShape (j));
 		for (int j = 0; j < NR_SLOTS; ++j) sendSlot (i, j);
 		if (i == pageAct) drawPad();
 		for (BWidgets::ValueWidget& m : tabs[i].midiWidgets) m.setValue (m.getValue());
@@ -1732,7 +1731,6 @@ void BOopsGUI::insertPage (const int page)
 
 	// Init new page
 	patterns[page].clear();
-	for (int j = 0; j < NR_SLOTS; ++j) patterns[page].setShape (j, Shape<SHAPE_MAXNODES>());
 	for (int j = 0; j < NR_SLOTS; ++j) sendSlot (page, j);
 	if (page == pageAct) drawPad();
 	tabs[page].midiWidgets[PAGE_CONTROLS_STATUS].setValue (0);
@@ -1751,7 +1749,6 @@ void BOopsGUI::deletePage (const int page)
 	for (int i = page; i < pageMax; ++i)
 	{
 		patterns[i] = patterns[i + 1];
-		for (int j = 0; j < NR_SLOTS; ++j) patterns[i].setShape (j, patterns[i + 1].getShape (j));
 		for (int j = 0; j < NR_SLOTS; ++j) sendSlot (i, j);
 		if (i == pageAct) drawPad ();
 		for (int j = 0; j < NR_MIDI_CTRLS; ++j)
@@ -1778,12 +1775,6 @@ void BOopsGUI::swapPage (const int page1, const int page2)
 	p = patterns[page1];
 	patterns[page1] = patterns[page2];
 	patterns[page2] = p;
-	for (int j = 0; j < NR_SLOTS; ++j)
-	{
-		Shape<SHAPE_MAXNODES> s = patterns[page1].getShape (j);
-		patterns[page1].setShape (j, patterns[page2].getShape (j));
-		patterns[page2].setShape (j, s);
-	}
 	for (int j = 0; j < NR_SLOTS; ++j) sendSlot (page1, j);
 	for (int j = 0; j < NR_SLOTS; ++j) sendSlot (page2, j);
 

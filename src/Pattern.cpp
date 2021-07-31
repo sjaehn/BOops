@@ -40,6 +40,7 @@ void Pattern::clear ()
 		for (int s = 0; s < NR_STEPS; ++s)
 		{
 			setPad (r, s, pad0);
+                        setShape (r, Shape<SHAPE_MAXNODES>());
 		}
 	}
 
