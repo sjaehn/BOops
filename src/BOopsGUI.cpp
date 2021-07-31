@@ -1820,7 +1820,7 @@ void BOopsGUI::updatePageContainer()
 
 	pageBackSymbol.moveTo (0, 0);
 	pageBackSymbol.resize (10 * sz, 30 * sz);
-	pageForwardSymbol.moveTo (x0 + 780 * sz, 0);
+	pageForwardSymbol.moveTo (x0 + 800 * sz, 0);
 	pageForwardSymbol.resize (10 * sz, 30 * sz);
 }
 
