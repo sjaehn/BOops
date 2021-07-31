@@ -1916,6 +1916,7 @@ void BOopsGUI::deleteSlot (int slot)
 	if ((slot < 0) || (slot >= NR_SLOTS)) return;
 
 	int slotSize = getSlotsSize ();
+	if (slotSize <= 0) return;
 	slot = LIMIT (slot, 0, slotSize - 1);
 
 	// Move slots, slotParams, pads
@@ -1933,6 +1934,7 @@ void BOopsGUI::swapSlots (int slot1, int slot2)
 	if ((slot1 < 0) || (slot1 >= NR_SLOTS) || (slot2 < 0) || (slot2 >= NR_SLOTS)) return;
 
 	int slotSize = getSlotsSize ();
+	if (slotSize <= 1) return;
 	slot1 = LIMIT (slot1, 0, slotSize - 1);
 	slot2 = LIMIT (slot2, 0, slotSize - 1);
 	slots[slot1].effectsListbox.hide();
