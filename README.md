@@ -20,8 +20,9 @@ a) Install the boops package for your system
 
 * [Arch user repository](https://aur.archlinux.org/packages/boops.lv2-git/) (thanks to SpotlightKid)
 * [Fedora](https://copr.fedorainfracloud.org/coprs/ycollet/linuxmao/package/lv2-BOops/) (thanks to ycollet)
-* [OpenSUSE](https://build.opensuse.org/package/show/home:geekositalia:daw/BOops)
 * [FreeBSD](https://www.freshports.org/audio/boops-lv2) (thanks to Yuri): `sudo pkg install boops-lv2`
+* NixOS (thanks to Bart Brouns)
+* [OpenSUSE](https://build.opensuse.org/package/show/home:geekositalia:daw/BOops)
 
 b) Build your own binaries in the following three steps.
 
@@ -527,3 +528,5 @@ But do not change or delete any definition symbol!
 * ACE reverb from the Ardour project (https://github.com/Ardour/ardour) by Fredrik Kilander, Robin Gareus, Will Panther, and Damien Zammit (GPL2).
 * Galactic and Infinity2 reverbs and XRegion from the Airwindows project (https://github.com/airwindows/airwindows) by Chris Johnson
 (MIT license).
+* Community participation on presets, themes, and translations:
+  * Fusterclucker (presets)

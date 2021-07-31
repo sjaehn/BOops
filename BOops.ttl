@@ -2659,3 +2659,9 @@
 	lv2:appliesTo <https://www.jahnichen.de/plugins/lv2/BOops> ;
 	rdfs:label "Raising voltage" ;
 	rdfs:seeAlso <BOops_Raising_voltage.ttl> .
+
+<https://www.jahnichen.de/plugins/lv2/BOops#Fusterclucker_-_EDM_glitch_(4_bar)>
+	a pset:Preset ;
+	lv2:appliesTo <https://www.jahnichen.de/plugins/lv2/BOops> ;
+	rdfs:label "Fusterclucker - EDM glitch (4 bar)" ;
+	rdfs:seeAlso <BOops_Fusterclucker_-_EDM_glitch_(4_bar).ttl> .
