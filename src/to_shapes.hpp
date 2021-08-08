@@ -103,7 +103,8 @@ void to_shapes (const std::string& text, std::array<Shape<SHAPE_MAXNODES>, NR_SL
         }
 
         // Set data
-        shapes[sl].appendNode (node);
+        if (isTypeDef) shapes[sl].appendNode (node);
+        else fprintf (stderr, "BOops.lv2: Not completed node ignored.\n");
     }
 }
 

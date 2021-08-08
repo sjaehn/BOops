@@ -355,10 +355,10 @@ protected:
 	BWidgets::Label subLabel;
 	BWidgets::Label boomLabel;
 	BWidgets::Label warmthLabel;
+	EQDisplay eqDisplay;
 	BWidgets::Label clarityLabel;
 	BWidgets::Label presenceLabel;
 	BWidgets::Label airLabel;
-	EQDisplay eqDisplay;
 };
 
 #endif /* OPTIONEQ_HPP_ */

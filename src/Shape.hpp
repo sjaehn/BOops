@@ -95,7 +95,7 @@ template<size_t sz> Shape<sz>::~Shape () {}
 template<size_t sz> bool Shape<sz>::operator== (const Shape<sz>& rhs)
 {
 	if (size () != rhs.size ()) return false;
-	for (int i = 0; i < size (); ++i) if (nodes_[i] != rhs.nodes_[i]) return false;
+	for (unsigned int i = 0; i < size (); ++i) if (nodes_[i] != rhs.nodes_[i]) return false;
 	return true;
 }
 

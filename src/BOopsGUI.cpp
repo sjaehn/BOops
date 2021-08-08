@@ -2851,7 +2851,7 @@ void BOopsGUI::shapeEditorControlsClickedCallback(BEvents::Event* event)
 	{
 		ui->shapeEditor.shapeWidget.setTool (value != 0 ? ToolType (widgetNr + 1) : NO_TOOL);
 		// Allow only one button pressed
-		for (unsigned int i = 0; i < ui->shapeEditor.shapeToolButtons.size(); ++i)
+		for (int i = 0; i < int (ui->shapeEditor.shapeToolButtons.size()); ++i)
 		{
 			if (i != widgetNr) ui->shapeEditor.shapeToolButtons[i].setValue (0.0);
 		}
@@ -3373,11 +3373,11 @@ void BOopsGUI::edit2ChangedCallback(BEvents::Event* event)
 		case EDIT_UNDO:
 		{
 			std::vector<Action> actions = ui->patterns[ui->pageAct].undo ();
-			for (Action const& a : actions)
+			/*for (Action const& a : actions)
 			{
 				size_t r = LIMIT (a.row, 0, NR_SLOTS);
 				size_t s = LIMIT (a.step, 0, NR_STEPS);
-			}
+			}*/
 			for (int r = 0; r < NR_SLOTS; ++r) ui->sendSlot (ui->pageAct, r);
 			ui->drawPad ();
 		}
@@ -3386,11 +3386,11 @@ void BOopsGUI::edit2ChangedCallback(BEvents::Event* event)
 		case EDIT_REDO:
 		{
 			std::vector<Action> actions = ui->patterns[ui->pageAct].redo ();
-			for (Action const& a : actions)
-			{
+			/*for (Action const& a : actions)
+			
 				size_t r = LIMIT (a.row, 0, NR_SLOTS);
 				size_t s = LIMIT (a.step, 0, NR_STEPS);
-			}
+			}*/
 			for (int r = 0; r < NR_SLOTS; ++r) ui->sendSlot (ui->pageAct, r);
 			ui->drawPad ();
 		}
@@ -3603,7 +3603,7 @@ void BOopsGUI::padsPressedCallback (BEvents::Event* event)
 										for (int s = 0; (s < int (ui->clipBoard.data[r].size ())) && (step + s < maxstep); )
 										{
 											ui->setPad (ui->pageAct, row + r, step + s, ui->clipBoard.data.at(r).at(s));
-											if ((ui->clipBoard.origin.second == 0) && (s == 0) && (r < ui->clipBoard.shapes.size ())) 
+											if ((ui->clipBoard.origin.second == 0) && (s == 0) && (r < int (ui->clipBoard.shapes.size ()))) 
 											{
 												ui->patterns[ui->pageAct].setShape (row + r, ui->clipBoard.shapes.at(r));
 											}

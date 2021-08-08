@@ -972,9 +972,9 @@ void BOops::resizeSteps ()
 
 void BOops::notifyAllSlotsToGui ()
 {
-	for (unsigned int page = 0; page <= pageMax; ++page)
+	for (int page = 0; page <= pageMax; ++page)
 	{
-		for (unsigned int slot = 0; slot < NR_SLOTS; ++slot)
+		for (int slot = 0; slot < NR_SLOTS; ++slot)
 		{
 			LV2_Atom_Forge_Frame frame;
 			lv2_atom_forge_frame_time(&forge, 0);
@@ -1973,19 +1973,15 @@ LV2_State_Status BOops::state_restore (LV2_State_Retrieve_Function retrieve, LV2
 			size_t nextPos = shapesDataString.find ("Shape data");
 			std::string s = shapesDataString.substr (0, nextPos);
 
-
-			bool pageMode = false;
-			int pageNr = 0;
-
 			// Check for slots page
 			size_t slotspagePos = s.find ("slots page");
 			if ((slotspagePos != std::string::npos) && (slotspagePos < 10))
 			{
-				pageMode = true;
 				s.erase (0, slotspagePos + 10);
 
 				// Parse page number
 				size_t np;
+				int pageNr = 0;
 				try {pageNr = BUtilities::stof (s, &np);}
 				catch  (const std::exception& e)
 				{

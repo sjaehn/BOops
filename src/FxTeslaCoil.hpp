@@ -56,7 +56,7 @@ public:
 	{
 		Fx::init (position);
 		const double r1 = bidist (rnd);
-		drive = drive = DB2CO (-30.0 + 100.0 * LIMIT (params[SLOTS_OPTPARAMS + FX_TESLACOIL_DRIVE] + r1 * params[SLOTS_OPTPARAMS + FX_TESLACOIL_DRIVERAND], 0.00, 1.0));
+		drive = DB2CO (-30.0 + 100.0 * LIMIT (params[SLOTS_OPTPARAMS + FX_TESLACOIL_DRIVE] + r1 * params[SLOTS_OPTPARAMS + FX_TESLACOIL_DRIVERAND], 0.00, 1.0));
 		const double r2 = bidist (rnd);
 		level = DB2CO (-70.0 + 100.0 * LIMIT (params[SLOTS_OPTPARAMS + FX_TESLACOIL_LEVEL] + r2 * params[SLOTS_OPTPARAMS + FX_TESLACOIL_LEVELRAND], 0.0, 1.0));
 		lsign = 0.0f;
