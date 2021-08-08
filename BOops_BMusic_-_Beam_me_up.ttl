@@ -1,0 +1,787 @@
+@prefix atom: <http://lv2plug.in/ns/ext/atom#> .
+@prefix lv2: <http://lv2plug.in/ns/lv2core#> .
+@prefix pset: <http://lv2plug.in/ns/ext/presets#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix state: <http://lv2plug.in/ns/ext/state#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<https://www.jahnichen.de/plugins/lv2/BOops#Beam_me_up>
+	a pset:Preset ;
+	lv2:appliesTo <https://www.jahnichen.de/plugins/lv2/BOops> ;
+	rdfs:label "B.Music - Beam me up" ;
+	lv2:port [
+		lv2:symbol "autoplay_beats_per_bar" ;
+		pset:value 4.0
+	] , [
+		lv2:symbol "autoplay_bpm" ;
+		pset:value 120.0
+	] , [
+		lv2:symbol "autoplay_position" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "base" ;
+		pset:value 2.0
+	] , [
+		lv2:symbol "base_value" ;
+		pset:value 4.0
+	] , [
+		lv2:symbol "on_midi" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "play" ;
+		pset:value 1.0
+	] , [
+		lv2:symbol "play_mode" ;
+		pset:value 2.0
+	] , [
+		lv2:symbol "slot_10_attack" ;
+		pset:value 0.1
+	] , [
+		lv2:symbol "slot_10_decay" ;
+		pset:value 0.1
+	] , [
+		lv2:symbol "slot_10_dry_wet" ;
+		pset:value 1.0
+	] , [
+		lv2:symbol "slot_10_effect" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_10_pan" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_10_param_1" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_10_param_10" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_10_param_11" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_10_param_12" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_10_param_2" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_10_param_3" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_10_param_4" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_10_param_5" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_10_param_6" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_10_param_7" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_10_param_8" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_10_param_9" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_10_play" ;
+		pset:value 1.0
+	] , [
+		lv2:symbol "slot_10_release" ;
+		pset:value 0.1
+	] , [
+		lv2:symbol "slot_10_sustain" ;
+		pset:value 1.0
+	] , [
+		lv2:symbol "slot_11_attack" ;
+		pset:value 0.1
+	] , [
+		lv2:symbol "slot_11_decay" ;
+		pset:value 0.1
+	] , [
+		lv2:symbol "slot_11_dry_wet" ;
+		pset:value 1.0
+	] , [
+		lv2:symbol "slot_11_effect" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_11_pan" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_11_param_1" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_11_param_10" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_11_param_11" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_11_param_12" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_11_param_2" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_11_param_3" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_11_param_4" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_11_param_5" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_11_param_6" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_11_param_7" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_11_param_8" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_11_param_9" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_11_play" ;
+		pset:value 1.0
+	] , [
+		lv2:symbol "slot_11_release" ;
+		pset:value 0.1
+	] , [
+		lv2:symbol "slot_11_sustain" ;
+		pset:value 1.0
+	] , [
+		lv2:symbol "slot_12_attack" ;
+		pset:value 0.1
+	] , [
+		lv2:symbol "slot_12_decay" ;
+		pset:value 0.1
+	] , [
+		lv2:symbol "slot_12_dry_wet" ;
+		pset:value 1.0
+	] , [
+		lv2:symbol "slot_12_effect" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_12_pan" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_12_param_1" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_12_param_10" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_12_param_11" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_12_param_12" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_12_param_2" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_12_param_3" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_12_param_4" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_12_param_5" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_12_param_6" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_12_param_7" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_12_param_8" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_12_param_9" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_12_play" ;
+		pset:value 1.0
+	] , [
+		lv2:symbol "slot_12_release" ;
+		pset:value 0.1
+	] , [
+		lv2:symbol "slot_12_sustain" ;
+		pset:value 1.0
+	] , [
+		lv2:symbol "slot_1_attack" ;
+		pset:value 0.1
+	] , [
+		lv2:symbol "slot_1_decay" ;
+		pset:value 0.1
+	] , [
+		lv2:symbol "slot_1_dry_wet" ;
+		pset:value 1.0
+	] , [
+		lv2:symbol "slot_1_effect" ;
+		pset:value 24.0
+	] , [
+		lv2:symbol "slot_1_pan" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_1_param_1" ;
+		pset:value 0.91379291
+	] , [
+		lv2:symbol "slot_1_param_10" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_1_param_11" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_1_param_12" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_1_param_2" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_1_param_3" ;
+		pset:value 0.47586197
+	] , [
+		lv2:symbol "slot_1_param_4" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_1_param_5" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_1_param_6" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_1_param_7" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_1_param_8" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_1_param_9" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_1_play" ;
+		pset:value 1.0
+	] , [
+		lv2:symbol "slot_1_release" ;
+		pset:value 0.1
+	] , [
+		lv2:symbol "slot_1_sustain" ;
+		pset:value 1.0
+	] , [
+		lv2:symbol "slot_2_attack" ;
+		pset:value 0.1
+	] , [
+		lv2:symbol "slot_2_decay" ;
+		pset:value 0.1
+	] , [
+		lv2:symbol "slot_2_dry_wet" ;
+		pset:value 0.5
+	] , [
+		lv2:symbol "slot_2_effect" ;
+		pset:value 23.0
+	] , [
+		lv2:symbol "slot_2_pan" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_2_param_1" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_2_param_10" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_2_param_11" ;
+		pset:value 0.40000001
+	] , [
+		lv2:symbol "slot_2_param_12" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_2_param_2" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_2_param_3" ;
+		pset:value 1.0
+	] , [
+		lv2:symbol "slot_2_param_4" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_2_param_5" ;
+		pset:value 0.32183
+	] , [
+		lv2:symbol "slot_2_param_6" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_2_param_7" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_2_param_8" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_2_param_9" ;
+		pset:value 0.94827563
+	] , [
+		lv2:symbol "slot_2_play" ;
+		pset:value 1.0
+	] , [
+		lv2:symbol "slot_2_release" ;
+		pset:value 0.1
+	] , [
+		lv2:symbol "slot_2_sustain" ;
+		pset:value 1.0
+	] , [
+		lv2:symbol "slot_3_attack" ;
+		pset:value 0.1
+	] , [
+		lv2:symbol "slot_3_decay" ;
+		pset:value 0.1
+	] , [
+		lv2:symbol "slot_3_dry_wet" ;
+		pset:value 1.0
+	] , [
+		lv2:symbol "slot_3_effect" ;
+		pset:value 24.0
+	] , [
+		lv2:symbol "slot_3_pan" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_3_param_1" ;
+		pset:value 0.80172396
+	] , [
+		lv2:symbol "slot_3_param_10" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_3_param_11" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_3_param_12" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_3_param_2" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_3_param_3" ;
+		pset:value 0.47586197
+	] , [
+		lv2:symbol "slot_3_param_4" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_3_param_5" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_3_param_6" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_3_param_7" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_3_param_8" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_3_param_9" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_3_play" ;
+		pset:value 1.0
+	] , [
+		lv2:symbol "slot_3_release" ;
+		pset:value 0.1
+	] , [
+		lv2:symbol "slot_3_sustain" ;
+		pset:value 1.0
+	] , [
+		lv2:symbol "slot_4_attack" ;
+		pset:value 0.1
+	] , [
+		lv2:symbol "slot_4_decay" ;
+		pset:value 0.1
+	] , [
+		lv2:symbol "slot_4_dry_wet" ;
+		pset:value 1.0
+	] , [
+		lv2:symbol "slot_4_effect" ;
+		pset:value 8.0
+	] , [
+		lv2:symbol "slot_4_pan" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_4_param_1" ;
+		pset:value 8.0
+	] , [
+		lv2:symbol "slot_4_param_10" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_4_param_11" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_4_param_12" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_4_param_2" ;
+		pset:value 0.1
+	] , [
+		lv2:symbol "slot_4_param_3" ;
+		pset:value 1.0
+	] , [
+		lv2:symbol "slot_4_param_4" ;
+		pset:value 0.29310346
+	] , [
+		lv2:symbol "slot_4_param_5" ;
+		pset:value 0.66379315
+	] , [
+		lv2:symbol "slot_4_param_6" ;
+		pset:value 0.16379313
+	] , [
+		lv2:symbol "slot_4_param_7" ;
+		pset:value 0.43103442
+	] , [
+		lv2:symbol "slot_4_param_8" ;
+		pset:value 0.06896552
+	] , [
+		lv2:symbol "slot_4_param_9" ;
+		pset:value 0.23275855
+	] , [
+		lv2:symbol "slot_4_play" ;
+		pset:value 1.0
+	] , [
+		lv2:symbol "slot_4_release" ;
+		pset:value 0.1
+	] , [
+		lv2:symbol "slot_4_sustain" ;
+		pset:value 1.0
+	] , [
+		lv2:symbol "slot_5_attack" ;
+		pset:value 0.1
+	] , [
+		lv2:symbol "slot_5_decay" ;
+		pset:value 0.1
+	] , [
+		lv2:symbol "slot_5_dry_wet" ;
+		pset:value 1.0
+	] , [
+		lv2:symbol "slot_5_effect" ;
+		pset:value 26.0
+	] , [
+		lv2:symbol "slot_5_pan" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_5_param_1" ;
+		pset:value 0.36613622
+	] , [
+		lv2:symbol "slot_5_param_10" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_5_param_11" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_5_param_12" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_5_param_2" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_5_param_3" ;
+		pset:value 0.66670001
+	] , [
+		lv2:symbol "slot_5_param_4" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_5_param_5" ;
+		pset:value 0.74709296
+	] , [
+		lv2:symbol "slot_5_param_6" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_5_param_7" ;
+		pset:value 0.375
+	] , [
+		lv2:symbol "slot_5_param_8" ;
+		pset:value 0.0775862
+	] , [
+		lv2:symbol "slot_5_param_9" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_5_play" ;
+		pset:value 1.0
+	] , [
+		lv2:symbol "slot_5_release" ;
+		pset:value 0.1
+	] , [
+		lv2:symbol "slot_5_sustain" ;
+		pset:value 1.0
+	] , [
+		lv2:symbol "slot_6_attack" ;
+		pset:value 0.1
+	] , [
+		lv2:symbol "slot_6_decay" ;
+		pset:value 0.1
+	] , [
+		lv2:symbol "slot_6_dry_wet" ;
+		pset:value 0.32758611
+	] , [
+		lv2:symbol "slot_6_effect" ;
+		pset:value 6.0
+	] , [
+		lv2:symbol "slot_6_pan" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_6_param_1" ;
+		pset:value 0.11206897
+	] , [
+		lv2:symbol "slot_6_param_10" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_6_param_11" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_6_param_12" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_6_param_2" ;
+		pset:value 0.94827574
+	] , [
+		lv2:symbol "slot_6_param_3" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_6_param_4" ;
+		pset:value 0.32758614
+	] , [
+		lv2:symbol "slot_6_param_5" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_6_param_6" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_6_param_7" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_6_param_8" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_6_param_9" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_6_play" ;
+		pset:value 1.0
+	] , [
+		lv2:symbol "slot_6_release" ;
+		pset:value 0.1
+	] , [
+		lv2:symbol "slot_6_sustain" ;
+		pset:value 1.0
+	] , [
+		lv2:symbol "slot_7_attack" ;
+		pset:value 0.1
+	] , [
+		lv2:symbol "slot_7_decay" ;
+		pset:value 0.1
+	] , [
+		lv2:symbol "slot_7_dry_wet" ;
+		pset:value 1.0
+	] , [
+		lv2:symbol "slot_7_effect" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_7_pan" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_7_param_1" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_7_param_10" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_7_param_11" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_7_param_12" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_7_param_2" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_7_param_3" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_7_param_4" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_7_param_5" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_7_param_6" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_7_param_7" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_7_param_8" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_7_param_9" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_7_play" ;
+		pset:value 1.0
+	] , [
+		lv2:symbol "slot_7_release" ;
+		pset:value 0.1
+	] , [
+		lv2:symbol "slot_7_sustain" ;
+		pset:value 1.0
+	] , [
+		lv2:symbol "slot_8_attack" ;
+		pset:value 0.1
+	] , [
+		lv2:symbol "slot_8_decay" ;
+		pset:value 0.1
+	] , [
+		lv2:symbol "slot_8_dry_wet" ;
+		pset:value 1.0
+	] , [
+		lv2:symbol "slot_8_effect" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_8_pan" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_8_param_1" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_8_param_10" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_8_param_11" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_8_param_12" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_8_param_2" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_8_param_3" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_8_param_4" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_8_param_5" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_8_param_6" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_8_param_7" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_8_param_8" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_8_param_9" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_8_play" ;
+		pset:value 1.0
+	] , [
+		lv2:symbol "slot_8_release" ;
+		pset:value 0.1
+	] , [
+		lv2:symbol "slot_8_sustain" ;
+		pset:value 1.0
+	] , [
+		lv2:symbol "slot_9_attack" ;
+		pset:value 0.1
+	] , [
+		lv2:symbol "slot_9_decay" ;
+		pset:value 0.1
+	] , [
+		lv2:symbol "slot_9_dry_wet" ;
+		pset:value 1.0
+	] , [
+		lv2:symbol "slot_9_effect" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_9_pan" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_9_param_1" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_9_param_10" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_9_param_11" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_9_param_12" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_9_param_2" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_9_param_3" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_9_param_4" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_9_param_5" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_9_param_6" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_9_param_7" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_9_param_8" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_9_param_9" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "slot_9_play" ;
+		pset:value 1.0
+	] , [
+		lv2:symbol "slot_9_release" ;
+		pset:value 0.1
+	] , [
+		lv2:symbol "slot_9_sustain" ;
+		pset:value 1.0
+	] , [
+		lv2:symbol "source" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "steps" ;
+		pset:value 16.0
+	] ;
+	state:state [
+		<https://www.jahnichen.de/plugins/lv2/BOops#shapeData> """Shape data:
+slo:4; typ:0; ptx:0,000000; pty:0,000000; h1x:0,000000; h1y:0,000000; h2x:0,000000; h2y:0,000000;
+slo:4; typ:1; ptx:0,000000; pty:1,000000; h1x:0,000000; h1y:0,000000; h2x:0,000000; h2y:0,000000;
+slo:4; typ:1; ptx:1,000000; pty:-1,000000; h1x:0,000000; h1y:0,000000; h2x:0,000000; h2y:0,000000;
+slo:4; typ:0; ptx:1,000000; pty:0,000000; h1x:0,000000; h1y:0,000000; h2x:0,000000; h2y:0,000000;
+""" ;
+		<https://www.jahnichen.de/plugins/lv2/BOops#statePad> """
+Matrix data:
+sl:0; st:0; gt:1,000; sz:2; mx:1,000;
+sl:0; st:8; gt:1,000; sz:2; mx:1,000;
+sl:1; st:0; gt:1,000; sz:4; mx:1,000;
+sl:1; st:8; gt:1,000; sz:4; mx:1,000;
+sl:2; st:11; gt:1,000; sz:3; mx:1,000;
+sl:3; st:13; gt:1,000; sz:1; mx:1,000;
+sl:4; st:13; gt:1,000; sz:3; mx:1,000;
+sl:5; st:4; gt:1,000; sz:4; mx:1,000;
+""" ;
+		<https://www.jahnichen.de/plugins/lv2/BOops#transportGateKeys> [
+			a atom:Vector ;
+			atom:childType atom:Int ;
+			rdf:value ()
+		]
+	] .

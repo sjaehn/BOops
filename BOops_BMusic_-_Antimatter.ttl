@@ -6,11 +6,14 @@
 @prefix state: <http://lv2plug.in/ns/ext/state#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-<https://www.jahnichen.de/plugins/lv2/BOops#Bobble_wobble>
+<https://www.jahnichen.de/plugins/lv2/BOops#Antimatter>
 	a pset:Preset ;
 	lv2:appliesTo <https://www.jahnichen.de/plugins/lv2/BOops> ;
-	rdfs:label "Bobble wobble" ;
+	rdfs:label "B.Music - Antimatter" ;
 	lv2:port [
+		lv2:symbol "source" ;
+		pset:value 0.0
+	] , [
 		lv2:symbol "autoplay_beats_per_bar" ;
 		pset:value 4.0
 	] , [
@@ -225,13 +228,13 @@
 		pset:value 1.0
 	] , [
 		lv2:symbol "slot_1_effect" ;
-		pset:value 21.0
+		pset:value 7.0
 	] , [
 		lv2:symbol "slot_1_pan" ;
 		pset:value 0.0
 	] , [
 		lv2:symbol "slot_1_param_1" ;
-		pset:value 1.0
+		pset:value 0.0
 	] , [
 		lv2:symbol "slot_1_param_10" ;
 		pset:value 0.0
@@ -243,7 +246,7 @@
 		pset:value 0.0
 	] , [
 		lv2:symbol "slot_1_param_2" ;
-		pset:value 0.1
+		pset:value 0.0
 	] , [
 		lv2:symbol "slot_1_param_3" ;
 		pset:value 0.0
@@ -285,13 +288,13 @@
 		pset:value 1.0
 	] , [
 		lv2:symbol "slot_2_effect" ;
-		pset:value 10.0
+		pset:value 18.0
 	] , [
 		lv2:symbol "slot_2_pan" ;
 		pset:value 0.0
 	] , [
 		lv2:symbol "slot_2_param_1" ;
-		pset:value 0.89655185
+		pset:value 0.32758617
 	] , [
 		lv2:symbol "slot_2_param_10" ;
 		pset:value 0.0
@@ -306,13 +309,13 @@
 		pset:value 0.0
 	] , [
 		lv2:symbol "slot_2_param_3" ;
-		pset:value 0.5
+		pset:value 0.43965518
 	] , [
 		lv2:symbol "slot_2_param_4" ;
 		pset:value 0.0
 	] , [
 		lv2:symbol "slot_2_param_5" ;
-		pset:value 0.0
+		pset:value 0.5
 	] , [
 		lv2:symbol "slot_2_param_6" ;
 		pset:value 0.0
@@ -345,7 +348,7 @@
 		pset:value 1.0
 	] , [
 		lv2:symbol "slot_3_effect" ;
-		pset:value 7.0
+		pset:value 0.0
 	] , [
 		lv2:symbol "slot_3_pan" ;
 		pset:value 0.0
@@ -405,13 +408,13 @@
 		pset:value 1.0
 	] , [
 		lv2:symbol "slot_4_effect" ;
-		pset:value 26.0
+		pset:value 0.0
 	] , [
 		lv2:symbol "slot_4_pan" ;
 		pset:value 0.0
 	] , [
 		lv2:symbol "slot_4_param_1" ;
-		pset:value 0.36605263
+		pset:value 0.0
 	] , [
 		lv2:symbol "slot_4_param_10" ;
 		pset:value 0.0
@@ -426,22 +429,22 @@
 		pset:value 0.0
 	] , [
 		lv2:symbol "slot_4_param_3" ;
-		pset:value 0.66670007
+		pset:value 0.0
 	] , [
 		lv2:symbol "slot_4_param_4" ;
 		pset:value 0.0
 	] , [
 		lv2:symbol "slot_4_param_5" ;
-		pset:value 0.672414
+		pset:value 0.0
 	] , [
 		lv2:symbol "slot_4_param_6" ;
 		pset:value 0.0
 	] , [
 		lv2:symbol "slot_4_param_7" ;
-		pset:value 0.375
+		pset:value 0.0
 	] , [
 		lv2:symbol "slot_4_param_8" ;
-		pset:value 0.2327586
+		pset:value 0.0
 	] , [
 		lv2:symbol "slot_4_param_9" ;
 		pset:value 0.0
@@ -465,7 +468,7 @@
 		pset:value 1.0
 	] , [
 		lv2:symbol "slot_5_effect" ;
-		pset:value 6.0
+		pset:value 0.0
 	] , [
 		lv2:symbol "slot_5_pan" ;
 		pset:value 0.0
@@ -483,13 +486,13 @@
 		pset:value 0.0
 	] , [
 		lv2:symbol "slot_5_param_2" ;
-		pset:value 0.5
+		pset:value 0.0
 	] , [
 		lv2:symbol "slot_5_param_3" ;
 		pset:value 0.0
 	] , [
 		lv2:symbol "slot_5_param_4" ;
-		pset:value 0.5
+		pset:value 0.0
 	] , [
 		lv2:symbol "slot_5_param_5" ;
 		pset:value 0.0
@@ -525,13 +528,13 @@
 		pset:value 1.0
 	] , [
 		lv2:symbol "slot_6_effect" ;
-		pset:value 3.0
+		pset:value 0.0
 	] , [
 		lv2:symbol "slot_6_pan" ;
 		pset:value 0.0
 	] , [
 		lv2:symbol "slot_6_param_1" ;
-		pset:value 0.2499999
+		pset:value 0.0
 	] , [
 		lv2:symbol "slot_6_param_10" ;
 		pset:value 0.0
@@ -585,13 +588,13 @@
 		pset:value 1.0
 	] , [
 		lv2:symbol "slot_7_effect" ;
-		pset:value 3.0
+		pset:value 0.0
 	] , [
 		lv2:symbol "slot_7_pan" ;
 		pset:value 0.0
 	] , [
 		lv2:symbol "slot_7_param_1" ;
-		pset:value 0.74999994
+		pset:value 0.0
 	] , [
 		lv2:symbol "slot_7_param_10" ;
 		pset:value 0.0
@@ -755,40 +758,21 @@
 		lv2:symbol "slot_9_sustain" ;
 		pset:value 1.0
 	] , [
-		lv2:symbol "source" ;
-		pset:value 0.0
-	] , [
 		lv2:symbol "steps" ;
-		pset:value 16.0
+		pset:value 8.0
 	] ;
 	state:state [
 		<https://www.jahnichen.de/plugins/lv2/BOops#shapeData> """Shape data:
-slo:3; typ:0; ptx:0,000000; pty:0,000000; h1x:0,000000; h1y:0,000000; h2x:0,000000; h2y:0,000000;
-slo:3; typ:1; ptx:0,250000; pty:-1,000000; h1x:0,000000; h1y:0,000000; h2x:0,000000; h2y:0,000000;
-slo:3; typ:1; ptx:0,750000; pty:1,000000; h1x:0,000000; h1y:0,000000; h2x:0,000000; h2y:0,000000;
-slo:3; typ:0; ptx:1,000000; pty:0,000000; h1x:0,000000; h1y:0,000000; h2x:0,000000; h2y:0,000000;
 """ ;
 		<https://www.jahnichen.de/plugins/lv2/BOops#statePad> """
 Matrix data:
-sl:0; st:9; gt:1,000; sz:1; mx:1,000;
-sl:1; st:1; gt:1,000; sz:1; mx:1,000;
-sl:2; st:2; gt:1,000; sz:1; mx:1,000;
-sl:2; st:6; gt:0,500; sz:2; mx:1,000;
-sl:2; st:14; gt:0,500; sz:2; mx:1,000;
-sl:3; st:0; gt:1,000; sz:8; mx:1,000;
-sl:3; st:8; gt:1,000; sz:8; mx:1,000;
-sl:4; st:4; gt:1,000; sz:4; mx:1,000;
-sl:4; st:12; gt:1,000; sz:4; mx:1,000;
-sl:5; st:0; gt:1,000; sz:4; mx:1,000;
-sl:5; st:8; gt:1,000; sz:4; mx:1,000;
-sl:6; st:4; gt:1,000; sz:4; mx:1,000;
-sl:6; st:12; gt:1,000; sz:4; mx:1,000;
+sl:0; st:2; gt:1,000; sz:2; mx:1,000;
+sl:0; st:4; gt:1,000; sz:2; mx:1,000;
+sl:1; st:4; gt:1,000; sz:4; mx:1,000;
 """ ;
 		<https://www.jahnichen.de/plugins/lv2/BOops#transportGateKeys> [
 			a atom:Vector ;
 			atom:childType atom:Int ;
-			rdf:value (
-				"48"^^xsd:int
-			)
+			rdf:value ()
 		]
 	] .

@@ -6,10 +6,10 @@
 @prefix state: <http://lv2plug.in/ns/ext/state#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-<https://www.jahnichen.de/plugins/lv2/BOops#Beam_me_up>
+<https://www.jahnichen.de/plugins/lv2/BOops#Grumpy_Bernie>
 	a pset:Preset ;
 	lv2:appliesTo <https://www.jahnichen.de/plugins/lv2/BOops> ;
-	rdfs:label "Beam me up" ;
+	rdfs:label "B.Music - Grumpy Bernie" ;
 	lv2:port [
 		lv2:symbol "autoplay_beats_per_bar" ;
 		pset:value 4.0
@@ -216,22 +216,22 @@
 		pset:value 1.0
 	] , [
 		lv2:symbol "slot_1_attack" ;
-		pset:value 0.1
+		pset:value 0.02068246
 	] , [
 		lv2:symbol "slot_1_decay" ;
-		pset:value 0.1
+		pset:value 0.0
 	] , [
 		lv2:symbol "slot_1_dry_wet" ;
 		pset:value 1.0
 	] , [
 		lv2:symbol "slot_1_effect" ;
-		pset:value 24.0
+		pset:value 18.0
 	] , [
 		lv2:symbol "slot_1_pan" ;
 		pset:value 0.0
 	] , [
 		lv2:symbol "slot_1_param_1" ;
-		pset:value 0.91379291
+		pset:value 0.25862074
 	] , [
 		lv2:symbol "slot_1_param_10" ;
 		pset:value 0.0
@@ -246,13 +246,13 @@
 		pset:value 0.0
 	] , [
 		lv2:symbol "slot_1_param_3" ;
-		pset:value 0.47586197
+		pset:value 0.47413799
 	] , [
 		lv2:symbol "slot_1_param_4" ;
 		pset:value 0.0
 	] , [
 		lv2:symbol "slot_1_param_5" ;
-		pset:value 0.0
+		pset:value 0.5
 	] , [
 		lv2:symbol "slot_1_param_6" ;
 		pset:value 0.0
@@ -270,34 +270,34 @@
 		pset:value 1.0
 	] , [
 		lv2:symbol "slot_1_release" ;
-		pset:value 0.1
+		pset:value 0.01602062
 	] , [
 		lv2:symbol "slot_1_sustain" ;
 		pset:value 1.0
 	] , [
 		lv2:symbol "slot_2_attack" ;
-		pset:value 0.1
+		pset:value 0.01602062
 	] , [
 		lv2:symbol "slot_2_decay" ;
-		pset:value 0.1
+		pset:value 0.00003461
 	] , [
 		lv2:symbol "slot_2_dry_wet" ;
-		pset:value 0.5
+		pset:value 1.0
 	] , [
 		lv2:symbol "slot_2_effect" ;
-		pset:value 23.0
+		pset:value 26.0
 	] , [
 		lv2:symbol "slot_2_pan" ;
 		pset:value 0.0
 	] , [
 		lv2:symbol "slot_2_param_1" ;
-		pset:value 0.0
+		pset:value 0.28854999
 	] , [
 		lv2:symbol "slot_2_param_10" ;
 		pset:value 0.0
 	] , [
 		lv2:symbol "slot_2_param_11" ;
-		pset:value 0.40000001
+		pset:value 0.0
 	] , [
 		lv2:symbol "slot_2_param_12" ;
 		pset:value 0.0
@@ -306,31 +306,31 @@
 		pset:value 0.0
 	] , [
 		lv2:symbol "slot_2_param_3" ;
-		pset:value 1.0
+		pset:value 0.66670001
 	] , [
 		lv2:symbol "slot_2_param_4" ;
 		pset:value 0.0
 	] , [
 		lv2:symbol "slot_2_param_5" ;
-		pset:value 0.32183
+		pset:value 0.49709293
 	] , [
 		lv2:symbol "slot_2_param_6" ;
 		pset:value 0.0
 	] , [
 		lv2:symbol "slot_2_param_7" ;
-		pset:value 0.0
+		pset:value 0.375
 	] , [
 		lv2:symbol "slot_2_param_8" ;
-		pset:value 0.0
+		pset:value 0.37068978
 	] , [
 		lv2:symbol "slot_2_param_9" ;
-		pset:value 0.94827563
+		pset:value 0.0
 	] , [
 		lv2:symbol "slot_2_play" ;
 		pset:value 1.0
 	] , [
 		lv2:symbol "slot_2_release" ;
-		pset:value 0.1
+		pset:value 0.01902497
 	] , [
 		lv2:symbol "slot_2_sustain" ;
 		pset:value 1.0
@@ -342,16 +342,16 @@
 		pset:value 0.1
 	] , [
 		lv2:symbol "slot_3_dry_wet" ;
-		pset:value 1.0
+		pset:value 0.32758623
 	] , [
 		lv2:symbol "slot_3_effect" ;
-		pset:value 24.0
+		pset:value 17.0
 	] , [
 		lv2:symbol "slot_3_pan" ;
 		pset:value 0.0
 	] , [
 		lv2:symbol "slot_3_param_1" ;
-		pset:value 0.80172396
+		pset:value 0.5
 	] , [
 		lv2:symbol "slot_3_param_10" ;
 		pset:value 0.0
@@ -363,13 +363,13 @@
 		pset:value 0.0
 	] , [
 		lv2:symbol "slot_3_param_2" ;
-		pset:value 0.0
+		pset:value 0.41999999
 	] , [
 		lv2:symbol "slot_3_param_3" ;
-		pset:value 0.47586197
+		pset:value 0.0
 	] , [
 		lv2:symbol "slot_3_param_4" ;
-		pset:value 0.0
+		pset:value 0.51999998
 	] , [
 		lv2:symbol "slot_3_param_5" ;
 		pset:value 0.0
@@ -402,16 +402,16 @@
 		pset:value 0.1
 	] , [
 		lv2:symbol "slot_4_dry_wet" ;
-		pset:value 1.0
+		pset:value 0.32758623
 	] , [
 		lv2:symbol "slot_4_effect" ;
-		pset:value 8.0
+		pset:value 2.0
 	] , [
 		lv2:symbol "slot_4_pan" ;
 		pset:value 0.0
 	] , [
 		lv2:symbol "slot_4_param_1" ;
-		pset:value 8.0
+		pset:value 1.0
 	] , [
 		lv2:symbol "slot_4_param_10" ;
 		pset:value 0.0
@@ -423,28 +423,28 @@
 		pset:value 0.0
 	] , [
 		lv2:symbol "slot_4_param_2" ;
-		pset:value 0.1
+		pset:value 0.0
 	] , [
 		lv2:symbol "slot_4_param_3" ;
-		pset:value 1.0
+		pset:value 0.0
 	] , [
 		lv2:symbol "slot_4_param_4" ;
-		pset:value 0.29310346
+		pset:value 0.0
 	] , [
 		lv2:symbol "slot_4_param_5" ;
-		pset:value 0.66379315
+		pset:value 0.0
 	] , [
 		lv2:symbol "slot_4_param_6" ;
-		pset:value 0.16379313
+		pset:value 0.0
 	] , [
 		lv2:symbol "slot_4_param_7" ;
-		pset:value 0.43103442
+		pset:value 0.0
 	] , [
 		lv2:symbol "slot_4_param_8" ;
-		pset:value 0.06896552
+		pset:value 0.0
 	] , [
 		lv2:symbol "slot_4_param_9" ;
-		pset:value 0.23275855
+		pset:value 0.0
 	] , [
 		lv2:symbol "slot_4_play" ;
 		pset:value 1.0
@@ -465,13 +465,13 @@
 		pset:value 1.0
 	] , [
 		lv2:symbol "slot_5_effect" ;
-		pset:value 26.0
+		pset:value 14.0
 	] , [
 		lv2:symbol "slot_5_pan" ;
 		pset:value 0.0
 	] , [
 		lv2:symbol "slot_5_param_1" ;
-		pset:value 0.36613622
+		pset:value 0.5
 	] , [
 		lv2:symbol "slot_5_param_10" ;
 		pset:value 0.0
@@ -486,22 +486,22 @@
 		pset:value 0.0
 	] , [
 		lv2:symbol "slot_5_param_3" ;
-		pset:value 0.66670001
+		pset:value 1.0
 	] , [
 		lv2:symbol "slot_5_param_4" ;
 		pset:value 0.0
 	] , [
 		lv2:symbol "slot_5_param_5" ;
-		pset:value 0.74709296
+		pset:value 0.1
 	] , [
 		lv2:symbol "slot_5_param_6" ;
 		pset:value 0.0
 	] , [
 		lv2:symbol "slot_5_param_7" ;
-		pset:value 0.375
+		pset:value 0.2
 	] , [
 		lv2:symbol "slot_5_param_8" ;
-		pset:value 0.0775862
+		pset:value 0.0
 	] , [
 		lv2:symbol "slot_5_param_9" ;
 		pset:value 0.0
@@ -522,16 +522,16 @@
 		pset:value 0.1
 	] , [
 		lv2:symbol "slot_6_dry_wet" ;
-		pset:value 0.32758611
+		pset:value 1.0
 	] , [
 		lv2:symbol "slot_6_effect" ;
-		pset:value 6.0
+		pset:value 20.0
 	] , [
 		lv2:symbol "slot_6_pan" ;
 		pset:value 0.0
 	] , [
 		lv2:symbol "slot_6_param_1" ;
-		pset:value 0.11206897
+		pset:value 0.5
 	] , [
 		lv2:symbol "slot_6_param_10" ;
 		pset:value 0.0
@@ -543,22 +543,22 @@
 		pset:value 0.0
 	] , [
 		lv2:symbol "slot_6_param_2" ;
-		pset:value 0.94827574
+		pset:value 0.0
 	] , [
 		lv2:symbol "slot_6_param_3" ;
-		pset:value 0.0
+		pset:value 0.25
 	] , [
 		lv2:symbol "slot_6_param_4" ;
-		pset:value 0.32758614
+		pset:value 0.0
 	] , [
 		lv2:symbol "slot_6_param_5" ;
-		pset:value 0.0
+		pset:value 0.5
 	] , [
 		lv2:symbol "slot_6_param_6" ;
 		pset:value 0.0
 	] , [
 		lv2:symbol "slot_6_param_7" ;
-		pset:value 0.0
+		pset:value 0.30000001
 	] , [
 		lv2:symbol "slot_6_param_8" ;
 		pset:value 0.0
@@ -585,13 +585,13 @@
 		pset:value 1.0
 	] , [
 		lv2:symbol "slot_7_effect" ;
-		pset:value 0.0
+		pset:value 10.0
 	] , [
 		lv2:symbol "slot_7_pan" ;
 		pset:value 0.0
 	] , [
 		lv2:symbol "slot_7_param_1" ;
-		pset:value 0.0
+		pset:value 0.5
 	] , [
 		lv2:symbol "slot_7_param_10" ;
 		pset:value 0.0
@@ -606,7 +606,7 @@
 		pset:value 0.0
 	] , [
 		lv2:symbol "slot_7_param_3" ;
-		pset:value 0.0
+		pset:value 0.5
 	] , [
 		lv2:symbol "slot_7_param_4" ;
 		pset:value 0.0
@@ -763,21 +763,23 @@
 	] ;
 	state:state [
 		<https://www.jahnichen.de/plugins/lv2/BOops#shapeData> """Shape data:
-slo:4; typ:0; ptx:0,000000; pty:0,000000; h1x:0,000000; h1y:0,000000; h2x:0,000000; h2y:0,000000;
-slo:4; typ:1; ptx:0,000000; pty:1,000000; h1x:0,000000; h1y:0,000000; h2x:0,000000; h2y:0,000000;
-slo:4; typ:1; ptx:1,000000; pty:-1,000000; h1x:0,000000; h1y:0,000000; h2x:0,000000; h2y:0,000000;
-slo:4; typ:0; ptx:1,000000; pty:0,000000; h1x:0,000000; h1y:0,000000; h2x:0,000000; h2y:0,000000;
+slo:1; typ:0; ptx:0,000000; pty:0,000000; h1x:0,000000; h1y:0,000000; h2x:0,000000; h2y:0,000000;
+slo:1; typ:1; ptx:0,250000; pty:-1,000000; h1x:0,000000; h1y:0,000000; h2x:0,000000; h2y:0,000000;
+slo:1; typ:1; ptx:0,750000; pty:1,000000; h1x:0,000000; h1y:0,000000; h2x:0,000000; h2y:0,000000;
+slo:1; typ:0; ptx:1,000000; pty:0,000000; h1x:0,000000; h1y:0,000000; h2x:0,000000; h2y:0,000000;
 """ ;
 		<https://www.jahnichen.de/plugins/lv2/BOops#statePad> """
 Matrix data:
-sl:0; st:0; gt:1,000; sz:2; mx:1,000;
-sl:0; st:8; gt:1,000; sz:2; mx:1,000;
-sl:1; st:0; gt:1,000; sz:4; mx:1,000;
-sl:1; st:8; gt:1,000; sz:4; mx:1,000;
-sl:2; st:11; gt:1,000; sz:3; mx:1,000;
-sl:3; st:13; gt:1,000; sz:1; mx:1,000;
-sl:4; st:13; gt:1,000; sz:3; mx:1,000;
-sl:5; st:4; gt:1,000; sz:4; mx:1,000;
+sl:0; st:2; gt:1,000; sz:2; mx:1,000;
+sl:1; st:4; gt:1,000; sz:12; mx:1,000;
+sl:2; st:2; gt:1,000; sz:1; mx:1,000;
+sl:2; st:4; gt:1,000; sz:4; mx:1,000;
+sl:2; st:12; gt:1,000; sz:4; mx:1,000;
+sl:3; st:3; gt:1,000; sz:1; mx:1,000;
+sl:3; st:8; gt:1,000; sz:4; mx:1,000;
+sl:4; st:8; gt:1,000; sz:8; mx:1,000;
+sl:5; st:12; gt:1,000; sz:4; mx:1,000;
+sl:6; st:15; gt:1,000; sz:1; mx:1,000;
 """ ;
 		<https://www.jahnichen.de/plugins/lv2/BOops#transportGateKeys> [
 			a atom:Vector ;

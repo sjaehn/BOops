@@ -2561,104 +2561,116 @@
 <https://www.jahnichen.de/plugins/lv2/BOops#Antimatter>
 	a pset:Preset ;
 	lv2:appliesTo <https://www.jahnichen.de/plugins/lv2/BOops> ;
-	rdfs:label "Antimatter" ;
-	rdfs:seeAlso <BOops_Antimatter.ttl> .
+	rdfs:label "B.Music - Antimatter" ;
+	rdfs:seeAlso <BOops_BMusic_-_Antimatter.ttl> .
+
+<https://www.jahnichen.de/plugins/lv2/BOops#Arctic_resonance>
+	a pset:Preset ;
+	lv2:appliesTo <https://www.jahnichen.de/plugins/lv2/BOops> ;
+	rdfs:label "B.Music - Arctic resonance" ;
+	rdfs:seeAlso <BOops_BMusic_-_Arctic_resonance.ttl> .
 
 <https://www.jahnichen.de/plugins/lv2/BOops#Beam_me_up>
 	a pset:Preset ;
 	lv2:appliesTo <https://www.jahnichen.de/plugins/lv2/BOops> ;
-	rdfs:label "Beam me up" ;
-	rdfs:seeAlso <BOops_Beam_me_up.ttl> .
+	rdfs:label "B.Music - Beam me up" ;
+	rdfs:seeAlso <BOops_BMusic_-_Beam_me_up.ttl> .
 
 <https://www.jahnichen.de/plugins/lv2/BOops#Bobble_wobble>
 	a pset:Preset ;
 	lv2:appliesTo <https://www.jahnichen.de/plugins/lv2/BOops> ;
-	rdfs:label "Bobble wobble" ;
-	rdfs:seeAlso <BOops_Bobble_wobble.ttl> .
+	rdfs:label "B.Music - Bobble wobble" ;
+	rdfs:seeAlso <BOops_BMusic_-_Bobble_wobble.ttl> .
 
 <https://www.jahnichen.de/plugins/lv2/BOops#Chaos_theory>
 	a pset:Preset ;
 	lv2:appliesTo <https://www.jahnichen.de/plugins/lv2/BOops> ;
-	rdfs:label "Chaos theory" ;
-	rdfs:seeAlso <BOops_Chaos_theory.ttl> .
+	rdfs:label "B.Music - Chaos theory" ;
+	rdfs:seeAlso <BOops_BMusic_-_Chaos_theory.ttl> .
 
 <https://www.jahnichen.de/plugins/lv2/BOops#Cross_fire>
 	a pset:Preset ;
 	lv2:appliesTo <https://www.jahnichen.de/plugins/lv2/BOops> ;
-	rdfs:label "Cross fire" ;
-	rdfs:seeAlso <BOops_Cross_fire.ttl> .
+	rdfs:label "B.Music - Cross fire" ;
+	rdfs:seeAlso <BOops_BMusic_-_Cross_fire.ttl> .
 
 <https://www.jahnichen.de/plugins/lv2/BOops#Dizzy_tizzy>
 	a pset:Preset ;
 	lv2:appliesTo <https://www.jahnichen.de/plugins/lv2/BOops> ;
-	rdfs:label "Dizzy tizzy" ;
-	rdfs:seeAlso <BOops_Dizzy_tizzy.ttl> .
+	rdfs:label "B.Music - Dizzy tizzy" ;
+	rdfs:seeAlso <BOops_BMusic_-_Dizzy_tizzy.ttl> .
 
 <https://www.jahnichen.de/plugins/lv2/BOops#Fade_to_grey>
 	a pset:Preset ;
 	lv2:appliesTo <https://www.jahnichen.de/plugins/lv2/BOops> ;
-	rdfs:label "Fade to grey" ;
-	rdfs:seeAlso <BOops_Fade_to_grey.ttl> .
+	rdfs:label "B.Music - Fade to grey" ;
+	rdfs:seeAlso <BOops_BMusic_-_Fade_to_grey.ttl> .
 
 <https://www.jahnichen.de/plugins/lv2/BOops#Game_over>
 	a pset:Preset ;
 	lv2:appliesTo <https://www.jahnichen.de/plugins/lv2/BOops> ;
-	rdfs:label "Game over" ;
-	rdfs:seeAlso <BOops_Game_over.ttl> .
+	rdfs:label "B.Music - Game over" ;
+	rdfs:seeAlso <BOops_BMusic_-_Game_over.ttl> .
+
+<https://www.jahnichen.de/plugins/lv2/BOops#Grannys_vinyl>
+	a pset:Preset ;
+	lv2:appliesTo <https://www.jahnichen.de/plugins/lv2/BOops> ;
+	rdfs:label "B.Music - Granny's vinyl" ;
+	rdfs:seeAlso <BOops_BMusic_-_Grannys_vinyl.ttl> .
 
 <https://www.jahnichen.de/plugins/lv2/BOops#Grumpy_Bernie>
 	a pset:Preset ;
 	lv2:appliesTo <https://www.jahnichen.de/plugins/lv2/BOops> ;
-	rdfs:label "Grumpy Bernie" ;
-	rdfs:seeAlso <BOops_Grumpy_Bernie.ttl> .
+	rdfs:label "B.Music - Grumpy Bernie" ;
+	rdfs:seeAlso <BOops_BMusic_-_Grumpy_Bernie.ttl> .
 
 <https://www.jahnichen.de/plugins/lv2/BOops#Leap_in_time>
 	a pset:Preset ;
 	lv2:appliesTo <https://www.jahnichen.de/plugins/lv2/BOops> ;
-	rdfs:label "Leap in time" ;
-	rdfs:seeAlso <BOops_Leap_in_time.ttl> .
+	rdfs:label "B.Music - Leap in time" ;
+	rdfs:seeAlso <BOops_BMusic_-_Leap_in_time.ttl> .
 
 <https://www.jahnichen.de/plugins/lv2/BOops#Loopodelic>
 	a pset:Preset ;
 	lv2:appliesTo <https://www.jahnichen.de/plugins/lv2/BOops> ;
-	rdfs:label "Loopodelic" ;
-	rdfs:seeAlso <BOops_Loopodelic.ttl> .
+	rdfs:label "B.Music - Loopodelic" ;
+	rdfs:seeAlso <BOops_BMusic_-_Loopodelic.ttl> .
 
 <https://www.jahnichen.de/plugins/lv2/BOops#Message_from_outerspace>
 	a pset:Preset ;
 	lv2:appliesTo <https://www.jahnichen.de/plugins/lv2/BOops> ;
-	rdfs:label "Message from outerspace" ;
-	rdfs:seeAlso <BOops_Message_from_outerspace.ttl> .
-
-<https://www.jahnichen.de/plugins/lv2/BOops#Steel_punk>
-	a pset:Preset ;
-	lv2:appliesTo <https://www.jahnichen.de/plugins/lv2/BOops> ;
-	rdfs:label "Steel punk" ;
-	rdfs:seeAlso <BOops_Steel_punk.ttl> .
-
-<https://www.jahnichen.de/plugins/lv2/BOops#Sudden_1>
-	a pset:Preset ;
-	lv2:appliesTo <https://www.jahnichen.de/plugins/lv2/BOops> ;
-	rdfs:label "Sudden 1" ;
-	rdfs:seeAlso <BOops_Sudden_1.ttl> .
-
-<https://www.jahnichen.de/plugins/lv2/BOops#Sudden_2>
-	a pset:Preset ;
-	lv2:appliesTo <https://www.jahnichen.de/plugins/lv2/BOops> ;
-	rdfs:label "Sudden 2" ;
-	rdfs:seeAlso <BOops_Sudden_2.ttl> .
-
-<https://www.jahnichen.de/plugins/lv2/BOops#Through_the_intestine>
-	a pset:Preset ;
-	lv2:appliesTo <https://www.jahnichen.de/plugins/lv2/BOops> ;
-	rdfs:label "Through the intestine" ;
-	rdfs:seeAlso <BOops_Through_the_intestine.ttl> .
+	rdfs:label "B.Music - Message from outerspace" ;
+	rdfs:seeAlso <BOops_BMusic_-_Message_from_outerspace.ttl> .
 
 <https://www.jahnichen.de/plugins/lv2/BOops#Raising_voltage>
 	a pset:Preset ;
 	lv2:appliesTo <https://www.jahnichen.de/plugins/lv2/BOops> ;
-	rdfs:label "Raising voltage" ;
-	rdfs:seeAlso <BOops_Raising_voltage.ttl> .
+	rdfs:label "B.Music - Raising voltage" ;
+	rdfs:seeAlso <BOops_BMusic_-_Raising_voltage.ttl> .
+
+<https://www.jahnichen.de/plugins/lv2/BOops#Steel_punk>
+	a pset:Preset ;
+	lv2:appliesTo <https://www.jahnichen.de/plugins/lv2/BOops> ;
+	rdfs:label "B.Music - Steel punk" ;
+	rdfs:seeAlso <BOops_BMusic_-_Steel_punk.ttl> .
+
+<https://www.jahnichen.de/plugins/lv2/BOops#Sudden_1>
+	a pset:Preset ;
+	lv2:appliesTo <https://www.jahnichen.de/plugins/lv2/BOops> ;
+	rdfs:label "B.Music - Sudden 1" ;
+	rdfs:seeAlso <BOops_BMusic_-_Sudden_1.ttl> .
+
+<https://www.jahnichen.de/plugins/lv2/BOops#Sudden_2>
+	a pset:Preset ;
+	lv2:appliesTo <https://www.jahnichen.de/plugins/lv2/BOops> ;
+	rdfs:label "B.Music - Sudden 2" ;
+	rdfs:seeAlso <BOops_BMusic_-_Sudden_2.ttl> .
+
+<https://www.jahnichen.de/plugins/lv2/BOops#Through_the_intestine>
+	a pset:Preset ;
+	lv2:appliesTo <https://www.jahnichen.de/plugins/lv2/BOops> ;
+	rdfs:label "B.Music - Through the intestine" ;
+	rdfs:seeAlso <BOops_BMusic_-_Through_the_intestine.ttl> .
 
 <https://www.jahnichen.de/plugins/lv2/BOops#Fusterclucker_-_EDM_glitch_(4_bar)>
 	a pset:Preset ;
