@@ -24,7 +24,10 @@ a) Install the boops package for your system
 * NixOS (thanks to Bart Brouns)
 * [OpenSUSE](https://build.opensuse.org/package/show/home:geekositalia:daw/BOops)
 
-b) Build your own binaries in the following three steps.
+b) Copy the binaries of the latest version (once provided) to your lv2 directory (depending on your system settings,
+~/.lv2/, /usr/lib/lv2/, /usr/local/lib/lv2/, or ...).
+
+c) Build your own binaries in the following three steps.
 
 Step 1: [Download the latest published version](https://github.com/sjaehn/BOops/releases) of B.Oops. Or clone or
 [download the master](https://github.com/sjaehn/BOops/archive/master.zip) of this repository.
@@ -52,7 +55,7 @@ sudo make install
 ```
 
 **Optional:** Standard `make` and `make install` parameters are supported. You may build a debugging version 
-using `make CPPFLAGS+=-g`. For installation into an alternative directory (e.g., /usr/lib/lv2/), change the
+using `make CXXFLAGS+=-g`. For installation into an alternative directory (e.g., /usr/lib/lv2/), change the
 variable `PREFIX` while installing: `sudo make install PREFIX=/usr`. If you want to freely choose the
 install target directory, change the variable `LV2DIR` (e.g., `make install LV2DIR=~/.lv2`).
 
@@ -497,16 +500,19 @@ But do not change or delete any definition symbol!
   * Tremolo: Waveform option
   * Oops: New sample
 * Default optimization flags `-O3 -ffast-math` for compiling DSP
+* Improved binary compatibility / portability using static libs
 * New presets
 * Bugfixes
   * Fix pattern Y flip glitches
   * Correctly X flip merged pads
   * Fix paste merged pads causing overlaps
+  * Bugfix remove slots may cause segfault 
 
 
 ## TODO
 
-* More presets
+* More, more, more presets
+* MIDI triggered slots
 * Remove redundant sendShape() calls if sendPad() called
 * Implement effects
   * Pitch (?)

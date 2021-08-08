@@ -18,25 +18,28 @@ STRIP ?= strip
 PREFIX ?= /usr/local
 LV2DIR ?= $(PREFIX)/lib/lv2
 
-CPPFLAGS += -DPIC
-CFLAGS += -std=c99 -fvisibility=hidden -fPIC
-CXXFLAGS += -std=c++11 -fvisibility=hidden -fPIC
-LDFLAGS += -shared -Wl,-z,relro,-z,now
-STRIPFLAGS += -s --strip-program=$(STRIP)
+OPTIMIZATIONS ?=-O3 -ffast-math
+CFLAGS ?=-Wall
+CXXFLAGS ?=-Wall
+STRIPFLAGS ?=-s
+LDFLAGS ?=-Wl,-Bstatic -Wl,-Bdynamic -Wl,--as-needed
 
-GUIPPFLAGS += -DPUGL_HAVE_CAIRO
+override CFLAGS += -std=c99 -fvisibility=hidden -fPIC
+override CXXFLAGS += -std=c++11 -fvisibility=hidden -fPIC
+override LDFLAGS += -shared -pthread
 
+override GUIPPFLAGS += -DPUGL_HAVE_CAIRO
 DSPCFLAGS += `$(PKG_CONFIG) --cflags $(LV2_LIBS)`
 GUICFLAGS += `$(PKG_CONFIG) --cflags $(GUI_LIBS)`
-DSPLFLAGS += `$(PKG_CONFIG) --libs $(LV2_LIBS)`
-GUILFLAGS += `$(PKG_CONFIG) --libs $(GUI_LIBS)`
+DSPLIBS += -lm `$(PKG_CONFIG) --libs $(LV2_LIBS)`
+GUILIBS += -lm `$(PKG_CONFIG) --libs $(GUI_LIBS)`
 
 ifeq ($(shell test -e src/Locale_$(LANGUAGE).hpp && echo -n yes),yes)
-  GUIPPFLAGS += -DLOCALEFILE=\"Locale_$(LANGUAGE).hpp\"
+  override GUIPPFLAGS += -DLOCALEFILE=\"Locale_$(LANGUAGE).hpp\"
 endif
 
 ifdef WWW_BROWSER_CMD
-  GUIPPFLAGS += -DWWW_BROWSER_CMD=\"$(WWW_BROWSER_CMD)\"
+  override GUIPPFLAGS += -DWWW_BROWSER_CMD=\"$(WWW_BROWSER_CMD)\"
 endif
 
 BUNDLE = BOops.lv2
@@ -124,7 +127,8 @@ all: $(BUNDLE)
 $(DSP_OBJ): $(DSP_SRC)
 	@echo -n Build $(BUNDLE) DSP...
 	@mkdir -p $(BUNDLE)
-	@$(CXX) -O3 -ffast-math $(CPPFLAGS) $(CXXFLAGS) $(LDFLAGS) $(DSPCFLAGS) -Wl,--start-group $(DSPLFLAGS) $< $(DSP_INCL) -Wl,--end-group -o $(BUNDLE)/$@
+	@$(CXX) $(CPPFLAGS) $(OPTIMIZATIONS) $(CXXFLAGS) $(LDFLAGS) $(DSPCFLAGS) -Wl,--start-group $(DSPLIBS) $< $(DSP_INCL) -Wl,--end-group -o $(BUNDLE)/$@ 
+	@$(STRIP) $(STRIPFLAGS) $(BUNDLE)/$(DSP_OBJ)
 	@echo \ done.
 
 $(GUI_OBJ): $(GUI_SRC)
@@ -133,7 +137,8 @@ $(GUI_OBJ): $(GUI_SRC)
 	@mkdir -p $(BUNDLE)/tmp
 	@cd $(BUNDLE)/tmp; $(CC) $(CPPFLAGS) $(GUIPPFLAGS) $(CFLAGS) $(GUICFLAGS) $(addprefix ../../, $(GUI_C_INCL)) -c
 	@cd $(BUNDLE)/tmp; $(CXX) $(CPPFLAGS) $(GUIPPFLAGS) $(CXXFLAGS) $(GUICFLAGS) $(addprefix ../../, $< $(GUI_CXX_INCL)) -c
-	@$(CXX) $(CPPFLAGS) $(GUIPPFLAGS) $(CXXFLAGS) $(LDFLAGS) $(GUICFLAGS) -Wl,--start-group $(GUILFLAGS) $(BUNDLE)/tmp/*.o -Wl,--end-group -o $(BUNDLE)/$@
+	@$(CXX) $(CPPFLAGS) $(GUIPPFLAGS) $(CXXFLAGS) $(LDFLAGS) $(GUICFLAGS) -Wl,--start-group $(GUILIBS) $(BUNDLE)/tmp/*.o -Wl,--end-group -o $(BUNDLE)/$@ 
+	@$(STRIP) $(STRIPFLAGS) $(BUNDLE)/$(GUI_OBJ)
 	@rm -rf $(BUNDLE)/tmp
 	@echo \ done.
 
@@ -142,15 +147,6 @@ install:
 	@$(INSTALL) -d $(DESTDIR)$(LV2DIR)/$(BUNDLE)
 	@$(INSTALL) -d $(DESTDIR)$(LV2DIR)/$(BUNDLE)/inc
 	@$(INSTALL_PROGRAM) -m755 $(B_OBJECTS) $(DESTDIR)$(LV2DIR)/$(BUNDLE)
-	@$(INSTALL_DATA) $(addprefix $(BUNDLE)/, $(ROOTFILES)) $(DESTDIR)$(LV2DIR)/$(BUNDLE)
-	@$(INSTALL_DATA) $(addprefix $(BUNDLE)/, $(INCFILES)) $(DESTDIR)$(LV2DIR)/$(BUNDLE)/inc
-	@echo \ done.
-
-install-strip:
-	@echo -n "Install (stripped)" $(BUNDLE) to $(DESTDIR)$(LV2DIR)...
-	@$(INSTALL) -d $(DESTDIR)$(LV2DIR)/$(BUNDLE)
-	@$(INSTALL) -d $(DESTDIR)$(LV2DIR)/$(BUNDLE)/inc
-	@$(INSTALL_PROGRAM) -m755 $(STRIPFLAGS) $(B_OBJECTS) $(DESTDIR)$(LV2DIR)/$(BUNDLE)
 	@$(INSTALL_DATA) $(addprefix $(BUNDLE)/, $(ROOTFILES)) $(DESTDIR)$(LV2DIR)/$(BUNDLE)
 	@$(INSTALL_DATA) $(addprefix $(BUNDLE)/, $(INCFILES)) $(DESTDIR)$(LV2DIR)/$(BUNDLE)/inc
 	@echo \ done.
@@ -183,6 +179,6 @@ endif
 clean:
 	@rm -rf $(BUNDLE)
 
-.PHONY: all install install-strip uninstall clean
+.PHONY: all install uninstall check clean
 
 .NOTPARALLEL:
