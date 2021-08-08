@@ -1950,6 +1950,7 @@ LV2_State_Status BOops::state_restore (LV2_State_Retrieve_Function retrieve, LV2
 	}
 
 	// Retrieve shapes
+	for (Page& p : pages) for (Shape<SHAPE_MAXNODES>& s : p.shapes) s = Shape<SHAPE_MAXNODES>();
 	const void* shapesData = retrieve(handle, urids.bOops_shapeData, &size, &type, &valflags);
 	if (shapesData && (type == urids.atom_String))
 	{
