@@ -36,7 +36,7 @@ public:
 
 	FxChopper (RingBuffer<Stereo>** buffer, float* params, Pad* pads) :
 		Fx (buffer, params, pads),
-		nr (0), smoothing (0.1f), reach (1.0)
+		nr (1), smoothing (0.1f), reach (1.0)
 	{}
 
 	virtual void init (const double position) override
