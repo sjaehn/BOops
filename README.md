@@ -2,11 +2,11 @@
 Description: Glitch effect sequencer LV2 plugin
 
 Key features:
-* Multi-effect plugin controlled by step sequencer patterns
+* Multi-effect plugin controlled by extended step sequencer patterns
 * Apply glitch effects in live or on a sample track
 * 32 effects
 * Up to 12 effect slots, freely select effects and effect order
-* Optionally use effect mixer shapes
+* Extended step sequencer patterns: use pads, or mixer shapes, or MIDI key responses
 * Random effects: 4 different ways of randomization
 * Autoplay, host controlled, or MIDI controlled playback
 * Up to 16 patterns, MIDI controlled pattern change
@@ -208,6 +208,16 @@ properties in the right of the user interface. Directly change the pad mix prope
 
 Once switched to the shape mode by clicking on the respective symbol on the left of the pattern, you can edit a shape by
 clicking on the shape-harboring pad.
+
+
+##### Keys-controlled mode
+
+The keys-controlled mode (MIDI-controlled mode) is the third mode you can choose by clicking on the respective symbol on 
+the left of the pattern. In contrast to the pattern or shape drawing mode, you don't predefine the start and end point 
+and the amout of an effect. In the keys-controlled mode you predefine keys to respond. The effect will be started if you
+then press the predefined key. And the keys velocity represents the amount of the effect.
+
+You can use this mode for more creativity in live performances.
 
 
 ##### Cut, copy or flip mode
@@ -515,7 +525,6 @@ But do not change or delete any definition symbol!
 
 * Include slot keys in pattern load/save
 * Save / restore slot keys
-* Write slot keys documentation
 * More, more, more presets
 * MIDI triggered slots
 * Remove redundant sendShape() calls if sendPad() called
