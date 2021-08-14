@@ -21,6 +21,7 @@
 #ifndef SLOT_HPP_
 #define SLOT_HPP_
 
+#include <array>
 #include "Definitions.hpp"
 #include "RingBuffer.hpp"
 #include "Stereo.hpp"
@@ -28,6 +29,15 @@
 #include "Ports.hpp"
 #include "Fx.hpp"
 #include "Shape.hpp"
+#include "MidiKey.hpp"
+#include "StaticArrayList.hpp"
+
+enum SlotMode
+{
+	MODE_PATTERN	= 0,
+	MODE_SHAPE		= 1,
+	MODE_KEYS		= 2
+};
 
 class BOops; // Forward declaration;
 
@@ -44,22 +54,30 @@ public:
 	Pad getPad (const int index) const {return pads[index];}
 	void setSlotShape (const Shape<SHAPE_MAXNODES>& source);
 	Shape<SHAPE_MAXNODES> getSlotShape () const {return slotShape;}
-	bool hasSlotShape () const {return shapeMode;}
+	void setSlotKeys (const std::array<bool, NR_PIANO_KEYS + 1>& source);
+	bool isKey (const int index) {return slotKeys[index];}
+	void addMidiKey (const MidiKey& midiKey);
+	void removeMidiKey (const MidiKey& midiKey);
+	MidiKey findMidiKey (const uint8_t note);
+	SlotMode getMode () const {return slotMode;}
 	Fx* newFx (const BOopsEffectsIndex effect);
 	int getStartPad (const int index) const;
 	bool isPadSet (const int index) const {return ((startPos[index] >= 0) && (startPos[index] + pads[startPos[index]].size > index));}
 	void init (const double position) {if (fx) fx->init (position);}
 	Stereo play (const double position);
+	Stereo play (const double position, const float mx);
 	void end () {if (fx) fx->end ();}
 
 	BOops* plugin;
 	BOopsEffectsIndex effect;
 	float params [NR_PARAMS];
+	StaticArrayList<MidiKey, 16> midis;
 protected:
 	float adsr (const double position, const double size) const;
 	Pad pads[NR_STEPS];
 	Shape<SHAPE_MAXNODES> slotShape;
-	bool shapeMode;
+	std::array<bool, NR_PIANO_KEYS + 1> slotKeys;
+	SlotMode slotMode;
 
 public:
 	int startPos[NR_STEPS];

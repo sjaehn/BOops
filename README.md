@@ -492,7 +492,8 @@ But do not change or delete any definition symbol!
 
 ## What's new
 
-* Slot shapes
+* Slot shape mode: Controlled by a user-defined shape instead of a pattern
+* Slot keys mode: Controlled by user-defined MIDI events instead of a pattern
 * Pattern randomization
 * Fx
   * New Banger
@@ -507,10 +508,14 @@ But do not change or delete any definition symbol!
   * Correctly X flip merged pads
   * Fix paste merged pads causing overlaps
   * Bugfix remove slots may cause segfault 
+  * Fix clicks on decay
 
 
 ## TODO
 
+* Include slot keys in pattern load/save
+* Save / restore slot keys
+* Write slot keys documentation
 * More, more, more presets
 * MIDI triggered slots
 * Remove redundant sendShape() calls if sendPad() called

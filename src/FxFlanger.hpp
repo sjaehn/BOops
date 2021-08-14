@@ -90,13 +90,10 @@ public:
 		return s1;
 	}
 
-	virtual Stereo playShape (const double position, const double size, const double mixf) override
+	virtual Stereo play (const double position, const double size, const double mx, const double mixf) override
 	{
 		const Stereo s0 = (**buffer).front();
-		if (!slotShape) return s0;
 
-		double mx = slotShape->getMapValue (position / size);
-		mx = LIMIT (mx, 0.0, 1.0);
 		if (shapePaused && (mx >= 0.0001)) init (position);
 		shapePaused = (mx < 0.0001);
 

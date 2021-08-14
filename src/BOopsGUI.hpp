@@ -192,6 +192,7 @@ private:
 	static void padsFocusedCallback (BEvents::Event* event);
 	static void transportGateButtonClickedCallback (BEvents::Event* event);
 	static void sampleLoadButtonClickedCallback (BEvents::Event* event);
+	static void pianoCallback (BEvents::Event* event);
 	static void helpButtonClickedCallback (BEvents::Event* event);
 	static void ytButtonClickedCallback (BEvents::Event* event);
 	virtual void resize () override;
@@ -356,6 +357,7 @@ private:
 
 	MonitorWidget monitor;
 	PadSurface padSurface;
+	std::array<BWidgets::HPianoRoll, NR_SLOTS> slotPianos;
 
 	BWidgets::Widget editContainer;
 	std::array<HaloToggleButton, EDIT_RESET> edit1Buttons;

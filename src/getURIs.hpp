@@ -64,6 +64,7 @@ void getURIs (LV2_URID_Map* m, BOopsURIDs* uris)
 	uris->bOops_pad = m->map(m->handle, BOOPS_URI "#pad");
 	uris->bOops_shapeEvent = m->map(m->handle, BOOPS_URI "#shapeEvent");
 	uris->bOops_shapeData = m->map(m->handle, BOOPS_URI "#shapeData");
+	uris->bOops_keysData = m->map(m->handle, BOOPS_URI "#keysData");
 	uris->bOops_allocateBuffers = m->map(m->handle, BOOPS_URI "#allocateBuffers");
 	uris->bOops_installBuffers = m->map(m->handle, BOOPS_URI "#installBuffers");
 	uris->bOops_freeBuffers = m->map(m->handle, BOOPS_URI "#freeBuffers");

@@ -55,6 +55,10 @@ public:
         void setPad (const size_t row, const size_t step, const Pad& pad);
         Shape<SHAPE_MAXNODES> getShape(const size_t row) const;
         void setShape (const size_t row, const Shape<SHAPE_MAXNODES>& shape);
+        std::array<bool, NR_PIANO_KEYS + 1> getKeys (const size_t row) const;
+        bool getKey (const size_t row, const size_t note) const;
+        void setKeys (const size_t row, const std::array<bool, NR_PIANO_KEYS + 1>& ks);
+        void setKey (const size_t row, const size_t note, const bool state);
         std::vector<Action> undo ();
         std::vector<Action> redo ();
         void store ();
@@ -64,6 +68,7 @@ private:
         Journal<std::vector<Action>, MAXUNDO> journal;
         std::array<std::array<Pad, NR_STEPS>, NR_SLOTS> pads;
         std::array<Shape<SHAPE_MAXNODES>, NR_SLOTS> shapes;
+        std::array<std::array<bool, NR_PIANO_KEYS + 1>, NR_SLOTS> keys;
         struct
         {
                 std::vector<Action> oldMessage;

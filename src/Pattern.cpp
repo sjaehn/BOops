@@ -30,6 +30,8 @@
 void Pattern::clear ()
 {
 	Pad pad0 = Pad ();
+        std::array<bool, NR_PIANO_KEYS + 1> k0;
+        k0.fill (false);
 
 	changes.oldMessage.clear ();
 	changes.newMessage.clear ();
@@ -37,11 +39,9 @@ void Pattern::clear ()
 
 	for (int r = 0; r < NR_SLOTS; ++r)
 	{
-		for (int s = 0; s < NR_STEPS; ++s)
-		{
-			setPad (r, s, pad0);
-                        setShape (r, Shape<SHAPE_MAXNODES>());
-		}
+		for (int s = 0; s < NR_STEPS; ++s) setPad (r, s, pad0);
+                setShape (r, Shape<SHAPE_MAXNODES>());
+                setKeys (r, k0);
 	}
 
 	store ();
@@ -49,12 +49,12 @@ void Pattern::clear ()
 
 Pad Pattern::getPad (const size_t row, const size_t step) const
 {
-	return pads[LIMIT (row, 0, NR_SLOTS)][LIMIT (step, 0, NR_STEPS)];
+	return pads[LIMIT (row, 0, NR_SLOTS)][LIMIT (step, 0, NR_STEPS - 1)];
 }
 void Pattern::setPad (const size_t row, const size_t step, const Pad& pad)
 {
-	size_t r = LIMIT (row, 0, NR_SLOTS);
-	size_t s = LIMIT (step, 0, NR_STEPS);
+	size_t r = LIMIT (row, 0, NR_SLOTS - 1);
+	size_t s = LIMIT (step, 0, NR_STEPS - 1);
 	changes.oldMessage.push_back (Action (r, s, BUtilities::makeAny<Pad> (pads[r][s])));
 	changes.newMessage.push_back (Action (r, s, BUtilities::makeAny<Pad> (pad)));
 	pads[r][s] = pad;
@@ -62,15 +62,44 @@ void Pattern::setPad (const size_t row, const size_t step, const Pad& pad)
 
 Shape<SHAPE_MAXNODES> Pattern::getShape(const size_t row) const
 {
-        return shapes[LIMIT (row, 0, NR_SLOTS)];
+        return shapes[LIMIT (row, 0, NR_SLOTS - 1)];
 }
 
 void Pattern::setShape (const size_t row, const Shape<SHAPE_MAXNODES>& shape)
 {
-        size_t r = LIMIT (row, 0, NR_SLOTS);
+        size_t r = LIMIT (row, 0, NR_SLOTS - 1);
 	changes.oldMessage.push_back (Action (r, 0, BUtilities::makeAny<Shape<SHAPE_MAXNODES>> (shapes[r])));
 	changes.newMessage.push_back (Action (r, 0, BUtilities::makeAny<Shape<SHAPE_MAXNODES>> (shape)));
 	shapes[r] = shape;
+}
+
+std::array<bool, NR_PIANO_KEYS + 1> Pattern::getKeys (const size_t row) const
+{
+        return keys[LIMIT (row, 0, NR_SLOTS - 1)];
+}
+
+bool Pattern::getKey (const size_t row, const size_t note) const
+{
+        return keys[LIMIT (row, 0, NR_SLOTS - 1)] [LIMIT (note, 0, NR_PIANO_KEYS)];
+}
+
+void Pattern::setKeys (const size_t row, const std::array<bool, NR_PIANO_KEYS + 1>& ks)
+{
+        size_t r = LIMIT (row, 0, NR_SLOTS - 1);
+	changes.oldMessage.push_back (Action (r, 0, BUtilities::makeAny<std::array<bool, NR_PIANO_KEYS + 1>> (keys[r])));
+	changes.newMessage.push_back (Action (r, 0, BUtilities::makeAny<std::array<bool, NR_PIANO_KEYS + 1>> (ks)));
+	keys[r] = ks;
+}
+
+void Pattern::setKey (const size_t row, const size_t note, const bool state)
+{
+        size_t r = LIMIT (row, 0, NR_SLOTS - 1);
+        size_t n = LIMIT (note, 0, NR_PIANO_KEYS);
+        std::array<bool, NR_PIANO_KEYS + 1> nks = getKeys (row);
+        nks[n] = state;
+	changes.oldMessage.push_back (Action (r, 0, BUtilities::makeAny<std::array<bool, NR_PIANO_KEYS + 1>> (keys[r])));
+	changes.newMessage.push_back (Action (r, 0, BUtilities::makeAny<std::array<bool, NR_PIANO_KEYS + 1>> (nks)));
+	keys[r] = nks;
 }
 
 std::vector<Action> Pattern::undo ()
@@ -85,6 +114,7 @@ std::vector<Action> Pattern::undo ()
 		size_t s = LIMIT (a.step, 0, NR_STEPS);
 		if (a.content.test<Pad>()) pads[r][s] = a.content.get<Pad>();
                 else if (a.content.test<Shape<SHAPE_MAXNODES>>()) shapes[r] = a.content.get<Shape<SHAPE_MAXNODES>>();
+                else if (a.content.test<std::array<bool, NR_PIANO_KEYS + 1>>()) keys[r] = a.content.get<std::array<bool, NR_PIANO_KEYS + 1>>();
 	}
 
 	return actions;
@@ -101,6 +131,7 @@ std::vector<Action> Pattern::redo ()
 		size_t s = LIMIT (a.step, 0, NR_STEPS);
 		if (a.content.test<Pad>()) pads[r][s] = a.content.get<Pad>();
                 else if (a.content.test<Shape<SHAPE_MAXNODES>>()) shapes[r] = a.content.get<Shape<SHAPE_MAXNODES>>();
+                else if (a.content.test<std::array<bool, NR_PIANO_KEYS + 1>>()) keys[r] = a.content.get<std::array<bool, NR_PIANO_KEYS + 1>>();
 	}
 
 	return actions;

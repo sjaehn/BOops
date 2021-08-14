@@ -41,7 +41,7 @@ public:
 	Fx () = delete;
 
 	Fx (RingBuffer<Stereo>** buffer, float* params, Pad* pads) :
-		buffer (buffer), params (params), pads (pads), slotShape (nullptr),
+		buffer (buffer), params (params), pads (pads),
 		shapePaused (true), playing (false), panf (), unpanf(),
 		rnd (time (0)), unidist (0.0, 1.0), bidist (-1.0, 1.0)
 	{
@@ -78,13 +78,10 @@ public:
 		return mix (s0, process (position, size), position, size, mixf);
 	}
 
-	virtual Stereo playShape (const double position, const double size, const double mixf)
+	virtual Stereo play (const double position, const double size, const double mx, const double mixf)
 	{
 		const Stereo s0 = (**buffer).front();
-		if (!slotShape) return s0;
 
-		double mx = slotShape->getMapValue (position / size);
-		mx = LIMIT (mx, 0.0, 1.0);
 		if (shapePaused && (mx >= 0.0001)) init (position);
 		shapePaused = (mx < 0.0001);
 		
@@ -93,13 +90,10 @@ public:
 
 	virtual void end () {playing = false;}
 
-	void setSlotShape (Shape<SHAPE_MAXNODES>* source) {slotShape = source;}
-
 protected:
 	RingBuffer<Stereo>** buffer;
 	float* params;
 	Pad* pads;
-	Shape<SHAPE_MAXNODES>* slotShape;
 	bool shapePaused;
 	bool playing;
 	Stereo panf;
@@ -118,12 +112,12 @@ protected:
 
 		if (position < params[SLOTS_ATTACK] / adr) return position / (params[SLOTS_ATTACK] / adr);
 
-		if (position < params[SLOTS_DECAY] / adr) return
+		if (position < (params[SLOTS_ATTACK] + params[SLOTS_DECAY]) / adr) return
 		(
 			1.0f -
 			(1.0f - params[SLOTS_SUSTAIN]) *
 			(position - (params[SLOTS_ATTACK] / adr)) /
-			((params[SLOTS_DECAY] - params[SLOTS_ATTACK]) / adr)
+			(params[SLOTS_DECAY] / adr)
 		);
 
 		if (position > size - params[SLOTS_RELEASE] / adr) return params[SLOTS_SUSTAIN] * (size - position) / (params[SLOTS_RELEASE] / adr);

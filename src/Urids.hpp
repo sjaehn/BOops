@@ -64,6 +64,7 @@ struct BOopsURIDs
 	LV2_URID bOops_pad;
 	LV2_URID bOops_shapeEvent;
 	LV2_URID bOops_shapeData;
+	LV2_URID bOops_keysData;
 	LV2_URID bOops_allocateBuffers;
 	LV2_URID bOops_installBuffers;
 	LV2_URID bOops_freeBuffers;

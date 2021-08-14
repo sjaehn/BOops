@@ -37,6 +37,7 @@
 #include "Slot.hpp"
 #include "Message.hpp"
 #include "StaticArrayList.hpp"
+#include "MidiKey.hpp"
 
 class Sample; 	// Forward declaration
 
@@ -74,6 +75,7 @@ struct Page
 	PageControls controls;
 	std::array<std::array<Pad, NR_STEPS>, NR_SLOTS> pads;
 	std::array<Shape<SHAPE_MAXNODES>, NR_SLOTS> shapes;
+	std::array<std::array<bool, NR_PIANO_KEYS + 1>, NR_SLOTS> keys;
 };
 
 class BOops

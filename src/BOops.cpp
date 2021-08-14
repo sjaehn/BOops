@@ -28,6 +28,7 @@
 #include "BUtilities/Path.hpp"
 #include "getURIs.hpp"
 #include "to_shapes.hpp"
+#include "bool2hstr.hpp"
 
 #ifndef SF_FORMAT_MP3
 #ifndef MINIMP3_IMPLEMENTATION
@@ -102,7 +103,13 @@ BOops::BOops (double samplerate, const char* bundle_path, const LV2_Feature* con
 	slots.fill (Slot (this, FX_NONE, nullptr, nullptr, 16, 1.0f, 0.25 * samplerate));
 
 	// Init pages
-	pages.fill ({{0, 0, 0, 0}, std::array<std::array<Pad, NR_STEPS>, NR_SLOTS>(), std::array<Shape<SHAPE_MAXNODES>, NR_SLOTS>()});
+	for (Page& p : pages)
+	{
+		p.controls = {0, 0, 0, 0};
+		for (std::array<Pad, NR_STEPS>& pp : p.pads) pp.fill (Pad());
+		p.shapes.fill (Shape<SHAPE_MAXNODES>());
+		for (std::array<bool, NR_PIANO_KEYS + 1>& pk : p.keys) pk.fill (false);
+	}
 }
 
 BOops::~BOops ()
@@ -322,7 +329,6 @@ void BOops::run (uint32_t n_samples)
 				continue;
 			}
 
-
 			for (int params = 0; params < NR_PARAMS; ++params)
 			{
 				int controllerNr = SLOTS + slotNr * (SLOTS_PARAMS + NR_PARAMS) + SLOTS_PARAMS + params;
@@ -469,10 +475,10 @@ void BOops::run (uint32_t n_samples)
 				}
 			}
 
-			// Process slot pads or shape data
+			// Process slot pads or shape or keys data
 			else if (obj->body.otype == urids.bOops_slotEvent)
 			{
-				LV2_Atom *oPg = NULL, *oSl = NULL, *oPd = NULL, *oSh = NULL;
+				LV2_Atom *oPg = NULL, *oSl = NULL, *oPd = NULL, *oSh = NULL, *oKy = NULL;
 				int pg = 0;
 				int slot = -1;
 				lv2_atom_object_get (obj,
@@ -480,6 +486,7 @@ void BOops::run (uint32_t n_samples)
 					 	     urids.bOops_slot, &oSl,
 						     urids.bOops_pads, &oPd,
 							 urids.bOops_shapeData, &oSh,
+							 urids.bOops_keysData, &oKy,
 						     NULL);
 
 				// Page nr notification
@@ -539,6 +546,16 @@ void BOops::run (uint32_t n_samples)
 
 						scheduleStateChanged = true;
 					}
+				}
+
+				// Keys notification
+				if (oKy && (oKy->type == urids.atom_String) && (slot >= 0))
+				{
+					const char* kstr = (const char*) (oKy + 1);
+					hstr2bool<std::array<bool, NR_PIANO_KEYS + 1>> (kstr, pages[pg].keys[slot]);
+					if (pg == pageNr) slots[slot].setSlotKeys (pages[pg].keys[slot]);
+					scheduleStateChanged = true;
+					//fprintf (stderr, "%s : %i %i\n", kstr, int (slots[slot].getMode()), int (pages[pg].keys[slot][NR_PIANO_KEYS]));
 				}
 			}
 
@@ -799,6 +816,7 @@ void BOops::run (uint32_t n_samples)
 			const uint8_t note = ((status == 8) || (status == 9) || (status == 11) ? msg[1] : 0);
 			const uint8_t value = ((status == 8) || (status == 9) || (status == 11) ? msg[2] : 0);
 
+			// MidiLearn
 			if (midiLearn)
 			{
 				midiLearned[0] = status;
@@ -812,6 +830,34 @@ void BOops::run (uint32_t n_samples)
 			// Analyze MIDI event
 			else
 			{
+				// Store into keys
+				if (note < NR_PIANO_KEYS)
+				{
+					// Note on
+					if (status == 9) 
+					{
+						for (Slot& s : slots) 
+						{
+							MidiKey old = s.findMidiKey (note);
+							const double v0 = old.value;
+							s.addMidiKey ({9, channel, note, value, 0.0, v0});
+						}
+					}
+
+					// Note off
+					else if (status == 8)
+					{
+						for (Slot& s : slots)
+						{
+							MidiKey old = s.findMidiKey (note);
+							if (old.status != 0) s.addMidiKey ({8, channel, note, value, 0.0, old.value});
+						}
+					}
+				}
+				
+				// TODO LV2_MIDI_CTL_ALL_NOTES_OFF, LV2_MIDI_CTL_ALL_SOUNDS_OFF
+
+				// MIDI-controlled pages
 				for (int p = 0; p <= pageMax; ++p)
 				{
 					if
@@ -844,6 +890,7 @@ void BOops::run (uint32_t n_samples)
 					}
 				}
 
+				// MIDI-controlled playback
 				if (globalControllers[PLAY_MODE] == MIDI_CONTROLLED)
 				{
 					const uint8_t typ = lv2_midi_message_type(msg);
@@ -980,6 +1027,9 @@ void BOops::notifyAllSlotsToGui ()
 			lv2_atom_forge_frame_time(&forge, 0);
 			forgePads (&forge, &frame, page, slot, NR_STEPS);
 			forgeShapeData (&forge, &frame, &pages[page].shapes[slot]);
+			char hstr[40];
+			bool2hstr<std::array<bool, NR_PIANO_KEYS + 1>> (pages[page].keys[slot], hstr);
+			lv2_atom_forge_string (&forge, hstr, strlen (hstr) + 1);
 			lv2_atom_forge_pop(&forge, &frame);
 		}
 	}
@@ -1307,6 +1357,7 @@ void BOops::play (uint32_t start, uint32_t end)
 		return;
 	}
 
+	
 	for (uint32_t i = start; i < end; ++i)
 	{
 		Position& p = positions[0];
@@ -1344,7 +1395,7 @@ void BOops::play (uint32_t start, uint32_t end)
 
 					// Old pad ended?
 					const int iStart = s.startPos[iStep];
-					if (((p.step < 0) || (s.startPos[p.step] != iStart)) && (!s.hasSlotShape()))
+					if (((p.step < 0) || (s.startPos[p.step] != iStart)) && (s.getMode() == MODE_PATTERN))
 					{
 						// Stop old pad
 						s.end ();
@@ -1356,6 +1407,7 @@ void BOops::play (uint32_t start, uint32_t end)
 			}
 
 			// Play slots
+			const double dsteps = getPositionFromFrames (p.transport, 1) * globalControllers[STEPS];
 			for (Slot& s : slots)
 			{
 				input = output;
@@ -1363,13 +1415,64 @@ void BOops::play (uint32_t start, uint32_t end)
 				if ((s.effect == FX_INVALID) || (s.effect == FX_NONE)) break;
 
 				// Play music :-)
-				output = (s.params[SLOTS_PLAY] ? s.play (step) : input);
+				if (!s.params[SLOTS_PLAY]) output = input;
+				else
+				{
+					if (s.getMode() == MODE_KEYS)
+					{
+						float mx = 0;
+						for (MidiKey** iit = s.midis.begin(); iit < s.midis.end(); ++iit)
+						{
+							if (((**iit).status != 0) && s.isKey ((**iit).note)) mx = std::max (float ((**iit).velocity) * float ((**iit).value) / 127.0f, mx);
+						}
+						output = s.play (step, mx);
+					}
+
+					else output = s.play (step);
+				}
+
 				s.mixf = 1.0f;
+
+				// Update MidiKeys
+				for (MidiKey** iit = s.midis.begin(); iit < s.midis.end(); )
+				{
+					// Update position;
+					(**iit).count +=dsteps;
+
+					// Use ADSR envelope
+					double adr = s.params[SLOTS_ATTACK] + s.params[SLOTS_DECAY] + s.params[SLOTS_RELEASE];
+					if (adr < 1.0f) adr = 1.0f;
+					const double a = s.params[SLOTS_ATTACK] / adr;
+					const double d = s.params[SLOTS_DECAY] / adr;
+					const double r = s.params[SLOTS_RELEASE] / adr;
+		
+					// Recalculate value
+					// NOTE_ON
+					if ((**iit).status == 9)
+					{
+						if ((**iit).count < a) (**iit).value = std::min ((**iit).value + dsteps / a, 1.0);
+						else if ((**iit).count < a + d) (**iit).value = std::max ((**iit).value - dsteps / d, double (s.params[SLOTS_SUSTAIN]));
+						else (**iit).value = s.params[SLOTS_SUSTAIN];
+					}
+
+					// NOTE_OFF
+					else if ((**iit).status == 8)
+					{
+						if (r == 0) (**iit).value = 0.0;
+						else (**iit).value -= dsteps / r;
+					}
+
+					else (**iit).value = 0.0;
+
+					// Cleanup
+					if (((**iit).value <= 0.0) || ((**iit).status == 0)) iit = s.midis.erase (iit);
+					else ++iit;	 
+				}
 			}
 
 			p.step = iStep;
 		}
-
+		
 		audioOutput1[i] = (1.0 - p.fader) * audioOutput1[i] + p.fader * output.left;
 		audioOutput2[i] = (1.0 - p.fader) * audioOutput2[i] + p.fader * output.right;
 
@@ -1384,6 +1487,7 @@ void BOops::play (uint32_t start, uint32_t end)
 			{
 				for (int j = 0; j < NR_STEPS; ++j) slots[i].setPad (j, pages[pageNr].pads[i][j]);
 				slots[i].setSlotShape (pages[pageNr].shapes[i]);
+				slots[i].setSlotKeys (pages[pageNr].keys[i]);
 			}
 		}
 	}
@@ -1521,6 +1625,8 @@ LV2_State_Status BOops::state_save (LV2_State_Store_Function store, LV2_State_Ha
 		}
 		store (handle, urids.bOops_statePad, padDataString, strlen (padDataString) + 1, urids.atom_String, LV2_STATE_IS_POD);
 	}
+
+	// TODO Store Keys
 
 	// Store shapes
 	{
@@ -1948,6 +2054,8 @@ LV2_State_Status BOops::state_restore (LV2_State_Retrieve_Function retrieve, LV2
 		// Schedule notify GUI
 		scheduleNotifyAllSlots = true;
 	}
+
+	// TODO Retrieve Keys
 
 	// Retrieve shapes
 	for (Page& p : pages) for (Shape<SHAPE_MAXNODES>& s : p.shapes) s = Shape<SHAPE_MAXNODES>();
