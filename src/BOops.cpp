@@ -1029,6 +1029,7 @@ void BOops::notifyAllSlotsToGui ()
 			forgeShapeData (&forge, &frame, &pages[page].shapes[slot]);
 			char hstr[40];
 			bool2hstr<std::array<bool, NR_PIANO_KEYS + 1>> (pages[page].keys[slot], hstr);
+			lv2_atom_forge_key(&forge, urids.bOops_keysData);
 			lv2_atom_forge_string (&forge, hstr, strlen (hstr) + 1);
 			lv2_atom_forge_pop(&forge, &frame);
 		}
@@ -1626,7 +1627,36 @@ LV2_State_Status BOops::state_save (LV2_State_Store_Function store, LV2_State_Ha
 		store (handle, urids.bOops_statePad, padDataString, strlen (padDataString) + 1, urids.atom_String, LV2_STATE_IS_POD);
 	}
 
-	// TODO Store Keys
+	// Store Keys
+	{
+		char keysDataString[8192] = "";
+
+		for (int pageNr = 0; pageNr <= pageMax; ++pageNr)
+		{
+			strcat (keysDataString, "\nKeys data slots page ");
+			char pageString[16];
+			snprintf (pageString, 12, "%d", pageNr);
+			strcat (keysDataString, pageString);
+			strcat (keysDataString, ":\n");
+			for (int slotNr = 0; slotNr < NR_SLOTS; ++slotNr)
+			{
+				if (pages[pageNr].keys[slotNr][NR_PIANO_KEYS])
+				{
+					char slotString[16];
+					snprintf (slotString, 12, "slo: %d", slotNr);
+					char keysString[40];
+					bool2hstr<std::array<bool, NR_PIANO_KEYS + 1>> (pages[pageNr].keys[slotNr], keysString);
+
+					strcat (keysDataString, slotString);
+					strcat (keysDataString, " key: 0x");
+					strcat (keysDataString, keysString);
+					strcat (keysDataString, ";\n");
+				}
+			}
+		}
+
+		store (handle, urids.bOops_keysData, keysDataString, strlen (keysDataString) + 1, urids.atom_String, LV2_STATE_IS_POD);
+	}
 
 	// Store shapes
 	{
@@ -2055,7 +2085,80 @@ LV2_State_Status BOops::state_restore (LV2_State_Retrieve_Function retrieve, LV2
 		scheduleNotifyAllSlots = true;
 	}
 
-	// TODO Retrieve Keys
+	// Retrieve keys
+	for (Page& p : pages) for (std::array<bool, NR_PIANO_KEYS + 1>& k : p.keys) k.fill (false);
+	const void* keysData = retrieve(handle, urids.bOops_keysData, &size, &type, &valflags);
+	if (keysData && (type == urids.atom_String))
+	{
+		// Parse retrieved data
+		std::string s = (char*) keysData;
+
+		while (!s.empty())
+		{
+			// Check for slots page
+			size_t pos = s.find ("Keys data slots page");
+			if ((pos != std::string::npos) && (pos + 20 <= s.length())) break;
+			s.erase (0, pos + 20);
+
+			// Parse page number
+			int pageNr = 0;
+			try {pageNr = BUtilities::stof (s, &pos);}
+			catch  (const std::exception& e)
+			{
+				fprintf (stderr, "BOops.lv2: Restore keys state incomplete. Can't parse page number from \"%s...\"", s.substr (0, 63).c_str());
+				break;
+			}
+
+			if (pos > 0) s.erase (0, pos);
+			if ((pageNr < 0) || (pageNr >= NR_PAGES))
+			{
+				fprintf (stderr, "BOops.lv2: Restore keys state incomplete. Invalid matrix data block loaded for page %i.\n", pageNr);
+				break;
+			}
+
+			while (!s.empty())
+			{
+				pos = s.find ("slo:");
+				if (pos == std::string::npos) break;
+				if (pos + 4 >= s.length())
+				{
+						fprintf (stderr, "BOops.lv2: Restore keys state incomplete. Can't parse slot number from \"%s...\"", s.substr (0, 63).c_str());
+						break;
+				}
+				
+				s.erase (0, pos + 4);
+
+				int sl;
+				try {sl = BUtilities::stof (s, &pos);}
+				catch  (const std::exception& e)
+				{
+					fprintf (stderr, "BOops.lv2: Restore keys state incomplete. Can't parse slot number from \"%s...\"", s.substr (0, 63).c_str());
+					break;
+				}
+
+				if (pos > 0) s.erase (0, pos);
+				if ((sl < 0) || (sl >= NR_SLOTS))
+				{
+					fprintf (stderr, "BOops.lv2: Restore keys state incomplete. Invalid matrix data block loaded for slot %i.\n", sl);
+					break;
+				}
+
+				size_t kPos = s.find ("key: 0x");
+				size_t ePos = s.find (";");
+				if ((kPos == std::string::npos) || (kPos + 7 >= s.length()) || (kPos == std::string::npos) || (kPos + 47 < ePos))
+				{
+					fprintf (stderr, "BOops.lv2: Restore keys state incomplete. Invalid matrix data block loaded for slot %i.\n", sl);
+					break;
+				}
+
+				hstr2bool<std::array<bool, NR_PIANO_KEYS + 1>> (s.substr (kPos + 7, ePos - kPos - 7).c_str(), pages[pageNr].keys[sl]);
+				s.erase (0, ePos + 1);
+			}
+		}
+
+		scheduleNotifyAllSlots = true;
+	}
+	for (int i = 0; i < NR_SLOTS; ++i) slots[i].setSlotKeys (pages[pageNr].keys[i]);
 
 	// Retrieve shapes
 	for (Page& p : pages) for (Shape<SHAPE_MAXNODES>& s : p.shapes) s = Shape<SHAPE_MAXNODES>();
@@ -2139,6 +2242,7 @@ LV2_State_Status BOops::state_restore (LV2_State_Retrieve_Function retrieve, LV2
 			startPos = nextPos;
 		}
 	}
+	for (int i = 0; i < NR_SLOTS; ++i) slots[i].setSlotShape (pages[pageNr].shapes[i]);
 
 	return LV2_STATE_SUCCESS;
 }

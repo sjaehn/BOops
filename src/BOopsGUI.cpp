@@ -1335,7 +1335,8 @@ void BOopsGUI::onCloseRequest (BEvents::WidgetEvent* event)
 			if (patternChooser->getButtonText() == BOOPS_LABEL_SAVE)
 			{
 				// Additional data
-				std::string ads = "";
+				// Shape
+				std::string shapeStr = "";
 				for (int sl = 0; sl < NR_SLOTS; ++sl)
 				{
 					Shape<SHAPE_MAXNODES> sh = patterns[pageAct].getShape (sl);
@@ -1345,25 +1346,39 @@ void BOopsGUI::onCloseRequest (BEvents::WidgetEvent* event)
 						for (unsigned int n = 0; n < sh.size(); ++n)
 						{
 							const Node node = sh.getNode (n);
-							ads +=	"slo:" + std::to_string (sl) + "; " +
-									"typ:" + std::to_string (int (node.nodeType)) + "; " + 
-									"ptx:" + std::to_string (node.point.x) + "; " +
-									"pty:" + std::to_string (node.point.y) + "; " +
-									"h1x:" + std::to_string (node.handle1.x) + "; " +
-									"h1y:" + std::to_string (node.handle1.y) + "; " +
-									"h2x:" + std::to_string (node.handle2.x) + "; " +
-									"h2y:" + std::to_string (node.handle2.y) + ";\n";
+							shapeStr +=	"slo:" + std::to_string (sl) + "; " +
+										"typ:" + std::to_string (int (node.nodeType)) + "; " + 
+										"ptx:" + std::to_string (node.point.x) + "; " +
+										"pty:" + std::to_string (node.point.y) + "; " +
+										"h1x:" + std::to_string (node.handle1.x) + "; " +
+										"h1y:" + std::to_string (node.handle1.y) + "; " +
+										"h2x:" + std::to_string (node.handle2.x) + "; " +
+										"h2y:" + std::to_string (node.handle2.y) + ";\n";
 						}
 					}
 				}
+				if (shapeStr != "") shapeStr = "\nShapes data:\n" + shapeStr + "\n";
+
+				// Keys
+				std::string keyStr = "";
+				for (int sl = 0; sl < NR_SLOTS; ++sl)
+				{
+					if (patterns[pageAct].getKey (sl, NR_PIANO_KEYS))
+					{
+						char s[40];
+						bool2hstr<std::array<bool, NR_PIANO_KEYS + 1>> (patterns[pageAct].getKeys (sl), s);
+						keyStr += "slo: " + std::to_string (sl) + " key: 0x" + s + ";\n";
+					}
+				}
+				if (keyStr != "") keyStr = "\nKeys data:\n" + keyStr + "\n";
 
 				// Write file
-				if (ads != "") ads = "\nAdditional data:\n" + ads;
+				if ((shapeStr != "") || (keyStr != "")) shapeStr = "\nAdditional data:\n" + shapeStr;
 				const std::string path = patternChooser->getPath() + BUTILITIES_PATH_SLASH + patternChooser->getFileName();
 				std::ofstream file (path, std::ios::out | std::ios::trunc);
 				if (file.good())
 				{
-					file << "appliesTo: <" BOOPS_URI ">;\n" << patterns[pageAct].toString (std::array<std::string, 5> {"sl", "st", "gt", "sz", "mx"}) << ads;
+					file << "appliesTo: <" BOOPS_URI ">;\n" << patterns[pageAct].toString (std::array<std::string, 5> {"sl", "st", "gt", "sz", "mx"}) << shapeStr << keyStr;
 					if (file.is_open()) file.close();
 				}
 
@@ -1394,9 +1409,19 @@ void BOopsGUI::onCloseRequest (BEvents::WidgetEvent* event)
 
 					// Additional data
 					const std::string ads = patternChooser->getAdditionalData();
+					const size_t shapesPos = ads.find ("Shapes data:");
+					const size_t keysPos = ads.find ("Keys data:");
+					std::string shapeStr = (shapesPos != std::string::npos ? ads.substr (shapesPos + 12, (keysPos != std::string::npos ? keysPos - shapesPos - 12: std::string::npos)) : "");
+					std::string keysStr = (keysPos != std::string::npos ? ads.substr (keysPos + 10, std::string::npos) : "");
 					std::array<Shape<SHAPE_MAXNODES>, NR_SLOTS> shapes;
 					shapes.fill (Shape<SHAPE_MAXNODES>());
-					to_shapes (ads, shapes);
+					std::array<bool, NR_PIANO_KEYS + 1> k0;
+					k0.fill (false);
+					std::array<std::array<bool, NR_PIANO_KEYS + 1>, NR_SLOTS> keys;
+					keys.fill (k0);
+
+					// Load shapes
+					to_shapes (shapeStr, shapes);
 					for (int sl = 0; sl < NR_SLOTS; ++sl)
 					{
 						if (shapes[sl] != Shape<SHAPE_MAXNODES>())
@@ -1405,8 +1430,55 @@ void BOopsGUI::onCloseRequest (BEvents::WidgetEvent* event)
 						}
 					}
 
-					for (int r = 0; r < NR_SLOTS; ++r) patterns[pageAct].setShape (r, shapes[r]);
-					for (int r = 0; r < NR_SLOTS; ++r) sendSlot (pageAct, r);
+					// Load keys
+					size_t pos = 0;
+					while (!keysStr.empty())
+					{
+						pos = keysStr.find ("slo:");
+						if (pos == std::string::npos) break;
+						if (pos + 4 >= keysStr.length())
+						{
+							fprintf (stderr, "BOops.lv2: Restore keys state incomplete. Can't parse slot number from \"%s...\"", keysStr.substr (0, 63).c_str());
+							break;
+						}
+						
+						keysStr.erase (0, pos + 4);
+
+						int sl;
+						try {sl = BUtilities::stof (keysStr, &pos);}
+						catch  (const std::exception& e)
+						{
+							fprintf (stderr, "BOops.lv2: Restore keys state incomplete. Can't parse slot number from \"%s...\"", keysStr.substr (0, 63).c_str());
+							break;
+						}
+
+						if (pos > 0) keysStr.erase (0, pos);
+						if ((sl < 0) || (sl >= NR_SLOTS))
+						{
+							fprintf (stderr, "BOops.lv2: Restore keys state incomplete. Invalid matrix data block loaded for slot %i.\n", sl);
+							break;
+						}
+
+						size_t kPos = keysStr.find ("key: 0x");
+						size_t ePos = keysStr.find (";");
+						if ((kPos == std::string::npos) || (kPos + 7 >= keysStr.length()) || (ePos == std::string::npos) || (kPos + 47 < ePos))
+						{
+							fprintf (stderr, "BOops.lv2: Restore keys state incomplete. Invalid matrix data block loaded for slot %i.\n", sl);
+							break;
+						}
+
+						hstr2bool<std::array<bool, NR_PIANO_KEYS + 1>> (keysStr.substr (kPos + 7, ePos - kPos - 7).c_str(), keys[sl]);
+						keysStr.erase (0, ePos + 1);
+					}
+
+					// Install additional data
+					for (int r = 0; r < NR_SLOTS; ++r) 
+					{
+						patterns[pageAct].setShape (r, shapes[r]);
+						patterns[pageAct].setKeys (r, keys[r]);
+						sendSlot (pageAct, r);
+					}
+
 					patterns[pageAct].store ();
 					drawPad ();
 				}

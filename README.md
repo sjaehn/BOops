@@ -523,15 +523,8 @@ But do not change or delete any definition symbol!
 
 ## TODO
 
-* Include slot keys in pattern load/save
-* Save / restore slot keys
 * More, more, more presets
-* MIDI triggered slots
 * Remove redundant sendShape() calls if sendPad() called
-* Implement effects
-  * Pitch (?)
-  * Tape start (?)
-* Latency ? (Pitch, Tape start)
 * More tooltips
 * Reduce CPU load
 
