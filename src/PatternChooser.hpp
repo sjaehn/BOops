@@ -65,6 +65,7 @@ protected:
 	BWidgets::Label noFileLabel;
 	bool patternValid;
 	std::string additionalData;
+	std::array<bool, NR_SLOTS> ads;
 
 	void drawPattern();
 	virtual std::function<void (BEvents::Event*)> getFileListBoxClickedCallback() override;

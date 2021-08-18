@@ -21,6 +21,7 @@
 #include "PatternChooser.hpp"
 #include <limits.h>		// PATH_MAX
 #include <fstream>
+#include "BUtilities/stof.hpp"
 
 PatternChooser::PatternChooser () : PatternChooser (0.0, 0.0, 0.0, 0.0, "FileChooser") {}
 
@@ -49,6 +50,7 @@ PatternChooser::PatternChooser (const double x, const double y, const double wid
 	additionalData ("")
 {
 	clear();
+	ads.fill (false);
 
 	std::vector<std::string> patternLabels = {"No pattern file selected"};
 	labels.insert (labels.end(), patternLabels.begin(), patternLabels.end());
@@ -133,7 +135,26 @@ void PatternChooser::setFileName (const std::string& filename)
 						{
 							// Parse file
 							pos += 1;
+
+							// Pattern
 							fromString (text.substr (pos, epos - pos), std::array<std::string, 5> {"sl", "st", "gt", "sz", "mx"});
+
+							// Additional data
+							ads.fill (false);
+							size_t spos = epos;
+							while (spos !=std::string::npos)
+							{
+								size_t ipos = text.substr (spos).find ("slo:");
+								if (ipos == std::string::npos) break;
+								spos += ipos + 4;
+
+								int slNr = 0;
+								try {slNr = BUtilities::stof (text.substr (spos), &ipos);}
+								catch  (const std::exception& e) {break;}
+								if ((slNr >= 0) && (slNr < NR_SLOTS)) ads[slNr] = true;
+								spos += ipos;
+							}
+							
 							patternValid = true;
 						}
 					}
@@ -372,29 +393,44 @@ void PatternChooser::drawPattern()
 			const double ph = NR_SLOTS * w / NR_STEPS;
 			for (int r = 0; r < NR_SLOTS; ++r)
 			{
-				for (int s = 0; s < NR_STEPS; )
+				// Row contains additional data
+				if (ads[r])
 				{
-					Pad pad = getPad (r, s);
-					if (pad.size >= 1.0)
-					{
-						int size = (s + pad.size <= NR_STEPS ? pad.size : NR_STEPS - s);
-						cairo_rectangle 
-						(
-							cr, 
-							x0 + 0.5 * w - 0.5 * pw + s * pw / NR_STEPS, 
-							y0 + 0.5 * h - 0.5 * ph + r * ph / NR_SLOTS,
-							size * pw / NR_STEPS,
-							ph / NR_SLOTS
-						);
-						cairo_set_line_width (cr, 1.0);
-						cairo_set_source_rgba (cr, 1.0, 1.0, 1.0, 1.0);
-						cairo_fill_preserve (cr);
-						cairo_set_source_rgba (cr, 0.0, 0.0, 0.0, 0.75);
-						cairo_stroke (cr);
-						s += pad.size;
-					}
+					cairo_rectangle (cr, x0 + 0.5 * w - 0.5 * pw, y0 + 0.5 * h - 0.5 * ph + r * ph / NR_SLOTS, pw, ph / NR_SLOTS);
+					cairo_set_line_width (cr, 1.0);
+					cairo_set_source_rgba (cr, 0.5, 0.5, 0.5, 1.0);
+					cairo_fill_preserve (cr);
+					cairo_set_source_rgba (cr, 0.0, 0.0, 0.0, 0.75);
+					cairo_stroke (cr);
+				}
 
-					else s++;
+				// Row contains pads only
+				else
+				{
+					for (int s = 0; s < NR_STEPS; )
+					{
+						Pad pad = getPad (r, s);
+						if (pad.size >= 1.0)
+						{
+							int size = (s + pad.size <= NR_STEPS ? pad.size : NR_STEPS - s);
+							cairo_rectangle 
+							(
+								cr, 
+								x0 + 0.5 * w - 0.5 * pw + s * pw / NR_STEPS, 
+								y0 + 0.5 * h - 0.5 * ph + r * ph / NR_SLOTS,
+								size * pw / NR_STEPS,
+								ph / NR_SLOTS
+							);
+							cairo_set_line_width (cr, 1.0);
+							cairo_set_source_rgba (cr, 1.0, 1.0, 1.0, 1.0);
+							cairo_fill_preserve (cr);
+							cairo_set_source_rgba (cr, 0.0, 0.0, 0.0, 0.75);
+							cairo_stroke (cr);
+							s += pad.size;
+						}
+
+						else s++;
+					}
 				}
 			}
 			
