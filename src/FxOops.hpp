@@ -41,7 +41,8 @@ public:
 		samplerate (rate),
 		framesPerStepPtr (framesPerStep),
 		framesPerStep (24000),
-		amp (0.0f), pitch (0.0f), offset (0.0)
+		amp (0.0f), pitch (0.0f), offset (0.0),
+		p0 (0.0)
 	{
 		if (!framesPerStep) throw std::invalid_argument ("Fx initialized with framesPerStep nullptr");
 
@@ -71,6 +72,7 @@ public:
 		pitch = pow (2.0, LIMIT (2.0 * (params[SLOTS_OPTPARAMS + FX_OOPSPITCH] + r2 * params[SLOTS_OPTPARAMS + FX_OOPSPITCHRAND]) - 1.0, -1.0, 1.0));
 		framesPerStep = *framesPerStepPtr;
 		offset = (params ? LIMIT (params[SLOTS_OPTPARAMS + FX_OOPSOFFSET] + r1 * params[SLOTS_OPTPARAMS + FX_OOPSOFFSETRAND], 0.0, 1.0) : 0.0);
+		p0 = position;
 	}
 
 	virtual Stereo process (const double position, const double size) override
@@ -79,7 +81,7 @@ public:
 		Stereo s1 = Stereo (0, 0);
 		if (position > offset)
 		{
-			sf_count_t frame = (position - offset) * framesPerStep * pitch;
+			sf_count_t frame = (position - offset - p0) * framesPerStep * pitch;
 			s1 = Stereo (oops.get (frame, 0, samplerate), oops.get (frame, 0, samplerate));
 		}
 
@@ -94,6 +96,7 @@ protected:
 	float amp;
 	float pitch;
 	double offset;
+	double p0;
 
 };
 

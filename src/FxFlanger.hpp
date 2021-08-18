@@ -96,6 +96,11 @@ public:
 
 		if (shapePaused && (mx >= 0.0001)) init (position);
 		shapePaused = (mx < 0.0001);
+		if (shapePaused) 
+		{
+			end();
+			return s0;
+		}
 
 		Stereo s1 = process (position, size);
 		s1 = BUtilities::mix<Stereo> (s0, pan (s0, s1), mx * mixf);

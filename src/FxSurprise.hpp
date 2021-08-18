@@ -92,6 +92,11 @@ public:
 		{
 			if (shapePaused && (mx >= 0.0001)) init (position);
 			shapePaused = (mx < 0.0001);
+			if (shapePaused) 
+			{
+				end();
+				return (**buffer).front();
+			}
 
 			for (int i = 0; i < FX_SURPRISE_NR; ++i)
 			{
