@@ -175,6 +175,7 @@ struct Sample
         float get (const sf_count_t frame, const int channel, const int rate)
         {
         	if (!data) return 0.0f;
+                if (frame < 0) return 0.0f;
 
         	// Direct access if same frame rate
         	if (info.samplerate == rate)
