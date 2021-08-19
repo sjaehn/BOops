@@ -329,7 +329,7 @@ void ShapeWidget::onButtonPressed (BEvents::PointerEvent* event)
 	if (event->getButton() == BDevices::LEFT_BUTTON)
 	{
 		// Node already activated => Select handles
-		if ((grabbedNode >= 0) && (grabbedNode < size()))
+		if ((grabbedNode >= 0) && (grabbedNode < int (size())))
 		{
 			Node node = getNode (grabbedNode);
 			// Handle2 => Select
