@@ -512,6 +512,7 @@ But do not change or delete any definition symbol!
   * Oops: New sample
 * Default optimization flags `-O3 -ffast-math` for compiling DSP
 * Improved binary compatibility / portability using static libs
+* User friendly hiding patterns for inactive slots
 * New presets
 * Bugfixes
   * Fix pattern Y flip glitches

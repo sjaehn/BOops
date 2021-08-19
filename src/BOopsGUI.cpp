@@ -3683,7 +3683,7 @@ void BOopsGUI::padsPressedCallback (BEvents::Event* event)
 		if ((event->getEventType () == BEvents::BUTTON_PRESS_EVENT) || (event->getEventType () == BEvents::POINTER_DRAG_EVENT))
 		{
 
-			if ((row >= 0) && (row < NR_SLOTS) && (step >= 0) && (step < maxstep))
+			if ((row >= 0) && (row < NR_SLOTS) && (step >= 0) && (step < maxstep) && (ui->slots[row].container.getValue() != FX_NONE) && (ui->slots[row].container.getValue() != FX_INVALID))
 			{
 				Shape<SHAPE_MAXNODES> sh = ui->patterns[ui->pageAct].getShape (row);
 
@@ -4374,8 +4374,14 @@ void BOopsGUI::drawPad ()
 	int maxstep = controllerWidgets[STEPS]->getValue ();
 	for (int row = 0; row < NR_SLOTS; ++row)
 	{
+		// Empty slot
+		if ((slots[row].container.getValue() == FX_NONE) || (slots[row].container.getValue() == FX_INVALID))
+		{
+			for (int step = 0; step < maxstep; ++step) drawPad (cr, row, step);
+		}
+
 		// Keys or shape mode
-		if (patterns[pageAct].getKey(row, NR_PIANO_KEYS) || (patterns[pageAct].getShape (row) != Shape<SHAPE_MAXNODES>())) drawPad (cr, row, 0);
+		else if (patterns[pageAct].getKey(row, NR_PIANO_KEYS) || (patterns[pageAct].getShape (row) != Shape<SHAPE_MAXNODES>())) drawPad (cr, row, 0);
 
 		// Pattern mode
 		else
@@ -4397,8 +4403,14 @@ void BOopsGUI::drawPad (const int slot)
 	cairo_t* cr = cairo_create (surface);
 	int maxstep = controllerWidgets[STEPS]->getValue ();
 
+	// Empty slot
+	if ((slots[slot].container.getValue() == FX_NONE) || (slots[slot].container.getValue() == FX_INVALID))
+	{
+		for (int step = 0; step < maxstep; ++step) drawPad (cr, slot, step);
+	}
+
 	// Keys or shape mode
-	if (patterns[pageAct].getKey(slot, NR_PIANO_KEYS) || (patterns[pageAct].getShape (slot) != Shape<SHAPE_MAXNODES>())) drawPad (cr, slot, 0);
+	else if (patterns[pageAct].getKey(slot, NR_PIANO_KEYS) || (patterns[pageAct].getShape (slot) != Shape<SHAPE_MAXNODES>())) drawPad (cr, slot, 0);
 
 	// Pattern mode
 	else
@@ -4424,18 +4436,18 @@ void BOopsGUI::drawPad (const int row, const int step)
 
 void BOopsGUI::drawPad (cairo_t* cr, const int row, const int step)
 {
+	const int fxnr = LIMIT (slots[row].container.getValue(), FX_NONE, NR_FX - 1);
 	Shape<SHAPE_MAXNODES> sh = patterns[pageAct].getShape (row);
 	SymbolIndex mode = (patterns[pageAct].getKey(row, NR_PIANO_KEYS) ? MIDISYMBOL : (sh != Shape<SHAPE_MAXNODES>())? SHAPESYMBOL : PATTERNSYMBOL);
 	int maxstep = controllerWidgets[STEPS]->getValue ();
 	if ((!cr) || (cairo_status (cr) != CAIRO_STATUS_SUCCESS) || (row < 0) || (row >= NR_SLOTS)) return;
 
-
 	slots[row].shapePad.setSymbol (mode);
 	if ((step < 0) || (step >= maxstep)) return;
 
 	// Get origin and size of pad data
-	const int p0 = (mode == PATTERNSYMBOL ? getPadOrigin (pageAct, row, step) : 0);
-	const Pad pd = (mode == PATTERNSYMBOL ? patterns[pageAct].getPad (row, p0) : Pad (0, maxstep - p0, 0));
+	const int p0 = ((fxnr == FX_NONE) || (fxnr == FX_INVALID) ? step : (mode == PATTERNSYMBOL ? getPadOrigin (pageAct, row, step) : 0));
+	const Pad pd = ((fxnr == FX_NONE) || (fxnr == FX_INVALID) ? Pad (0, 1, 0) : (mode == PATTERNSYMBOL ? patterns[pageAct].getPad (row, p0) : Pad (0, maxstep - p0, 0)));
 	const int ps = LIMIT (pd.size, 1.0, maxstep - p0);
 
 	// Get size of drawing area
@@ -4472,11 +4484,10 @@ void BOopsGUI::drawPad (cairo_t* cr, const int row, const int step)
 	cairo_fill (cr);
 
 	// Draw pad
-	const int fxnr = LIMIT (slots[row].container.getValue(), FX_NONE, NR_FX - 1);
 	BColors::Color color = *padColors[fxnr].getColor(BColors::NORMAL);
 	BColors::Color pc = color;
 	pc.applyBrightness (pd.mix - 1.0);
-	if ((p0 <= ic) && (p0 + ps > ic) && (mode == PATTERNSYMBOL)) pc.applyBrightness (0.75);
+	if ((p0 <= ic) && (p0 + ps > ic) && ((mode == PATTERNSYMBOL) || (fxnr == FX_NONE) || (fxnr == FX_INVALID))) pc.applyBrightness (0.75);
 	drawButton (cr, xr + 1, yr + 1, wr - 2, hr - 2, pc);
 
 	// Draw label
@@ -4495,7 +4506,7 @@ void BOopsGUI::drawPad (cairo_t* cr, const int row, const int step)
 	}
 
 	// Draw shape
-	if ((mode == SHAPESYMBOL) && (wr > 4.0))
+	if ((mode == SHAPESYMBOL) && (wr > 4.0) && (fxnr != FX_NONE) && (fxnr != FX_INVALID))
 	{
 		cairo_move_to (cr, xr + 2.0, yr + hr - 2.0 - LIMIT (sh.getMapValue (0.0), 0.0, 1.0) * (hr - 4.0));
 		for (int i = 0; i <= wr - 4; ++i)
@@ -4515,14 +4526,12 @@ void BOopsGUI::drawPad (cairo_t* cr, const int row, const int step)
 		cairo_pattern_add_color_stop_rgba (pat, 1, color.getRed (), color.getGreen (), color.getBlue (), 0.6 * color.getAlpha ());
 		cairo_set_source (cr, pat);
 		cairo_fill (cr);
-
-		if (ic >= 0) drawButton (cr, ic * w1 + 1, yr + 1, w1 - 2, hr - 2, {1.0, 1.0, 1.0, 0.75});
-		
 		cairo_pattern_destroy (pat);
-	}
+		if (ic >= 0) drawButton (cr, ic * w1 + 1, yr + 1, w1 - 2, hr - 2, {1.0, 1.0, 1.0, 0.75});	
+	}	
 
 	// Update keys
-	if (mode == MIDISYMBOL)
+	if ((mode == MIDISYMBOL) && (fxnr != FX_NONE) && (fxnr != FX_INVALID))
 	{
 		std::vector<bool> ks;
 		for (int i = 0; i < NR_PIANO_KEYS; ++i) ks.push_back (patterns[pageAct].getKey (row, i));
