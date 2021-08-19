@@ -72,28 +72,17 @@ public:
 
 	virtual Stereo playPad (const double position, const double size, const double mixf)
 	{
-		const Stereo s0 = (**buffer).front();
-		if (!playing) return s0;
-
-		return mix (s0, process (position, size), position, size, mixf);
+		return mix ((**buffer).front(), process (position, size), position, size, mixf);
 	}
 
 	virtual Stereo play (const double position, const double size, const double mx, const double mixf)
 	{
-		const Stereo s0 = (**buffer).front();
-
-		if (shapePaused && (mx >= 0.0001)) init (position);
-		shapePaused = (mx < 0.0001);
-		if (shapePaused) 
-		{
-			end();
-			return s0;
-		}
-		
-		return BUtilities::mix<Stereo> (s0, pan (s0, process (position, size)), mx * mixf);
+		return BUtilities::mix<Stereo> ((**buffer).front(), pan ((**buffer).front(), process (position, size)), params[SLOTS_MIX] * mx * mixf);
 	}
 
 	virtual void end () {playing = false;}
+
+	virtual bool isPlaying () {return playing;}
 
 protected:
 	RingBuffer<Stereo>** buffer;

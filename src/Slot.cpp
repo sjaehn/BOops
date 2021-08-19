@@ -60,7 +60,9 @@
 Slot::Slot () : Slot (nullptr, FX_INVALID, nullptr, nullptr, 0, 0.0f, 0.0) {}
 
 Slot::Slot (BOops* plugin, const BOopsEffectsIndex effect, float* params, Pad* pads, const size_t size, const float mixf, const double framesPerStep) :
-	plugin (plugin), effect (FX_INVALID), midis (), slotShape(), slotKeys(), slotMode (MODE_PATTERN), fx (nullptr),
+	plugin (plugin), effect (FX_INVALID), midis (), slotShape(), slotKeys(), slotMode (MODE_PATTERN),
+	initPos (0.0), lastPos (0.0), patchPos (0.0), shapePaused (true),
+	fx (nullptr),
 	size (size), mixf (mixf), framesPerStep (framesPerStep), buffer (nullptr), shape ()
 {
 	std::fill (startPos, startPos + NR_STEPS, -1);
@@ -86,6 +88,8 @@ Slot:: Slot (const Slot& that) :
 	slotShape (that.slotShape),
 	slotKeys (that.slotKeys),
 	slotMode (that.slotMode),
+	initPos (that.initPos),
+	lastPos (that.lastPos),
 	fx (nullptr),
 	size (that.size), 
 	mixf (that.mixf),
@@ -115,6 +119,9 @@ Slot& Slot::operator= (const Slot& that)
 	slotShape = that.slotShape;
 	slotKeys = that.slotKeys;
 	slotMode = that.slotMode;
+	initPos = that.initPos;
+	lastPos = that.lastPos;
+	patchPos = that.patchPos;
 	size = that.size;
 	mixf = that.mixf;
 	framesPerStep = that.framesPerStep;
@@ -268,6 +275,21 @@ Fx* Slot::newFx (const BOopsEffectsIndex effect)
 	return fx;
 }
 
+void Slot::init (const double position) 
+{
+	initPos = position;
+	lastPos = position;
+	patchPos = 0.0;
+	shapePaused = true;
+	if (fx) fx->init (position);
+}
+
+void Slot::end ()
+{
+	shapePaused = true;
+	if (fx) fx->end ();
+}
+
 void Slot::setSlotShape (const Shape<SHAPE_MAXNODES>& source) 
 {
 	slotShape = source;
@@ -324,17 +346,10 @@ MidiKey Slot::findMidiKey (const uint8_t note)
 
 Stereo Slot::play (const double position)
 {
+	if (slotMode == MODE_SHAPE) return play (position, slotShape.getMapValue (position / size));
 	if ((!fx) || (!buffer)) return Stereo();
 	if (!params[SLOTS_PLAY]) return (*buffer).front();
-
-	if (slotMode == MODE_SHAPE)
-	{
-		const Stereo s0 = (*buffer).front();
-		const double mx = slotShape.getMapValue (position / size);
-		const Stereo s1 = fx->play (position, size, LIMIT (mx, 0.0, 1.0), mixf);
-		return BUtilities::mix<Stereo> (s0, s1, mixf);
-	}
-
+	if (!fx->isPlaying()) return (*buffer).front();
 	if (!isPadSet(position)) return (*buffer).front();
 
 	const int index = startPos[int(position)];
@@ -349,7 +364,18 @@ Stereo Slot::play (const double position, const float mx)
 	if ((!fx) || (!buffer)) return Stereo();
 	if (!params[SLOTS_PLAY]) return (*buffer).front();
 
+	if (shapePaused && (mx >= 0.0001)) init (position);
+	shapePaused = (mx < 0.0001);
+	if (shapePaused) 
+	{
+		end();
+		return (*buffer).front();
+	}
+
+	if ((position < lastPos) && (position < 1.0)) patchPos += std::ceil (lastPos);
+	lastPos = position;
+
 	const Stereo s0 = (*buffer).front();
-	const Stereo s1 = fx->play (position, size, mx, mixf);
+	const Stereo s1 = fx->play (std::max (position - initPos + patchPos, 0.0), size, mx, mixf);
 	return BUtilities::mix<Stereo> (s0, s1, mixf);
 }

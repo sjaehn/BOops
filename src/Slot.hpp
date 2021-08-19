@@ -63,10 +63,10 @@ public:
 	Fx* newFx (const BOopsEffectsIndex effect);
 	int getStartPad (const int index) const;
 	bool isPadSet (const int index) const {return ((startPos[index] >= 0) && (startPos[index] + pads[startPos[index]].size > index));}
-	void init (const double position) {if (fx) fx->init (position);}
+	void init (const double position);
 	Stereo play (const double position);
 	Stereo play (const double position, const float mx);
-	void end () {if (fx) fx->end ();}
+	void end ();
 
 	BOops* plugin;
 	BOopsEffectsIndex effect;
@@ -78,6 +78,10 @@ protected:
 	Shape<SHAPE_MAXNODES> slotShape;
 	std::array<bool, NR_PIANO_KEYS + 1> slotKeys;
 	SlotMode slotMode;
+	double initPos;		// Shape / keys mode
+	double lastPos;		// Shape / keys mode
+	double patchPos;	// Shape / keys mode
+	bool shapePaused;	// Shape / keys mode
 
 public:
 	int startPos[NR_STEPS];

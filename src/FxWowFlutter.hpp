@@ -64,17 +64,7 @@ public:
 	{
 		const double wow = (0.5 - 0.5 * cos (2 * M_PI * position * wowRate)) * wowDepth;
 		const double flutter = (0.5 - 0.5 * cos (2 * M_PI * position * flutterRate)) * flutterDepth;
-		const double fade =
-		(
-			position < 0.5 ?
-			0.5 - 0.5 * cos (2 * M_PI * position) :
-			(
-				position > size - 0.5 ?
-				0.5 - 0.5 * cos (2 * M_PI * (size - position)) :
-				1.0
-			)
-		);
-		const double frame = framesPerStep * fade * (wow + flutter);
+		const double frame = framesPerStep * (wow + flutter);
 		return getSample (frame);
 	}
 

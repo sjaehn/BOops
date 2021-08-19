@@ -50,7 +50,7 @@ public:
 
 	virtual Stereo process (const double position, const double size) override
 	{
-		const long nr = position * double (stutters);
+		const long nr = std::min (position, double (NR_STEPS)) * double (stutters);
 		const double frac = fmod (position, 1.0 / double (stutters));
 		const double frame = nr * framesPerStutter;
 		Stereo s1 = getSample (frame);

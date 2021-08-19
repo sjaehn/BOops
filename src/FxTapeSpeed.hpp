@@ -50,7 +50,7 @@ public:
 
 	virtual Stereo process (const double position, const double size) override
 	{
-		return getSample ((1.0 - speed) * framesPerStep * position);
+		return getSample ((1.0 - speed) * framesPerStep * std::min (position, double (NR_STEPS)));
 	}
 
 protected:

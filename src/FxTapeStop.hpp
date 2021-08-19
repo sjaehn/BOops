@@ -56,7 +56,7 @@ public:
 
 	virtual Stereo process (const double position, const double size) override
 	{
-		return getSample ((log (exp (order * position) + exp (order * reach) - 1) / order - reach) * framesPerStep);
+		return getSample ((log (exp (order * std::min (position, double (NR_STEPS))) + exp (order * reach) - 1) / order - reach) * framesPerStep);
 	}
 
 protected:

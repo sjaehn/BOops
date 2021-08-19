@@ -44,7 +44,8 @@ public:
 
 	virtual Stereo process (const double position, const double size) override
 	{
-		return (**buffer)[long (2.0 * framesPerStep * position)];
+		size_t rpos = 2.0 * framesPerStep * std::min (position, double (NR_STEPS));
+		return (**buffer)[rpos];
 	}
 
 protected:

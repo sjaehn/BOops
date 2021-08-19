@@ -78,7 +78,7 @@ public:
 				break;
 
 			case FOLDBACK:
-				l = fabs (l) <= 1.0 ? level * l : (SGN (l) * level * float (2 * (int ((abs (l) + 1) / 2) % 2) - 1) * (1.0 - fmod (fabs (l) + 1.0, 2.0)));
+				l = fabs (l) <= 1.0 ? level * l : (SGN (l) * level * float (2 * (int ((abs (l) + 1) / 2) % 2) - 1) * (1.0 - fmodf(fabs (l) + 1.0, 2.0)));
 				r = fabs (r) <= 1.0 ? level * r : (SGN (r) * level * float (2 * (int ((abs (r) + 1) / 2) % 2) - 1) * (1.0 - fmodf(fabs (r) + 1.0, 2.0)));
 				break;
 

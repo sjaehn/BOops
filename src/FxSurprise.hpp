@@ -75,7 +75,7 @@ public:
 
 	virtual Stereo playPad (const double position, const double size, const double mixf) override
 	{
-		if (playing && pads && plugin)
+		if (pads && plugin)
 		{
 			for (int i = 0; i < FX_SURPRISE_NR; ++i)
 			{
@@ -88,16 +88,8 @@ public:
 
 	virtual Stereo play (const double position, const double size, const double mx, const double mixf) override
 	{
-		if (playing && plugin)
+		if (plugin)
 		{
-			if (shapePaused && (mx >= 0.0001)) init (position);
-			shapePaused = (mx < 0.0001);
-			if (shapePaused) 
-			{
-				end();
-				return (**buffer).front();
-			}
-
 			for (int i = 0; i < FX_SURPRISE_NR; ++i)
 			{
 				if (slots[i] >= 0) plugin->slots[slots[i]].mixf = (i == act ? mx : 0);

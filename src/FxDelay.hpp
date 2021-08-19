@@ -66,8 +66,6 @@ public:
 	virtual Stereo playPad (const double position, const double size, const double mixf) override
 	{
 		const Stereo s0 = (**buffer).front();
-		if (!playing) return s0;
-
 		Stereo s1 = process (position, size);
 		s1 = mix (s0, s1, position, size, mixf);
 		Stereo s2 = s1;
@@ -78,17 +76,8 @@ public:
 	virtual Stereo play (const double position, const double size, const double mx, const double mixf) override
 	{
 		const Stereo s0 = (**buffer).front();
-
-		if (shapePaused && (mx >= 0.0001)) init (position);
-		shapePaused = (mx < 0.0001);
-		if (shapePaused) 
-		{
-			end();
-			return s0;
-		}
-
 		Stereo s1 = process (position, size);
-		s1 = BUtilities::mix<Stereo> (s0, pan (s0, s1), mx * mixf);
+		s1 = BUtilities::mix<Stereo> (s0, pan (s0, s1), params[SLOTS_MIX] * mx * mixf);
 		Stereo s2 = s1;
 		(**buffer).front() = s2.mix (s0, 1.0f - feedback);
 		return s1;
