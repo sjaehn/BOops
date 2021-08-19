@@ -1370,7 +1370,7 @@ void BOops::play (uint32_t start, uint32_t end)
 		double pos = floorfrac (p.sequence + relpos);							// 0..1 position sequence
 
 		// Input
-		Stereo input = (globalControllers[SOURCE] == SOURCE_SAMPLE) ? getSample (p, pos) : Stereo (audioInput1[i], audioInput2[i]);
+		const Stereo input = (globalControllers[SOURCE] == SOURCE_SAMPLE) ? getSample (p, pos) : Stereo (audioInput1[i], audioInput2[i]);
 		Stereo output = input;
 
 		// Waveform
@@ -1411,13 +1411,13 @@ void BOops::play (uint32_t start, uint32_t end)
 			const double dsteps = getPositionFromFrames (p.transport, 1) * globalControllers[STEPS];
 			for (Slot& s : slots)
 			{
-				input = output;
-				s.buffer->push_front (input);
+				// Store last output
+				s.buffer->push_front (output);
+
 				if ((s.effect == FX_INVALID) || (s.effect == FX_NONE)) break;
 
 				// Play music :-)
-				if (!s.params[SLOTS_PLAY]) output = input;
-				else
+				if (s.params[SLOTS_PLAY])
 				{
 					if (s.getMode() == MODE_KEYS)
 					{
@@ -1474,8 +1474,8 @@ void BOops::play (uint32_t start, uint32_t end)
 			p.step = iStep;
 		}
 		
-		audioOutput1[i] = (1.0 - p.fader) * audioOutput1[i] + p.fader * output.left;
-		audioOutput2[i] = (1.0 - p.fader) * audioOutput2[i] + p.fader * output.right;
+		audioOutput1[i] = (1.0 - p.fader) * input.left + p.fader * output.left;
+		audioOutput2[i] = (1.0 - p.fader) * input.right + p.fader * output.right;
 
 		// Just faded out ?
 		if ((p.fader <= 0) && (sizePosition() > 1))
