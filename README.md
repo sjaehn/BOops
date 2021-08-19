@@ -519,6 +519,7 @@ But do not change or delete any definition symbol!
   * Fix paste merged pads causing overlaps
   * Bugfix remove slots may cause segfault 
   * Fix clicks on decay
+  * Bugfix clicked handles if shape changed
 
 
 ## TODO
