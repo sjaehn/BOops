@@ -264,7 +264,7 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 	};
 	shapeEditor.historyToolButtons = 
 	{
-		HaloButton (448.5, 130, 20, 20, "widget", BOOPS_LABEL_RESET),
+		HaloButton (438.5, 130, 20, 20, "widget", BOOPS_LABEL_RESET),
 		HaloButton (461, 130, 20, 20, "widget", BOOPS_LABEL_UNDO),
 		HaloButton (483.5, 130, 20, 20, "widget", BOOPS_LABEL_REDO)
 	};
@@ -1073,7 +1073,7 @@ void BOopsGUI::resize ()
 	RESIZE (shapeEditor.toolboxIcon, 246, 130, 308, 20, sz);
 	for (unsigned int i = 0; i < shapeEditor.shapeToolButtons.size(); ++i) RESIZE (shapeEditor.shapeToolButtons[i], 243.5 + i * 22.5, 130, 20, 20, sz);
 	for (unsigned int i = 0; i < shapeEditor.editToolButtons.size(); ++i) RESIZE (shapeEditor.editToolButtons[i], 363.5 + i * 22.5, 130, 20, 20, sz);
-	for (unsigned int i = 0; i < shapeEditor.historyToolButtons.size(); ++i) RESIZE (shapeEditor.historyToolButtons[i], 448.5 + i * 22.5, 130, 20, 20, sz);
+	for (unsigned int i = 0; i < shapeEditor.historyToolButtons.size(); ++i) RESIZE (shapeEditor.historyToolButtons[i], 438.5 + i * 22.5, 130, 20, 20, sz);
 	RESIZE (shapeEditor.gridShowButton, 513.5, 130, 20, 20, sz);
 	RESIZE (shapeEditor.gridSnapButton, 536, 130, 20, 20, sz);
 
@@ -3712,7 +3712,7 @@ void BOopsGUI::padsPressedCallback (BEvents::Event* event)
 						ui->shapeEditor.container.moveTo (0, LIMIT (row * 24 * ui->sz, 0, 128 * ui->sz));
 						ui->shapeEditor.shapeWidget.rename (ui->slots[row].effectPad.getName());
 						ui->shapeEditor.shapeWidget.applyTheme (ui->theme);
-						ui->shapeEditor.shapeToolButtons[1].setValue (1.0);
+						for (int i = 0; i < 5; ++i) ui->shapeEditor.shapeToolButtons[i].setValue (i == 1 ? 1.0 : 0.0);
 						ui->shapeEditor.container.show();
 					}
 
