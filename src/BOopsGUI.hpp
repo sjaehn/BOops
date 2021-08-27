@@ -243,6 +243,7 @@ private:
 	{
 		std::vector<std::vector<Pad>> data;
 		std::vector<Shape<SHAPE_MAXNODES>> shapes;
+		std::vector<std::array<bool, NR_PIANO_KEYS + 1>> keys;
 		std::pair<int, int> origin;
 		std::pair<int, int> extends;
 		bool ready = true;
