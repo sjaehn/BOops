@@ -3686,12 +3686,13 @@ void BOopsGUI::padsPressedCallback (BEvents::Event* event)
 			if ((row >= 0) && (row < NR_SLOTS) && (step >= 0) && (step < maxstep) && (ui->slots[row].container.getValue() != FX_NONE) && (ui->slots[row].container.getValue() != FX_INVALID))
 			{
 				Shape<SHAPE_MAXNODES> sh = ui->patterns[ui->pageAct].getShape (row);
+				SymbolIndex mode = (ui->patterns[ui->pageAct].getKey(row, NR_PIANO_KEYS) ? MIDISYMBOL : (sh != Shape<SHAPE_MAXNODES>())? SHAPESYMBOL : PATTERNSYMBOL);
 
 				// Left button
 				if (pointerEvent->getButton() == BDevices::LEFT_BUTTON)
 				{
 					// Check if shape
-					if ((sh != Shape<SHAPE_MAXNODES>()) && (event->getEventType() == BEvents::BUTTON_PRESS_EVENT))
+					if ((mode == SHAPESYMBOL) && (event->getEventType() == BEvents::BUTTON_PRESS_EVENT))
 					{
 						ui->shapeEditor.page = ui->pageAct;
 						ui->shapeEditor.slot = row;
