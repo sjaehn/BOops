@@ -184,6 +184,7 @@ private:
 	bool scheduleNotifySamplePathToGui;
 	bool scheduleNotifyMidiLearnedToGui;
 	bool scheduleStateChanged;
+	bool scheduleInit;
 
 	struct Atom_BufferList
 	{

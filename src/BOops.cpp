@@ -69,7 +69,8 @@ BOops::BOops (double samplerate, const char* bundle_path, const LV2_Feature* con
 	scheduleNotifyWaveformToGui (false), scheduleNotifyTransportGateKeys (false),
 	scheduleNotifySamplePathToGui (false),
 	scheduleNotifyMidiLearnedToGui (false),
-	scheduleStateChanged (false)
+	scheduleStateChanged (false),
+	scheduleInit (false)
 
 {
 	if (bundle_path) strncpy (pluginPath, bundle_path, 1023);
@@ -1387,8 +1388,8 @@ void BOops::play (uint32_t start, uint32_t end)
 			double step = pos * globalControllers[STEPS];
 			int iStep = LIMIT (step, 0, globalControllers[STEPS] - 1);
 
-			// Enter next step ?
-			if (p.step != iStep)
+			// Init step ?
+			if (scheduleInit || (p.step != iStep))
 			{
 				for (Slot& s : slots)
 				{
@@ -1404,7 +1405,14 @@ void BOops::play (uint32_t start, uint32_t end)
 						// Start new pad (if set)
 						if (iStart >= 0) s.init (iStart);
 					}
+
+					else if (scheduleInit)
+					{
+						s.end();
+						s.init (LIMIT (step, 0, globalControllers[STEPS] - 1));
+					}
 				}
+				scheduleInit = false;
 			}
 
 			// Play slots
@@ -1490,6 +1498,8 @@ void BOops::play (uint32_t start, uint32_t end)
 				slots[i].setSlotShape (pages[pageNr].shapes[i]);
 				slots[i].setSlotKeys (pages[pageNr].keys[i]);
 			}
+
+			scheduleInit = true;
 		}
 	}
 }
