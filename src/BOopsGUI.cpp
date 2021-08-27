@@ -3912,6 +3912,10 @@ void BOopsGUI::padsPressedCallback (BEvents::Event* event)
 								const Shape<SHAPE_MAXNODES> s = ui->patterns[ui->pageAct].getShape (clipRMin + dr);
 								ui->patterns[ui->pageAct].setShape (clipRMin + dr, ui->patterns[ui->pageAct].getShape (clipRMax - dr));
 								ui->patterns[ui->pageAct].setShape (clipRMax - dr, s);
+
+								const std::array<bool, NR_PIANO_KEYS + 1> k = ui->patterns[ui->pageAct].getKeys (clipRMin + dr);
+								ui->patterns[ui->pageAct].setKeys (clipRMin + dr, ui->patterns[ui->pageAct].getKeys (clipRMax - dr));
+								ui->patterns[ui->pageAct].setKeys (clipRMax - dr, k);
 							}
 
 							ui->sendSlot (ui->pageAct, clipRMin + dr);
@@ -3943,7 +3947,7 @@ void BOopsGUI::padsPressedCallback (BEvents::Event* event)
 					{
 						std::array<bool, NR_PIANO_KEYS + 1> k0;
 						k0.fill (false);
-						
+
 						for (int r = clipRMin; r <= clipRMax; ++r)
 						{
 							for (int s = clipSMin; s <= clipSMax; ++s)
