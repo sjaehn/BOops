@@ -164,8 +164,6 @@ uninstall:
 	-@rmdir $(DESTDIR)$(LV2DIR)/$(BUNDLE)/inc
 	@rm -f $(DESTDIR)$(LV2DIR)/$(BUNDLE)/$(GUI_OBJ)
 	@rm -f $(DESTDIR)$(LV2DIR)/$(BUNDLE)/$(DSP_OBJ)
-	@rm -f $(DESTDIR)$(LV2DIR)/$(BUNDLE)/$(GUI_CV_OBJ)
-	@rm -f $(DESTDIR)$(LV2DIR)/$(BUNDLE)/$(DSP_CV_OBJ)
 	-@rmdir $(DESTDIR)$(LV2DIR)/$(BUNDLE)
 	@echo \ done.
 

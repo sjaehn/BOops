@@ -24,7 +24,12 @@ a) Install the boops package for your system
 * NixOS (thanks to Bart Brouns)
 * [OpenSUSE](https://build.opensuse.org/package/show/home:geekositalia:daw/BOops)
 
-b) Copy the binaries of the latest version (once provided) to your lv2 directory (depending on your system settings,
+Note: This will NOT necessarily install the latest version of B.Oops. The version provided depends on the packagers.
+
+b) Use the latest provided binaries (once established)
+
+Unpack the provided boops-\*.zip or boops-\*.tar.gz from the latest release and 
+copy the BOops.lv2 folder to your lv2 directory (depending on your system settings,
 ~/.lv2/, /usr/lib/lv2/, /usr/local/lib/lv2/, or ...).
 
 c) Build your own binaries in the following three steps.
