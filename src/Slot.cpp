@@ -321,6 +321,11 @@ void Slot::addMidiKey (const MidiKey& midiKey)
 	midis.push_back (midiKey);
 }
 
+void Slot::allKeysOff ()
+{
+	for (MidiKey** iit = midis.begin(); iit < midis.end(); ++iit) (**iit).status = 8;
+}
+
 void Slot::removeMidiKey (const MidiKey& midiKey)
 {
 	// Search and remove already existing note

@@ -831,7 +831,8 @@ void BOops::run (uint32_t n_samples)
 			else
 			{
 				// Store into keys
-				if (note < NR_PIANO_KEYS)
+				// NOTE_ON and NOTE_OFF
+				if (((status == 8) || (status == 9)) && (note < NR_PIANO_KEYS))
 				{
 					// Note on
 					if (status == 9) 
@@ -855,7 +856,13 @@ void BOops::run (uint32_t n_samples)
 					}
 				}
 				
-				// TODO LV2_MIDI_CTL_ALL_NOTES_OFF, LV2_MIDI_CTL_ALL_SOUNDS_OFF
+				// LV2_MIDI_CTL_ALL_NOTES_OFF, LV2_MIDI_CTL_ALL_SOUNDS_OFF
+				{
+					if ((status == 11) && ((note == LV2_MIDI_CTL_ALL_NOTES_OFF) || (note ==LV2_MIDI_CTL_ALL_SOUNDS_OFF)))
+					{
+						for (Slot& s : slots) s.allKeysOff();
+					}
+				}
 
 				// MIDI-controlled pages
 				for (int p = 0; p <= pageMax; ++p)

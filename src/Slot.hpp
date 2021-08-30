@@ -57,6 +57,7 @@ public:
 	void setSlotKeys (const std::array<bool, NR_PIANO_KEYS + 1>& source);
 	bool isKey (const int index) {return slotKeys[index];}
 	void addMidiKey (const MidiKey& midiKey);
+	void allKeysOff ();
 	void removeMidiKey (const MidiKey& midiKey);
 	MidiKey findMidiKey (const uint8_t note);
 	SlotMode getMode () const {return slotMode;}
