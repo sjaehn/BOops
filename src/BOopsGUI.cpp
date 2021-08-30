@@ -134,7 +134,7 @@ BOopsGUI::BOopsGUI (const char *bundle_path, const LV2_Feature *const *features,
 
 	pageWidget (288, 136, 824, 30, "widget", 0.0),
 	pageBackSymbol (0, 0, 10, 30, "tab", LEFTSYMBOL),
-	pageForwardSymbol (800, 0, 10, 30, "tab", RIGHTSYMBOL), // TODO xpos
+	pageForwardSymbol (800, 0, 10, 30, "tab", RIGHTSYMBOL),
 
 	midiBox (390, 170, 510, 120, "screen", 0),
 	midiText (20, 10, 450, 20, "tlabel", BOOPS_LABEL_MIDI_PAGE " #1"),
@@ -779,13 +779,10 @@ void BOopsGUI::port_event(uint32_t port, uint32_t buffer_size,
 			// Status notifications
 			else if (obj->body.otype == urids.bOops_statusEvent)
 			{
-				LV2_Atom *oBpb = NULL, *oBu = NULL, *oBpm = NULL, *oPos = NULL, *oPg = NULL, *oMax = NULL, *oMid = NULL, *oEdPg = NULL, *oEdSl = NULL;
+				LV2_Atom *oPos = NULL, *oPg = NULL, *oMax = NULL, *oMid = NULL, *oEdPg = NULL, *oEdSl = NULL;
 				lv2_atom_object_get
 				(
 					obj,
-					urids.time_beatsPerBar, &oBpb,
-					urids.time_beatUnit, &oBu,
-					urids.time_beatsPerMinute, &oBpm,
 					urids.bOops_position, &oPos,
 					urids.bOops_pageID, &oPg,
 					urids.bOops_pageMax, &oMax,
@@ -794,16 +791,6 @@ void BOopsGUI::port_event(uint32_t port, uint32_t buffer_size,
 					urids.bOops_editorSlot, &oEdSl,
 					NULL
 				);
-
-				if (oBpb && (oBpb->type == urids.atom_Float))
-				{
-					// TODO bpb = ((LV2_Atom_Float*)oBpb)->body;
-				}
-
-				if (oBpm && (oBpm->type == urids.atom_Float))
-				{
-					// TODO bpm = ((LV2_Atom_Float*)oBpm)->body;
-				}
 
 				if (oPos && (oPos->type == urids.atom_Double))
 				{

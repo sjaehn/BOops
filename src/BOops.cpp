@@ -556,7 +556,6 @@ void BOops::run (uint32_t n_samples)
 					hstr2bool<std::array<bool, NR_PIANO_KEYS + 1>> (kstr, pages[pg].keys[slot]);
 					if (pg == pageNr) slots[slot].setSlotKeys (pages[pg].keys[slot]);
 					scheduleStateChanged = true;
-					//fprintf (stderr, "%s : %i %i\n", kstr, int (slots[slot].getMode()), int (pages[pg].keys[slot][NR_PIANO_KEYS]));
 				}
 			}
 
@@ -648,7 +647,6 @@ void BOops::run (uint32_t n_samples)
 							slots[slot].shape.appendNode (node);
 						}
 						slots[slot].shape.validateShape();
-						//scheduleNotifyShape[slot] = true;
 						scheduleStateChanged = true;
 					}
 				}
@@ -696,7 +694,8 @@ void BOops::run (uint32_t n_samples)
 				const LV2_Atom_Object* obj = (const LV2_Atom_Object*)&ev->body;
 				lv2_atom_object_get
 				(
-					obj, urids.time_bar, &oBar,
+					obj, 
+					urids.time_bar, &oBar,
 					urids.time_barBeat, &oBbeat,
 					urids.time_beatsPerMinute,  &oBpm,
 					urids.time_beatsPerBar,  &oBpb,
@@ -1075,10 +1074,6 @@ void BOops::notifyStatusToGui()
 	LV2_Atom_Forge_Frame frame;
 	lv2_atom_forge_frame_time(&forge, 0);
 	lv2_atom_forge_object(&forge, &frame, 0, urids.bOops_statusEvent);
-	lv2_atom_forge_key(&forge, urids.time_beatsPerBar);
-	lv2_atom_forge_float(&forge, p.transport.beatsPerBar);
-	lv2_atom_forge_key(&forge, urids.time_beatsPerMinute);
-	lv2_atom_forge_float(&forge, p.transport.bpm);
 	lv2_atom_forge_key(&forge, urids.bOops_position);
 	lv2_atom_forge_double(&forge, pos);
 	lv2_atom_forge_key(&forge, urids.bOops_pageID);
