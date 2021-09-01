@@ -17,6 +17,7 @@
 
 #include "FileChooser.hpp"
 #include <dirent.h>
+#include <limits.h>
 #include <sys/stat.h>
 
 namespace BWidgets
