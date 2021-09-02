@@ -153,6 +153,8 @@ Pattern size in steps. Set up to 32 steps.
 
 #### Effect slots
 
+![Slots](https://raw.githubusercontent.com/sjaehn/BOops/master/doc/slots.png "Slots")
+
 There are up to 12 slots on the left of the user interface. Each slot is linked to a pattern row right to the respective
 slot. The effect slots will be applied in the order from the top to the bottom.
 
@@ -160,10 +162,12 @@ You can add (or insert) an effect by pressing the [+] button or remove an effect
 created more than one slot, you can select a slot by clicking on its name. You can
 change an effect and select one out of more than 20 effects by pressing the menu button. You can move the effect slot
 (including its respective pattern row) by pressing the up or the down button. To mute or un-mute a slot, press the play
-button.
+button. |
 
 
 #### Pattern page tabs
+
+![Pattern tabs](https://raw.githubusercontent.com/sjaehn/BOops/master/doc/pattern_tabs.png "Pattern page tabs")
 
 You can find the pattern page tabs on the top of the centrally located pattern. The tabs provide access to up to 16
 patterns. Click on a tab to highlight the tab and to edit the respective pattern. Press ▸ on the tab to switch playback
@@ -180,16 +184,18 @@ pattern.
 
 #### MIDI control pattern \#1 - 16
 
+![MIDI control pattern](https://raw.githubusercontent.com/sjaehn/BOops/master/doc/midi_control_pattern.png "MIDI pattern control")
+
 You can move through the up to 16 patterns in B.Oops using MIDI signals (e. g., from a pad controller or a keyboard). The
 respective control menu appears upon clicking on the piano keys symbol in the respective tab. Enable / disable MIDI
 control of the respective pattern by selection or deselection (= none) of a MIDI status. You can manually set the
 parameters to which B.Oops shall respond or you can use MIDI learning. Don't forget to confirm ("OK") or discard changes
 ("Cancel")!
 
-![MIDI control pattern](https://raw.githubusercontent.com/sjaehn/BOops/master/doc/midi_control_pattern.png "Click on the keyboard symbol")
-
 
 #### Pattern
+
+![Pattern](https://raw.githubusercontent.com/sjaehn/BOops/master/doc/pattern.png "Pattern")
 
 The pattern matrix is located in the center of user interface. Each line of the pattern is linked to an effect slot in the
 left of the user interface. And each line harbors either a sequencer pattern or a shape. You can switch between the two
@@ -205,6 +211,8 @@ the right of the user interface.
 
 ##### Pattern drawing mode
 
+![Pattern mode](https://raw.githubusercontent.com/sjaehn/BOops/master/doc/pattern_mode.png "Pattern drawing mode")
+
 You are in the drawing mode if none of the cut, copy, x-flip, y-flip, or paste symbols is selected. Left-click on a pad to
 set the pad and apply properties from the right of the user interface. If you click again, you will un-set this pad.
 Dragging results in linked pads. And right-clicking results in copying the properties of the respective pad to the pad
@@ -213,11 +221,15 @@ properties in the right of the user interface. Directly change the pad mix prope
 
 ##### Shape drawing mode
 
+![Shape mode](https://raw.githubusercontent.com/sjaehn/BOops/master/doc/shape_mode.png "Shape drawing mode")
+
 Once switched to the shape mode by clicking on the respective symbol on the left of the pattern, you can edit a shape by
 clicking on the shape-harboring pad.
 
 
 ##### Keys-controlled mode
+
+![Keys mode](https://raw.githubusercontent.com/sjaehn/BOops/master/doc/keys_mode.png "Keys-controlled mode")
 
 The keys-controlled mode (MIDI-controlled mode) is the third mode you can choose by clicking on the respective symbol on 
 the left of the pattern. In contrast to the pattern or shape drawing mode, you don't predefine the start and end point 
@@ -509,25 +521,8 @@ But do not change or delete any definition symbol!
 
 ## What's new
 
-* Slot shape mode: Controlled by a user-defined shape instead of a pattern
-* Slot keys mode: Controlled by user-defined MIDI events instead of a pattern
-* Pattern randomization
-* Fx
-  * New Banger
-  * New EQ
-  * Tremolo: Waveform option
-  * Oops: New sample
-* Default optimization flags `-O3 -ffast-math` for compiling DSP
-* Improved binary compatibility / portability using static libs
-* User friendly hiding patterns for inactive slots
-* New presets
 * Bugfixes
-  * Fix pattern Y flip glitches
-  * Correctly X flip merged pads
-  * Fix paste merged pads causing overlaps
-  * Bugfix remove slots may cause segfault 
-  * Fix clicks on decay
-  * Bugfix clicked handles if shape changed
+  * Restore slot keys
 
 
 ## TODO
