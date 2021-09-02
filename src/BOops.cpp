@@ -1753,7 +1753,6 @@ LV2_State_Status BOops::state_save (LV2_State_Store_Function store, LV2_State_Ha
 LV2_State_Status BOops::state_restore (LV2_State_Retrieve_Function retrieve, LV2_State_Handle handle, uint32_t flags,
 			const LV2_Feature* const* features)
 {
-
 	// Get host features
 	LV2_Worker_Schedule* schedule = nullptr;
 	LV2_State_Map_Path* mapPath = nullptr;
@@ -2109,7 +2108,7 @@ LV2_State_Status BOops::state_restore (LV2_State_Retrieve_Function retrieve, LV2
 		{
 			// Check for slots page
 			size_t pos = s.find ("Keys data slots page");
-			if ((pos != std::string::npos) && (pos + 20 <= s.length())) break;
+			if ((pos == std::string::npos) || (pos + 20 >= s.length())) break;
 			s.erase (0, pos + 20);
 
 			// Parse page number
