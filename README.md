@@ -26,9 +26,9 @@ a) Install the boops package for your system
 
 Note: This will NOT necessarily install the latest version of B.Oops. The version provided depends on the packagers.
 
-b) Use the latest provided binaries (once established)
+b) Use the latest provided binaries
 
-Unpack the provided boops-\*.zip or boops-\*.tar.gz from the latest release and 
+Unpack the provided boops-\*.zip or boops-\*.tar.xz from the latest release and 
 copy the BOops.lv2 folder to your lv2 directory (depending on your system settings,
 ~/.lv2/, /usr/lib/lv2/, /usr/local/lib/lv2/, or ...).
 
@@ -185,6 +185,8 @@ respective control menu appears upon clicking on the piano keys symbol in the re
 control of the respective pattern by selection or deselection (= none) of a MIDI status. You can manually set the
 parameters to which B.Oops shall respond or you can use MIDI learning. Don't forget to confirm ("OK") or discard changes
 ("Cancel")!
+
+![MIDI control pattern](https://raw.githubusercontent.com/sjaehn/BOops/master/doc/midi_control_pattern.png "Click on the keyboard symbol")
 
 
 #### Pattern
