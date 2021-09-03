@@ -138,7 +138,9 @@ key(s) which may trigger the progression by clicking on the piano symbol in the 
 MIDI controlled mode). You can also define how the sequencer should handle the trigger signal: restart, or restart and
 synchronize with the host-provided beat pattern, or continue progression.
 
-There is also an option to select patterns by MIDI signal. See below.
+![MIDI controlled mode](https://raw.githubusercontent.com/sjaehn/BOops/master/doc/midi_controlled.png "MIDI controlled mode")
+
+There is also an option to select patterns or to directly start an effect by a MIDI signal. See below.
 
 
 ##### Pattern size
@@ -521,6 +523,7 @@ But do not change or delete any definition symbol!
 
 ## What's new
 
+* More detailed documentation
 * Bugfixes
   * Restore slot keys
 
@@ -536,6 +539,7 @@ But do not change or delete any definition symbol!
 ## Links
 
 * Introduction / Quick start tutorial video: https://www.youtube.com/watch?v=bGUmZHWqdkE
+* Features version 1.8: https://www.youtube.com/watch?v=nHJlSlvxit8
 * Presets demo: https://www.youtube.com/watch?v=W2UBQbYq7Mw
 * Install tutorial: https://www.youtube.com/watch?v=XGgB5nCAqZo
 

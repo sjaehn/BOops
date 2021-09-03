@@ -53,7 +53,8 @@
 #define BOOPS_LABEL_SELECT_KEYS "Progression control: Select keys"
 #define BOOPS_LABEL_PROGRESSION_KEYS_TOOLTIP \
         "This option is intended for the control of the pattern progression (white vertical bar).\n" \
-        "For MIDI-controlled pattern selection click on the piano keys symbol of the respective pattern tab."
+        "For MIDI-controlled pattern selection click on the piano keys symbol of the respective pattern tab. " \
+        "For direct effect control click on the symbol left to the respective pattern row."
 #define BOOPS_LABEL_HELP "Help"
 #define BOOPS_LABEL_TUTORIAL "Introduction"
 #define BOOPS_LABEL_ROW "Row"

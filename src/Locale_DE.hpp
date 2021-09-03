@@ -53,7 +53,8 @@
 #define BOOPS_LABEL_SELECT_KEYS "Fortschrittskontrolle: Tastenauswahl"
 #define BOOPS_LABEL_PROGRESSION_KEYS_TOOLTIP \
         "Mit dieser Option kannst du den Fortschritt im Pattern kontrollieren (weißer Vertikalbalken).\n" \
-        "Für eine MIDI-kontrollierte Patternauswahl klicke auf das Pianotastensymbol auf dem jeweiligen Patterntab."
+        "Für eine MIDI-kontrollierte Patternauswahl klicke auf das Pianotastensymbol auf dem jeweiligen Patterntab." \
+        "Für die direkte Kontrolle von Effekten klicke auf das Symbol links von der jeweiligen Patternreihe."
 #define BOOPS_LABEL_HELP "Hilfe"
 #define BOOPS_LABEL_TUTORIAL "Einführung"
 #define BOOPS_LABEL_ROW "Reihe"
