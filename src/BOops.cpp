@@ -2264,28 +2264,28 @@ LV2_Worker_Status BOops::work (LV2_Worker_Respond_Function respond, LV2_Worker_R
 	if (!atom) return LV2_WORKER_ERR_UNKNOWN;
 
 	// Free old buffers
-        else if (atom->type == urids.bOops_freeBuffers)
+    if (atom->type == urids.bOops_freeBuffers)
 	{
 		const Atom_BufferList* bAtom = (const Atom_BufferList*) data;
 		for (int i = 0; i < NR_SLOTS; ++i)
 		{
 			if (bAtom->buffers[i]) delete (bAtom->buffers[i]);
 		}
-        }
+    }
 
 	// Free old Fx
-        else if (atom->type == urids.bOops_freeFx)
+    else if (atom->type == urids.bOops_freeFx)
 	{
 		const Atom_Fx* fAtom = (const Atom_Fx*) data;
 		if (fAtom->fx) delete (fAtom->fx);
-        }
+    }
 
 	// Free old sample
-        else if (atom->type == urids.bOops_sampleFreeEvent)
+    else if (atom->type == urids.bOops_sampleFreeEvent)
 	{
 		const AtomSample* sAtom = (AtomSample*) atom;
 		if (sAtom->sample) delete sAtom->sample;
-        }
+    }
 
 	// Load sample
 	else if ((atom->type == urids.atom_Object) && (((LV2_Atom_Object*)atom)->body.otype == urids.bOops_samplePathEvent))
@@ -2339,7 +2339,7 @@ LV2_Worker_Status BOops::work (LV2_Worker_Respond_Function respond, LV2_Worker_R
 		}
 
 		else return LV2_WORKER_ERR_UNKNOWN;
-        }
+    }
 
 	// Allocate new buffers
 	else if (atom->type == urids.bOops_allocateBuffers)

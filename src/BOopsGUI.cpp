@@ -2530,54 +2530,54 @@ void BOopsGUI::valueChangedCallback(BEvents::Event* event)
 			case PLAY:		ui->bypassButton.setValue (value == 2.0 ? 1 : 0);
 						break;
 
-			case SOURCE:		if (value == SOURCE_STREAM)
-						{
-							ui->loadButton.hide();
-							ui->sampleLabel.hide();
-							ui->sampleNameLabel.hide();
-							ui->sampleAmpLabel.hide();
-							ui->sampleAmpDial.hide();
-						}
-						else
-						{
-							ui->loadButton.show();
-							ui->sampleLabel.show();
-							ui->sampleNameLabel.show();
-							ui->sampleAmpLabel.show();
-							ui->sampleAmpDial.show();
-						}
-						break;
+			case SOURCE:	if (value == SOURCE_STREAM)
+							{
+								ui->loadButton.hide();
+								ui->sampleLabel.hide();
+								ui->sampleNameLabel.hide();
+								ui->sampleAmpLabel.hide();
+								ui->sampleAmpDial.hide();
+							}
+							else
+							{
+								ui->loadButton.show();
+								ui->sampleLabel.show();
+								ui->sampleNameLabel.show();
+								ui->sampleAmpLabel.show();
+								ui->sampleAmpDial.show();
+							}
+							break;
 
-			case PLAY_MODE:		if  (value == AUTOPLAY)
-						{
-							ui->autoplayBpmLabel.show();
-							ui->autoplayBpmSlider.show();
-							ui->autoplayBpbLabel.show();
-							ui->autoplayBpbSlider.show();
-							ui->autoplayPositionLabel.show();
-							ui->autoplayPositionSlider.show();
-						}
-						else
-						{
-							ui->autoplayBpmLabel.hide();
-							ui->autoplayBpmSlider.hide();
-							ui->autoplayBpbLabel.hide();
-							ui->autoplayBpbSlider.hide();
-							ui->autoplayPositionLabel.hide();
-							ui->autoplayPositionSlider.hide();
-						}
+			case PLAY_MODE:	if  (value == AUTOPLAY)
+							{
+								ui->autoplayBpmLabel.show();
+								ui->autoplayBpmSlider.show();
+								ui->autoplayBpbLabel.show();
+								ui->autoplayBpbSlider.show();
+								ui->autoplayPositionLabel.show();
+								ui->autoplayPositionSlider.show();
+							}
+							else
+							{
+								ui->autoplayBpmLabel.hide();
+								ui->autoplayBpmSlider.hide();
+								ui->autoplayBpbLabel.hide();
+								ui->autoplayBpbSlider.hide();
+								ui->autoplayPositionLabel.hide();
+								ui->autoplayPositionSlider.hide();
+							}
 
-						if  (value == MIDI_CONTROLLED)
-						{
-							ui->onMidiListBox.show();
-							ui->transportGateButton.show();
-						}
-						else
-						{
-							ui->onMidiListBox.hide();
-							ui->transportGateButton.hide();
-							ui->transportGateContainer.hide();
-						}
+							if  (value == MIDI_CONTROLLED)
+							{
+								ui->onMidiListBox.show();
+								ui->transportGateButton.show();
+							}
+							else
+							{
+								ui->onMidiListBox.hide();
+								ui->transportGateButton.hide();
+								ui->transportGateContainer.hide();
+							}
 
 						break;
 
@@ -3074,16 +3074,16 @@ void BOopsGUI::shapeEditorControlsClickedCallback(BEvents::Event* event)
 	else if (widget == &ui->shapeEditor.gridSnapButton)
 	{
 		if (value)
-			{
-				ui->shapeEditor.shapeWidget.showGrid();
-				ui->shapeEditor.shapeWidget.setSnap (true);
-			}
-			else
-			{
-				ui->shapeEditor.shapeWidget.hideGrid();
-				ui->shapeEditor.shapeWidget.setSnap (false);
-			}
-			ui->shapeEditor.gridShowButton.setValue (0.0);
+		{
+			ui->shapeEditor.shapeWidget.showGrid();
+			ui->shapeEditor.shapeWidget.setSnap (true);
+		}
+		else
+		{
+			ui->shapeEditor.shapeWidget.hideGrid();
+			ui->shapeEditor.shapeWidget.setSnap (false);
+		}
+		ui->shapeEditor.gridShowButton.setValue (0.0);
 	}
 }
 
@@ -4237,7 +4237,7 @@ void BOopsGUI::randomizePads()
 
 						st += pd.size;
 					}
-					else ++st;
+				else ++st;
 			}
 
 			// Insert new pads?

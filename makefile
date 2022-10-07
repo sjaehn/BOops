@@ -4,8 +4,8 @@ PKG_CONFIG ?= pkg-config
 GUI_LIBS += lv2 sndfile x11 cairo
 LV2_LIBS += lv2 sndfile
 ifneq ($(shell $(PKG_CONFIG) --exists fontconfig || echo no), no)
-  GUI_LIBS += fontconfig
-  GUIPPFLAGS += -DPKG_HAVE_FONTCONFIG
+  override GUI_LIBS += fontconfig
+  override GUIPPFLAGS += -DPKG_HAVE_FONTCONFIG
 endif
 
 CC ?= gcc

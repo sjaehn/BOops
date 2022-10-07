@@ -523,9 +523,7 @@ But do not change or delete any definition symbol!
 
 ## What's new
 
-* More detailed documentation
-* Bugfixes
-  * Restore slot keys
+* Minor visual improvements (sliders)
 
 
 ## TODO
