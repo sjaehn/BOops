@@ -31,6 +31,7 @@
 #ifndef Galactic_HPP
 #define Galactic_HPP
 
+#include <cstdlib>
 #include <cstring>
 #include <cmath>
 #include <cstdint>
